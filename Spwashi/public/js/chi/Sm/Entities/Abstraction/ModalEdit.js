@@ -76,7 +76,6 @@ require(['require', 'Class', 'Sm', 'Sm/Extras/Modal'], function (require, Class)
 
                     _Model.clear({silent: true});
                     _Model.set(response_model, {silent: true});
-                    Sm.CONFIG.DEBUG && console.log(response_model.content_location);
                     this.update();
                     var changed_arr = [];
                     for (var attr in changed_attributes) {
@@ -95,7 +94,6 @@ require(['require', 'Class', 'Sm', 'Sm/Extras/Modal'], function (require, Class)
                         }
                     }
                     var self = this;
-                    Sm.CONFIG.DEBUG && console.log(changed_attributes, response_model, _Model.attributes, _Model);
                     MvCombo_.forEachView(function () {
                         /** @type {Sm.Core.SmView|*}  */
                         var View = this;
@@ -183,7 +181,6 @@ require(['require', 'Class', 'Sm', 'Sm/Extras/Modal'], function (require, Class)
         };
         Sm.Entities.Abstraction.Modal.Edit.on_after_save         = function (result) {
             this.$content_element.removeClass('saving');
-            Sm.CONFIG.DEBUG && console.log(result);
             this.success(result, this.changed_attributes);
             this.changed_attributes = {};
             return result;
@@ -218,7 +215,6 @@ require(['require', 'Class', 'Sm', 'Sm/Extras/Modal'], function (require, Class)
             }).then(function (result) {
                 if (relationship_container) {
                     if (typeof result == 'string') {
-                        Sm.CONFIG.DEBUG && console.log(result);
                         relationship_container.innerHTML = '<hr>' + result;
                     } else {
                         relationship_container.innerHTML = '<hr>';
@@ -238,7 +234,6 @@ require(['require', 'Class', 'Sm', 'Sm/Extras/Modal'], function (require, Class)
         Sm.Entities.Abstraction.Modal.Edit.on_select             = function () {
             var self = this;
             this.resolve('save').then(function (res) {
-                Sm.CONFIG.DEBUG && console.log(res);
                 Sm.Entities.Abstraction.Modal.Edit.generate_element.call(self);
             }).catch(function (res) {
                 Sm.CONFIG.DEBUG && console.log(res);

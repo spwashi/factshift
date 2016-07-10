@@ -242,13 +242,12 @@ require(['require', 'Class', 'Sm', 'Sm/Extras/Modal'], function (require, Class)
                 Sm.CONFIG.DEBUG && console.log(e);
             });
         };
+
         Sm.Entities.Abstraction.Modal.Destroy.on_add_entity         = function () {};
         Sm.Entities.Abstraction.Modal.Destroy.on_select             = function () {
             Sm.Entities.Abstraction.Modal.Destroy.generate_element.call(this);
 
         };
-
-        Sm.loaded.add('Entities_Abstraction_Modal_Destroy');
-    });
+    }, 'Entities_Abstraction_Modal_Edit');
 
 });

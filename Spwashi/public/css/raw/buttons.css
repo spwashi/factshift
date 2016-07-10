@@ -1,0 +1,96 @@
+.clearfix {
+  zoom: 1;
+}
+.clearfix:after {
+  clear: both;
+}
+.clearfix:before,
+.clearfix:after {
+  content: '\0020';
+  display: block;
+  overflow: hidden;
+  visibility: hidden;
+  width: 0;
+  height: 0;
+}
+.vertical-align {
+  position: relative;
+  top: 50%;
+  transform: translateY(-50%);
+  -webkit-transform: translateY(-50%);
+  -ms-transform: translateY(-50%);
+}
+.noselect {
+  -webkit-user-select: none;
+  /* Chrome/Safari */
+  -moz-user-select: none;
+  /* Firefox */
+  -ms-user-select: none;
+  /* IE10+ */
+}
+.clickable {
+  cursor: pointer;
+}
+.hide {
+  display: none;
+}
+.no-margin-collapse:before,
+.no-margin-collapse:after {
+  content: ' ';
+  display: table;
+}
+.button-control {
+  zoom: 1;
+  position: absolute;
+  margin-bottom: 15px;
+  cursor: pointer;
+  border: none;
+  outline: none;
+  width: auto;
+  height: auto;
+  word-spacing: 30000px;
+}
+.button-control:after {
+  clear: both;
+}
+.button-control:before,
+.button-control:after {
+  content: '\0020';
+  display: block;
+  overflow: hidden;
+  visibility: hidden;
+  width: 0;
+  height: 0;
+}
+.button-control.inline {
+  word-spacing: normal;
+}
+.button-control.inline i {
+  float: left;
+  display: inline;
+  margin: 3px;
+}
+.button-control i {
+  margin: 4px 0;
+  padding: 0;
+  display: block;
+}
+.button-control .edit,
+.button-control .edit-external {
+  color: #555;
+}
+.button-control .save {
+  color: #394c99;
+}
+.button-control .close {
+  color: #e74c3c;
+}
+.button-control .close:hover {
+  color: #c0392b;
+}
+.button-control .debug {
+  display: none;
+}
+.debug .button-control .debug {
+  display: block;
+}

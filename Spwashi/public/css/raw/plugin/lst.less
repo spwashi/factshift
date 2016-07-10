@@ -1,0 +1,94 @@
+@import "../color";
+@import "../include";
+
+ul.lst {
+   padding:         0;
+   //border-bottom:   1px solid @module_shadow;
+   border-collapse: collapse;
+   position:        relative;
+   .clearfix;
+   top:             1px;
+   &.tag-container {
+      overflow-x: auto;
+   }
+   > li {
+      display:        inline-block;
+      list-style:     outside none none;
+      vertical-align: bottom;
+      position:       relative;
+      text-align:     center;
+      cursor:         pointer;
+      color:          @lst_text_color;
+      &.lst-tab {
+         bottom:                  0;
+         margin-top:              2px;
+         background-color:        @lst_tab_color;
+         border-collapse:         collapse;
+         padding:                 10px 7px;
+         cursor:                  pointer;
+         border:                  thin solid lighten(@palette_1_1, 40%);
+         border-bottom:           0;
+         transition:              padding .2s ease, margin-top .2s ease;
+         border-top-right-radius: 5px;
+         border-top-left-radius:  5px;
+         &:first-child {
+            margin-left: 0;
+         }
+         &:last-child {
+            margin-right: 0;
+         }
+         &.highlight {
+            background-color: @lst_highlight;
+            color:            @lst_highlight_text_color;
+         }
+
+         &.highlight, &:focus, &:hover {
+            margin-top:    -1px;
+            padding:       11px 7px;
+            border:        thin solid lighten(@palette_1_1, 20%);
+            border-bottom: none;
+         }
+      }
+      &.lst-tag {
+         &:last-child {
+            margin-right: 0;
+         }
+         padding:          2px;
+         //background-color: @lst_tag_color;
+         background-color: rgba(193, 193, 193, .45);
+         border:           1px solid @lst_tag_border_color;
+         margin:           5px 5px 5px 0;
+         &.focused {
+            background-color:           darken(@lst_tag_color, 20%);
+            border:                     2px solid darken(@lst_tag_border_color, 10%);
+            color:                      @spotlight_text_color;
+            font-style:                 italic;
+            border-bottom-left-radius:  0;
+            border-bottom-right-radius: 0;
+         }
+         &.word {
+            font-size:        .75em;
+            border:           thin solid @lst_word_border_color;
+            background-color: @lst_word_color;
+         }
+      }
+
+   }
+}
+
+.tab-content-holder {
+   min-height: 300px;
+   overflow-y: auto;
+   position:   relative;
+}
+
+.tab-content {
+   position: relative;
+   padding:  15px;
+   width:    100%;
+   &.hide {
+      position: absolute;
+      display:  none;
+      left:     660px;
+   }
+}

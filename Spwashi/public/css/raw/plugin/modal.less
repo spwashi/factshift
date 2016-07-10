@@ -1,0 +1,107 @@
+@import "../color";
+@import "../std";
+
+.modal {
+   position:                   fixed;
+   top:                        0;
+   left:                       0;
+   right:                      0;
+   bottom:                     0;
+   background:                 rgba(0, 0, 0, 0.7);
+   transition:                 opacity 0.2s, z-index 0s 0.2s;
+   text-align:                 center;
+   //overflow:                   hidden;
+   overflow-y:                 auto;
+   white-space:                nowrap;
+   .modal-content {
+      position: relative;
+      &.saving > .content {
+         background: lighten(@module_header_color, 55%);
+      }
+      > .content {
+         padding-right: 30px;
+      }
+      > header {
+         padding:                 20px 15px;
+         background-color:        @module_header_color;
+         //box-shadow:              0 1px 3px 0 #222222, 0 0 0 1px #222;
+         color:                   @header_text_color;
+         //padding:                 0 15px;
+         border-top-right-radius: 2px;
+         border-top-left-radius:  2px;
+         border:                  none;
+         //padding-bottom : 10px;
+         .clearfix;
+         text-align:              left;
+         > * {
+            .noselect;
+            .clickable;
+         }
+         h1 {
+            margin: 0;
+         }
+         .title, .subtitle {
+            clear:   both;
+            display: inline-block;
+         }
+         .title {
+            margin-right: 15px;
+         }
+         .subtitle {
+            //font-style: italic;
+            font-size: 1em;
+         }
+         .collection-container {
+            margin-top: 20px;
+            float:      left;
+         }
+         //background     : @module_header_color;
+         //color:      @module_header_text_color;
+         position:                relative;
+         //border-top:              thin solid @background_color;
+      }
+   }
+   .button-control {
+      right: 5px;
+   }
+   .form {
+      padding: 10px;
+   }
+   .content {
+      background: @module_color;
+   }
+   > * {
+      display:        inline-block;
+      white-space:    normal;
+      vertical-align: middle;
+      text-align:     left;
+   }
+   -webkit-overflow-scrolling: touch;
+   z-index:                    99;
+   opacity:                    1;
+   display:                    block;
+}
+
+.modal:before {
+   display:        inline-block;
+   overflow:       hidden;
+   width:          0;
+   height:         100%;
+   vertical-align: middle;
+   content:        "";
+}
+
+.modal-blur {
+   -webkit-filter: blur(3px);
+   -moz-filter:    blur(3px);
+   -o-filter:      blur(3px);
+   -ms-filter:     blur(3px);
+   filter:         blur(3px);
+}
+
+.modal-content {
+   width:      600px;
+   min-width:  40%;
+   overflow-y: auto;
+   z-index:    inherit;
+}

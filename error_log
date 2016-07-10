@@ -1,0 +1,821 @@
+[13-Jun-2016 21:33:30 America/New_York] PHP Fatal error:  Out of memory (allocated 1572864) (tried to allocate 12288 bytes) in /home/codozsqq/public_html/dev/s/Sm/Model/Model.php on line 539
+[13-Jun-2016 21:33:30 America/New_York] PHP Stack trace:
+[13-Jun-2016 21:33:30 America/New_York] PHP   1. {main}() /home/codozsqq/public_html/dev/s/index.php:0
+[13-Jun-2016 21:33:30 America/New_York] PHP   2. Sm\Session\Session::start() /home/codozsqq/public_html/dev/s/index.php:47
+[13-Jun-2016 21:33:30 America/New_York] PHP   3. session_start() /home/codozsqq/public_html/dev/s/Sm/Session/Session.php:24
+[13-Jun-2016 21:33:30 America/New_York] PHP   4. spl_autoload_call() /home/codozsqq/public_html/dev/s/Sm/Session/Session.php:24
+[13-Jun-2016 21:33:30 America/New_York] PHP   5. Sm\Core\App->{closure:/home/codozsqq/public_html/dev/s/Sm/drivers/autoload.php:11-21}() /home/codozsqq/public_html/dev/s/Sm/Session/Session.php:24
+[13-Jun-2016 21:33:30 America/New_York] PHP   6. require_once() /home/codozsqq/public_html/dev/s/Sm/drivers/autoload.php:17
+[13-Jun-2016 21:33:30 America/New_York] PHP   7. spl_autoload_call() /home/codozsqq/public_html/dev/s/Sm/drivers/autoload.php:30
+[13-Jun-2016 21:33:30 America/New_York] PHP   8. {closure:/home/codozsqq/public_html/dev/s/index.php:28-33}() /home/codozsqq/public_html/dev/s/Sm/drivers/autoload.php:30
+[14-Jun-2016 23:54:05 America/New_York] PHP Deprecated:  Automatically populating $HTTP_RAW_POST_DATA is deprecated and will be removed in a future version. To avoid this warning set 'always_populate_raw_post_data' to '-1' in php.ini and use the php://input stream instead. in Unknown on line 0
+[15-Jun-2016 00:04:03 America/New_York] PHP Deprecated:  Automatically populating $HTTP_RAW_POST_DATA is deprecated and will be removed in a future version. To avoid this warning set 'always_populate_raw_post_data' to '-1' in php.ini and use the php://input stream instead. in Unknown on line 0
+[15-Jun-2016 11:24:19 America/New_York] PHP Fatal error:  Out of memory (allocated 1572864) (tried to allocate 12288 bytes) in /home/codozsqq/public_html/dev/s/Sm/Model/Model.php on line 490
+[15-Jun-2016 11:24:19 America/New_York] PHP Stack trace:
+[15-Jun-2016 11:24:19 America/New_York] PHP   1. {main}() /home/codozsqq/public_html/dev/s/index.php:0
+[15-Jun-2016 11:24:19 America/New_York] PHP   2. Sm\Session\Session::start() /home/codozsqq/public_html/dev/s/index.php:47
+[15-Jun-2016 11:24:19 America/New_York] PHP   3. session_start() /home/codozsqq/public_html/dev/s/Sm/Session/Session.php:24
+[15-Jun-2016 11:24:19 America/New_York] PHP   4. spl_autoload_call() /home/codozsqq/public_html/dev/s/Sm/Session/Session.php:24
+[15-Jun-2016 11:24:19 America/New_York] PHP   5. Sm\Core\App->{closure:/home/codozsqq/public_html/dev/s/Sm/drivers/autoload.php:11-21}() /home/codozsqq/public_html/dev/s/Sm/Session/Session.php:24
+[15-Jun-2016 11:24:19 America/New_York] PHP   6. require_once() /home/codozsqq/public_html/dev/s/Sm/drivers/autoload.php:17
+[15-Jun-2016 11:24:19 America/New_York] PHP   7. spl_autoload_call() /home/codozsqq/public_html/dev/s/Sm/drivers/autoload.php:30
+[15-Jun-2016 11:24:19 America/New_York] PHP   8. {closure:/home/codozsqq/public_html/dev/s/index.php:28-33}() /home/codozsqq/public_html/dev/s/Sm/drivers/autoload.php:30
+[19-Jun-2016 14:57:45 America/New_York] PHP Warning:  Illegal offset type in isset or empty in /home/codozsqq/public_html/dev/s/Sm/Model/RelatorRemix.php on line 148
+[19-Jun-2016 14:57:45 America/New_York] PHP Stack trace:
+[19-Jun-2016 14:57:45 America/New_York] PHP   1. {main}() /home/codozsqq/public_html/dev/s/index.php:0
+[19-Jun-2016 14:57:45 America/New_York] PHP   2. Sm\Router\Toute->call() /home/codozsqq/public_html/dev/s/index.php:48
+[19-Jun-2016 14:57:45 America/New_York] PHP   3. call_user_func_array:{/home/codozsqq/public_html/dev/s/Sm/Router/Toute.php:69}() /home/codozsqq/public_html/dev/s/Sm/Router/Toute.php:69
+[19-Jun-2016 14:57:45 America/New_York] PHP   4. Spwashi\Controller\API\API->route() /home/codozsqq/public_html/dev/s/Sm/Router/Toute.php:69
+[19-Jun-2016 14:57:45 America/New_York] PHP   5. call_user_func_array:{/home/codozsqq/public_html/dev/s/Spwashi/Controller/API/API.php:77}() /home/codozsqq/public_html/dev/s/Spwashi/Controller/API/API.php:77
+[19-Jun-2016 14:57:45 America/New_York] PHP   6. Spwashi\Controller\API\API->manage_request() /home/codozsqq/public_html/dev/s/Spwashi/Controller/API/API.php:77
+[19-Jun-2016 14:57:45 America/New_York] PHP   7. Spwashi\Controller\API\API::init_models() /home/codozsqq/public_html/dev/s/Spwashi/Controller/API/API.php:446
+[19-Jun-2016 14:57:45 America/New_York] PHP   8. call_user_func_array:{/home/codozsqq/public_html/dev/s/Spwashi/Controller/API/API.php:322}() /home/codozsqq/public_html/dev/s/Spwashi/Controller/API/API.php:322
+[19-Jun-2016 14:57:45 America/New_York] PHP   9. Spwashi\Controller\API\SectionAPI::init_from_section() /home/codozsqq/public_html/dev/s/Spwashi/Controller/API/API.php:322
+[19-Jun-2016 14:57:45 America/New_York] PHP  10. Sm\Model\RelatorRemix->get_items() /home/codozsqq/public_html/dev/s/Spwashi/Controller/API/SectionAPI.php:90
+[19-Jun-2016 14:57:45 America/New_York] PHP Warning:  Illegal offset type in isset or empty in /home/codozsqq/public_html/dev/s/Sm/Model/RelatorRemix.php on line 148
+[19-Jun-2016 14:57:45 America/New_York] PHP Stack trace:
+[19-Jun-2016 14:57:45 America/New_York] PHP   1. {main}() /home/codozsqq/public_html/dev/s/index.php:0
+[19-Jun-2016 14:57:45 America/New_York] PHP   2. Sm\Router\Toute->call() /home/codozsqq/public_html/dev/s/index.php:48
+[19-Jun-2016 14:57:45 America/New_York] PHP   3. call_user_func_array:{/home/codozsqq/public_html/dev/s/Sm/Router/Toute.php:69}() /home/codozsqq/public_html/dev/s/Sm/Router/Toute.php:69
+[19-Jun-2016 14:57:45 America/New_York] PHP   4. Spwashi\Controller\API\API->route() /home/codozsqq/public_html/dev/s/Sm/Router/Toute.php:69
+[19-Jun-2016 14:57:45 America/New_York] PHP   5. call_user_func_array:{/home/codozsqq/public_html/dev/s/Spwashi/Controller/API/API.php:77}() /home/codozsqq/public_html/dev/s/Spwashi/Controller/API/API.php:77
+[19-Jun-2016 14:57:45 America/New_York] PHP   6. Spwashi\Controller\API\API->manage_request() /home/codozsqq/public_html/dev/s/Spwashi/Controller/API/API.php:77
+[19-Jun-2016 14:57:45 America/New_York] PHP   7. Spwashi\Controller\API\API::init_models() /home/codozsqq/public_html/dev/s/Spwashi/Controller/API/API.php:446
+[19-Jun-2016 14:57:45 America/New_York] PHP   8. call_user_func_array:{/home/codozsqq/public_html/dev/s/Spwashi/Controller/API/API.php:322}() /home/codozsqq/public_html/dev/s/Spwashi/Controller/API/API.php:322
+[19-Jun-2016 14:57:45 America/New_York] PHP   9. Spwashi\Controller\API\SectionAPI::init_from_section() /home/codozsqq/public_html/dev/s/Spwashi/Controller/API/API.php:322
+[19-Jun-2016 14:57:45 America/New_York] PHP  10. Sm\Model\RelatorRemix->get_items() /home/codozsqq/public_html/dev/s/Spwashi/Controller/API/SectionAPI.php:90
+[19-Jun-2016 14:57:45 America/New_York] PHP Warning:  Illegal offset type in isset or empty in /home/codozsqq/public_html/dev/s/Sm/Model/RelatorRemix.php on line 148
+[19-Jun-2016 14:57:45 America/New_York] PHP Stack trace:
+[19-Jun-2016 14:57:45 America/New_York] PHP   1. {main}() /home/codozsqq/public_html/dev/s/index.php:0
+[19-Jun-2016 14:57:45 America/New_York] PHP   2. Sm\Router\Toute->call() /home/codozsqq/public_html/dev/s/index.php:48
+[19-Jun-2016 14:57:45 America/New_York] PHP   3. call_user_func_array:{/home/codozsqq/public_html/dev/s/Sm/Router/Toute.php:69}() /home/codozsqq/public_html/dev/s/Sm/Router/Toute.php:69
+[19-Jun-2016 14:57:45 America/New_York] PHP   4. Spwashi\Controller\API\API->route() /home/codozsqq/public_html/dev/s/Sm/Router/Toute.php:69
+[19-Jun-2016 14:57:45 America/New_York] PHP   5. call_user_func_array:{/home/codozsqq/public_html/dev/s/Spwashi/Controller/API/API.php:77}() /home/codozsqq/public_html/dev/s/Spwashi/Controller/API/API.php:77
+[19-Jun-2016 14:57:45 America/New_York] PHP   6. Spwashi\Controller\API\API->manage_request() /home/codozsqq/public_html/dev/s/Spwashi/Controller/API/API.php:77
+[19-Jun-2016 14:57:45 America/New_York] PHP   7. Spwashi\Controller\API\API::init_models() /home/codozsqq/public_html/dev/s/Spwashi/Controller/API/API.php:446
+[19-Jun-2016 14:57:45 America/New_York] PHP   8. call_user_func_array:{/home/codozsqq/public_html/dev/s/Spwashi/Controller/API/API.php:322}() /home/codozsqq/public_html/dev/s/Spwashi/Controller/API/API.php:322
+[19-Jun-2016 14:57:45 America/New_York] PHP   9. Spwashi\Controller\API\SectionAPI::init_from_section() /home/codozsqq/public_html/dev/s/Spwashi/Controller/API/API.php:322
+[19-Jun-2016 14:57:45 America/New_York] PHP  10. Sm\Model\RelatorRemix->get_items() /home/codozsqq/public_html/dev/s/Spwashi/Controller/API/SectionAPI.php:90
+[19-Jun-2016 14:57:45 America/New_York] PHP Warning:  Illegal offset type in isset or empty in /home/codozsqq/public_html/dev/s/Sm/Model/RelatorRemix.php on line 148
+[19-Jun-2016 14:57:45 America/New_York] PHP Stack trace:
+[19-Jun-2016 14:57:45 America/New_York] PHP   1. {main}() /home/codozsqq/public_html/dev/s/index.php:0
+[19-Jun-2016 14:57:45 America/New_York] PHP   2. Sm\Router\Toute->call() /home/codozsqq/public_html/dev/s/index.php:48
+[19-Jun-2016 14:57:45 America/New_York] PHP   3. call_user_func_array:{/home/codozsqq/public_html/dev/s/Sm/Router/Toute.php:69}() /home/codozsqq/public_html/dev/s/Sm/Router/Toute.php:69
+[19-Jun-2016 14:57:45 America/New_York] PHP   4. Spwashi\Controller\API\API->route() /home/codozsqq/public_html/dev/s/Sm/Router/Toute.php:69
+[19-Jun-2016 14:57:45 America/New_York] PHP   5. call_user_func_array:{/home/codozsqq/public_html/dev/s/Spwashi/Controller/API/API.php:77}() /home/codozsqq/public_html/dev/s/Spwashi/Controller/API/API.php:77
+[19-Jun-2016 14:57:45 America/New_York] PHP   6. Spwashi\Controller\API\API->manage_request() /home/codozsqq/public_html/dev/s/Spwashi/Controller/API/API.php:77
+[19-Jun-2016 14:57:45 America/New_York] PHP   7. Spwashi\Controller\API\API::init_models() /home/codozsqq/public_html/dev/s/Spwashi/Controller/API/API.php:446
+[19-Jun-2016 14:57:45 America/New_York] PHP   8. call_user_func_array:{/home/codozsqq/public_html/dev/s/Spwashi/Controller/API/API.php:322}() /home/codozsqq/public_html/dev/s/Spwashi/Controller/API/API.php:322
+[19-Jun-2016 14:57:45 America/New_York] PHP   9. Spwashi\Controller\API\SectionAPI::init_from_section() /home/codozsqq/public_html/dev/s/Spwashi/Controller/API/API.php:322
+[19-Jun-2016 14:57:45 America/New_York] PHP  10. Sm\Model\RelatorRemix->get_items() /home/codozsqq/public_html/dev/s/Spwashi/Controller/API/SectionAPI.php:90
+[19-Jun-2016 14:57:45 America/New_York] PHP Warning:  Illegal offset type in isset or empty in /home/codozsqq/public_html/dev/s/Sm/Model/RelatorRemix.php on line 148
+[19-Jun-2016 14:57:45 America/New_York] PHP Stack trace:
+[19-Jun-2016 14:57:45 America/New_York] PHP   1. {main}() /home/codozsqq/public_html/dev/s/index.php:0
+[19-Jun-2016 14:57:45 America/New_York] PHP   2. Sm\Router\Toute->call() /home/codozsqq/public_html/dev/s/index.php:48
+[19-Jun-2016 14:57:45 America/New_York] PHP   3. call_user_func_array:{/home/codozsqq/public_html/dev/s/Sm/Router/Toute.php:69}() /home/codozsqq/public_html/dev/s/Sm/Router/Toute.php:69
+[19-Jun-2016 14:57:45 America/New_York] PHP   4. Spwashi\Controller\API\API->route() /home/codozsqq/public_html/dev/s/Sm/Router/Toute.php:69
+[19-Jun-2016 14:57:45 America/New_York] PHP   5. call_user_func_array:{/home/codozsqq/public_html/dev/s/Spwashi/Controller/API/API.php:77}() /home/codozsqq/public_html/dev/s/Spwashi/Controller/API/API.php:77
+[19-Jun-2016 14:57:45 America/New_York] PHP   6. Spwashi\Controller\API\API->manage_request() /home/codozsqq/public_html/dev/s/Spwashi/Controller/API/API.php:77
+[19-Jun-2016 14:57:45 America/New_York] PHP   7. Spwashi\Controller\API\API::init_models() /home/codozsqq/public_html/dev/s/Spwashi/Controller/API/API.php:446
+[19-Jun-2016 14:57:45 America/New_York] PHP   8. call_user_func_array:{/home/codozsqq/public_html/dev/s/Spwashi/Controller/API/API.php:322}() /home/codozsqq/public_html/dev/s/Spwashi/Controller/API/API.php:322
+[19-Jun-2016 14:57:45 America/New_York] PHP   9. Spwashi\Controller\API\SectionAPI::init_from_section() /home/codozsqq/public_html/dev/s/Spwashi/Controller/API/API.php:322
+[19-Jun-2016 14:57:45 America/New_York] PHP  10. Sm\Model\RelatorRemix->get_items() /home/codozsqq/public_html/dev/s/Spwashi/Controller/API/SectionAPI.php:90
+[19-Jun-2016 14:57:45 America/New_York] PHP Warning:  Illegal offset type in isset or empty in /home/codozsqq/public_html/dev/s/Sm/Model/RelatorRemix.php on line 148
+[19-Jun-2016 14:57:45 America/New_York] PHP Stack trace:
+[19-Jun-2016 14:57:45 America/New_York] PHP   1. {main}() /home/codozsqq/public_html/dev/s/index.php:0
+[19-Jun-2016 14:57:45 America/New_York] PHP   2. Sm\Router\Toute->call() /home/codozsqq/public_html/dev/s/index.php:48
+[19-Jun-2016 14:57:45 America/New_York] PHP   3. call_user_func_array:{/home/codozsqq/public_html/dev/s/Sm/Router/Toute.php:69}() /home/codozsqq/public_html/dev/s/Sm/Router/Toute.php:69
+[19-Jun-2016 14:57:45 America/New_York] PHP   4. Spwashi\Controller\API\API->route() /home/codozsqq/public_html/dev/s/Sm/Router/Toute.php:69
+[19-Jun-2016 14:57:45 America/New_York] PHP   5. call_user_func_array:{/home/codozsqq/public_html/dev/s/Spwashi/Controller/API/API.php:77}() /home/codozsqq/public_html/dev/s/Spwashi/Controller/API/API.php:77
+[19-Jun-2016 14:57:45 America/New_York] PHP   6. Spwashi\Controller\API\API->manage_request() /home/codozsqq/public_html/dev/s/Spwashi/Controller/API/API.php:77
+[19-Jun-2016 14:57:45 America/New_York] PHP   7. Spwashi\Controller\API\API::init_models() /home/codozsqq/public_html/dev/s/Spwashi/Controller/API/API.php:446
+[19-Jun-2016 14:57:45 America/New_York] PHP   8. call_user_func_array:{/home/codozsqq/public_html/dev/s/Spwashi/Controller/API/API.php:322}() /home/codozsqq/public_html/dev/s/Spwashi/Controller/API/API.php:322
+[19-Jun-2016 14:57:45 America/New_York] PHP   9. Spwashi\Controller\API\SectionAPI::init_from_section() /home/codozsqq/public_html/dev/s/Spwashi/Controller/API/API.php:322
+[19-Jun-2016 14:57:45 America/New_York] PHP  10. Sm\Model\RelatorRemix->get_items() /home/codozsqq/public_html/dev/s/Spwashi/Controller/API/SectionAPI.php:90
+[19-Jun-2016 14:57:45 America/New_York] PHP Warning:  Illegal offset type in isset or empty in /home/codozsqq/public_html/dev/s/Sm/Model/RelatorRemix.php on line 148
+[19-Jun-2016 14:57:45 America/New_York] PHP Stack trace:
+[19-Jun-2016 14:57:45 America/New_York] PHP   1. {main}() /home/codozsqq/public_html/dev/s/index.php:0
+[19-Jun-2016 14:57:45 America/New_York] PHP   2. Sm\Router\Toute->call() /home/codozsqq/public_html/dev/s/index.php:48
+[19-Jun-2016 14:57:45 America/New_York] PHP   3. call_user_func_array:{/home/codozsqq/public_html/dev/s/Sm/Router/Toute.php:69}() /home/codozsqq/public_html/dev/s/Sm/Router/Toute.php:69
+[19-Jun-2016 14:57:45 America/New_York] PHP   4. Spwashi\Controller\API\API->route() /home/codozsqq/public_html/dev/s/Sm/Router/Toute.php:69
+[19-Jun-2016 14:57:45 America/New_York] PHP   5. call_user_func_array:{/home/codozsqq/public_html/dev/s/Spwashi/Controller/API/API.php:77}() /home/codozsqq/public_html/dev/s/Spwashi/Controller/API/API.php:77
+[19-Jun-2016 14:57:45 America/New_York] PHP   6. Spwashi\Controller\API\API->manage_request() /home/codozsqq/public_html/dev/s/Spwashi/Controller/API/API.php:77
+[19-Jun-2016 14:57:45 America/New_York] PHP   7. Spwashi\Controller\API\API::init_models() /home/codozsqq/public_html/dev/s/Spwashi/Controller/API/API.php:446
+[19-Jun-2016 14:57:45 America/New_York] PHP   8. call_user_func_array:{/home/codozsqq/public_html/dev/s/Spwashi/Controller/API/API.php:322}() /home/codozsqq/public_html/dev/s/Spwashi/Controller/API/API.php:322
+[19-Jun-2016 14:57:45 America/New_York] PHP   9. Spwashi\Controller\API\SectionAPI::init_from_section() /home/codozsqq/public_html/dev/s/Spwashi/Controller/API/API.php:322
+[19-Jun-2016 14:57:45 America/New_York] PHP  10. Sm\Model\RelatorRemix->get_items() /home/codozsqq/public_html/dev/s/Spwashi/Controller/API/SectionAPI.php:90
+[19-Jun-2016 14:57:45 America/New_York] PHP Warning:  Illegal offset type in isset or empty in /home/codozsqq/public_html/dev/s/Sm/Model/RelatorRemix.php on line 148
+[19-Jun-2016 14:57:45 America/New_York] PHP Stack trace:
+[19-Jun-2016 14:57:45 America/New_York] PHP   1. {main}() /home/codozsqq/public_html/dev/s/index.php:0
+[19-Jun-2016 14:57:45 America/New_York] PHP   2. Sm\Router\Toute->call() /home/codozsqq/public_html/dev/s/index.php:48
+[19-Jun-2016 14:57:45 America/New_York] PHP   3. call_user_func_array:{/home/codozsqq/public_html/dev/s/Sm/Router/Toute.php:69}() /home/codozsqq/public_html/dev/s/Sm/Router/Toute.php:69
+[19-Jun-2016 14:57:45 America/New_York] PHP   4. Spwashi\Controller\API\API->route() /home/codozsqq/public_html/dev/s/Sm/Router/Toute.php:69
+[19-Jun-2016 14:57:45 America/New_York] PHP   5. call_user_func_array:{/home/codozsqq/public_html/dev/s/Spwashi/Controller/API/API.php:77}() /home/codozsqq/public_html/dev/s/Spwashi/Controller/API/API.php:77
+[19-Jun-2016 14:57:45 America/New_York] PHP   6. Spwashi\Controller\API\API->manage_request() /home/codozsqq/public_html/dev/s/Spwashi/Controller/API/API.php:77
+[19-Jun-2016 14:57:45 America/New_York] PHP   7. Spwashi\Controller\API\API::init_models() /home/codozsqq/public_html/dev/s/Spwashi/Controller/API/API.php:446
+[19-Jun-2016 14:57:45 America/New_York] PHP   8. call_user_func_array:{/home/codozsqq/public_html/dev/s/Spwashi/Controller/API/API.php:322}() /home/codozsqq/public_html/dev/s/Spwashi/Controller/API/API.php:322
+[19-Jun-2016 14:57:45 America/New_York] PHP   9. Spwashi\Controller\API\SectionAPI::init_from_section() /home/codozsqq/public_html/dev/s/Spwashi/Controller/API/API.php:322
+[19-Jun-2016 14:57:45 America/New_York] PHP  10. Sm\Model\RelatorRemix->get_items() /home/codozsqq/public_html/dev/s/Spwashi/Controller/API/SectionAPI.php:90
+[19-Jun-2016 14:57:45 America/New_York] PHP Warning:  Illegal offset type in isset or empty in /home/codozsqq/public_html/dev/s/Sm/Model/RelatorRemix.php on line 148
+[19-Jun-2016 14:57:45 America/New_York] PHP Stack trace:
+[19-Jun-2016 14:57:45 America/New_York] PHP   1. {main}() /home/codozsqq/public_html/dev/s/index.php:0
+[19-Jun-2016 14:57:45 America/New_York] PHP   2. Sm\Router\Toute->call() /home/codozsqq/public_html/dev/s/index.php:48
+[19-Jun-2016 14:57:45 America/New_York] PHP   3. call_user_func_array:{/home/codozsqq/public_html/dev/s/Sm/Router/Toute.php:69}() /home/codozsqq/public_html/dev/s/Sm/Router/Toute.php:69
+[19-Jun-2016 14:57:45 America/New_York] PHP   4. Spwashi\Controller\API\API->route() /home/codozsqq/public_html/dev/s/Sm/Router/Toute.php:69
+[19-Jun-2016 14:57:45 America/New_York] PHP   5. call_user_func_array:{/home/codozsqq/public_html/dev/s/Spwashi/Controller/API/API.php:77}() /home/codozsqq/public_html/dev/s/Spwashi/Controller/API/API.php:77
+[19-Jun-2016 14:57:45 America/New_York] PHP   6. Spwashi\Controller\API\API->manage_request() /home/codozsqq/public_html/dev/s/Spwashi/Controller/API/API.php:77
+[19-Jun-2016 14:57:45 America/New_York] PHP   7. Spwashi\Controller\API\API::init_models() /home/codozsqq/public_html/dev/s/Spwashi/Controller/API/API.php:446
+[19-Jun-2016 14:57:45 America/New_York] PHP   8. call_user_func_array:{/home/codozsqq/public_html/dev/s/Spwashi/Controller/API/API.php:322}() /home/codozsqq/public_html/dev/s/Spwashi/Controller/API/API.php:322
+[19-Jun-2016 14:57:45 America/New_York] PHP   9. Spwashi\Controller\API\SectionAPI::init_from_section() /home/codozsqq/public_html/dev/s/Spwashi/Controller/API/API.php:322
+[19-Jun-2016 14:57:45 America/New_York] PHP  10. Sm\Model\RelatorRemix->get_items() /home/codozsqq/public_html/dev/s/Spwashi/Controller/API/SectionAPI.php:90
+[19-Jun-2016 14:57:45 America/New_York] PHP Warning:  Illegal offset type in isset or empty in /home/codozsqq/public_html/dev/s/Sm/Model/RelatorRemix.php on line 148
+[19-Jun-2016 14:57:45 America/New_York] PHP Stack trace:
+[19-Jun-2016 14:57:45 America/New_York] PHP   1. {main}() /home/codozsqq/public_html/dev/s/index.php:0
+[19-Jun-2016 14:57:45 America/New_York] PHP   2. Sm\Router\Toute->call() /home/codozsqq/public_html/dev/s/index.php:48
+[19-Jun-2016 14:57:45 America/New_York] PHP   3. call_user_func_array:{/home/codozsqq/public_html/dev/s/Sm/Router/Toute.php:69}() /home/codozsqq/public_html/dev/s/Sm/Router/Toute.php:69
+[19-Jun-2016 14:57:45 America/New_York] PHP   4. Spwashi\Controller\API\API->route() /home/codozsqq/public_html/dev/s/Sm/Router/Toute.php:69
+[19-Jun-2016 14:57:45 America/New_York] PHP   5. call_user_func_array:{/home/codozsqq/public_html/dev/s/Spwashi/Controller/API/API.php:77}() /home/codozsqq/public_html/dev/s/Spwashi/Controller/API/API.php:77
+[19-Jun-2016 14:57:45 America/New_York] PHP   6. Spwashi\Controller\API\API->manage_request() /home/codozsqq/public_html/dev/s/Spwashi/Controller/API/API.php:77
+[19-Jun-2016 14:57:45 America/New_York] PHP   7. Spwashi\Controller\API\API::init_models() /home/codozsqq/public_html/dev/s/Spwashi/Controller/API/API.php:446
+[19-Jun-2016 14:57:45 America/New_York] PHP   8. call_user_func_array:{/home/codozsqq/public_html/dev/s/Spwashi/Controller/API/API.php:322}() /home/codozsqq/public_html/dev/s/Spwashi/Controller/API/API.php:322
+[19-Jun-2016 14:57:45 America/New_York] PHP   9. Spwashi\Controller\API\SectionAPI::init_from_section() /home/codozsqq/public_html/dev/s/Spwashi/Controller/API/API.php:322
+[19-Jun-2016 14:57:45 America/New_York] PHP  10. Sm\Model\RelatorRemix->get_items() /home/codozsqq/public_html/dev/s/Spwashi/Controller/API/SectionAPI.php:90
+[19-Jun-2016 14:57:45 America/New_York] PHP Warning:  Illegal offset type in isset or empty in /home/codozsqq/public_html/dev/s/Sm/Model/RelatorRemix.php on line 148
+[19-Jun-2016 14:57:45 America/New_York] PHP Stack trace:
+[19-Jun-2016 14:57:45 America/New_York] PHP   1. {main}() /home/codozsqq/public_html/dev/s/index.php:0
+[19-Jun-2016 14:57:45 America/New_York] PHP   2. Sm\Router\Toute->call() /home/codozsqq/public_html/dev/s/index.php:48
+[19-Jun-2016 14:57:45 America/New_York] PHP   3. call_user_func_array:{/home/codozsqq/public_html/dev/s/Sm/Router/Toute.php:69}() /home/codozsqq/public_html/dev/s/Sm/Router/Toute.php:69
+[19-Jun-2016 14:57:45 America/New_York] PHP   4. Spwashi\Controller\API\API->route() /home/codozsqq/public_html/dev/s/Sm/Router/Toute.php:69
+[19-Jun-2016 14:57:45 America/New_York] PHP   5. call_user_func_array:{/home/codozsqq/public_html/dev/s/Spwashi/Controller/API/API.php:77}() /home/codozsqq/public_html/dev/s/Spwashi/Controller/API/API.php:77
+[19-Jun-2016 14:57:45 America/New_York] PHP   6. Spwashi\Controller\API\API->manage_request() /home/codozsqq/public_html/dev/s/Spwashi/Controller/API/API.php:77
+[19-Jun-2016 14:57:45 America/New_York] PHP   7. Spwashi\Controller\API\API::init_models() /home/codozsqq/public_html/dev/s/Spwashi/Controller/API/API.php:446
+[19-Jun-2016 14:57:45 America/New_York] PHP   8. call_user_func_array:{/home/codozsqq/public_html/dev/s/Spwashi/Controller/API/API.php:322}() /home/codozsqq/public_html/dev/s/Spwashi/Controller/API/API.php:322
+[19-Jun-2016 14:57:45 America/New_York] PHP   9. Spwashi\Controller\API\SectionAPI::init_from_section() /home/codozsqq/public_html/dev/s/Spwashi/Controller/API/API.php:322
+[19-Jun-2016 14:57:45 America/New_York] PHP  10. Sm\Model\RelatorRemix->get_items() /home/codozsqq/public_html/dev/s/Spwashi/Controller/API/SectionAPI.php:90
+[19-Jun-2016 21:06:42 America/New_York] PHP Warning:  Missing argument 4 for Spwashi\Controller\API\API::init_from_() in /home/codozsqq/public_html/dev/s/Spwashi/Controller/API/API.php on line 357
+[19-Jun-2016 21:06:42 America/New_York] PHP Stack trace:
+[19-Jun-2016 21:06:42 America/New_York] PHP   1. {main}() /home/codozsqq/public_html/dev/s/index.php:0
+[19-Jun-2016 21:06:42 America/New_York] PHP   2. Sm\Router\Toute->call() /home/codozsqq/public_html/dev/s/index.php:48
+[19-Jun-2016 21:06:42 America/New_York] PHP   3. call_user_func_array:{/home/codozsqq/public_html/dev/s/Sm/Router/Toute.php:69}() /home/codozsqq/public_html/dev/s/Sm/Router/Toute.php:69
+[19-Jun-2016 21:06:42 America/New_York] PHP   4. Spwashi\Controller\API\API->route() /home/codozsqq/public_html/dev/s/Sm/Router/Toute.php:69
+[19-Jun-2016 21:06:42 America/New_York] PHP   5. Spwashi\Controller\API\API->handle_request() /home/codozsqq/public_html/dev/s/Spwashi/Controller/API/API.php:149
+[19-Jun-2016 21:06:42 America/New_York] PHP   6. Spwashi\Controller\API\API->send_to() /home/codozsqq/public_html/dev/s/Spwashi/Controller/API/API.php:122
+[19-Jun-2016 21:06:42 America/New_York] PHP   7. Spwashi\Controller\API\API->handle_request() /home/codozsqq/public_html/dev/s/Spwashi/Controller/API/API.php:63
+[19-Jun-2016 21:06:42 America/New_York] PHP   8. Spwashi\Controller\API\API->Spwashi\Controller\API\{closure}() /home/codozsqq/public_html/dev/s/Spwashi/Controller/API/API.php:119
+[19-Jun-2016 21:06:42 America/New_York] PHP   9. call_user_func_array:{/home/codozsqq/public_html/dev/s/Spwashi/Controller/API/API.php:91}() /home/codozsqq/public_html/dev/s/Spwashi/Controller/API/API.php:91
+[19-Jun-2016 21:06:42 America/New_York] PHP  10. Spwashi\Controller\API\API::init_from_() /home/codozsqq/public_html/dev/s/Spwashi/Controller/API/API.php:91
+[19-Jun-2016 21:06:42 America/New_York] PHP Warning:  Missing argument 5 for Spwashi\Controller\API\API::init_from_() in /home/codozsqq/public_html/dev/s/Spwashi/Controller/API/API.php on line 357
+[19-Jun-2016 21:06:42 America/New_York] PHP Stack trace:
+[19-Jun-2016 21:06:42 America/New_York] PHP   1. {main}() /home/codozsqq/public_html/dev/s/index.php:0
+[19-Jun-2016 21:06:42 America/New_York] PHP   2. Sm\Router\Toute->call() /home/codozsqq/public_html/dev/s/index.php:48
+[19-Jun-2016 21:06:42 America/New_York] PHP   3. call_user_func_array:{/home/codozsqq/public_html/dev/s/Sm/Router/Toute.php:69}() /home/codozsqq/public_html/dev/s/Sm/Router/Toute.php:69
+[19-Jun-2016 21:06:42 America/New_York] PHP   4. Spwashi\Controller\API\API->route() /home/codozsqq/public_html/dev/s/Sm/Router/Toute.php:69
+[19-Jun-2016 21:06:42 America/New_York] PHP   5. Spwashi\Controller\API\API->handle_request() /home/codozsqq/public_html/dev/s/Spwashi/Controller/API/API.php:149
+[19-Jun-2016 21:06:42 America/New_York] PHP   6. Spwashi\Controller\API\API->send_to() /home/codozsqq/public_html/dev/s/Spwashi/Controller/API/API.php:122
+[19-Jun-2016 21:06:42 America/New_York] PHP   7. Spwashi\Controller\API\API->handle_request() /home/codozsqq/public_html/dev/s/Spwashi/Controller/API/API.php:63
+[19-Jun-2016 21:06:42 America/New_York] PHP   8. Spwashi\Controller\API\API->Spwashi\Controller\API\{closure}() /home/codozsqq/public_html/dev/s/Spwashi/Controller/API/API.php:119
+[19-Jun-2016 21:06:42 America/New_York] PHP   9. call_user_func_array:{/home/codozsqq/public_html/dev/s/Spwashi/Controller/API/API.php:91}() /home/codozsqq/public_html/dev/s/Spwashi/Controller/API/API.php:91
+[19-Jun-2016 21:06:42 America/New_York] PHP  10. Spwashi\Controller\API\API::init_from_() /home/codozsqq/public_html/dev/s/Spwashi/Controller/API/API.php:91
+[19-Jun-2016 21:11:46 America/New_York] PHP Warning:  Missing argument 5 for Spwashi\Controller\API\API::init_from_() in /home/codozsqq/public_html/dev/s/Spwashi/Controller/API/API.php on line 358
+[19-Jun-2016 21:11:46 America/New_York] PHP Stack trace:
+[19-Jun-2016 21:11:46 America/New_York] PHP   1. {main}() /home/codozsqq/public_html/dev/s/index.php:0
+[19-Jun-2016 21:11:46 America/New_York] PHP   2. Sm\Router\Toute->call() /home/codozsqq/public_html/dev/s/index.php:48
+[19-Jun-2016 21:11:46 America/New_York] PHP   3. call_user_func_array:{/home/codozsqq/public_html/dev/s/Sm/Router/Toute.php:69}() /home/codozsqq/public_html/dev/s/Sm/Router/Toute.php:69
+[19-Jun-2016 21:11:46 America/New_York] PHP   4. Spwashi\Controller\API\API->route() /home/codozsqq/public_html/dev/s/Sm/Router/Toute.php:69
+[19-Jun-2016 21:11:46 America/New_York] PHP   5. Spwashi\Controller\API\API->handle_request() /home/codozsqq/public_html/dev/s/Spwashi/Controller/API/API.php:150
+[19-Jun-2016 21:11:46 America/New_York] PHP   6. Spwashi\Controller\API\API->send_to() /home/codozsqq/public_html/dev/s/Spwashi/Controller/API/API.php:123
+[19-Jun-2016 21:11:46 America/New_York] PHP   7. Spwashi\Controller\API\API->handle_request() /home/codozsqq/public_html/dev/s/Spwashi/Controller/API/API.php:63
+[19-Jun-2016 21:11:46 America/New_York] PHP   8. Spwashi\Controller\API\API->Spwashi\Controller\API\{closure}() /home/codozsqq/public_html/dev/s/Spwashi/Controller/API/API.php:120
+[19-Jun-2016 21:11:46 America/New_York] PHP   9. call_user_func_array:{/home/codozsqq/public_html/dev/s/Spwashi/Controller/API/API.php:92}() /home/codozsqq/public_html/dev/s/Spwashi/Controller/API/API.php:92
+[19-Jun-2016 21:11:46 America/New_York] PHP  10. Spwashi\Controller\API\API::init_from_() /home/codozsqq/public_html/dev/s/Spwashi/Controller/API/API.php:92
+[19-Jun-2016 23:21:43 America/New_York] PHP Parse error:  syntax error, unexpected '}' in /home/codozsqq/public_html/dev/s/Spwashi/Controller/API/SectionAPI.php on line 78
+[19-Jun-2016 23:21:43 America/New_York] PHP Stack trace:
+[19-Jun-2016 23:21:43 America/New_York] PHP   1. {main}() /home/codozsqq/public_html/dev/s/index.php:0
+[19-Jun-2016 23:21:43 America/New_York] PHP   2. Sm\Router\Toute->call() /home/codozsqq/public_html/dev/s/index.php:48
+[19-Jun-2016 23:21:43 America/New_York] PHP   3. call_user_func_array:{/home/codozsqq/public_html/dev/s/Sm/Router/Toute.php:69}() /home/codozsqq/public_html/dev/s/Sm/Router/Toute.php:69
+[19-Jun-2016 23:21:43 America/New_York] PHP   4. Spwashi\Controller\API\API->route() /home/codozsqq/public_html/dev/s/Sm/Router/Toute.php:69
+[19-Jun-2016 23:21:43 America/New_York] PHP   5. class_exists() /home/codozsqq/public_html/dev/s/Spwashi/Controller/API/API.php:147
+[19-Jun-2016 23:21:43 America/New_York] PHP   6. spl_autoload_call() /home/codozsqq/public_html/dev/s/Spwashi/Controller/API/API.php:147
+[19-Jun-2016 23:21:43 America/New_York] PHP   7. {closure:/home/codozsqq/public_html/dev/s/index.php:28-33}() /home/codozsqq/public_html/dev/s/Spwashi/Controller/API/API.php:147
+[20-Jun-2016 10:50:16 America/New_York] PHP Fatal error:  Cannot use $this as lexical variable in /home/codozsqq/public_html/dev/s/Spwashi/Controller/API/API.php on line 82
+[20-Jun-2016 10:50:16 America/New_York] PHP Stack trace:
+[20-Jun-2016 10:50:16 America/New_York] PHP   1. {main}() /home/codozsqq/public_html/dev/s/index.php:0
+[20-Jun-2016 10:50:16 America/New_York] PHP   2. Sm\Router\Toute->call() /home/codozsqq/public_html/dev/s/index.php:48
+[20-Jun-2016 10:50:16 America/New_York] PHP   3. class_exists() /home/codozsqq/public_html/dev/s/Sm/Router/Toute.php:53
+[20-Jun-2016 10:50:16 America/New_York] PHP   4. spl_autoload_call() /home/codozsqq/public_html/dev/s/Sm/Router/Toute.php:53
+[20-Jun-2016 10:50:16 America/New_York] PHP   5. {closure:/home/codozsqq/public_html/dev/s/index.php:28-33}() /home/codozsqq/public_html/dev/s/Sm/Router/Toute.php:53
+[20-Jun-2016 10:50:32 America/New_York] PHP Warning:  array_shift() expects parameter 1 to be array, null given in /home/codozsqq/public_html/dev/s/Spwashi/Controller/API/API.php on line 83
+[20-Jun-2016 10:50:32 America/New_York] PHP Stack trace:
+[20-Jun-2016 10:50:32 America/New_York] PHP   1. {main}() /home/codozsqq/public_html/dev/s/index.php:0
+[20-Jun-2016 10:50:32 America/New_York] PHP   2. Sm\Router\Toute->call() /home/codozsqq/public_html/dev/s/index.php:48
+[20-Jun-2016 10:50:32 America/New_York] PHP   3. call_user_func_array:{/home/codozsqq/public_html/dev/s/Sm/Router/Toute.php:69}() /home/codozsqq/public_html/dev/s/Sm/Router/Toute.php:69
+[20-Jun-2016 10:50:32 America/New_York] PHP   4. Spwashi\Controller\API\API->route() /home/codozsqq/public_html/dev/s/Sm/Router/Toute.php:69
+[20-Jun-2016 10:50:32 America/New_York] PHP   5. Spwashi\Controller\API\API->handle_request() /home/codozsqq/public_html/dev/s/Spwashi/Controller/API/API.php:189
+[20-Jun-2016 10:50:32 America/New_York] PHP   6. Spwashi\Controller\API\API->Spwashi\Controller\API\{closure}() /home/codozsqq/public_html/dev/s/Spwashi/Controller/API/API.php:140
+[20-Jun-2016 10:50:32 America/New_York] PHP   7. array_shift() /home/codozsqq/public_html/dev/s/Spwashi/Controller/API/API.php:83
+[20-Jun-2016 10:50:32 America/New_York] PHP Notice:  Trying to get property of non-object in /home/codozsqq/public_html/dev/s/Spwashi/Controller/API/API.php on line 84
+[20-Jun-2016 10:50:32 America/New_York] PHP Stack trace:
+[20-Jun-2016 10:50:32 America/New_York] PHP   1. {main}() /home/codozsqq/public_html/dev/s/index.php:0
+[20-Jun-2016 10:50:32 America/New_York] PHP   2. Sm\Router\Toute->call() /home/codozsqq/public_html/dev/s/index.php:48
+[20-Jun-2016 10:50:32 America/New_York] PHP   3. call_user_func_array:{/home/codozsqq/public_html/dev/s/Sm/Router/Toute.php:69}() /home/codozsqq/public_html/dev/s/Sm/Router/Toute.php:69
+[20-Jun-2016 10:50:32 America/New_York] PHP   4. Spwashi\Controller\API\API->route() /home/codozsqq/public_html/dev/s/Sm/Router/Toute.php:69
+[20-Jun-2016 10:50:32 America/New_York] PHP   5. Spwashi\Controller\API\API->handle_request() /home/codozsqq/public_html/dev/s/Spwashi/Controller/API/API.php:189
+[20-Jun-2016 10:50:32 America/New_York] PHP   6. Spwashi\Controller\API\API->Spwashi\Controller\API\{closure}() /home/codozsqq/public_html/dev/s/Spwashi/Controller/API/API.php:140
+[20-Jun-2016 10:50:32 America/New_York] PHP Notice:  Trying to get property of non-object in /home/codozsqq/public_html/dev/s/Spwashi/Controller/API/API.php on line 113
+[20-Jun-2016 10:50:32 America/New_York] PHP Stack trace:
+[20-Jun-2016 10:50:32 America/New_York] PHP   1. {main}() /home/codozsqq/public_html/dev/s/index.php:0
+[20-Jun-2016 10:50:32 America/New_York] PHP   2. Sm\Router\Toute->call() /home/codozsqq/public_html/dev/s/index.php:48
+[20-Jun-2016 10:50:32 America/New_York] PHP   3. call_user_func_array:{/home/codozsqq/public_html/dev/s/Sm/Router/Toute.php:69}() /home/codozsqq/public_html/dev/s/Sm/Router/Toute.php:69
+[20-Jun-2016 10:50:32 America/New_York] PHP   4. Spwashi\Controller\API\API->route() /home/codozsqq/public_html/dev/s/Sm/Router/Toute.php:69
+[20-Jun-2016 10:50:32 America/New_York] PHP   5. Spwashi\Controller\API\API->handle_request() /home/codozsqq/public_html/dev/s/Spwashi/Controller/API/API.php:189
+[20-Jun-2016 10:50:32 America/New_York] PHP   6. Spwashi\Controller\API\API->Spwashi\Controller\API\{closure}() /home/codozsqq/public_html/dev/s/Spwashi/Controller/API/API.php:140
+[20-Jun-2016 20:03:12 America/New_York] PHP Notice:  Trying to get property of non-object in /home/codozsqq/public_html/dev/s/Spwashi/Controller/API/API.php on line 192
+[20-Jun-2016 20:03:12 America/New_York] PHP Stack trace:
+[20-Jun-2016 20:03:12 America/New_York] PHP   1. {main}() /home/codozsqq/public_html/dev/s/index.php:0
+[20-Jun-2016 20:03:12 America/New_York] PHP   2. Sm\Router\Toute->call() /home/codozsqq/public_html/dev/s/index.php:48
+[20-Jun-2016 20:03:12 America/New_York] PHP   3. call_user_func_array:{/home/codozsqq/public_html/dev/s/Sm/Router/Toute.php:69}() /home/codozsqq/public_html/dev/s/Sm/Router/Toute.php:69
+[20-Jun-2016 20:03:12 America/New_York] PHP   4. Spwashi\Controller\API\API->route() /home/codozsqq/public_html/dev/s/Sm/Router/Toute.php:69
+[20-Jun-2016 21:45:40 America/New_York] PHP Notice:  Trying to get property of non-object in /home/codozsqq/public_html/dev/s/Spwashi/Controller/API/SectionAPI.php on line 101
+[20-Jun-2016 21:45:40 America/New_York] PHP Stack trace:
+[20-Jun-2016 21:45:40 America/New_York] PHP   1. {main}() /home/codozsqq/public_html/dev/s/index.php:0
+[20-Jun-2016 21:45:40 America/New_York] PHP   2. Sm\Router\Toute->call() /home/codozsqq/public_html/dev/s/index.php:48
+[20-Jun-2016 21:45:40 America/New_York] PHP   3. call_user_func_array:{/home/codozsqq/public_html/dev/s/Sm/Router/Toute.php:69}() /home/codozsqq/public_html/dev/s/Sm/Router/Toute.php:69
+[20-Jun-2016 21:45:40 America/New_York] PHP   4. Spwashi\Controller\API\API->route() /home/codozsqq/public_html/dev/s/Sm/Router/Toute.php:69
+[20-Jun-2016 21:45:40 America/New_York] PHP   5. Spwashi\Controller\API\API->handle_request() /home/codozsqq/public_html/dev/s/Spwashi/Controller/API/API.php:231
+[20-Jun-2016 21:45:40 America/New_York] PHP   6. Spwashi\Controller\API\API->send_to() /home/codozsqq/public_html/dev/s/Spwashi/Controller/API/API.php:185
+[20-Jun-2016 21:45:40 America/New_York] PHP   7. Spwashi\Controller\API\API->handle_request() /home/codozsqq/public_html/dev/s/Spwashi/Controller/API/API.php:58
+[20-Jun-2016 21:45:40 America/New_York] PHP   8. Spwashi\Controller\API\API->Spwashi\Controller\API\{closure}() /home/codozsqq/public_html/dev/s/Spwashi/Controller/API/API.php:181
+[20-Jun-2016 21:45:40 America/New_York] PHP   9. Spwashi\Controller\API\API->Spwashi\Controller\API\{closure}() /home/codozsqq/public_html/dev/s/Spwashi/Controller/API/API.php:142
+[20-Jun-2016 21:45:40 America/New_York] PHP  10. call_user_func_array:{/home/codozsqq/public_html/dev/s/Spwashi/Controller/API/API.php:102}() /home/codozsqq/public_html/dev/s/Spwashi/Controller/API/API.php:102
+[20-Jun-2016 21:45:40 America/New_York] PHP  11. Spwashi\Controller\API\SectionAPI::init_from_section() /home/codozsqq/public_html/dev/s/Spwashi/Controller/API/API.php:102
+[20-Jun-2016 21:47:27 America/New_York] PHP Notice:  Trying to get property of non-object in /home/codozsqq/public_html/dev/s/Spwashi/Controller/API/SectionAPI.php on line 102
+[20-Jun-2016 21:47:27 America/New_York] PHP Stack trace:
+[20-Jun-2016 21:47:27 America/New_York] PHP   1. {main}() /home/codozsqq/public_html/dev/s/index.php:0
+[20-Jun-2016 21:47:27 America/New_York] PHP   2. Sm\Router\Toute->call() /home/codozsqq/public_html/dev/s/index.php:48
+[20-Jun-2016 21:47:27 America/New_York] PHP   3. call_user_func_array:{/home/codozsqq/public_html/dev/s/Sm/Router/Toute.php:69}() /home/codozsqq/public_html/dev/s/Sm/Router/Toute.php:69
+[20-Jun-2016 21:47:27 America/New_York] PHP   4. Spwashi\Controller\API\API->route() /home/codozsqq/public_html/dev/s/Sm/Router/Toute.php:69
+[20-Jun-2016 21:47:27 America/New_York] PHP   5. Spwashi\Controller\API\API->handle_request() /home/codozsqq/public_html/dev/s/Spwashi/Controller/API/API.php:231
+[20-Jun-2016 21:47:27 America/New_York] PHP   6. Spwashi\Controller\API\API->send_to() /home/codozsqq/public_html/dev/s/Spwashi/Controller/API/API.php:185
+[20-Jun-2016 21:47:27 America/New_York] PHP   7. Spwashi\Controller\API\API->handle_request() /home/codozsqq/public_html/dev/s/Spwashi/Controller/API/API.php:58
+[20-Jun-2016 21:47:27 America/New_York] PHP   8. Spwashi\Controller\API\API->Spwashi\Controller\API\{closure}() /home/codozsqq/public_html/dev/s/Spwashi/Controller/API/API.php:181
+[20-Jun-2016 21:47:27 America/New_York] PHP   9. Spwashi\Controller\API\API->Spwashi\Controller\API\{closure}() /home/codozsqq/public_html/dev/s/Spwashi/Controller/API/API.php:142
+[20-Jun-2016 21:47:27 America/New_York] PHP  10. call_user_func_array:{/home/codozsqq/public_html/dev/s/Spwashi/Controller/API/API.php:102}() /home/codozsqq/public_html/dev/s/Spwashi/Controller/API/API.php:102
+[20-Jun-2016 21:47:27 America/New_York] PHP  11. Spwashi\Controller\API\SectionAPI::init_from_section() /home/codozsqq/public_html/dev/s/Spwashi/Controller/API/API.php:102
+[20-Jun-2016 21:47:58 America/New_York] PHP Notice:  Trying to get property of non-object in /home/codozsqq/public_html/dev/s/Spwashi/Controller/API/SectionAPI.php on line 102
+[20-Jun-2016 21:47:58 America/New_York] PHP Stack trace:
+[20-Jun-2016 21:47:58 America/New_York] PHP   1. {main}() /home/codozsqq/public_html/dev/s/index.php:0
+[20-Jun-2016 21:47:58 America/New_York] PHP   2. Sm\Router\Toute->call() /home/codozsqq/public_html/dev/s/index.php:48
+[20-Jun-2016 21:47:58 America/New_York] PHP   3. call_user_func_array:{/home/codozsqq/public_html/dev/s/Sm/Router/Toute.php:69}() /home/codozsqq/public_html/dev/s/Sm/Router/Toute.php:69
+[20-Jun-2016 21:47:58 America/New_York] PHP   4. Spwashi\Controller\API\API->route() /home/codozsqq/public_html/dev/s/Sm/Router/Toute.php:69
+[20-Jun-2016 21:47:58 America/New_York] PHP   5. Spwashi\Controller\API\API->handle_request() /home/codozsqq/public_html/dev/s/Spwashi/Controller/API/API.php:231
+[20-Jun-2016 21:47:58 America/New_York] PHP   6. Spwashi\Controller\API\API->send_to() /home/codozsqq/public_html/dev/s/Spwashi/Controller/API/API.php:185
+[20-Jun-2016 21:47:58 America/New_York] PHP   7. Spwashi\Controller\API\API->handle_request() /home/codozsqq/public_html/dev/s/Spwashi/Controller/API/API.php:58
+[20-Jun-2016 21:47:58 America/New_York] PHP   8. Spwashi\Controller\API\API->Spwashi\Controller\API\{closure}() /home/codozsqq/public_html/dev/s/Spwashi/Controller/API/API.php:181
+[20-Jun-2016 21:47:58 America/New_York] PHP   9. Spwashi\Controller\API\API->Spwashi\Controller\API\{closure}() /home/codozsqq/public_html/dev/s/Spwashi/Controller/API/API.php:142
+[20-Jun-2016 21:47:58 America/New_York] PHP  10. call_user_func_array:{/home/codozsqq/public_html/dev/s/Spwashi/Controller/API/API.php:102}() /home/codozsqq/public_html/dev/s/Spwashi/Controller/API/API.php:102
+[20-Jun-2016 21:47:58 America/New_York] PHP  11. Spwashi\Controller\API\SectionAPI::init_from_section() /home/codozsqq/public_html/dev/s/Spwashi/Controller/API/API.php:102
+[20-Jun-2016 22:14:04 America/New_York] PHP Fatal error:  Cannot use Sm\Model\Abstraction\Model as Model because the name is already in use in /home/codozsqq/public_html/dev/s/Sm/Model/RelatorRemix.php on line 11
+[20-Jun-2016 22:14:04 America/New_York] PHP Stack trace:
+[20-Jun-2016 22:14:04 America/New_York] PHP   1. {main}() /home/codozsqq/public_html/dev/s/index.php:0
+[20-Jun-2016 22:14:04 America/New_York] PHP   2. Sm\Router\Toute->call() /home/codozsqq/public_html/dev/s/index.php:48
+[20-Jun-2016 22:14:04 America/New_York] PHP   3. call_user_func_array:{/home/codozsqq/public_html/dev/s/Sm/Router/Toute.php:69}() /home/codozsqq/public_html/dev/s/Sm/Router/Toute.php:69
+[20-Jun-2016 22:14:04 America/New_York] PHP   4. Spwashi\Controller\API\API->route() /home/codozsqq/public_html/dev/s/Sm/Router/Toute.php:69
+[20-Jun-2016 22:14:04 America/New_York] PHP   5. Spwashi\Controller\API\API->handle_request() /home/codozsqq/public_html/dev/s/Spwashi/Controller/API/API.php:240
+[20-Jun-2016 22:14:04 America/New_York] PHP   6. Spwashi\Controller\API\API->send_to() /home/codozsqq/public_html/dev/s/Spwashi/Controller/API/API.php:194
+[20-Jun-2016 22:14:04 America/New_York] PHP   7. Spwashi\Controller\API\API->handle_request() /home/codozsqq/public_html/dev/s/Spwashi/Controller/API/API.php:58
+[20-Jun-2016 22:14:04 America/New_York] PHP   8. Spwashi\Controller\API\API->Spwashi\Controller\API\{closure}() /home/codozsqq/public_html/dev/s/Spwashi/Controller/API/API.php:191
+[20-Jun-2016 22:14:04 America/New_York] PHP   9. Spwashi\Controller\API\API->Spwashi\Controller\API\{closure}() /home/codozsqq/public_html/dev/s/Spwashi/Controller/API/API.php:147
+[20-Jun-2016 22:14:04 America/New_York] PHP  10. call_user_func_array:{/home/codozsqq/public_html/dev/s/Spwashi/Controller/API/API.php:104}() /home/codozsqq/public_html/dev/s/Spwashi/Controller/API/API.php:104
+[20-Jun-2016 22:14:04 America/New_York] PHP  11. Spwashi\Controller\API\SectionAPI::init_from_section() /home/codozsqq/public_html/dev/s/Spwashi/Controller/API/API.php:104
+[20-Jun-2016 22:14:04 America/New_York] PHP  12. Sm\Model\Model->findType() /home/codozsqq/public_html/dev/s/Spwashi/Controller/API/SectionAPI.php:103
+[20-Jun-2016 22:14:04 America/New_York] PHP  13. Sm\Model\Abstraction\Model->__get() /home/codozsqq/public_html/dev/s/Spwashi/Controller/API/SectionAPI.php:209
+[20-Jun-2016 22:14:04 America/New_York] PHP  14. spl_autoload_call() /home/codozsqq/public_html/dev/s/Spwashi/Controller/API/SectionAPI.php:161
+[20-Jun-2016 22:14:04 America/New_York] PHP  15. {closure:/home/codozsqq/public_html/dev/s/index.php:28-33}() /home/codozsqq/public_html/dev/s/Spwashi/Controller/API/SectionAPI.php:161
+[21-Jun-2016 12:36:33 America/New_York] PHP Strict standards:  Declaration of Spwashi\Controller\API\SectionAPI::get() should be compatible with Spwashi\Controller\API\API::get($model, $req_data, $last_result = NULL, &$endpoint_array = Array) in /home/codozsqq/public_html/dev/s/Spwashi/Controller/API/SectionAPI.php on line 332
+[21-Jun-2016 12:36:33 America/New_York] PHP Stack trace:
+[21-Jun-2016 12:36:33 America/New_York] PHP   1. {main}() /home/codozsqq/public_html/dev/s/index.php:0
+[21-Jun-2016 12:36:33 America/New_York] PHP   2. Sm\Router\Toute->call() /home/codozsqq/public_html/dev/s/index.php:48
+[21-Jun-2016 12:36:33 America/New_York] PHP   3. call_user_func_array:{/home/codozsqq/public_html/dev/s/Sm/Router/Toute.php:69}() /home/codozsqq/public_html/dev/s/Sm/Router/Toute.php:69
+[21-Jun-2016 12:36:33 America/New_York] PHP   4. Spwashi\Controller\API\API->route() /home/codozsqq/public_html/dev/s/Sm/Router/Toute.php:69
+[21-Jun-2016 12:36:33 America/New_York] PHP   5. class_exists() /home/codozsqq/public_html/dev/s/Spwashi/Controller/API/API.php:236
+[21-Jun-2016 12:36:33 America/New_York] PHP   6. spl_autoload_call() /home/codozsqq/public_html/dev/s/Spwashi/Controller/API/API.php:236
+[21-Jun-2016 12:36:33 America/New_York] PHP   7. {closure:/home/codozsqq/public_html/dev/s/index.php:28-33}() /home/codozsqq/public_html/dev/s/Spwashi/Controller/API/API.php:236
+[21-Jun-2016 12:36:33 America/New_York] PHP Strict standards:  Declaration of Spwashi\Controller\API\SectionAPI::delete() should be compatible with Spwashi\Controller\API\API::delete($model, $req_data, $last_result = NULL, &$endpoint_array = Array) in /home/codozsqq/public_html/dev/s/Spwashi/Controller/API/SectionAPI.php on line 332
+[21-Jun-2016 12:36:33 America/New_York] PHP Stack trace:
+[21-Jun-2016 12:36:33 America/New_York] PHP   1. {main}() /home/codozsqq/public_html/dev/s/index.php:0
+[21-Jun-2016 12:36:33 America/New_York] PHP   2. Sm\Router\Toute->call() /home/codozsqq/public_html/dev/s/index.php:48
+[21-Jun-2016 12:36:33 America/New_York] PHP   3. call_user_func_array:{/home/codozsqq/public_html/dev/s/Sm/Router/Toute.php:69}() /home/codozsqq/public_html/dev/s/Sm/Router/Toute.php:69
+[21-Jun-2016 12:36:33 America/New_York] PHP   4. Spwashi\Controller\API\API->route() /home/codozsqq/public_html/dev/s/Sm/Router/Toute.php:69
+[21-Jun-2016 12:36:33 America/New_York] PHP   5. class_exists() /home/codozsqq/public_html/dev/s/Spwashi/Controller/API/API.php:236
+[21-Jun-2016 12:36:33 America/New_York] PHP   6. spl_autoload_call() /home/codozsqq/public_html/dev/s/Spwashi/Controller/API/API.php:236
+[21-Jun-2016 12:36:33 America/New_York] PHP   7. {closure:/home/codozsqq/public_html/dev/s/index.php:28-33}() /home/codozsqq/public_html/dev/s/Spwashi/Controller/API/API.php:236
+[21-Jun-2016 13:04:25 America/New_York] PHP Deprecated:  Automatically populating $HTTP_RAW_POST_DATA is deprecated and will be removed in a future version. To avoid this warning set 'always_populate_raw_post_data' to '-1' in php.ini and use the php://input stream instead. in Unknown on line 0
+[21-Jun-2016 13:04:25 America/New_York] PHP Strict standards:  Declaration of Spwashi\Controller\API\SectionAPI::get() should be compatible with Spwashi\Controller\API\API::get($model, $req_data, $last_result = NULL, &$endpoint_array = Array) in /home/codozsqq/public_html/dev/s/Spwashi/Controller/API/SectionAPI.php on line 332
+[21-Jun-2016 13:04:25 America/New_York] PHP Stack trace:
+[21-Jun-2016 13:04:25 America/New_York] PHP   1. {main}() /home/codozsqq/public_html/dev/s/index.php:0
+[21-Jun-2016 13:04:25 America/New_York] PHP   2. Sm\Router\Toute->call() /home/codozsqq/public_html/dev/s/index.php:48
+[21-Jun-2016 13:04:25 America/New_York] PHP   3. call_user_func_array:{/home/codozsqq/public_html/dev/s/Sm/Router/Toute.php:69}() /home/codozsqq/public_html/dev/s/Sm/Router/Toute.php:69
+[21-Jun-2016 13:04:25 America/New_York] PHP   4. Spwashi\Controller\API\API->route() /home/codozsqq/public_html/dev/s/Sm/Router/Toute.php:69
+[21-Jun-2016 13:04:25 America/New_York] PHP   5. class_exists() /home/codozsqq/public_html/dev/s/Spwashi/Controller/API/API.php:236
+[21-Jun-2016 13:04:25 America/New_York] PHP   6. spl_autoload_call() /home/codozsqq/public_html/dev/s/Spwashi/Controller/API/API.php:236
+[21-Jun-2016 13:04:25 America/New_York] PHP   7. {closure:/home/codozsqq/public_html/dev/s/index.php:28-33}() /home/codozsqq/public_html/dev/s/Spwashi/Controller/API/API.php:236
+[21-Jun-2016 13:04:25 America/New_York] PHP Strict standards:  Declaration of Spwashi\Controller\API\SectionAPI::delete() should be compatible with Spwashi\Controller\API\API::delete($model, $req_data, $last_result = NULL, &$endpoint_array = Array) in /home/codozsqq/public_html/dev/s/Spwashi/Controller/API/SectionAPI.php on line 332
+[21-Jun-2016 13:04:25 America/New_York] PHP Stack trace:
+[21-Jun-2016 13:04:25 America/New_York] PHP   1. {main}() /home/codozsqq/public_html/dev/s/index.php:0
+[21-Jun-2016 13:04:25 America/New_York] PHP   2. Sm\Router\Toute->call() /home/codozsqq/public_html/dev/s/index.php:48
+[21-Jun-2016 13:04:25 America/New_York] PHP   3. call_user_func_array:{/home/codozsqq/public_html/dev/s/Sm/Router/Toute.php:69}() /home/codozsqq/public_html/dev/s/Sm/Router/Toute.php:69
+[21-Jun-2016 13:04:25 America/New_York] PHP   4. Spwashi\Controller\API\API->route() /home/codozsqq/public_html/dev/s/Sm/Router/Toute.php:69
+[21-Jun-2016 13:04:25 America/New_York] PHP   5. class_exists() /home/codozsqq/public_html/dev/s/Spwashi/Controller/API/API.php:236
+[21-Jun-2016 13:04:25 America/New_York] PHP   6. spl_autoload_call() /home/codozsqq/public_html/dev/s/Spwashi/Controller/API/API.php:236
+[21-Jun-2016 13:04:25 America/New_York] PHP   7. {closure:/home/codozsqq/public_html/dev/s/index.php:28-33}() /home/codozsqq/public_html/dev/s/Spwashi/Controller/API/API.php:236
+[21-Jun-2016 13:51:58 America/New_York] PHP Deprecated:  Automatically populating $HTTP_RAW_POST_DATA is deprecated and will be removed in a future version. To avoid this warning set 'always_populate_raw_post_data' to '-1' in php.ini and use the php://input stream instead. in Unknown on line 0
+[21-Jun-2016 15:12:26 America/New_York] PHP Deprecated:  Automatically populating $HTTP_RAW_POST_DATA is deprecated and will be removed in a future version. To avoid this warning set 'always_populate_raw_post_data' to '-1' in php.ini and use the php://input stream instead. in Unknown on line 0
+[21-Jun-2016 15:13:03 America/New_York] PHP Deprecated:  Automatically populating $HTTP_RAW_POST_DATA is deprecated and will be removed in a future version. To avoid this warning set 'always_populate_raw_post_data' to '-1' in php.ini and use the php://input stream instead. in Unknown on line 0
+[21-Jun-2016 16:10:52 America/New_York] PHP Deprecated:  Automatically populating $HTTP_RAW_POST_DATA is deprecated and will be removed in a future version. To avoid this warning set 'always_populate_raw_post_data' to '-1' in php.ini and use the php://input stream instead. in Unknown on line 0
+[21-Jun-2016 17:58:06 America/New_York] PHP Deprecated:  Automatically populating $HTTP_RAW_POST_DATA is deprecated and will be removed in a future version. To avoid this warning set 'always_populate_raw_post_data' to '-1' in php.ini and use the php://input stream instead. in Unknown on line 0
+[21-Jun-2016 17:58:18 America/New_York] PHP Deprecated:  Automatically populating $HTTP_RAW_POST_DATA is deprecated and will be removed in a future version. To avoid this warning set 'always_populate_raw_post_data' to '-1' in php.ini and use the php://input stream instead. in Unknown on line 0
+[21-Jun-2016 18:00:28 America/New_York] PHP Deprecated:  Automatically populating $HTTP_RAW_POST_DATA is deprecated and will be removed in a future version. To avoid this warning set 'always_populate_raw_post_data' to '-1' in php.ini and use the php://input stream instead. in Unknown on line 0
+[21-Jun-2016 18:00:28 America/New_York] PHP Parse error:  syntax error, unexpected 'return' (T_RETURN), expecting function (T_FUNCTION) in /home/codozsqq/public_html/dev/s/Spwashi/Controller/API/API.php on line 722
+[21-Jun-2016 18:00:28 America/New_York] PHP Stack trace:
+[21-Jun-2016 18:00:28 America/New_York] PHP   1. {main}() /home/codozsqq/public_html/dev/s/index.php:0
+[21-Jun-2016 18:00:28 America/New_York] PHP   2. Sm\Router\Toute->call() /home/codozsqq/public_html/dev/s/index.php:48
+[21-Jun-2016 18:00:28 America/New_York] PHP   3. class_exists() /home/codozsqq/public_html/dev/s/Sm/Router/Toute.php:53
+[21-Jun-2016 18:00:28 America/New_York] PHP   4. spl_autoload_call() /home/codozsqq/public_html/dev/s/Sm/Router/Toute.php:53
+[21-Jun-2016 18:00:28 America/New_York] PHP   5. {closure:/home/codozsqq/public_html/dev/s/index.php:28-33}() /home/codozsqq/public_html/dev/s/Sm/Router/Toute.php:53
+[21-Jun-2016 18:01:42 America/New_York] PHP Deprecated:  Automatically populating $HTTP_RAW_POST_DATA is deprecated and will be removed in a future version. To avoid this warning set 'always_populate_raw_post_data' to '-1' in php.ini and use the php://input stream instead. in Unknown on line 0
+[21-Jun-2016 18:03:18 America/New_York] PHP Deprecated:  Automatically populating $HTTP_RAW_POST_DATA is deprecated and will be removed in a future version. To avoid this warning set 'always_populate_raw_post_data' to '-1' in php.ini and use the php://input stream instead. in Unknown on line 0
+[21-Jun-2016 18:06:51 America/New_York] PHP Deprecated:  Automatically populating $HTTP_RAW_POST_DATA is deprecated and will be removed in a future version. To avoid this warning set 'always_populate_raw_post_data' to '-1' in php.ini and use the php://input stream instead. in Unknown on line 0
+[21-Jun-2016 18:11:30 America/New_York] PHP Warning:  PHP Startup: Unable to load dynamic library '/opt/alt/php56/usr/lib64/php/modules/mysql.so' - libmysqlclient.so.18: failed to map segment from shared object: Cannot allocate memory in Unknown on line 0
+[21-Jun-2016 18:11:30 America/New_York] PHP Warning:  PHP Startup: Unable to load dynamic library '/opt/alt/php56/usr/lib64/php/modules/mysqli.so' - libmysqlclient.so.18: failed to map segment from shared object: Cannot allocate memory in Unknown on line 0
+[21-Jun-2016 18:11:30 America/New_York] PHP Warning:  PHP Startup: Unable to load dynamic library '/opt/alt/php56/usr/lib64/php/modules/pdf.so' - libpdf.so.6: failed to map segment from shared object: Cannot allocate memory in Unknown on line 0
+[21-Jun-2016 18:11:30 America/New_York] PHP Warning:  PHP Startup: Unable to load dynamic library '/opt/alt/php56/usr/lib64/php/modules/pdo_mysql.so' - libmysqlclient.so.18: failed to map segment from shared object: Cannot allocate memory in Unknown on line 0
+[21-Jun-2016 18:11:30 America/New_York] PHP Warning:  PHP Startup: Unable to load dynamic library '/opt/alt/php56/usr/lib64/php/modules/posix.so' - /opt/alt/php56/usr/lib64/php/modules/posix.so: failed to map segment from shared object: Cannot allocate memory in Unknown on line 0
+[21-Jun-2016 18:11:30 America/New_York] PHP Warning:  PHP Startup: Unable to load dynamic library '/opt/alt/php56/usr/lib64/php/modules/soap.so' - /opt/alt/php56/usr/lib64/php/modules/soap.so: failed to map segment from shared object: Cannot allocate memory in Unknown on line 0
+[21-Jun-2016 18:11:30 America/New_York] PHP Warning:  PHP Startup: Unable to load dynamic library '/opt/alt/php56/usr/lib64/php/modules/sockets.so' - /opt/alt/php56/usr/lib64/php/modules/sockets.so: failed to map segment from shared object: Cannot allocate memory in Unknown on line 0
+[21-Jun-2016 18:11:30 America/New_York] PHP Warning:  PHP Startup: Unable to load dynamic library '/opt/alt/php56/usr/lib64/php/modules/tidy.so' - /opt/alt/php56/usr/lib64/php/modules/tidy.so: failed to map segment from shared object: Cannot allocate memory in Unknown on line 0
+[21-Jun-2016 18:11:30 America/New_York] PHP Warning:  PHP Startup: Unable to load dynamic library '/opt/alt/php56/usr/lib64/php/modules/timezonedb.so' - /opt/alt/php56/usr/lib64/php/modules/timezonedb.so: failed to map segment from shared object: Cannot allocate memory in Unknown on line 0
+[21-Jun-2016 18:11:30 America/New_York] PHP Warning:  PHP Startup: Unable to load dynamic library '/opt/alt/php56/usr/lib64/php/modules/xmlreader.so' - /opt/alt/php56/usr/lib64/php/modules/xmlreader.so: failed to map segment from shared object: Cannot allocate memory in Unknown on line 0
+[21-Jun-2016 18:11:30 America/New_York] PHP Warning:  PHP Startup: Unable to load dynamic library '/opt/alt/php56/usr/lib64/php/modules/xmlrpc.so' - /opt/alt/php56/usr/lib64/php/modules/xmlrpc.so: failed to map segment from shared object: Cannot allocate memory in Unknown on line 0
+[21-Jun-2016 18:11:30 America/New_York] PHP Warning:  PHP Startup: Unable to load dynamic library '/opt/alt/php56/usr/lib64/php/modules/xmlwriter.so' - /opt/alt/php56/usr/lib64/php/modules/xmlwriter.so: failed to map segment from shared object: Cannot allocate memory in Unknown on line 0
+[21-Jun-2016 18:11:30 America/New_York] PHP Warning:  PHP Startup: Unable to load dynamic library '/opt/alt/php56/usr/lib64/php/modules/xsl.so' - /opt/alt/php56/usr/lib64/php/modules/xsl.so: failed to map segment from shared object: Cannot allocate memory in Unknown on line 0
+[21-Jun-2016 18:11:30 America/New_York] PHP Warning:  PHP Startup: Unable to load dynamic library '/opt/alt/php56/usr/lib64/php/modules/zip.so' - /opt/alt/php56/usr/lib64/php/modules/zip.so: failed to map segment from shared object: Cannot allocate memory in Unknown on line 0
+[21-Jun-2016 18:12:07 America/New_York] PHP Deprecated:  Automatically populating $HTTP_RAW_POST_DATA is deprecated and will be removed in a future version. To avoid this warning set 'always_populate_raw_post_data' to '-1' in php.ini and use the php://input stream instead. in Unknown on line 0
+[21-Jun-2016 18:16:10 America/New_York] PHP Deprecated:  Automatically populating $HTTP_RAW_POST_DATA is deprecated and will be removed in a future version. To avoid this warning set 'always_populate_raw_post_data' to '-1' in php.ini and use the php://input stream instead. in Unknown on line 0
+[21-Jun-2016 18:16:13 America/New_York] PHP Notice:  Undefined index: maps in /home/codozsqq/public_html/dev/s/Spwashi/Controller/API/API.php on line 683
+[21-Jun-2016 18:16:13 America/New_York] PHP Stack trace:
+[21-Jun-2016 18:16:13 America/New_York] PHP   1. {main}() /home/codozsqq/public_html/dev/s/index.php:0
+[21-Jun-2016 18:16:13 America/New_York] PHP   2. Sm\Router\Toute->call() /home/codozsqq/public_html/dev/s/index.php:48
+[21-Jun-2016 18:16:13 America/New_York] PHP   3. call_user_func_array:{/home/codozsqq/public_html/dev/s/Sm/Router/Toute.php:69}() /home/codozsqq/public_html/dev/s/Sm/Router/Toute.php:69
+[21-Jun-2016 18:16:13 America/New_York] PHP   4. Spwashi\Controller\API\API->route() /home/codozsqq/public_html/dev/s/Sm/Router/Toute.php:69
+[21-Jun-2016 18:16:13 America/New_York] PHP   5. Spwashi\Controller\API\API->handle_request() /home/codozsqq/public_html/dev/s/Spwashi/Controller/API/API.php:249
+[21-Jun-2016 18:16:13 America/New_York] PHP   6. Spwashi\Controller\API\API->Spwashi\Controller\API\{closure}() /home/codozsqq/public_html/dev/s/Spwashi/Controller/API/API.php:200
+[21-Jun-2016 18:16:13 America/New_York] PHP   7. Spwashi\Controller\API\API->Spwashi\Controller\API\{closure}() /home/codozsqq/public_html/dev/s/Spwashi/Controller/API/API.php:173
+[21-Jun-2016 18:16:13 America/New_York] PHP   8. Spwashi\Controller\API\API->patch() /home/codozsqq/public_html/dev/s/Spwashi/Controller/API/API.php:127
+[21-Jun-2016 18:16:13 America/New_York] PHP Notice:  Undefined index: maps in /home/codozsqq/public_html/dev/s/Spwashi/Controller/API/API.php on line 683
+[21-Jun-2016 18:16:13 America/New_York] PHP Stack trace:
+[21-Jun-2016 18:16:13 America/New_York] PHP   1. {main}() /home/codozsqq/public_html/dev/s/index.php:0
+[21-Jun-2016 18:16:13 America/New_York] PHP   2. Sm\Router\Toute->call() /home/codozsqq/public_html/dev/s/index.php:48
+[21-Jun-2016 18:16:13 America/New_York] PHP   3. call_user_func_array:{/home/codozsqq/public_html/dev/s/Sm/Router/Toute.php:69}() /home/codozsqq/public_html/dev/s/Sm/Router/Toute.php:69
+[21-Jun-2016 18:16:13 America/New_York] PHP   4. Spwashi\Controller\API\API->route() /home/codozsqq/public_html/dev/s/Sm/Router/Toute.php:69
+[21-Jun-2016 18:16:13 America/New_York] PHP   5. Spwashi\Controller\API\API->handle_request() /home/codozsqq/public_html/dev/s/Spwashi/Controller/API/API.php:249
+[21-Jun-2016 18:16:13 America/New_York] PHP   6. Spwashi\Controller\API\API->Spwashi\Controller\API\{closure}() /home/codozsqq/public_html/dev/s/Spwashi/Controller/API/API.php:200
+[21-Jun-2016 18:16:13 America/New_York] PHP   7. Spwashi\Controller\API\API->Spwashi\Controller\API\{closure}() /home/codozsqq/public_html/dev/s/Spwashi/Controller/API/API.php:173
+[21-Jun-2016 18:16:13 America/New_York] PHP   8. Spwashi\Controller\API\API->patch() /home/codozsqq/public_html/dev/s/Spwashi/Controller/API/API.php:127
+[21-Jun-2016 18:17:48 America/New_York] PHP Deprecated:  Automatically populating $HTTP_RAW_POST_DATA is deprecated and will be removed in a future version. To avoid this warning set 'always_populate_raw_post_data' to '-1' in php.ini and use the php://input stream instead. in Unknown on line 0
+[21-Jun-2016 18:27:18 America/New_York] PHP Deprecated:  Automatically populating $HTTP_RAW_POST_DATA is deprecated and will be removed in a future version. To avoid this warning set 'always_populate_raw_post_data' to '-1' in php.ini and use the php://input stream instead. in Unknown on line 0
+[21-Jun-2016 18:33:56 America/New_York] PHP Deprecated:  Automatically populating $HTTP_RAW_POST_DATA is deprecated and will be removed in a future version. To avoid this warning set 'always_populate_raw_post_data' to '-1' in php.ini and use the php://input stream instead. in Unknown on line 0
+[21-Jun-2016 18:36:44 America/New_York] PHP Deprecated:  Automatically populating $HTTP_RAW_POST_DATA is deprecated and will be removed in a future version. To avoid this warning set 'always_populate_raw_post_data' to '-1' in php.ini and use the php://input stream instead. in Unknown on line 0
+[21-Jun-2016 18:40:33 America/New_York] PHP Deprecated:  Automatically populating $HTTP_RAW_POST_DATA is deprecated and will be removed in a future version. To avoid this warning set 'always_populate_raw_post_data' to '-1' in php.ini and use the php://input stream instead. in Unknown on line 0
+[21-Jun-2016 18:43:30 America/New_York] PHP Deprecated:  Automatically populating $HTTP_RAW_POST_DATA is deprecated and will be removed in a future version. To avoid this warning set 'always_populate_raw_post_data' to '-1' in php.ini and use the php://input stream instead. in Unknown on line 0
+[21-Jun-2016 18:47:05 America/New_York] PHP Deprecated:  Automatically populating $HTTP_RAW_POST_DATA is deprecated and will be removed in a future version. To avoid this warning set 'always_populate_raw_post_data' to '-1' in php.ini and use the php://input stream instead. in Unknown on line 0
+[21-Jun-2016 18:47:11 America/New_York] PHP Deprecated:  Automatically populating $HTTP_RAW_POST_DATA is deprecated and will be removed in a future version. To avoid this warning set 'always_populate_raw_post_data' to '-1' in php.ini and use the php://input stream instead. in Unknown on line 0
+[21-Jun-2016 22:05:49 America/New_York] PHP Deprecated:  Automatically populating $HTTP_RAW_POST_DATA is deprecated and will be removed in a future version. To avoid this warning set 'always_populate_raw_post_data' to '-1' in php.ini and use the php://input stream instead. in Unknown on line 0
+[21-Jun-2016 22:07:57 America/New_York] PHP Deprecated:  Automatically populating $HTTP_RAW_POST_DATA is deprecated and will be removed in a future version. To avoid this warning set 'always_populate_raw_post_data' to '-1' in php.ini and use the php://input stream instead. in Unknown on line 0
+[21-Jun-2016 22:10:31 America/New_York] PHP Deprecated:  Automatically populating $HTTP_RAW_POST_DATA is deprecated and will be removed in a future version. To avoid this warning set 'always_populate_raw_post_data' to '-1' in php.ini and use the php://input stream instead. in Unknown on line 0
+[21-Jun-2016 22:13:14 America/New_York] PHP Deprecated:  Automatically populating $HTTP_RAW_POST_DATA is deprecated and will be removed in a future version. To avoid this warning set 'always_populate_raw_post_data' to '-1' in php.ini and use the php://input stream instead. in Unknown on line 0
+[21-Jun-2016 22:13:26 America/New_York] PHP Fatal error:  Uncaught exception 'Sm\Model\ModelNotFoundException' with message 'No models were found' in /home/codozsqq/public_html/dev/s/Sm/Model/Model.php:348
+Stack trace:
+#0 /home/codozsqq/public_html/dev/s/Spwashi/Model/Section.php(203): Sm\Model\Model->findType('sections', Array, Array)
+#1 /home/codozsqq/public_html/dev/s/Spwashi/Controller/API/API.php(495): Spwashi\Model\Section->findSections()
+#2 /home/codozsqq/public_html/dev/s/Spwashi/Controller/API/API.php(127): Spwashi\Controller\API\API->patch(Object(Spwashi\Model\Section), Array, NULL, Array)
+#3 /home/codozsqq/public_html/dev/s/Spwashi/Controller/API/API.php(173): Spwashi\Controller\API\API->Spwashi\Controller\API\{closure}(NULL, Object(Spwashi\Controller\API\Endpoint))
+#4 /home/codozsqq/public_html/dev/s/Spwashi/Controller/API/API.php(200): Spwashi\Controller\API\API->Spwashi\Controller\API\{closure}(NULL)
+#5 /home/codozsqq/public_html/dev/s/Spwashi/Controller/API/API.php(249): Spwashi\Controller\API\API->handle_request('patch', NULL, Array, Array)
+#6 [inter in /home/codozsqq/public_html/dev/s/Sm/Model/Model.php on line 348
+[21-Jun-2016 22:21:38 America/New_York] PHP Deprecated:  Automatically populating $HTTP_RAW_POST_DATA is deprecated and will be removed in a future version. To avoid this warning set 'always_populate_raw_post_data' to '-1' in php.ini and use the php://input stream instead. in Unknown on line 0
+[22-Jun-2016 19:52:48 America/New_York] PHP Deprecated:  Automatically populating $HTTP_RAW_POST_DATA is deprecated and will be removed in a future version. To avoid this warning set 'always_populate_raw_post_data' to '-1' in php.ini and use the php://input stream instead. in Unknown on line 0
+[22-Jun-2016 19:53:59 America/New_York] PHP Deprecated:  Automatically populating $HTTP_RAW_POST_DATA is deprecated and will be removed in a future version. To avoid this warning set 'always_populate_raw_post_data' to '-1' in php.ini and use the php://input stream instead. in Unknown on line 0
+[22-Jun-2016 19:56:38 America/New_York] PHP Deprecated:  Automatically populating $HTTP_RAW_POST_DATA is deprecated and will be removed in a future version. To avoid this warning set 'always_populate_raw_post_data' to '-1' in php.ini and use the php://input stream instead. in Unknown on line 0
+[22-Jun-2016 19:56:53 America/New_York] PHP Deprecated:  Automatically populating $HTTP_RAW_POST_DATA is deprecated and will be removed in a future version. To avoid this warning set 'always_populate_raw_post_data' to '-1' in php.ini and use the php://input stream instead. in Unknown on line 0
+[22-Jun-2016 19:59:15 America/New_York] PHP Deprecated:  Automatically populating $HTTP_RAW_POST_DATA is deprecated and will be removed in a future version. To avoid this warning set 'always_populate_raw_post_data' to '-1' in php.ini and use the php://input stream instead. in Unknown on line 0
+[22-Jun-2016 20:41:15 America/New_York] PHP Deprecated:  Automatically populating $HTTP_RAW_POST_DATA is deprecated and will be removed in a future version. To avoid this warning set 'always_populate_raw_post_data' to '-1' in php.ini and use the php://input stream instead. in Unknown on line 0
+[22-Jun-2016 20:42:24 America/New_York] PHP Deprecated:  Automatically populating $HTTP_RAW_POST_DATA is deprecated and will be removed in a future version. To avoid this warning set 'always_populate_raw_post_data' to '-1' in php.ini and use the php://input stream instead. in Unknown on line 0
+[22-Jun-2016 20:44:39 America/New_York] PHP Deprecated:  Automatically populating $HTTP_RAW_POST_DATA is deprecated and will be removed in a future version. To avoid this warning set 'always_populate_raw_post_data' to '-1' in php.ini and use the php://input stream instead. in Unknown on line 0
+[22-Jun-2016 20:46:19 America/New_York] PHP Deprecated:  Automatically populating $HTTP_RAW_POST_DATA is deprecated and will be removed in a future version. To avoid this warning set 'always_populate_raw_post_data' to '-1' in php.ini and use the php://input stream instead. in Unknown on line 0
+[22-Jun-2016 20:47:02 America/New_York] PHP Deprecated:  Automatically populating $HTTP_RAW_POST_DATA is deprecated and will be removed in a future version. To avoid this warning set 'always_populate_raw_post_data' to '-1' in php.ini and use the php://input stream instead. in Unknown on line 0
+[23-Jun-2016 11:45:45 America/New_York] PHP Notice:  Undefined variable: endpoint_entities in /home/codozsqq/public_html/dev/s/Spwashi/Controller/API/SectionAPI.php on line 295
+[23-Jun-2016 11:45:45 America/New_York] PHP Stack trace:
+[23-Jun-2016 11:45:45 America/New_York] PHP   1. {main}() /home/codozsqq/public_html/dev/s/index.php:0
+[23-Jun-2016 11:45:45 America/New_York] PHP   2. Sm\Router\Toute->call() /home/codozsqq/public_html/dev/s/index.php:48
+[23-Jun-2016 11:45:45 America/New_York] PHP   3. call_user_func_array:{/home/codozsqq/public_html/dev/s/Sm/Router/Toute.php:69}() /home/codozsqq/public_html/dev/s/Sm/Router/Toute.php:69
+[23-Jun-2016 11:45:45 America/New_York] PHP   4. Spwashi\Controller\API\API->route() /home/codozsqq/public_html/dev/s/Sm/Router/Toute.php:69
+[23-Jun-2016 11:45:45 America/New_York] PHP   5. Spwashi\Controller\API\API->handle_request() /home/codozsqq/public_html/dev/s/Spwashi/Controller/API/API.php:248
+[23-Jun-2016 11:45:45 America/New_York] PHP   6. Spwashi\Controller\API\API->Spwashi\Controller\API\{closure}() /home/codozsqq/public_html/dev/s/Spwashi/Controller/API/API.php:200
+[23-Jun-2016 11:45:45 America/New_York] PHP   7. Spwashi\Controller\API\API->Spwashi\Controller\API\{closure}() /home/codozsqq/public_html/dev/s/Spwashi/Controller/API/API.php:173
+[23-Jun-2016 11:45:45 America/New_York] PHP   8. Spwashi\Controller\API\SectionAPI->delete() /home/codozsqq/public_html/dev/s/Spwashi/Controller/API/API.php:127
+[23-Jun-2016 11:48:01 America/New_York] PHP Fatal error:  Call to a member function findPermissions() on boolean in /home/codozsqq/public_html/dev/s/Spwashi/Controller/API/API.php on line 899
+[23-Jun-2016 11:48:01 America/New_York] PHP Stack trace:
+[23-Jun-2016 11:48:01 America/New_York] PHP   1. {main}() /home/codozsqq/public_html/dev/s/index.php:0
+[23-Jun-2016 11:48:01 America/New_York] PHP   2. Sm\Router\Toute->call() /home/codozsqq/public_html/dev/s/index.php:48
+[23-Jun-2016 11:48:01 America/New_York] PHP   3. call_user_func_array:{/home/codozsqq/public_html/dev/s/Sm/Router/Toute.php:69}() /home/codozsqq/public_html/dev/s/Sm/Router/Toute.php:69
+[23-Jun-2016 11:48:01 America/New_York] PHP   4. Spwashi\Controller\API\API->route() /home/codozsqq/public_html/dev/s/Sm/Router/Toute.php:69
+[23-Jun-2016 11:48:01 America/New_York] PHP   5. Spwashi\Controller\API\API->handle_request() /home/codozsqq/public_html/dev/s/Spwashi/Controller/API/API.php:248
+[23-Jun-2016 11:48:01 America/New_York] PHP   6. Spwashi\Controller\API\API->Spwashi\Controller\API\{closure}() /home/codozsqq/public_html/dev/s/Spwashi/Controller/API/API.php:200
+[23-Jun-2016 11:48:01 America/New_York] PHP   7. Spwashi\Controller\API\API->Spwashi\Controller\API\{closure}() /home/codozsqq/public_html/dev/s/Spwashi/Controller/API/API.php:173
+[23-Jun-2016 11:48:01 America/New_York] PHP   8. Spwashi\Controller\API\API->delete() /home/codozsqq/public_html/dev/s/Spwashi/Controller/API/API.php:127
+[23-Jun-2016 11:48:01 America/New_York] PHP   9. Spwashi\Controller\API\API::user_can() /home/codozsqq/public_html/dev/s/Spwashi/Controller/API/API.php:924
+[23-Jun-2016 12:16:28 America/New_York] PHP Parse error:  syntax error, unexpected end of file in /home/codozsqq/public_html/dev/s/Spwashi/Controller/API/API.php on line 773
+[23-Jun-2016 12:16:28 America/New_York] PHP Stack trace:
+[23-Jun-2016 12:16:28 America/New_York] PHP   1. {main}() /home/codozsqq/public_html/dev/s/index.php:0
+[23-Jun-2016 12:16:28 America/New_York] PHP   2. Sm\Router\Toute->call() /home/codozsqq/public_html/dev/s/index.php:48
+[23-Jun-2016 12:16:28 America/New_York] PHP   3. class_exists() /home/codozsqq/public_html/dev/s/Sm/Router/Toute.php:53
+[23-Jun-2016 12:16:28 America/New_York] PHP   4. spl_autoload_call() /home/codozsqq/public_html/dev/s/Sm/Router/Toute.php:53
+[23-Jun-2016 12:16:28 America/New_York] PHP   5. {closure:/home/codozsqq/public_html/dev/s/index.php:28-33}() /home/codozsqq/public_html/dev/s/Sm/Router/Toute.php:53
+[23-Jun-2016 12:20:00 America/New_York] PHP Notice:  Trying to get property of non-object in /home/codozsqq/public_html/dev/s/Spwashi/Controller/API/API.php on line 471
+[23-Jun-2016 12:20:00 America/New_York] PHP Stack trace:
+[23-Jun-2016 12:20:00 America/New_York] PHP   1. {main}() /home/codozsqq/public_html/dev/s/index.php:0
+[23-Jun-2016 12:20:00 America/New_York] PHP   2. Sm\Router\Toute->call() /home/codozsqq/public_html/dev/s/index.php:48
+[23-Jun-2016 12:20:00 America/New_York] PHP   3. call_user_func_array:{/home/codozsqq/public_html/dev/s/Sm/Router/Toute.php:69}() /home/codozsqq/public_html/dev/s/Sm/Router/Toute.php:69
+[23-Jun-2016 12:20:00 America/New_York] PHP   4. Spwashi\Controller\API\API->route() /home/codozsqq/public_html/dev/s/Sm/Router/Toute.php:69
+[23-Jun-2016 12:20:00 America/New_York] PHP   5. Spwashi\Controller\API\API->handle_request() /home/codozsqq/public_html/dev/s/Spwashi/Controller/API/API.php:252
+[23-Jun-2016 12:20:00 America/New_York] PHP   6. Spwashi\Controller\API\API->send_to() /home/codozsqq/public_html/dev/s/Spwashi/Controller/API/API.php:206
+[23-Jun-2016 12:20:00 America/New_York] PHP   7. Spwashi\Controller\API\API->handle_request() /home/codozsqq/public_html/dev/s/Spwashi/Controller/API/API.php:60
+[23-Jun-2016 12:20:00 America/New_York] PHP   8. Spwashi\Controller\API\API->Spwashi\Controller\API\{closure}() /home/codozsqq/public_html/dev/s/Spwashi/Controller/API/API.php:204
+[23-Jun-2016 12:20:00 America/New_York] PHP   9. Spwashi\Controller\API\API->Spwashi\Controller\API\{closure}() /home/codozsqq/public_html/dev/s/Spwashi/Controller/API/API.php:177
+[23-Jun-2016 12:20:00 America/New_York] PHP  10. call_user_func_array:{/home/codozsqq/public_html/dev/s/Spwashi/Controller/API/API.php:110}() /home/codozsqq/public_html/dev/s/Spwashi/Controller/API/API.php:110
+[23-Jun-2016 12:20:00 America/New_York] PHP  11. Spwashi\Controller\API\API::init_from_() /home/codozsqq/public_html/dev/s/Spwashi/Controller/API/API.php:110
+[23-Jun-2016 12:26:48 America/New_York] PHP Notice:  Trying to get property of non-object in /home/codozsqq/public_html/dev/s/Spwashi/Controller/API/API.php on line 471
+[23-Jun-2016 12:26:48 America/New_York] PHP Stack trace:
+[23-Jun-2016 12:26:48 America/New_York] PHP   1. {main}() /home/codozsqq/public_html/dev/s/index.php:0
+[23-Jun-2016 12:26:48 America/New_York] PHP   2. Sm\Router\Toute->call() /home/codozsqq/public_html/dev/s/index.php:48
+[23-Jun-2016 12:26:48 America/New_York] PHP   3. call_user_func_array:{/home/codozsqq/public_html/dev/s/Sm/Router/Toute.php:69}() /home/codozsqq/public_html/dev/s/Sm/Router/Toute.php:69
+[23-Jun-2016 12:26:48 America/New_York] PHP   4. Spwashi\Controller\API\API->route() /home/codozsqq/public_html/dev/s/Sm/Router/Toute.php:69
+[23-Jun-2016 12:26:48 America/New_York] PHP   5. Spwashi\Controller\API\API->handle_request() /home/codozsqq/public_html/dev/s/Spwashi/Controller/API/API.php:252
+[23-Jun-2016 12:26:48 America/New_York] PHP   6. Spwashi\Controller\API\API->send_to() /home/codozsqq/public_html/dev/s/Spwashi/Controller/API/API.php:206
+[23-Jun-2016 12:26:48 America/New_York] PHP   7. Spwashi\Controller\API\API->handle_request() /home/codozsqq/public_html/dev/s/Spwashi/Controller/API/API.php:60
+[23-Jun-2016 12:26:48 America/New_York] PHP   8. Spwashi\Controller\API\API->Spwashi\Controller\API\{closure}() /home/codozsqq/public_html/dev/s/Spwashi/Controller/API/API.php:204
+[23-Jun-2016 12:26:48 America/New_York] PHP   9. Spwashi\Controller\API\API->Spwashi\Controller\API\{closure}() /home/codozsqq/public_html/dev/s/Spwashi/Controller/API/API.php:177
+[23-Jun-2016 12:26:48 America/New_York] PHP  10. call_user_func_array:{/home/codozsqq/public_html/dev/s/Spwashi/Controller/API/API.php:110}() /home/codozsqq/public_html/dev/s/Spwashi/Controller/API/API.php:110
+[23-Jun-2016 12:26:48 America/New_York] PHP  11. Spwashi\Controller\API\API::init_from_() /home/codozsqq/public_html/dev/s/Spwashi/Controller/API/API.php:110
+[23-Jun-2016 12:27:49 America/New_York] PHP Notice:  Trying to get property of non-object in /home/codozsqq/public_html/dev/s/Spwashi/Controller/API/API.php on line 471
+[23-Jun-2016 12:27:49 America/New_York] PHP Stack trace:
+[23-Jun-2016 12:27:49 America/New_York] PHP   1. {main}() /home/codozsqq/public_html/dev/s/index.php:0
+[23-Jun-2016 12:27:49 America/New_York] PHP   2. Sm\Router\Toute->call() /home/codozsqq/public_html/dev/s/index.php:48
+[23-Jun-2016 12:27:49 America/New_York] PHP   3. call_user_func_array:{/home/codozsqq/public_html/dev/s/Sm/Router/Toute.php:69}() /home/codozsqq/public_html/dev/s/Sm/Router/Toute.php:69
+[23-Jun-2016 12:27:49 America/New_York] PHP   4. Spwashi\Controller\API\API->route() /home/codozsqq/public_html/dev/s/Sm/Router/Toute.php:69
+[23-Jun-2016 12:27:49 America/New_York] PHP   5. Spwashi\Controller\API\API->handle_request() /home/codozsqq/public_html/dev/s/Spwashi/Controller/API/API.php:252
+[23-Jun-2016 12:27:49 America/New_York] PHP   6. Spwashi\Controller\API\API->send_to() /home/codozsqq/public_html/dev/s/Spwashi/Controller/API/API.php:206
+[23-Jun-2016 12:27:49 America/New_York] PHP   7. Spwashi\Controller\API\API->handle_request() /home/codozsqq/public_html/dev/s/Spwashi/Controller/API/API.php:60
+[23-Jun-2016 12:27:49 America/New_York] PHP   8. Spwashi\Controller\API\API->Spwashi\Controller\API\{closure}() /home/codozsqq/public_html/dev/s/Spwashi/Controller/API/API.php:204
+[23-Jun-2016 12:27:49 America/New_York] PHP   9. Spwashi\Controller\API\API->Spwashi\Controller\API\{closure}() /home/codozsqq/public_html/dev/s/Spwashi/Controller/API/API.php:177
+[23-Jun-2016 12:27:49 America/New_York] PHP  10. call_user_func_array:{/home/codozsqq/public_html/dev/s/Spwashi/Controller/API/API.php:110}() /home/codozsqq/public_html/dev/s/Spwashi/Controller/API/API.php:110
+[23-Jun-2016 12:27:49 America/New_York] PHP  11. Spwashi\Controller\API\API::init_from_() /home/codozsqq/public_html/dev/s/Spwashi/Controller/API/API.php:110
+[23-Jun-2016 12:27:51 America/New_York] PHP Notice:  Trying to get property of non-object in /home/codozsqq/public_html/dev/s/Spwashi/Controller/API/API.php on line 471
+[23-Jun-2016 12:27:51 America/New_York] PHP Stack trace:
+[23-Jun-2016 12:27:51 America/New_York] PHP   1. {main}() /home/codozsqq/public_html/dev/s/index.php:0
+[23-Jun-2016 12:27:51 America/New_York] PHP   2. Sm\Router\Toute->call() /home/codozsqq/public_html/dev/s/index.php:48
+[23-Jun-2016 12:27:51 America/New_York] PHP   3. call_user_func_array:{/home/codozsqq/public_html/dev/s/Sm/Router/Toute.php:69}() /home/codozsqq/public_html/dev/s/Sm/Router/Toute.php:69
+[23-Jun-2016 12:27:51 America/New_York] PHP   4. Spwashi\Controller\API\API->route() /home/codozsqq/public_html/dev/s/Sm/Router/Toute.php:69
+[23-Jun-2016 12:27:51 America/New_York] PHP   5. Spwashi\Controller\API\API->handle_request() /home/codozsqq/public_html/dev/s/Spwashi/Controller/API/API.php:252
+[23-Jun-2016 12:27:51 America/New_York] PHP   6. Spwashi\Controller\API\API->send_to() /home/codozsqq/public_html/dev/s/Spwashi/Controller/API/API.php:206
+[23-Jun-2016 12:27:51 America/New_York] PHP   7. Spwashi\Controller\API\API->handle_request() /home/codozsqq/public_html/dev/s/Spwashi/Controller/API/API.php:60
+[23-Jun-2016 12:27:51 America/New_York] PHP   8. Spwashi\Controller\API\API->Spwashi\Controller\API\{closure}() /home/codozsqq/public_html/dev/s/Spwashi/Controller/API/API.php:204
+[23-Jun-2016 12:27:51 America/New_York] PHP   9. Spwashi\Controller\API\API->Spwashi\Controller\API\{closure}() /home/codozsqq/public_html/dev/s/Spwashi/Controller/API/API.php:177
+[23-Jun-2016 12:27:51 America/New_York] PHP  10. call_user_func_array:{/home/codozsqq/public_html/dev/s/Spwashi/Controller/API/API.php:110}() /home/codozsqq/public_html/dev/s/Spwashi/Controller/API/API.php:110
+[23-Jun-2016 12:27:51 America/New_York] PHP  11. Spwashi\Controller\API\API::init_from_() /home/codozsqq/public_html/dev/s/Spwashi/Controller/API/API.php:110
+[23-Jun-2016 12:29:29 America/New_York] PHP Fatal error:  Uncaught exception 'Sm\Model\ModelNotFoundException' with message 'Could not adequately map user_section_map' in /home/codozsqq/public_html/dev/s/Sm/Model/Model.php:266
+Stack trace:
+#0 /home/codozsqq/public_html/dev/s/Spwashi/Controller/API/API.php(482): Sm\Model\Model->findType('User', Array)
+#1 [internal function]: Spwashi\Controller\API\API::init_from_(Object(Spwashi\Model\Section), NULL, Object(Spwashi\Controller\API\Endpoint), Array)
+#2 /home/codozsqq/public_html/dev/s/Spwashi/Controller/API/API.php(110): call_user_func_array('Spwashi\\Control...', Array)
+#3 /home/codozsqq/public_html/dev/s/Spwashi/Controller/API/API.php(177): Spwashi\Controller\API\API->Spwashi\Controller\API\{closure}(Object(Spwashi\Model\Section), Object(Spwashi\Controller\API\Endpoint))
+#4 /home/codozsqq/public_html/dev/s/Spwashi/Controller/API/API.php(204): Spwashi\Controller\API\API->Spwashi\Controller\API\{closure}(Object(Spwashi\Model\Section))
+#5 /home/codozsqq/public_html/dev/s/Spwashi/Controller/API/API.php(60): Spwashi\Contro in /home/codozsqq/public_html/dev/s/Sm/Model/Model.php on line 266
+[23-Jun-2016 12:35:39 America/New_York] PHP Fatal error:  Uncaught exception 'Sm\Model\ModelNotFoundException' with message 'Could Not Find Any Models -> [{"user_id":null}]' in /home/codozsqq/public_html/dev/s/Sm/Model/Model.php:166
+Stack trace:
+#0 /home/codozsqq/public_html/dev/s/Spwashi/Controller/API/API.php(487): Sm\Model\Model::findAll(Array)
+#1 [internal function]: Spwashi\Controller\API\API::init_from_(Object(Spwashi\Model\Section), NULL, Object(Spwashi\Controller\API\Endpoint), Array)
+#2 /home/codozsqq/public_html/dev/s/Spwashi/Controller/API/API.php(110): call_user_func_array('Spwashi\\Control...', Array)
+#3 /home/codozsqq/public_html/dev/s/Spwashi/Controller/API/API.php(177): Spwashi\Controller\API\API->Spwashi\Controller\API\{closure}(Object(Spwashi\Model\Section), Object(Spwashi\Controller\API\Endpoint))
+#4 /home/codozsqq/public_html/dev/s/Spwashi/Controller/API/API.php(204): Spwashi\Controller\API\API->Spwashi\Controller\API\{closure}(Object(Spwashi\Model\Section))
+#5 /home/codozsqq/public_html/dev/s/Spwashi/Controller/API/API.php(60): Spwashi\Controlle in /home/codozsqq/public_html/dev/s/Sm/Model/Model.php on line 166
+[23-Jun-2016 12:35:40 America/New_York] PHP Fatal error:  Uncaught exception 'Sm\Model\ModelNotFoundException' with message 'Could Not Find Any Models -> [{"user_id":null}]' in /home/codozsqq/public_html/dev/s/Sm/Model/Model.php:166
+Stack trace:
+#0 /home/codozsqq/public_html/dev/s/Spwashi/Controller/API/API.php(487): Sm\Model\Model::findAll(Array)
+#1 [internal function]: Spwashi\Controller\API\API::init_from_(Object(Spwashi\Model\Section), NULL, Object(Spwashi\Controller\API\Endpoint), Array)
+#2 /home/codozsqq/public_html/dev/s/Spwashi/Controller/API/API.php(110): call_user_func_array('Spwashi\\Control...', Array)
+#3 /home/codozsqq/public_html/dev/s/Spwashi/Controller/API/API.php(177): Spwashi\Controller\API\API->Spwashi\Controller\API\{closure}(Object(Spwashi\Model\Section), Object(Spwashi\Controller\API\Endpoint))
+#4 /home/codozsqq/public_html/dev/s/Spwashi/Controller/API/API.php(204): Spwashi\Controller\API\API->Spwashi\Controller\API\{closure}(Object(Spwashi\Model\Section))
+#5 /home/codozsqq/public_html/dev/s/Spwashi/Controller/API/API.php(60): Spwashi\Controlle in /home/codozsqq/public_html/dev/s/Sm/Model/Model.php on line 166
+[23-Jun-2016 12:35:42 America/New_York] PHP Fatal error:  Uncaught exception 'Sm\Model\ModelNotFoundException' with message 'Could Not Find Any Models -> [{"user_id":null}]' in /home/codozsqq/public_html/dev/s/Sm/Model/Model.php:166
+Stack trace:
+#0 /home/codozsqq/public_html/dev/s/Spwashi/Controller/API/API.php(487): Sm\Model\Model::findAll(Array)
+#1 [internal function]: Spwashi\Controller\API\API::init_from_(Object(Spwashi\Model\Section), NULL, Object(Spwashi\Controller\API\Endpoint), Array)
+#2 /home/codozsqq/public_html/dev/s/Spwashi/Controller/API/API.php(110): call_user_func_array('Spwashi\\Control...', Array)
+#3 /home/codozsqq/public_html/dev/s/Spwashi/Controller/API/API.php(177): Spwashi\Controller\API\API->Spwashi\Controller\API\{closure}(Object(Spwashi\Model\Section), Object(Spwashi\Controller\API\Endpoint))
+#4 /home/codozsqq/public_html/dev/s/Spwashi/Controller/API/API.php(204): Spwashi\Controller\API\API->Spwashi\Controller\API\{closure}(Object(Spwashi\Model\Section))
+#5 /home/codozsqq/public_html/dev/s/Spwashi/Controller/API/API.php(60): Spwashi\Controlle in /home/codozsqq/public_html/dev/s/Sm/Model/Model.php on line 166
+[23-Jun-2016 19:16:42 America/New_York] PHP Notice:  Object of class Sm\Model\Model could not be converted to int in /home/codozsqq/public_html/dev/s/Sm/Model/Model.php on line 467
+[23-Jun-2016 19:16:42 America/New_York] PHP Stack trace:
+[23-Jun-2016 19:16:42 America/New_York] PHP   1. {main}() /home/codozsqq/public_html/dev/s/index.php:0
+[23-Jun-2016 19:16:42 America/New_York] PHP   2. Sm\Router\Toute->call() /home/codozsqq/public_html/dev/s/index.php:48
+[23-Jun-2016 19:16:42 America/New_York] PHP   3. call_user_func_array:{/home/codozsqq/public_html/dev/s/Sm/Router/Toute.php:69}() /home/codozsqq/public_html/dev/s/Sm/Router/Toute.php:69
+[23-Jun-2016 19:16:42 America/New_York] PHP   4. Spwashi\Controller\API\API->route() /home/codozsqq/public_html/dev/s/Sm/Router/Toute.php:69
+[23-Jun-2016 19:16:42 America/New_York] PHP   5. Spwashi\Controller\API\API->handle_request() /home/codozsqq/public_html/dev/s/Spwashi/Controller/API/API.php:252
+[23-Jun-2016 19:16:42 America/New_York] PHP   6. Spwashi\Controller\API\API->send_to() /home/codozsqq/public_html/dev/s/Spwashi/Controller/API/API.php:206
+[23-Jun-2016 19:16:42 America/New_York] PHP   7. Spwashi\Controller\API\API->handle_request() /home/codozsqq/public_html/dev/s/Spwashi/Controller/API/API.php:60
+[23-Jun-2016 19:16:42 America/New_York] PHP   8. Spwashi\Controller\API\API->Spwashi\Controller\API\{closure}() /home/codozsqq/public_html/dev/s/Spwashi/Controller/API/API.php:204
+[23-Jun-2016 19:16:42 America/New_York] PHP   9. Spwashi\Controller\API\API->Spwashi\Controller\API\{closure}() /home/codozsqq/public_html/dev/s/Spwashi/Controller/API/API.php:177
+[23-Jun-2016 19:16:42 America/New_York] PHP  10. call_user_func_array:{/home/codozsqq/public_html/dev/s/Spwashi/Controller/API/API.php:110}() /home/codozsqq/public_html/dev/s/Spwashi/Controller/API/API.php:110
+[23-Jun-2016 19:16:42 America/New_York] PHP  11. Spwashi\Controller\API\API::init_from_() /home/codozsqq/public_html/dev/s/Spwashi/Controller/API/API.php:110
+[23-Jun-2016 19:16:42 America/New_York] PHP  12. Sm\Model\Model->findType() /home/codozsqq/public_html/dev/s/Spwashi/Controller/API/API.php:483
+[23-Jun-2016 19:16:42 America/New_York] PHP  13. Sm\Model\ModelMeta::table_to_class() /home/codozsqq/public_html/dev/s/Sm/Model/Model.php:243
+[23-Jun-2016 19:16:42 America/New_York] PHP  14. Sm\Model\Map->__construct() /home/codozsqq/public_html/dev/s/Sm/Model/ModelMeta.php:285
+[23-Jun-2016 19:16:42 America/New_York] PHP  15. Sm\Model\Abstraction\Model->__set() /home/codozsqq/public_html/dev/s/Sm/Model/ModelMeta.php:31
+[23-Jun-2016 19:16:42 America/New_York] PHP  16. Sm\Model\Model->set() /home/codozsqq/public_html/dev/s/Sm/Model/Abstraction/Model.php:189
+[23-Jun-2016 19:16:42 America/New_York] PHP  17. intval() /home/codozsqq/public_html/dev/s/Sm/Model/Model.php:467
+[23-Jun-2016 19:18:39 America/New_York] PHP Notice:  Object of class Sm\Model\Model could not be converted to int in /home/codozsqq/public_html/dev/s/Sm/Model/Model.php on line 472
+[23-Jun-2016 19:18:39 America/New_York] PHP Stack trace:
+[23-Jun-2016 19:18:39 America/New_York] PHP   1. {main}() /home/codozsqq/public_html/dev/s/index.php:0
+[23-Jun-2016 19:18:39 America/New_York] PHP   2. Sm\Router\Toute->call() /home/codozsqq/public_html/dev/s/index.php:48
+[23-Jun-2016 19:18:39 America/New_York] PHP   3. call_user_func_array:{/home/codozsqq/public_html/dev/s/Sm/Router/Toute.php:69}() /home/codozsqq/public_html/dev/s/Sm/Router/Toute.php:69
+[23-Jun-2016 19:18:39 America/New_York] PHP   4. Spwashi\Controller\API\API->route() /home/codozsqq/public_html/dev/s/Sm/Router/Toute.php:69
+[23-Jun-2016 19:18:39 America/New_York] PHP   5. Spwashi\Controller\API\API->handle_request() /home/codozsqq/public_html/dev/s/Spwashi/Controller/API/API.php:252
+[23-Jun-2016 19:18:39 America/New_York] PHP   6. Spwashi\Controller\API\API->send_to() /home/codozsqq/public_html/dev/s/Spwashi/Controller/API/API.php:206
+[23-Jun-2016 19:18:39 America/New_York] PHP   7. Spwashi\Controller\API\API->handle_request() /home/codozsqq/public_html/dev/s/Spwashi/Controller/API/API.php:60
+[23-Jun-2016 19:18:39 America/New_York] PHP   8. Spwashi\Controller\API\API->Spwashi\Controller\API\{closure}() /home/codozsqq/public_html/dev/s/Spwashi/Controller/API/API.php:204
+[23-Jun-2016 19:18:39 America/New_York] PHP   9. Spwashi\Controller\API\API->Spwashi\Controller\API\{closure}() /home/codozsqq/public_html/dev/s/Spwashi/Controller/API/API.php:177
+[23-Jun-2016 19:18:39 America/New_York] PHP  10. call_user_func_array:{/home/codozsqq/public_html/dev/s/Spwashi/Controller/API/API.php:110}() /home/codozsqq/public_html/dev/s/Spwashi/Controller/API/API.php:110
+[23-Jun-2016 19:18:39 America/New_York] PHP  11. Spwashi\Controller\API\API::init_from_() /home/codozsqq/public_html/dev/s/Spwashi/Controller/API/API.php:110
+[23-Jun-2016 19:18:39 America/New_York] PHP  12. Sm\Model\Model->findType() /home/codozsqq/public_html/dev/s/Spwashi/Controller/API/API.php:483
+[23-Jun-2016 19:18:39 America/New_York] PHP  13. Sm\Model\ModelMeta::table_to_class() /home/codozsqq/public_html/dev/s/Sm/Model/Model.php:243
+[23-Jun-2016 19:18:39 America/New_York] PHP  14. Sm\Model\Map->__construct() /home/codozsqq/public_html/dev/s/Sm/Model/ModelMeta.php:285
+[23-Jun-2016 19:18:39 America/New_York] PHP  15. Sm\Model\Abstraction\Model->__set() /home/codozsqq/public_html/dev/s/Sm/Model/ModelMeta.php:31
+[23-Jun-2016 19:18:39 America/New_York] PHP  16. Sm\Model\Model->set() /home/codozsqq/public_html/dev/s/Sm/Model/Abstraction/Model.php:189
+[23-Jun-2016 19:18:39 America/New_York] PHP  17. intval() /home/codozsqq/public_html/dev/s/Sm/Model/Model.php:472
+[23-Jun-2016 19:21:25 America/New_York] PHP Notice:  Object of class Sm\Model\Model could not be converted to int in /home/codozsqq/public_html/dev/s/Sm/Model/Model.php on line 473
+[23-Jun-2016 19:21:25 America/New_York] PHP Stack trace:
+[23-Jun-2016 19:21:25 America/New_York] PHP   1. {main}() /home/codozsqq/public_html/dev/s/index.php:0
+[23-Jun-2016 19:21:25 America/New_York] PHP   2. Sm\Router\Toute->call() /home/codozsqq/public_html/dev/s/index.php:48
+[23-Jun-2016 19:21:25 America/New_York] PHP   3. call_user_func_array:{/home/codozsqq/public_html/dev/s/Sm/Router/Toute.php:69}() /home/codozsqq/public_html/dev/s/Sm/Router/Toute.php:69
+[23-Jun-2016 19:21:25 America/New_York] PHP   4. Spwashi\Controller\API\API->route() /home/codozsqq/public_html/dev/s/Sm/Router/Toute.php:69
+[23-Jun-2016 19:21:25 America/New_York] PHP   5. Spwashi\Controller\API\API->handle_request() /home/codozsqq/public_html/dev/s/Spwashi/Controller/API/API.php:252
+[23-Jun-2016 19:21:25 America/New_York] PHP   6. Spwashi\Controller\API\API->send_to() /home/codozsqq/public_html/dev/s/Spwashi/Controller/API/API.php:206
+[23-Jun-2016 19:21:25 America/New_York] PHP   7. Spwashi\Controller\API\API->handle_request() /home/codozsqq/public_html/dev/s/Spwashi/Controller/API/API.php:60
+[23-Jun-2016 19:21:25 America/New_York] PHP   8. Spwashi\Controller\API\API->Spwashi\Controller\API\{closure}() /home/codozsqq/public_html/dev/s/Spwashi/Controller/API/API.php:204
+[23-Jun-2016 19:21:25 America/New_York] PHP   9. Spwashi\Controller\API\API->Spwashi\Controller\API\{closure}() /home/codozsqq/public_html/dev/s/Spwashi/Controller/API/API.php:177
+[23-Jun-2016 19:21:25 America/New_York] PHP  10. call_user_func_array:{/home/codozsqq/public_html/dev/s/Spwashi/Controller/API/API.php:110}() /home/codozsqq/public_html/dev/s/Spwashi/Controller/API/API.php:110
+[23-Jun-2016 19:21:25 America/New_York] PHP  11. Spwashi\Controller\API\API::init_from_() /home/codozsqq/public_html/dev/s/Spwashi/Controller/API/API.php:110
+[23-Jun-2016 19:21:25 America/New_York] PHP  12. Sm\Model\Model->findType() /home/codozsqq/public_html/dev/s/Spwashi/Controller/API/API.php:483
+[23-Jun-2016 19:21:25 America/New_York] PHP  13. Sm\Model\ModelMeta::table_to_class() /home/codozsqq/public_html/dev/s/Sm/Model/Model.php:243
+[23-Jun-2016 19:21:25 America/New_York] PHP  14. Sm\Model\Map->__construct() /home/codozsqq/public_html/dev/s/Sm/Model/ModelMeta.php:285
+[23-Jun-2016 19:21:25 America/New_York] PHP  15. Sm\Model\Abstraction\Model->__set() /home/codozsqq/public_html/dev/s/Sm/Model/ModelMeta.php:31
+[23-Jun-2016 19:21:25 America/New_York] PHP  16. Sm\Model\Model->set() /home/codozsqq/public_html/dev/s/Sm/Model/Abstraction/Model.php:189
+[23-Jun-2016 19:21:25 America/New_York] PHP  17. intval() /home/codozsqq/public_html/dev/s/Sm/Model/Model.php:473
+[23-Jun-2016 19:22:50 America/New_York] PHP Notice:  Object of class Sm\Model\Model could not be converted to int in /home/codozsqq/public_html/dev/s/Sm/Model/Model.php on line 473
+[23-Jun-2016 19:22:50 America/New_York] PHP Stack trace:
+[23-Jun-2016 19:22:50 America/New_York] PHP   1. {main}() /home/codozsqq/public_html/dev/s/index.php:0
+[23-Jun-2016 19:22:50 America/New_York] PHP   2. Sm\Router\Toute->call() /home/codozsqq/public_html/dev/s/index.php:48
+[23-Jun-2016 19:22:50 America/New_York] PHP   3. call_user_func_array:{/home/codozsqq/public_html/dev/s/Sm/Router/Toute.php:69}() /home/codozsqq/public_html/dev/s/Sm/Router/Toute.php:69
+[23-Jun-2016 19:22:50 America/New_York] PHP   4. Spwashi\Controller\API\API->route() /home/codozsqq/public_html/dev/s/Sm/Router/Toute.php:69
+[23-Jun-2016 19:22:50 America/New_York] PHP   5. Spwashi\Controller\API\API->handle_request() /home/codozsqq/public_html/dev/s/Spwashi/Controller/API/API.php:252
+[23-Jun-2016 19:22:50 America/New_York] PHP   6. Spwashi\Controller\API\API->send_to() /home/codozsqq/public_html/dev/s/Spwashi/Controller/API/API.php:206
+[23-Jun-2016 19:22:50 America/New_York] PHP   7. Spwashi\Controller\API\API->handle_request() /home/codozsqq/public_html/dev/s/Spwashi/Controller/API/API.php:60
+[23-Jun-2016 19:22:50 America/New_York] PHP   8. Spwashi\Controller\API\API->Spwashi\Controller\API\{closure}() /home/codozsqq/public_html/dev/s/Spwashi/Controller/API/API.php:204
+[23-Jun-2016 19:22:50 America/New_York] PHP   9. Spwashi\Controller\API\API->Spwashi\Controller\API\{closure}() /home/codozsqq/public_html/dev/s/Spwashi/Controller/API/API.php:177
+[23-Jun-2016 19:22:50 America/New_York] PHP  10. call_user_func_array:{/home/codozsqq/public_html/dev/s/Spwashi/Controller/API/API.php:110}() /home/codozsqq/public_html/dev/s/Spwashi/Controller/API/API.php:110
+[23-Jun-2016 19:22:50 America/New_York] PHP  11. Spwashi\Controller\API\API::init_from_() /home/codozsqq/public_html/dev/s/Spwashi/Controller/API/API.php:110
+[23-Jun-2016 19:22:50 America/New_York] PHP  12. Sm\Model\Model->findType() /home/codozsqq/public_html/dev/s/Spwashi/Controller/API/API.php:483
+[23-Jun-2016 19:22:50 America/New_York] PHP  13. Sm\Model\ModelMeta::table_to_class() /home/codozsqq/public_html/dev/s/Sm/Model/Model.php:243
+[23-Jun-2016 19:22:50 America/New_York] PHP  14. Sm\Model\Map->__construct() /home/codozsqq/public_html/dev/s/Sm/Model/ModelMeta.php:285
+[23-Jun-2016 19:22:50 America/New_York] PHP  15. Sm\Model\Abstraction\Model->__set() /home/codozsqq/public_html/dev/s/Sm/Model/ModelMeta.php:31
+[23-Jun-2016 19:22:50 America/New_York] PHP  16. Sm\Model\Model->set() /home/codozsqq/public_html/dev/s/Sm/Model/Abstraction/Model.php:189
+[23-Jun-2016 19:22:50 America/New_York] PHP  17. intval() /home/codozsqq/public_html/dev/s/Sm/Model/Model.php:473
+[23-Jun-2016 19:23:37 America/New_York] PHP Notice:  Object of class Sm\Model\Model could not be converted to int in /home/codozsqq/public_html/dev/s/Sm/Model/Model.php on line 473
+[23-Jun-2016 19:23:37 America/New_York] PHP Stack trace:
+[23-Jun-2016 19:23:37 America/New_York] PHP   1. {main}() /home/codozsqq/public_html/dev/s/index.php:0
+[23-Jun-2016 19:23:37 America/New_York] PHP   2. Sm\Router\Toute->call() /home/codozsqq/public_html/dev/s/index.php:48
+[23-Jun-2016 19:23:37 America/New_York] PHP   3. call_user_func_array:{/home/codozsqq/public_html/dev/s/Sm/Router/Toute.php:69}() /home/codozsqq/public_html/dev/s/Sm/Router/Toute.php:69
+[23-Jun-2016 19:23:37 America/New_York] PHP   4. Spwashi\Controller\API\API->route() /home/codozsqq/public_html/dev/s/Sm/Router/Toute.php:69
+[23-Jun-2016 19:23:37 America/New_York] PHP   5. Spwashi\Controller\API\API->handle_request() /home/codozsqq/public_html/dev/s/Spwashi/Controller/API/API.php:252
+[23-Jun-2016 19:23:37 America/New_York] PHP   6. Spwashi\Controller\API\API->send_to() /home/codozsqq/public_html/dev/s/Spwashi/Controller/API/API.php:206
+[23-Jun-2016 19:23:37 America/New_York] PHP   7. Spwashi\Controller\API\API->handle_request() /home/codozsqq/public_html/dev/s/Spwashi/Controller/API/API.php:60
+[23-Jun-2016 19:23:37 America/New_York] PHP   8. Spwashi\Controller\API\API->Spwashi\Controller\API\{closure}() /home/codozsqq/public_html/dev/s/Spwashi/Controller/API/API.php:204
+[23-Jun-2016 19:23:37 America/New_York] PHP   9. Spwashi\Controller\API\API->Spwashi\Controller\API\{closure}() /home/codozsqq/public_html/dev/s/Spwashi/Controller/API/API.php:177
+[23-Jun-2016 19:23:37 America/New_York] PHP  10. call_user_func_array:{/home/codozsqq/public_html/dev/s/Spwashi/Controller/API/API.php:110}() /home/codozsqq/public_html/dev/s/Spwashi/Controller/API/API.php:110
+[23-Jun-2016 19:23:37 America/New_York] PHP  11. Spwashi\Controller\API\API::init_from_() /home/codozsqq/public_html/dev/s/Spwashi/Controller/API/API.php:110
+[23-Jun-2016 19:23:37 America/New_York] PHP  12. Sm\Model\Model->findType() /home/codozsqq/public_html/dev/s/Spwashi/Controller/API/API.php:483
+[23-Jun-2016 19:23:37 America/New_York] PHP  13. Sm\Model\ModelMeta::table_to_class() /home/codozsqq/public_html/dev/s/Sm/Model/Model.php:243
+[23-Jun-2016 19:23:37 America/New_York] PHP  14. Sm\Model\Map->__construct() /home/codozsqq/public_html/dev/s/Sm/Model/ModelMeta.php:285
+[23-Jun-2016 19:23:37 America/New_York] PHP  15. Sm\Model\Abstraction\Model->__set() /home/codozsqq/public_html/dev/s/Sm/Model/ModelMeta.php:31
+[23-Jun-2016 19:23:37 America/New_York] PHP  16. Sm\Model\Model->set() /home/codozsqq/public_html/dev/s/Sm/Model/Abstraction/Model.php:189
+[23-Jun-2016 19:23:37 America/New_York] PHP  17. intval() /home/codozsqq/public_html/dev/s/Sm/Model/Model.php:473
+[23-Jun-2016 20:13:02 America/New_York] PHP Strict standards:  Declaration of Spwashi\Controller\API\CollectionAPI::init_from_() should be compatible with Spwashi\Controller\API\API::init_from_($primary_model, $identifier, $endpoint, $req_data) in /home/codozsqq/public_html/dev/s/Spwashi/Controller/API/CollectionAPI.php on line 29
+[23-Jun-2016 20:13:02 America/New_York] PHP Stack trace:
+[23-Jun-2016 20:13:02 America/New_York] PHP   1. {main}() /home/codozsqq/public_html/dev/s/index.php:0
+[23-Jun-2016 20:13:02 America/New_York] PHP   2. Sm\Router\Toute->call() /home/codozsqq/public_html/dev/s/index.php:48
+[23-Jun-2016 20:13:02 America/New_York] PHP   3. call_user_func_array:{/home/codozsqq/public_html/dev/s/Sm/Router/Toute.php:69}() /home/codozsqq/public_html/dev/s/Sm/Router/Toute.php:69
+[23-Jun-2016 20:13:02 America/New_York] PHP   4. Spwashi\Controller\API\API->route() /home/codozsqq/public_html/dev/s/Sm/Router/Toute.php:69
+[23-Jun-2016 20:13:02 America/New_York] PHP   5. Spwashi\Controller\API\API->handle_request() /home/codozsqq/public_html/dev/s/Spwashi/Controller/API/API.php:252
+[23-Jun-2016 20:13:02 America/New_York] PHP   6. Spwashi\Controller\API\API->send_to() /home/codozsqq/public_html/dev/s/Spwashi/Controller/API/API.php:206
+[23-Jun-2016 20:13:02 America/New_York] PHP   7. class_exists() /home/codozsqq/public_html/dev/s/Spwashi/Controller/API/API.php:57
+[23-Jun-2016 20:13:02 America/New_York] PHP   8. spl_autoload_call() /home/codozsqq/public_html/dev/s/Spwashi/Controller/API/API.php:57
+[23-Jun-2016 20:13:02 America/New_York] PHP   9. {closure:/home/codozsqq/public_html/dev/s/index.php:28-33}() /home/codozsqq/public_html/dev/s/Spwashi/Controller/API/API.php:57
+[23-Jun-2016 20:13:16 America/New_York] PHP Strict standards:  Declaration of Spwashi\Controller\API\CollectionAPI::init_from_() should be compatible with Spwashi\Controller\API\API::init_from_($primary_model, $identifier, $endpoint, $req_data) in /home/codozsqq/public_html/dev/s/Spwashi/Controller/API/CollectionAPI.php on line 29
+[23-Jun-2016 20:13:16 America/New_York] PHP Stack trace:
+[23-Jun-2016 20:13:16 America/New_York] PHP   1. {main}() /home/codozsqq/public_html/dev/s/index.php:0
+[23-Jun-2016 20:13:16 America/New_York] PHP   2. Sm\Router\Toute->call() /home/codozsqq/public_html/dev/s/index.php:48
+[23-Jun-2016 20:13:16 America/New_York] PHP   3. call_user_func_array:{/home/codozsqq/public_html/dev/s/Sm/Router/Toute.php:69}() /home/codozsqq/public_html/dev/s/Sm/Router/Toute.php:69
+[23-Jun-2016 20:13:16 America/New_York] PHP   4. Spwashi\Controller\API\API->route() /home/codozsqq/public_html/dev/s/Sm/Router/Toute.php:69
+[23-Jun-2016 20:13:16 America/New_York] PHP   5. Spwashi\Controller\API\API->handle_request() /home/codozsqq/public_html/dev/s/Spwashi/Controller/API/API.php:252
+[23-Jun-2016 20:13:16 America/New_York] PHP   6. Spwashi\Controller\API\API->send_to() /home/codozsqq/public_html/dev/s/Spwashi/Controller/API/API.php:206
+[23-Jun-2016 20:13:16 America/New_York] PHP   7. class_exists() /home/codozsqq/public_html/dev/s/Spwashi/Controller/API/API.php:57
+[23-Jun-2016 20:13:16 America/New_York] PHP   8. spl_autoload_call() /home/codozsqq/public_html/dev/s/Spwashi/Controller/API/API.php:57
+[23-Jun-2016 20:13:16 America/New_York] PHP   9. {closure:/home/codozsqq/public_html/dev/s/index.php:28-33}() /home/codozsqq/public_html/dev/s/Spwashi/Controller/API/API.php:57
+[23-Jun-2016 20:13:26 America/New_York] PHP Strict standards:  Declaration of Spwashi\Controller\API\DimensionAPI::delete() should be compatible with Spwashi\Controller\API\API::delete($primary_model, $req_data, $last_result = NULL, &$endpoint_array = Array) in /home/codozsqq/public_html/dev/s/Spwashi/Controller/API/DimensionAPI.php on line 53
+[23-Jun-2016 20:13:26 America/New_York] PHP Stack trace:
+[23-Jun-2016 20:13:26 America/New_York] PHP   1. {main}() /home/codozsqq/public_html/dev/s/index.php:0
+[23-Jun-2016 20:13:26 America/New_York] PHP   2. Sm\Router\Toute->call() /home/codozsqq/public_html/dev/s/index.php:48
+[23-Jun-2016 20:13:26 America/New_York] PHP   3. call_user_func_array:{/home/codozsqq/public_html/dev/s/Sm/Router/Toute.php:69}() /home/codozsqq/public_html/dev/s/Sm/Router/Toute.php:69
+[23-Jun-2016 20:13:26 America/New_York] PHP   4. Spwashi\Controller\API\API->route() /home/codozsqq/public_html/dev/s/Sm/Router/Toute.php:69
+[23-Jun-2016 20:13:26 America/New_York] PHP   5. Spwashi\Controller\API\API->handle_request() /home/codozsqq/public_html/dev/s/Spwashi/Controller/API/API.php:252
+[23-Jun-2016 20:13:26 America/New_York] PHP   6. Spwashi\Controller\API\API->send_to() /home/codozsqq/public_html/dev/s/Spwashi/Controller/API/API.php:206
+[23-Jun-2016 20:13:26 America/New_York] PHP   7. class_exists() /home/codozsqq/public_html/dev/s/Spwashi/Controller/API/API.php:57
+[23-Jun-2016 20:13:26 America/New_York] PHP   8. spl_autoload_call() /home/codozsqq/public_html/dev/s/Spwashi/Controller/API/API.php:57
+[23-Jun-2016 20:13:26 America/New_York] PHP   9. {closure:/home/codozsqq/public_html/dev/s/index.php:28-33}() /home/codozsqq/public_html/dev/s/Spwashi/Controller/API/API.php:57
+[23-Jun-2016 22:14:23 America/New_York] PHP Notice:  Object of class Sm\Model\ModelIterator could not be converted to int in /home/codozsqq/public_html/dev/s/Spwashi/Libs/API/APIResponse.php on line 34
+[23-Jun-2016 22:14:23 America/New_York] PHP Stack trace:
+[23-Jun-2016 22:14:23 America/New_York] PHP   1. {main}() /home/codozsqq/public_html/dev/s/index.php:0
+[23-Jun-2016 22:14:23 America/New_York] PHP   2. Sm\Router\Toute->call() /home/codozsqq/public_html/dev/s/index.php:48
+[23-Jun-2016 22:14:23 America/New_York] PHP   3. call_user_func_array:{/home/codozsqq/public_html/dev/s/Sm/Router/Toute.php:69}() /home/codozsqq/public_html/dev/s/Sm/Router/Toute.php:69
+[23-Jun-2016 22:14:23 America/New_York] PHP   4. Spwashi\Controller\API\API->route() /home/codozsqq/public_html/dev/s/Sm/Router/Toute.php:69
+[23-Jun-2016 22:14:23 America/New_York] PHP   5. Spwashi\Controller\API\API->handle_request() /home/codozsqq/public_html/dev/s/Spwashi/Controller/API/API.php:258
+[23-Jun-2016 22:14:23 America/New_York] PHP   6. Spwashi\Controller\API\API->send_to() /home/codozsqq/public_html/dev/s/Spwashi/Controller/API/API.php:212
+[23-Jun-2016 22:14:23 America/New_York] PHP   7. Spwashi\Controller\API\API->handle_request() /home/codozsqq/public_html/dev/s/Spwashi/Controller/API/API.php:65
+[23-Jun-2016 22:14:23 America/New_York] PHP   8. Spwashi\Controller\API\API->Spwashi\Controller\API\{closure}() /home/codozsqq/public_html/dev/s/Spwashi/Controller/API/API.php:210
+[23-Jun-2016 22:14:23 America/New_York] PHP   9. Spwashi\Controller\API\API->Spwashi\Controller\API\{closure}() /home/codozsqq/public_html/dev/s/Spwashi/Controller/API/API.php:183
+[23-Jun-2016 22:14:23 America/New_York] PHP  10. Sm\Development\Log->log_it() /home/codozsqq/public_html/dev/s/Spwashi/Controller/API/API.php:139
+[23-Jun-2016 22:14:23 America/New_York] PHP  11. Sm\Development\Log::styleArray() /home/codozsqq/public_html/dev/s/Sm/Development/Log.php:56
+[23-Jun-2016 22:14:23 America/New_York] PHP  12. json_encode() /home/codozsqq/public_html/dev/s/Sm/Development/Log.php:116
+[23-Jun-2016 22:14:23 America/New_York] PHP  13. Spwashi\Libs\API\APIResponse->jsonSerialize() /home/codozsqq/public_html/dev/s/Sm/Development/Log.php:116
+[23-Jun-2016 22:14:23 America/New_York] PHP  14. sort() /home/codozsqq/public_html/dev/s/Spwashi/Libs/API/APIResponse.php:34
+[23-Jun-2016 22:14:23 America/New_York] PHP Notice:  Object of class Sm\Model\ModelIterator could not be converted to int in /home/codozsqq/public_html/dev/s/Spwashi/Libs/API/APIResponse.php on line 34
+[23-Jun-2016 22:14:23 America/New_York] PHP Stack trace:
+[23-Jun-2016 22:14:23 America/New_York] PHP   1. {main}() /home/codozsqq/public_html/dev/s/index.php:0
+[23-Jun-2016 22:14:23 America/New_York] PHP   2. Sm\Output\Output::process() /home/codozsqq/public_html/dev/s/index.php:51
+[23-Jun-2016 22:14:23 America/New_York] PHP   3. json_encode() /home/codozsqq/public_html/dev/s/Sm/Output/Output.php:28
+[23-Jun-2016 22:14:23 America/New_York] PHP   4. Spwashi\Libs\API\APIResponse->jsonSerialize() /home/codozsqq/public_html/dev/s/Sm/Output/Output.php:28
+[23-Jun-2016 22:14:23 America/New_York] PHP   5. sort() /home/codozsqq/public_html/dev/s/Spwashi/Libs/API/APIResponse.php:34
+[23-Jun-2016 23:23:23 America/New_York] PHP Deprecated:  Automatically populating $HTTP_RAW_POST_DATA is deprecated and will be removed in a future version. To avoid this warning set 'always_populate_raw_post_data' to '-1' in php.ini and use the php://input stream instead. in Unknown on line 0
+[23-Jun-2016 23:25:31 America/New_York] PHP Deprecated:  Automatically populating $HTTP_RAW_POST_DATA is deprecated and will be removed in a future version. To avoid this warning set 'always_populate_raw_post_data' to '-1' in php.ini and use the php://input stream instead. in Unknown on line 0
+[23-Jun-2016 23:27:56 America/New_York] PHP Deprecated:  Automatically populating $HTTP_RAW_POST_DATA is deprecated and will be removed in a future version. To avoid this warning set 'always_populate_raw_post_data' to '-1' in php.ini and use the php://input stream instead. in Unknown on line 0
+[24-Jun-2016 01:23:43 America/New_York] PHP Deprecated:  Automatically populating $HTTP_RAW_POST_DATA is deprecated and will be removed in a future version. To avoid this warning set 'always_populate_raw_post_data' to '-1' in php.ini and use the php://input stream instead. in Unknown on line 0
+[24-Jun-2016 01:26:50 America/New_York] PHP Deprecated:  Automatically populating $HTTP_RAW_POST_DATA is deprecated and will be removed in a future version. To avoid this warning set 'always_populate_raw_post_data' to '-1' in php.ini and use the php://input stream instead. in Unknown on line 0
+[24-Jun-2016 01:28:00 America/New_York] PHP Deprecated:  Automatically populating $HTTP_RAW_POST_DATA is deprecated and will be removed in a future version. To avoid this warning set 'always_populate_raw_post_data' to '-1' in php.ini and use the php://input stream instead. in Unknown on line 0
+[24-Jun-2016 01:31:22 America/New_York] PHP Deprecated:  Automatically populating $HTTP_RAW_POST_DATA is deprecated and will be removed in a future version. To avoid this warning set 'always_populate_raw_post_data' to '-1' in php.ini and use the php://input stream instead. in Unknown on line 0
+[24-Jun-2016 01:33:50 America/New_York] PHP Deprecated:  Automatically populating $HTTP_RAW_POST_DATA is deprecated and will be removed in a future version. To avoid this warning set 'always_populate_raw_post_data' to '-1' in php.ini and use the php://input stream instead. in Unknown on line 0
+[24-Jun-2016 01:36:50 America/New_York] PHP Deprecated:  Automatically populating $HTTP_RAW_POST_DATA is deprecated and will be removed in a future version. To avoid this warning set 'always_populate_raw_post_data' to '-1' in php.ini and use the php://input stream instead. in Unknown on line 0
+[24-Jun-2016 01:40:09 America/New_York] PHP Deprecated:  Automatically populating $HTTP_RAW_POST_DATA is deprecated and will be removed in a future version. To avoid this warning set 'always_populate_raw_post_data' to '-1' in php.ini and use the php://input stream instead. in Unknown on line 0
+[24-Jun-2016 01:40:48 America/New_York] PHP Deprecated:  Automatically populating $HTTP_RAW_POST_DATA is deprecated and will be removed in a future version. To avoid this warning set 'always_populate_raw_post_data' to '-1' in php.ini and use the php://input stream instead. in Unknown on line 0
+[24-Jun-2016 11:40:51 America/New_York] PHP Deprecated:  Automatically populating $HTTP_RAW_POST_DATA is deprecated and will be removed in a future version. To avoid this warning set 'always_populate_raw_post_data' to '-1' in php.ini and use the php://input stream instead. in Unknown on line 0
+[24-Jun-2016 11:46:15 America/New_York] PHP Deprecated:  Automatically populating $HTTP_RAW_POST_DATA is deprecated and will be removed in a future version. To avoid this warning set 'always_populate_raw_post_data' to '-1' in php.ini and use the php://input stream instead. in Unknown on line 0
+[24-Jun-2016 11:48:54 America/New_York] PHP Deprecated:  Automatically populating $HTTP_RAW_POST_DATA is deprecated and will be removed in a future version. To avoid this warning set 'always_populate_raw_post_data' to '-1' in php.ini and use the php://input stream instead. in Unknown on line 0
+[24-Jun-2016 11:55:37 America/New_York] PHP Deprecated:  Automatically populating $HTTP_RAW_POST_DATA is deprecated and will be removed in a future version. To avoid this warning set 'always_populate_raw_post_data' to '-1' in php.ini and use the php://input stream instead. in Unknown on line 0
+[24-Jun-2016 11:56:36 America/New_York] PHP Deprecated:  Automatically populating $HTTP_RAW_POST_DATA is deprecated and will be removed in a future version. To avoid this warning set 'always_populate_raw_post_data' to '-1' in php.ini and use the php://input stream instead. in Unknown on line 0
+[24-Jun-2016 12:00:23 America/New_York] PHP Deprecated:  Automatically populating $HTTP_RAW_POST_DATA is deprecated and will be removed in a future version. To avoid this warning set 'always_populate_raw_post_data' to '-1' in php.ini and use the php://input stream instead. in Unknown on line 0
+[24-Jun-2016 12:02:31 America/New_York] PHP Deprecated:  Automatically populating $HTTP_RAW_POST_DATA is deprecated and will be removed in a future version. To avoid this warning set 'always_populate_raw_post_data' to '-1' in php.ini and use the php://input stream instead. in Unknown on line 0
+[24-Jun-2016 12:02:34 America/New_York] PHP Deprecated:  Automatically populating $HTTP_RAW_POST_DATA is deprecated and will be removed in a future version. To avoid this warning set 'always_populate_raw_post_data' to '-1' in php.ini and use the php://input stream instead. in Unknown on line 0
+[24-Jun-2016 12:05:26 America/New_York] PHP Deprecated:  Automatically populating $HTTP_RAW_POST_DATA is deprecated and will be removed in a future version. To avoid this warning set 'always_populate_raw_post_data' to '-1' in php.ini and use the php://input stream instead. in Unknown on line 0
+[24-Jun-2016 12:05:29 America/New_York] PHP Deprecated:  Automatically populating $HTTP_RAW_POST_DATA is deprecated and will be removed in a future version. To avoid this warning set 'always_populate_raw_post_data' to '-1' in php.ini and use the php://input stream instead. in Unknown on line 0
+[24-Jun-2016 12:14:14 America/New_York] PHP Deprecated:  Automatically populating $HTTP_RAW_POST_DATA is deprecated and will be removed in a future version. To avoid this warning set 'always_populate_raw_post_data' to '-1' in php.ini and use the php://input stream instead. in Unknown on line 0
+[24-Jun-2016 12:14:17 America/New_York] PHP Deprecated:  Automatically populating $HTTP_RAW_POST_DATA is deprecated and will be removed in a future version. To avoid this warning set 'always_populate_raw_post_data' to '-1' in php.ini and use the php://input stream instead. in Unknown on line 0
+[24-Jun-2016 12:16:21 America/New_York] PHP Deprecated:  Automatically populating $HTTP_RAW_POST_DATA is deprecated and will be removed in a future version. To avoid this warning set 'always_populate_raw_post_data' to '-1' in php.ini and use the php://input stream instead. in Unknown on line 0
+[24-Jun-2016 12:16:24 America/New_York] PHP Deprecated:  Automatically populating $HTTP_RAW_POST_DATA is deprecated and will be removed in a future version. To avoid this warning set 'always_populate_raw_post_data' to '-1' in php.ini and use the php://input stream instead. in Unknown on line 0
+[24-Jun-2016 12:18:51 America/New_York] PHP Deprecated:  Automatically populating $HTTP_RAW_POST_DATA is deprecated and will be removed in a future version. To avoid this warning set 'always_populate_raw_post_data' to '-1' in php.ini and use the php://input stream instead. in Unknown on line 0
+[24-Jun-2016 12:18:54 America/New_York] PHP Deprecated:  Automatically populating $HTTP_RAW_POST_DATA is deprecated and will be removed in a future version. To avoid this warning set 'always_populate_raw_post_data' to '-1' in php.ini and use the php://input stream instead. in Unknown on line 0
+[24-Jun-2016 12:20:25 America/New_York] PHP Deprecated:  Automatically populating $HTTP_RAW_POST_DATA is deprecated and will be removed in a future version. To avoid this warning set 'always_populate_raw_post_data' to '-1' in php.ini and use the php://input stream instead. in Unknown on line 0
+[24-Jun-2016 12:20:27 America/New_York] PHP Deprecated:  Automatically populating $HTTP_RAW_POST_DATA is deprecated and will be removed in a future version. To avoid this warning set 'always_populate_raw_post_data' to '-1' in php.ini and use the php://input stream instead. in Unknown on line 0
+[24-Jun-2016 12:23:21 America/New_York] PHP Deprecated:  Automatically populating $HTTP_RAW_POST_DATA is deprecated and will be removed in a future version. To avoid this warning set 'always_populate_raw_post_data' to '-1' in php.ini and use the php://input stream instead. in Unknown on line 0
+[24-Jun-2016 12:23:24 America/New_York] PHP Deprecated:  Automatically populating $HTTP_RAW_POST_DATA is deprecated and will be removed in a future version. To avoid this warning set 'always_populate_raw_post_data' to '-1' in php.ini and use the php://input stream instead. in Unknown on line 0
+[24-Jun-2016 12:24:46 America/New_York] PHP Deprecated:  Automatically populating $HTTP_RAW_POST_DATA is deprecated and will be removed in a future version. To avoid this warning set 'always_populate_raw_post_data' to '-1' in php.ini and use the php://input stream instead. in Unknown on line 0
+[24-Jun-2016 12:24:48 America/New_York] PHP Deprecated:  Automatically populating $HTTP_RAW_POST_DATA is deprecated and will be removed in a future version. To avoid this warning set 'always_populate_raw_post_data' to '-1' in php.ini and use the php://input stream instead. in Unknown on line 0
+[24-Jun-2016 12:26:22 America/New_York] PHP Deprecated:  Automatically populating $HTTP_RAW_POST_DATA is deprecated and will be removed in a future version. To avoid this warning set 'always_populate_raw_post_data' to '-1' in php.ini and use the php://input stream instead. in Unknown on line 0
+[24-Jun-2016 12:26:27 America/New_York] PHP Deprecated:  Automatically populating $HTTP_RAW_POST_DATA is deprecated and will be removed in a future version. To avoid this warning set 'always_populate_raw_post_data' to '-1' in php.ini and use the php://input stream instead. in Unknown on line 0
+[24-Jun-2016 12:27:47 America/New_York] PHP Deprecated:  Automatically populating $HTTP_RAW_POST_DATA is deprecated and will be removed in a future version. To avoid this warning set 'always_populate_raw_post_data' to '-1' in php.ini and use the php://input stream instead. in Unknown on line 0
+[24-Jun-2016 12:27:50 America/New_York] PHP Deprecated:  Automatically populating $HTTP_RAW_POST_DATA is deprecated and will be removed in a future version. To avoid this warning set 'always_populate_raw_post_data' to '-1' in php.ini and use the php://input stream instead. in Unknown on line 0
+[24-Jun-2016 12:30:49 America/New_York] PHP Deprecated:  Automatically populating $HTTP_RAW_POST_DATA is deprecated and will be removed in a future version. To avoid this warning set 'always_populate_raw_post_data' to '-1' in php.ini and use the php://input stream instead. in Unknown on line 0
+[24-Jun-2016 12:30:52 America/New_York] PHP Deprecated:  Automatically populating $HTTP_RAW_POST_DATA is deprecated and will be removed in a future version. To avoid this warning set 'always_populate_raw_post_data' to '-1' in php.ini and use the php://input stream instead. in Unknown on line 0
+[24-Jun-2016 12:31:50 America/New_York] PHP Deprecated:  Automatically populating $HTTP_RAW_POST_DATA is deprecated and will be removed in a future version. To avoid this warning set 'always_populate_raw_post_data' to '-1' in php.ini and use the php://input stream instead. in Unknown on line 0
+[24-Jun-2016 12:31:53 America/New_York] PHP Deprecated:  Automatically populating $HTTP_RAW_POST_DATA is deprecated and will be removed in a future version. To avoid this warning set 'always_populate_raw_post_data' to '-1' in php.ini and use the php://input stream instead. in Unknown on line 0
+[24-Jun-2016 12:36:58 America/New_York] PHP Deprecated:  Automatically populating $HTTP_RAW_POST_DATA is deprecated and will be removed in a future version. To avoid this warning set 'always_populate_raw_post_data' to '-1' in php.ini and use the php://input stream instead. in Unknown on line 0
+[24-Jun-2016 12:37:02 America/New_York] PHP Deprecated:  Automatically populating $HTTP_RAW_POST_DATA is deprecated and will be removed in a future version. To avoid this warning set 'always_populate_raw_post_data' to '-1' in php.ini and use the php://input stream instead. in Unknown on line 0
+[24-Jun-2016 12:46:39 America/New_York] PHP Deprecated:  Automatically populating $HTTP_RAW_POST_DATA is deprecated and will be removed in a future version. To avoid this warning set 'always_populate_raw_post_data' to '-1' in php.ini and use the php://input stream instead. in Unknown on line 0
+[24-Jun-2016 12:46:43 America/New_York] PHP Deprecated:  Automatically populating $HTTP_RAW_POST_DATA is deprecated and will be removed in a future version. To avoid this warning set 'always_populate_raw_post_data' to '-1' in php.ini and use the php://input stream instead. in Unknown on line 0
+[24-Jun-2016 12:49:01 America/New_York] PHP Deprecated:  Automatically populating $HTTP_RAW_POST_DATA is deprecated and will be removed in a future version. To avoid this warning set 'always_populate_raw_post_data' to '-1' in php.ini and use the php://input stream instead. in Unknown on line 0
+[24-Jun-2016 12:49:06 America/New_York] PHP Deprecated:  Automatically populating $HTTP_RAW_POST_DATA is deprecated and will be removed in a future version. To avoid this warning set 'always_populate_raw_post_data' to '-1' in php.ini and use the php://input stream instead. in Unknown on line 0
+[24-Jun-2016 12:49:20 America/New_York] PHP Notice:  Trying to get property of non-object in /home/codozsqq/public_html/dev/s/Sm/Model/Map.php on line 392
+[24-Jun-2016 12:49:20 America/New_York] PHP Stack trace:
+[24-Jun-2016 12:49:20 America/New_York] PHP   1. {main}() /home/codozsqq/public_html/dev/s/index.php:0
+[24-Jun-2016 12:49:20 America/New_York] PHP   2. Sm\Router\Toute->call() /home/codozsqq/public_html/dev/s/index.php:48
+[24-Jun-2016 12:49:20 America/New_York] PHP   3. call_user_func_array:{/home/codozsqq/public_html/dev/s/Sm/Router/Toute.php:69}() /home/codozsqq/public_html/dev/s/Sm/Router/Toute.php:69
+[24-Jun-2016 12:49:20 America/New_York] PHP   4. Spwashi\Controller\API\API->route() /home/codozsqq/public_html/dev/s/Sm/Router/Toute.php:69
+[24-Jun-2016 12:49:20 America/New_York] PHP   5. Spwashi\Controller\API\API->handle_request() /home/codozsqq/public_html/dev/s/Spwashi/Controller/API/API.php:252
+[24-Jun-2016 12:49:20 America/New_York] PHP   6. Spwashi\Controller\API\API->Spwashi\Controller\API\{closure}() /home/codozsqq/public_html/dev/s/Spwashi/Controller/API/API.php:204
+[24-Jun-2016 12:49:20 America/New_York] PHP   7. Spwashi\Controller\API\API->Spwashi\Controller\API\{closure}() /home/codozsqq/public_html/dev/s/Spwashi/Controller/API/API.php:177
+[24-Jun-2016 12:49:20 America/New_York] PHP   8. Spwashi\Controller\API\API->delete() /home/codozsqq/public_html/dev/s/Spwashi/Controller/API/API.php:133
+[24-Jun-2016 12:49:20 America/New_York] PHP   9. Sm\Model\Map->remove_relationship() /home/codozsqq/public_html/dev/s/Spwashi/Controller/API/API.php:996
+[24-Jun-2016 13:21:07 America/New_York] PHP Deprecated:  Automatically populating $HTTP_RAW_POST_DATA is deprecated and will be removed in a future version. To avoid this warning set 'always_populate_raw_post_data' to '-1' in php.ini and use the php://input stream instead. in Unknown on line 0
+[24-Jun-2016 13:21:11 America/New_York] PHP Deprecated:  Automatically populating $HTTP_RAW_POST_DATA is deprecated and will be removed in a future version. To avoid this warning set 'always_populate_raw_post_data' to '-1' in php.ini and use the php://input stream instead. in Unknown on line 0
+[24-Jun-2016 19:48:31 America/New_York] PHP Deprecated:  Automatically populating $HTTP_RAW_POST_DATA is deprecated and will be removed in a future version. To avoid this warning set 'always_populate_raw_post_data' to '-1' in php.ini and use the php://input stream instead. in Unknown on line 0
+[24-Jun-2016 19:48:33 America/New_York] PHP Deprecated:  Automatically populating $HTTP_RAW_POST_DATA is deprecated and will be removed in a future version. To avoid this warning set 'always_populate_raw_post_data' to '-1' in php.ini and use the php://input stream instead. in Unknown on line 0
+[24-Jun-2016 19:48:36 America/New_York] PHP Deprecated:  Automatically populating $HTTP_RAW_POST_DATA is deprecated and will be removed in a future version. To avoid this warning set 'always_populate_raw_post_data' to '-1' in php.ini and use the php://input stream instead. in Unknown on line 0
+[24-Jun-2016 19:48:41 America/New_York] PHP Deprecated:  Automatically populating $HTTP_RAW_POST_DATA is deprecated and will be removed in a future version. To avoid this warning set 'always_populate_raw_post_data' to '-1' in php.ini and use the php://input stream instead. in Unknown on line 0
+[24-Jun-2016 19:48:45 America/New_York] PHP Deprecated:  Automatically populating $HTTP_RAW_POST_DATA is deprecated and will be removed in a future version. To avoid this warning set 'always_populate_raw_post_data' to '-1' in php.ini and use the php://input stream instead. in Unknown on line 0
+[24-Jun-2016 19:48:49 America/New_York] PHP Deprecated:  Automatically populating $HTTP_RAW_POST_DATA is deprecated and will be removed in a future version. To avoid this warning set 'always_populate_raw_post_data' to '-1' in php.ini and use the php://input stream instead. in Unknown on line 0
+[24-Jun-2016 19:49:00 America/New_York] PHP Deprecated:  Automatically populating $HTTP_RAW_POST_DATA is deprecated and will be removed in a future version. To avoid this warning set 'always_populate_raw_post_data' to '-1' in php.ini and use the php://input stream instead. in Unknown on line 0
+[24-Jun-2016 19:49:03 America/New_York] PHP Deprecated:  Automatically populating $HTTP_RAW_POST_DATA is deprecated and will be removed in a future version. To avoid this warning set 'always_populate_raw_post_data' to '-1' in php.ini and use the php://input stream instead. in Unknown on line 0
+[24-Jun-2016 20:05:00 America/New_York] PHP Deprecated:  Automatically populating $HTTP_RAW_POST_DATA is deprecated and will be removed in a future version. To avoid this warning set 'always_populate_raw_post_data' to '-1' in php.ini and use the php://input stream instead. in Unknown on line 0
+[24-Jun-2016 20:05:21 America/New_York] PHP Deprecated:  Automatically populating $HTTP_RAW_POST_DATA is deprecated and will be removed in a future version. To avoid this warning set 'always_populate_raw_post_data' to '-1' in php.ini and use the php://input stream instead. in Unknown on line 0
+[24-Jun-2016 20:05:25 America/New_York] PHP Deprecated:  Automatically populating $HTTP_RAW_POST_DATA is deprecated and will be removed in a future version. To avoid this warning set 'always_populate_raw_post_data' to '-1' in php.ini and use the php://input stream instead. in Unknown on line 0
+[25-Jun-2016 19:49:31 America/New_York] PHP Deprecated:  Automatically populating $HTTP_RAW_POST_DATA is deprecated and will be removed in a future version. To avoid this warning set 'always_populate_raw_post_data' to '-1' in php.ini and use the php://input stream instead. in Unknown on line 0
+[25-Jun-2016 19:49:31 America/New_York] PHP Strict standards:  Declaration of Spwashi\Controller\API\DictionaryAPI::patch() should be compatible with Spwashi\Controller\API\API::patch($primary_model, $request_data, $last_result, &$endpoint_entities = Array) in /home/codozsqq/public_html/dev/s/Spwashi/Controller/API/DictionaryAPI.php on line 148
+[25-Jun-2016 19:49:31 America/New_York] PHP Stack trace:
+[25-Jun-2016 19:49:31 America/New_York] PHP   1. {main}() /home/codozsqq/public_html/dev/s/index.php:0
+[25-Jun-2016 19:49:31 America/New_York] PHP   2. Sm\Router\Toute->call() /home/codozsqq/public_html/dev/s/index.php:48
+[25-Jun-2016 19:49:31 America/New_York] PHP   3. call_user_func_array:{/home/codozsqq/public_html/dev/s/Sm/Router/Toute.php:69}() /home/codozsqq/public_html/dev/s/Sm/Router/Toute.php:69
+[25-Jun-2016 19:49:31 America/New_York] PHP   4. Spwashi\Controller\API\API->route() /home/codozsqq/public_html/dev/s/Sm/Router/Toute.php:69
+[25-Jun-2016 19:49:31 America/New_York] PHP   5. class_exists() /home/codozsqq/public_html/dev/s/Spwashi/Controller/API/API.php:248
+[25-Jun-2016 19:49:31 America/New_York] PHP   6. spl_autoload_call() /home/codozsqq/public_html/dev/s/Spwashi/Controller/API/API.php:248
+[25-Jun-2016 19:49:31 America/New_York] PHP   7. {closure:/home/codozsqq/public_html/dev/s/index.php:28-33}() /home/codozsqq/public_html/dev/s/Spwashi/Controller/API/API.php:248
+[25-Jun-2016 19:49:31 America/New_York] PHP Strict standards:  Declaration of Spwashi\Controller\API\DictionaryAPI::delete() should be compatible with Spwashi\Controller\API\API::delete($primary_model, $req_data, $last_result = NULL, &$endpoint_array = Array) in /home/codozsqq/public_html/dev/s/Spwashi/Controller/API/DictionaryAPI.php on line 148
+[25-Jun-2016 19:49:31 America/New_York] PHP Stack trace:
+[25-Jun-2016 19:49:31 America/New_York] PHP   1. {main}() /home/codozsqq/public_html/dev/s/index.php:0
+[25-Jun-2016 19:49:31 America/New_York] PHP   2. Sm\Router\Toute->call() /home/codozsqq/public_html/dev/s/index.php:48
+[25-Jun-2016 19:49:31 America/New_York] PHP   3. call_user_func_array:{/home/codozsqq/public_html/dev/s/Sm/Router/Toute.php:69}() /home/codozsqq/public_html/dev/s/Sm/Router/Toute.php:69
+[25-Jun-2016 19:49:31 America/New_York] PHP   4. Spwashi\Controller\API\API->route() /home/codozsqq/public_html/dev/s/Sm/Router/Toute.php:69
+[25-Jun-2016 19:49:31 America/New_York] PHP   5. class_exists() /home/codozsqq/public_html/dev/s/Spwashi/Controller/API/API.php:248
+[25-Jun-2016 19:49:31 America/New_York] PHP   6. spl_autoload_call() /home/codozsqq/public_html/dev/s/Spwashi/Controller/API/API.php:248
+[25-Jun-2016 19:49:31 America/New_York] PHP   7. {closure:/home/codozsqq/public_html/dev/s/index.php:28-33}() /home/codozsqq/public_html/dev/s/Spwashi/Controller/API/API.php:248
+[25-Jun-2016 19:50:12 America/New_York] PHP Deprecated:  Automatically populating $HTTP_RAW_POST_DATA is deprecated and will be removed in a future version. To avoid this warning set 'always_populate_raw_post_data' to '-1' in php.ini and use the php://input stream instead. in Unknown on line 0
+[27-Jun-2016 12:31:14 America/New_York] PHP Notice:  Undefined offset: 0 in /home/codozsqq/public_html/dev/s/Spwashi/Controller/Page/PageController.php on line 137
+[27-Jun-2016 12:31:14 America/New_York] PHP Stack trace:
+[27-Jun-2016 12:31:14 America/New_York] PHP   1. {main}() /home/codozsqq/public_html/dev/s/index.php:0
+[27-Jun-2016 12:31:14 America/New_York] PHP   2. Sm\Router\Toute->call() /home/codozsqq/public_html/dev/s/index.php:48
+[27-Jun-2016 12:31:14 America/New_York] PHP   3. call_user_func_array:{/home/codozsqq/public_html/dev/s/Sm/Router/Toute.php:69}() /home/codozsqq/public_html/dev/s/Sm/Router/Toute.php:69
+[27-Jun-2016 12:31:14 America/New_York] PHP   4. Spwashi\Controller\Page\PageController->view() /home/codozsqq/public_html/dev/s/Sm/Router/Toute.php:69
+[27-Jun-2016 12:31:30 America/New_York] PHP Notice:  Undefined offset: 0 in /home/codozsqq/public_html/dev/s/Spwashi/Controller/Page/PageController.php on line 137
+[27-Jun-2016 12:31:30 America/New_York] PHP Stack trace:
+[27-Jun-2016 12:31:30 America/New_York] PHP   1. {main}() /home/codozsqq/public_html/dev/s/index.php:0
+[27-Jun-2016 12:31:30 America/New_York] PHP   2. Sm\Router\Toute->call() /home/codozsqq/public_html/dev/s/index.php:48
+[27-Jun-2016 12:31:30 America/New_York] PHP   3. call_user_func_array:{/home/codozsqq/public_html/dev/s/Sm/Router/Toute.php:69}() /home/codozsqq/public_html/dev/s/Sm/Router/Toute.php:69
+[27-Jun-2016 12:31:30 America/New_York] PHP   4. Spwashi\Controller\Page\PageController->view() /home/codozsqq/public_html/dev/s/Sm/Router/Toute.php:69
+[27-Jun-2016 12:31:35 America/New_York] PHP Notice:  Undefined offset: 0 in /home/codozsqq/public_html/dev/s/Spwashi/Controller/Page/PageController.php on line 137
+[27-Jun-2016 12:31:35 America/New_York] PHP Stack trace:
+[27-Jun-2016 12:31:35 America/New_York] PHP   1. {main}() /home/codozsqq/public_html/dev/s/index.php:0
+[27-Jun-2016 12:31:35 America/New_York] PHP   2. Sm\Router\Toute->call() /home/codozsqq/public_html/dev/s/index.php:48
+[27-Jun-2016 12:31:35 America/New_York] PHP   3. call_user_func_array:{/home/codozsqq/public_html/dev/s/Sm/Router/Toute.php:69}() /home/codozsqq/public_html/dev/s/Sm/Router/Toute.php:69
+[27-Jun-2016 12:31:35 America/New_York] PHP   4. Spwashi\Controller\Page\PageController->view() /home/codozsqq/public_html/dev/s/Sm/Router/Toute.php:69
+[27-Jun-2016 12:31:52 America/New_York] PHP Notice:  Undefined offset: 0 in /home/codozsqq/public_html/dev/s/Spwashi/Controller/Page/PageController.php on line 137
+[27-Jun-2016 12:31:52 America/New_York] PHP Stack trace:
+[27-Jun-2016 12:31:52 America/New_York] PHP   1. {main}() /home/codozsqq/public_html/dev/s/index.php:0
+[27-Jun-2016 12:31:52 America/New_York] PHP   2. Sm\Router\Toute->call() /home/codozsqq/public_html/dev/s/index.php:48
+[27-Jun-2016 12:31:52 America/New_York] PHP   3. call_user_func_array:{/home/codozsqq/public_html/dev/s/Sm/Router/Toute.php:69}() /home/codozsqq/public_html/dev/s/Sm/Router/Toute.php:69
+[27-Jun-2016 12:31:52 America/New_York] PHP   4. Spwashi\Controller\Page\PageController->view() /home/codozsqq/public_html/dev/s/Sm/Router/Toute.php:69
+[27-Jun-2016 12:31:58 America/New_York] PHP Notice:  Undefined offset: 0 in /home/codozsqq/public_html/dev/s/Spwashi/Controller/Page/PageController.php on line 137
+[27-Jun-2016 12:31:58 America/New_York] PHP Stack trace:
+[27-Jun-2016 12:31:58 America/New_York] PHP   1. {main}() /home/codozsqq/public_html/dev/s/index.php:0
+[27-Jun-2016 12:31:58 America/New_York] PHP   2. Sm\Router\Toute->call() /home/codozsqq/public_html/dev/s/index.php:48
+[27-Jun-2016 12:31:58 America/New_York] PHP   3. call_user_func_array:{/home/codozsqq/public_html/dev/s/Sm/Router/Toute.php:69}() /home/codozsqq/public_html/dev/s/Sm/Router/Toute.php:69
+[27-Jun-2016 12:31:58 America/New_York] PHP   4. Spwashi\Controller\Page\PageController->view() /home/codozsqq/public_html/dev/s/Sm/Router/Toute.php:69
+[30-Jun-2016 12:07:21 America/New_York] PHP Warning:  Declaration of Spwashi\Controller\API\ConceptAPI::patch($primary_model, $request_data, $endpoint_entities = Array) should be compatible with Spwashi\Controller\API\API::patch($primary_model, $request_data, $last_result, &$endpoint_entities = Array) in /home/codozsqq/public_html/dev/s/Spwashi/Controller/API/ConceptAPI.php on line 103
+[30-Jun-2016 12:07:21 America/New_York] PHP Stack trace:
+[30-Jun-2016 12:07:21 America/New_York] PHP   1. {main}() /home/codozsqq/public_html/dev/s/index.php:0
+[30-Jun-2016 12:07:21 America/New_York] PHP   2. Sm\Router\Toute->call() /home/codozsqq/public_html/dev/s/index.php:48
+[30-Jun-2016 12:07:21 America/New_York] PHP   3. call_user_func_array:{/home/codozsqq/public_html/dev/s/Sm/Router/Toute.php:69}() /home/codozsqq/public_html/dev/s/Sm/Router/Toute.php:69
+[30-Jun-2016 12:07:21 America/New_York] PHP   4. Spwashi\Controller\API\API->route() /home/codozsqq/public_html/dev/s/Sm/Router/Toute.php:69
+[30-Jun-2016 12:07:21 America/New_York] PHP   5. class_exists() /home/codozsqq/public_html/dev/s/Spwashi/Controller/API/API.php:248
+[30-Jun-2016 12:07:21 America/New_York] PHP   6. spl_autoload_call() /home/codozsqq/public_html/dev/s/Spwashi/Controller/API/API.php:248
+[30-Jun-2016 12:07:21 America/New_York] PHP   7. {closure:/home/codozsqq/public_html/dev/s/index.php:28-33}() /home/codozsqq/public_html/dev/s/Spwashi/Controller/API/API.php:248
+[30-Jun-2016 16:40:41 America/New_York] PHP Fatal error:  Uncaught Error: Class 'Redis' not found in /home/codozsqq/public_html/dev/s/Spwashi/views/page/page.php:133
+Stack trace:
+#0 /home/codozsqq/public_html/dev/s/Sm/Core/Util.php(168): include()
+#1 /home/codozsqq/public_html/dev/s/Sm/View/Abstraction/View.php(70): Sm\Core\Util::includeWithVariables('/home/codozsqq/...', Array, false, false)
+#2 /home/codozsqq/public_html/dev/s/Spwashi/Controller/Page/PageController.php(157): Sm\View\Abstraction\View::create('/home/codozsqq/...', Array)
+#3 [internal function]: Spwashi\Controller\Page\PageController->view('spwashi', 'forces-newtonia...')
+#4 /home/codozsqq/public_html/dev/s/Sm/Router/Toute.php(69): call_user_func_array(Array, Array)
+#5 /home/codozsqq/public_html/dev/s/index.php(48): Sm\Router\Toute->call('GET')
+#6 {main}
+  thrown in /home/codozsqq/public_html/dev/s/Spwashi/views/page/page.php on line 133
+[06-Jul-2016 07:18:05 UTC] PHP Fatal error:  Class 'Redis' not found in /home/codozsqq/public_html/dev/s/Spwashi/views/page/page.php on line 12
+[08-Jul-2016 06:16:26 UTC] PHP Warning:  require_once(Sm-Core-App.php): failed to open stream: No such file or directory in /home/codozsqq/public_html/dev/s/index.php on line 26
+[08-Jul-2016 06:16:26 UTC] PHP Fatal error:  require_once(): Failed opening required 'Sm-Core-App.php' (include_path='.:/usr/lib/php:/usr/local/lib/php') in /home/codozsqq/public_html/dev/s/index.php on line 26

@@ -1,0 +1,108 @@
+//@palette_1_1: #002b49;
+@palette_1_1: darken(#627c8e, 10%);
+@palette_1_1 : #fdf3e7;
+@palette_1_2: darken(overlay(@background_color, @palette_1_1), 15%);
+@palette_1_3: #213848;
+@palette_1_3: #3b3738;
+
+@palette_2_1: #57597a;
+@palette_2_2: rgba(87, 89, 122, .6);
+
+@palette_3_1: #214e38;
+
+@__tmp: darken(#627c8e, 10%);
+//@palette_1_1: average(average(@__tmp, #3a6693), @__tmp);
+
+@text_color: #0a0b0c;
+@text_color: @palette_1_3;
+
+@light_std: #56a0d3;
+@dark_std: #131160;
+
+@header_color: @palette_1_3;
+@header_color: @palette_1_3;
+@header_gradient_1_color: darken(@header_color, 10%);
+@header_gradient_1_color: @palette_1_3;
+@header_shadow: #00172f;
+@header_shadow: darken(@header_color, 10%);
+@header_text_color: lighten(#f2f3f4, 2%);
+@header_text_color: lighten(#f2f3f4, 2%);
+@header_border_color: #c63d0f;
+@header_highlight_color: #c63d0f;
+
+@background_color: lighten(#627c8e, 45%);
+@background_color: #7e8f7c;
+@background_color: mix(#3b3738, #bbb, 8%);
+//@background_color: #f0f0f0;
+
+@button_color: lighten(@palette_2_1, 50%);
+@button_hover_color: darken(@button_color, 7%);
+@button_hover_border_color: #999;
+@button_border_color: #999;
+@button_hover_text_color: #222;
+@button_text_color: #333;
+
+@error_color: #b00000;
+@success_color: #0a0;
+@tentative_color: #cba54e;
+
+@module_color: #fafafa;
+@module_color: #fdf3e7;
+@module_color: lighten(desaturate(#daefee, 20%), 10%);
+@module_color: #f6f7f7;
+@module_color_focus: lighten(@palette_3_1, 10%);
+//@unloaded_module_color : lighten(desaturate(@module_header_color, 20%), 10%);
+@unloaded_module_color : inherit;
+@module_shadow: darken(@background_color, 12%);
+@module_shadow: transparent;
+
+@module_header_color: @palette_1_3;
+@module_header_color: darken(@module_color, 5%);
+@module_header_color: lighten(desaturate(#a8d3d1, 20%), 10%);
+@module_header_color: lighten(#0b1c3a, 15%);
+@module_header_color: lighten(desaturate(#0b1c3a, 25%), 5%);
+@module_header_color: rgba(255, 255, 255, .2);
+@module_header_color: rgba(79, 117, 120, .8);
+@spotlight_header_color: #598487;
+@spotlight_text_color: #0a0b0c;
+@module_header_border: thin solid #fff;
+
+@module_border_color: @palette_1_1;
+@module_separator_color : @module_header_color;
+
+@module_header_text_color: darken(@header_color, 10%);
+@module_header_text_color: @text_color;
+@module_header_text_color: #fff;
+
+@module_body_text_color: inherit;
+
+@tooltip_color: @module_color;
+@tooltip_header_color: #516676;
+@tooltip_border_color: #516676;
+@tooltip_header_text_color: #eee;
+@tooltip_text_color: @text_color;
+
+@link_color: @button_hover_color;
+@link_hover_color: #3b6654;
+
+@lst_highlight: @palette_2_2;
+//@lst_highlight: #c04000;
+@lst_highlight_text_color: inherit;
+@lst_text_color: @text_color;
+@lst_tab_color : darken(@palette_1_3, 0%);
+@lst_tab_color : lighten(@background_color, 20%);
+//@lst_tab_color : #627c8e;
+@lst_tag_color : lighten(#627c8e, 40%);
+@lst_tag_color : rgba(red(@background_color), green(@background_color), blue(@background_color), .15);
+@lst_tag_border_color: darken(@lst_tag_color, 20%);
+@lst_word_border_color: darken(@module_color, 10%);
+@lst_word_color: darken(@module_color, 5%);
+
+@feature_1_row_color: lighten(@background_color, 7%);
+@row_border: #999;
+@footer_color: @header_color;
+@feature_shadow_color: #8888a9;
+
+@calendar_palette: @palette_1_2;
+@calendar_header_color: @calendar_palette;
+@calendar_border_color: @calendar_palette;

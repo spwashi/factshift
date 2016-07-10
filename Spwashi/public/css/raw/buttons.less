@@ -1,0 +1,52 @@
+@import "include";
+
+.button-control {
+    .clearfix;
+    position      : absolute;
+    &.inline {
+        word-spacing : normal;
+        i {
+            float   : left;
+            display : inline;
+            margin  : 3px;
+        }
+    }
+    //max-width:      25%;
+    //float:          right;
+    //display:        block;
+    margin-bottom : 15px;
+    cursor        : pointer;
+    border        : none;
+    outline       : none;
+    width         : auto;
+    height        : auto;
+    word-spacing  : 30000px;
+    i {
+        //margin-right: 5px;
+        margin  : 4px 0;
+        padding : 0;
+        display : block;
+    }
+
+    .edit, .edit-external {
+        //float: right;
+        color : #555;
+    }
+    .save {
+        //float: right;
+        color : #394c99;
+    }
+    .close {
+        color : #e74c3c;
+        //float: right;
+        &:hover {
+            color : #c0392b;
+        }
+    }
+    .debug {
+        display : none;
+        .debug & {
+            display : block;
+        }
+    }
+}

@@ -82,16 +82,17 @@ define(['Class'], function (Class) {
                 return [];
             }
 
-            var callbacks = this._callbacks[event];
+            var callbacks       = this._callbacks[event];
             var callback;
+            var other_callbacks = [];
             if (callbacks) {
                 for (var _i = 0, _len = callbacks.length; _i < _len; _i++) {
                     callback = callbacks[_i];
                     if (!callback) continue;
-                    callbacks[_i] = Function.prototype.bind.apply(callback, [this].concat(args));
+                    other_callbacks[_i] = Function.prototype.bind.apply(callback, [this].concat(args));
                 }
             }
-            return callbacks || [];
+            return other_callbacks || [];
         },
         resolve:            function (event) {
             var count = 0;

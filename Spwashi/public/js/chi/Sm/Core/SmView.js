@@ -392,6 +392,7 @@ require(['require', 'backbone', 'jquery', 'underscore', 'Cocktail', 'Sm-Entities
                         return synchronous ? false : Promise.reject("There is no longer an existent MvCombo for this View");
                     }
                     if ((this.queryStatus('rendered') && !!settings.if_not_rendered) || this.queryStatus('rendering')) {
+                        Sm.CONFIG.DEBUG && console.log('ignore');
                         return synchronous ? this.el : Promise.resolve(this.el);
                     }
                     this.setStatus('rendering', true);
@@ -404,9 +405,9 @@ require(['require', 'backbone', 'jquery', 'underscore', 'Cocktail', 'Sm-Entities
                         self.old_el = self.el;
                         self.setElement(el_1, 'render');
                         self.setStatus({
-                            rendered:     true,
-                            is_rendering: false,
-                            up_to_date:   true
+                            rendered:   true,
+                            rendering:  false,
+                            up_to_date: true
                         });
                         self.init_elements();
                         self.delegateEvents(self.events());
@@ -431,10 +432,12 @@ require(['require', 'backbone', 'jquery', 'underscore', 'Cocktail', 'Sm-Entities
                 get_rendered:    function (what) {
                     if (!what) return false;
                     if (what == 'Element') {
-                        if (!this.queryStatus('rendered')) this.render({
-                            synchronous:     true,
-                            if_not_rendered: true
-                        });
+                        if (!this.queryStatus('rendered')) {
+                            (this.render({
+                                synchronous:     true,
+                                if_not_rendered: true
+                            }));
+                        }
                         return this.el;
                     } else if (what == '$Element') {
                         return (this.$el = $(this.get_rendered('Element')));
@@ -853,16 +856,18 @@ require(['require', 'backbone', 'jquery', 'underscore', 'Cocktail', 'Sm-Entities
                  * Refresh the old element, replace it with a new one
                  */
                 replaceOldElement:             function () {
-                    Sm.CONFIG.DEBUG && console.log('replace');
                     var old_el           = this.el;
-                    var rendered_element = this.get_rendered('Element');
+                    var rendered_element = this.render({
+                        display_type: this.display_type,
+                        synchronous:  true
+                    });
                     this.old_el &&
                     (this.old_el != rendered_element) &&
                     this.old_el.parentNode &&
                     this.old_el.parentNode.replaceChild(rendered_element, this.old_el);
-
-                    this.old_el = old_el;
+                    this.old_el          = old_el;
                     this.refresh_element(rendered_element);
+                    this.refresh_all();
                 },
 
                 /**
@@ -977,7 +982,7 @@ require(['require', 'backbone', 'jquery', 'underscore', 'Cocktail', 'Sm-Entities
                 update:                          function (changed_attributes) {
                     if (this.display_type.indexOf('modal') > -1) return this;
                     if (!this.MvCombo) return this;
-                    this.model = this.model || this.MvCombo.Model;
+                    this.model          = this.model || this.MvCombo.Model;
                     if (!this.model) {
                         Sm.CONFIG.DEBUG && console.log("There was no model!");
                         return this;
@@ -987,6 +992,15 @@ require(['require', 'backbone', 'jquery', 'underscore', 'Cocktail', 'Sm-Entities
                         changed_attributes = Object.keys(this.elements)
                     }
                     Sm.CONFIG.DEBUG && console.log(changed_attributes);
+                    var type            = this.type.toLowerCase();
+                    var type_identifier = type + '_type';
+                    Sm.CONFIG.DEBUG && console.log(type_identifier);
+                    if (changed_attributes.indexOf(type_identifier) > -1) {
+                        this.mark_unrendered();
+                        this.replaceOldElement();
+                        return this;
+                    }
+
                     for (var i = 0; i < changed_attributes.length; i++) {
                         var name = changed_attributes[i];
                         this._updateElementFromModelProperty(name, this.get_rendered(name));

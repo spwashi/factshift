@@ -128,7 +128,20 @@ require(['require'], function (require) {
                 Sm.Core.SmView.prototype.initialize.apply(this, arguments);
             },
 
-
+            update:                     function (changed_attributes) {
+                if (this.display_type.indexOf('modal') > -1) return this;
+                var triggers = ["section_type", "content_location"];
+                Sm.CONFIG.DEBUG && console.log(changed_attributes);
+                for (var i = 0; i < triggers.length; i++) {
+                    var t = triggers[i];
+                    if (changed_attributes.indexOf(t) > -1) {
+                        this.mark_unrendered();
+                        this.replaceOldElement();
+                        return this;
+                    }
+                }
+                return Sm.Core.SmView.prototype.update.apply(this, arguments);
+            },
             handle:                     true,
             /**
              * This is a basic click handler that operates based only on the target of the click.

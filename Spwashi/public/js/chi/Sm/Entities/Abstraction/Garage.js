@@ -212,7 +212,7 @@ require(['require', 'Class', 'Sm'], function (require, Class) {
                             }
                         }
                     }
-
+//ssh://codozsqq@host32.registrar-servers.com:21098/home/codozsqq/public_html/
                     //default string!
                     if (!outer_template_string) {
                         outer_template_string = '<div>__CONTENT__</div>';

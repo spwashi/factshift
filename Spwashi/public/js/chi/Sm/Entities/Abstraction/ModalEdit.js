@@ -3,7 +3,6 @@
  */
 require(['require', 'Class', 'Sm', 'Sm/Extras/Modal'], function (require, Class) {
     Sm.loaded.when_loaded('Extras_Modal', function () {
-
         Sm.Entities.Abstraction.Modal      = Sm.Entities.Abstraction.Modal || {};
         /**
          * @alias Sm.Entities.Abstraction.Modal.Edit
@@ -42,7 +41,7 @@ require(['require', 'Class', 'Sm', 'Sm/Extras/Modal'], function (require, Class)
                 return res;
             },
             update:             function () {
-                Sm.CONFIG.DEBUG && console.log("Not sure how to update this View");
+                //Sm.CONFIG.DEBUG && console.log("Not sure how to update this View");
             },
             /**
              * @this Sm.Entities.Abstraction.Modal.Edit
@@ -75,7 +74,9 @@ require(['require', 'Class', 'Sm', 'Sm/Extras/Modal'], function (require, Class)
                     var errors      = response.message.errors || {};
                     var _Model      = MvCombo_.Model || {};
 
+                    _Model.clear({silent: true});
                     _Model.set(response_model, {silent: true});
+                    Sm.CONFIG.DEBUG && console.log(response_model.content_location);
                     this.update();
                     var changed_arr = [];
                     for (var attr in changed_attributes) {
@@ -94,7 +95,7 @@ require(['require', 'Class', 'Sm', 'Sm/Extras/Modal'], function (require, Class)
                         }
                     }
                     var self = this;
-                    Sm.CONFIG.DEBUG && console.log(changed_attributes);
+                    Sm.CONFIG.DEBUG && console.log(changed_attributes, response_model, _Model.attributes, _Model);
                     MvCombo_.forEachView(function () {
                         /** @type {Sm.Core.SmView|*}  */
                         var View = this;
@@ -102,7 +103,7 @@ require(['require', 'Class', 'Sm', 'Sm/Extras/Modal'], function (require, Class)
                         View.update(changed_arr);
                         View.refresh_all();
                     });
-                    return Promise.resolve(true);
+                    return Promise.resolve(changed_arr);
                 }
                 return Promise.reject("Not sure what to do with multiple MvCombos");
             },
@@ -140,7 +141,6 @@ require(['require', 'Class', 'Sm', 'Sm/Extras/Modal'], function (require, Class)
                     alert('There was an error - 1 - ' + reason);
                 }).then(function (result) {
                     if (self.status.is_open) {
-                        Sm.CONFIG.DEBUG && console.log('CALLED');
                         self._changeElement(result);
                     } else {
                         self.element = result;
@@ -183,7 +183,10 @@ require(['require', 'Class', 'Sm', 'Sm/Extras/Modal'], function (require, Class)
         };
         Sm.Entities.Abstraction.Modal.Edit.on_after_save         = function (result) {
             this.$content_element.removeClass('saving');
-            return this.success(result, this.changed_attributes);
+            Sm.CONFIG.DEBUG && console.log(result);
+            this.success(result, this.changed_attributes);
+            this.changed_attributes = {};
+            return result;
         };
         Sm.Entities.Abstraction.Modal.Edit.on_open               = function () {
             var content_element = this.content_element;
@@ -222,7 +225,6 @@ require(['require', 'Class', 'Sm', 'Sm/Extras/Modal'], function (require, Class)
                         try {
                             relationship_container.appendChild(result);
                         } catch (e) {
-
                             Sm.CONFIG.DEBUG && console.log(e);
                         }
                     }
@@ -236,12 +238,11 @@ require(['require', 'Class', 'Sm', 'Sm/Extras/Modal'], function (require, Class)
         Sm.Entities.Abstraction.Modal.Edit.on_select             = function () {
             var self = this;
             this.resolve('save').then(function (res) {
-                Sm.CONFIG.DEBUG && console.log(res, 'manna');
+                Sm.CONFIG.DEBUG && console.log(res);
                 Sm.Entities.Abstraction.Modal.Edit.generate_element.call(self);
+            }).catch(function (res) {
+                Sm.CONFIG.DEBUG && console.log(res);
             });
         };
-
-        Sm.loaded.add('Entities_Abstraction_Modal_Edit');
-    });
-
+    }, 'Entities_Abstraction_Modal_Edit');
 });

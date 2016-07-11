@@ -23,6 +23,7 @@ require(['require', 'backbone', 'jquery', 'underscore', 'Cocktail', 'Sm-Entities
         blur:                 function () {
             if (!this.MvCombo.queryStatus('focused')) return this;
             this.elements.description_container && (this.elements.description_container.innerHTML = '');
+            this.elements.button_control = false;
             return Sm.Core.SmView.prototype.blur.apply(this, arguments);
         },
         _rendering_callbacks: {

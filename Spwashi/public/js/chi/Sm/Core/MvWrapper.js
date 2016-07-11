@@ -24,11 +24,11 @@ require(['require', 'Class', 'Sm', 'Sm-Core-Identifier'], function (require, Cla
         init:       function (settings) {
             settings              = settings || {};
             this.MvMaps           = {
-                loaded_MVs:   {},
-                focused_MVs:  {},
-                selected_MVs: {},
-                active_MVs:   {},
-                deleted_MVs:  {}
+                loaded_MVs:    {},
+                focused_MVs:   {},
+                selected_MVs:  {},
+                active_MVs:    {},
+                destroyed_MVs: {}
             };
             this.CONFIG           = settings.CONFIG || {};
             this.CONFIG.EDIT      = this.CONFIG.EDIT || Sm.CONFIG.EDIT || false;
@@ -39,7 +39,7 @@ require(['require', 'Class', 'Sm', 'Sm-Core-Identifier'], function (require, Cla
             this.loaded_ent_ids   = {};
         },
         get_MVs:    function (type) {
-            if (/loaded|active|focused|selected|deleted/.test(type)) return this.MvMaps[type];
+            if (/loaded|active|focused|selected|destroyed/.test(type)) return this.MvMaps[type];
         },
 
         /**
@@ -278,6 +278,9 @@ require(['require', 'Class', 'Sm', 'Sm-Core-Identifier'], function (require, Cla
             selfSm && selfSm.Meta && selfSm.Meta.add_MV_as(type_to_add, Id);
             var MvMaps = this.MvMaps;
             switch (type_to_add) {
+                case 'destroyed':
+                    MvMaps.destroyed_MVs[rid] = true;
+                    break;
                 case 'loaded':
                     MvMaps.loaded_MVs[rid] = Id;
                     break;
@@ -302,7 +305,7 @@ require(['require', 'Class', 'Sm', 'Sm-Core-Identifier'], function (require, Cla
             var ent_id = Id.ent_id;
             if (Id.getResource) ent_id = ent_id || (Id.getResource() || {}).ent_id || false;
 
-            (!!ent_id) && (this.loaded_ent_ids[ent_id] = Id);
+            (!!ent_id) && (type_to_add != 'destroyed') && (this.loaded_ent_ids[ent_id] = Id);
 
             //If this Wrapper is a conceptual Wrapper, add the Entity to its parent, too
             if (this.parentType) {
@@ -480,13 +483,10 @@ require(['require', 'Class', 'Sm', 'Sm-Core-Identifier'], function (require, Cla
         destroy_MV:         function (MvCombo) {
             if (!MvCombo)   return Promise.reject();
 
-            var id = MvCombo.id;
-            (id in this.MvMaps.selected_MVs) && delete this.MvMaps.selected_MVs[id];
-            (id in this.MvMaps.active_MVs) && delete this.MvMaps.active_MVs[id];
-            (id in this.MvMaps.loaded_MVs) && delete this.MvMaps.loaded_MVs[id];
-            (id in this.MvMaps.focused_MVs) && delete this.MvMaps.focused_MVs[id];
-
-            this.MvMaps.deleted_MVs[id] = true;
+            var MvMaps = this.MvMaps;
+            this.add_MV_as('destroyed', MvCombo);
+            this.remove_MV_as('loaded', MvCombo);
+            Sm.CONFIG.DEBUG && console.log(MvMaps, MvMaps.destroyed_MVs);
             return Promise.resolve(true);
         },
         _prompt_build_MV:   function (settings) {

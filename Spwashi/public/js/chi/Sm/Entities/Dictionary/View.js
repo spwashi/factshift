@@ -54,26 +54,6 @@ require(['require', 'Sm-Core-SmView', 'Sm-Entities-Abstraction-mixins-SidebarMod
                     return false;
                 }
             },
-            wrap_element_for_relationship: function (View, relationship_index, Relationship_) {
-                if (relationship_index == "definitions") {
-                    var MvCombo_ = View.MvCombo;
-                    var outer    = Sm.Entities.Dictionary.templates._template.definition_relationship_outer;
-                    outer        = outer
-                        .replace('__MV_R_ID__', MvCombo_.Identity.r_id)
-                        .replace('__R_ID__', Relationship_.Identity.r_id)
-                        .replace('__CONTENT__', '')
-                        .replace('__TITLE__', MvCombo_.Model.get('title') || '_');
-                    var $outer   = $(outer);
-                    if ($outer[0]) {
-                        var $content = $outer.find('.content');
-                        if ($content[0]) {
-                            $content[0].appendChild(View.get_rendered('Element'));
-                            return $outer[0];
-                        }
-                    }
-                }
-                return View.get_rendered('Element');
-            },
             handle:                        undefined
         });
         Sm.loaded.add('Entities_Dictionary_View');

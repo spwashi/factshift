@@ -31,6 +31,7 @@
     excludeShallow: [
         'Sm-Core-SmView',
         "Sm-Entities-Abstraction-ModalEdit",
+        "Sm-Entities-Section-Abstraction-ModalEdit",
         'Sm-Entities-Abstraction-mixins-SidebarModule',
         'Sm-Entities-Page-MvCombo', 'Sm-Entities-Page-Wrapper',
         'Sm-Entities-Page-View', 'Sm-Entities-Page-Model',
@@ -90,6 +91,7 @@
         "Sm-Core-SmView":            "Sm/Core/SmView",
         "Sm-Core-util":              "Sm/Core/util",
 
+        "Sm-Entities-Section-Abstraction-ModalEdit":                            "Sm/Entities/Section/Abstraction/ModalEdit",
         "Sm-Entities-Abstraction-ModalEdit":                                    "Sm/Entities/Abstraction/ModalEdit",
         "Sm-Entities-Abstraction-mixins-SidebarModule":                         "Sm/Entities/Abstraction/SidebarModule",
         "Sm-Entities-Page-Wrapper":                                             "Sm/Entities/Page/Wrapper",

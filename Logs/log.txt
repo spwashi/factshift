@@ -1369,3 +1369,85 @@
 	1 => str     : 	
 		UPDATE section_section_map AS tbl SET tbl.position = tbl.position + 1 WHERE tbl.primary_section_id = 21 AND tbl.secondary_section_id != 22 AND table2.relationship_type = 1 
 
+--------------------------------------------------------------------------------------------------------------------------
+-------------------------{07-10-2016  23:49:50}---------------------------------------------------------------------------
+--------------------------------------------------------------------------------------------------------------------------
+ {07-10-2016  23:49:50} 	 code {42S22} line {130}	 of {Sm/Database/Abstraction/Sql.php};
+	0 => str     : 	SQLSTATE[42S22]: Column not found: 1054 Unknown column 'table2.relationship_type' in 'where clause'
+	1 => str     : 	
+		UPDATE section_section_map AS tbl SET tbl.position = tbl.position + 1 WHERE tbl.primary_section_id = 2 AND tbl.secondary_section_id != 23 AND table2.relationship_type = 1 
+
+--------------------------------------------------------------------------------------------------------------------------
+-------------------------{07-10-2016  23:55:37}---------------------------------------------------------------------------
+--------------------------------------------------------------------------------------------------------------------------
+ {07-10-2016  23:55:37} 	 code {42S22} line {130}	 of {Sm/Database/Abstraction/Sql.php};
+	0 => str     : 	SQLSTATE[42S22]: Column not found: 1054 Unknown column 'table2.relationship_type' in 'where clause'
+	1 => str     : 	
+		UPDATE section_section_map AS tbl SET tbl.position = tbl.position + 1 WHERE tbl.primary_section_id = 2 AND tbl.secondary_section_id != 24 AND table2.relationship_type = 1 
+
+--------------------------------------------------------------------------------------------------------------------------
+-------------------------{07-11-2016  02:48:25}---------------------------------------------------------------------------
+--------------------------------------------------------------------------------------------------------------------------
+ {07-11-2016  02:48:25} 	  line {915}	 of {Spwashi/Controller/API/API.php};
+	-->		Could not set the property relationship_type in class Spwashi\Model\Map\DictionarySectionMap
+
+ {07-11-2016  02:48:25} 	  line {915}	 of {Spwashi/Controller/API/API.php};
+	-->		Could not set the property user_id in class Spwashi\Model\Map\DictionarySectionMap
+
+--------------------------------------------------------------------------------------------------------------------------
+-------------------------{07-11-2016  02:52:31}---------------------------------------------------------------------------
+--------------------------------------------------------------------------------------------------------------------------
+ {07-11-2016  02:52:31} 	  line {915}	 of {Spwashi/Controller/API/API.php};
+	-->		Could not set the property relationship_type in class Spwashi\Model\Map\DictionarySectionMap
+
+ {07-11-2016  02:52:31} 	  line {915}	 of {Spwashi/Controller/API/API.php};
+	-->		Could not set the property user_id in class Spwashi\Model\Map\DictionarySectionMap
+
+--------------------------------------------------------------------------------------------------------------------------
+-------------------------{07-11-2016  03:02:23}---------------------------------------------------------------------------
+--------------------------------------------------------------------------------------------------------------------------
+ {07-11-2016  03:02:23} 	  line {915}	 of {Spwashi/Controller/API/API.php};
+	-->		Could not set the property relationship_type in class Spwashi\Model\Map\DictionarySectionMap
+
+ {07-11-2016  03:02:23} 	  line {915}	 of {Spwashi/Controller/API/API.php};
+	-->		Could not set the property user_id in class Spwashi\Model\Map\DictionarySectionMap
+
+--------------------------------------------------------------------------------------------------------------------------
+-------------------------{07-11-2016  03:02:39}---------------------------------------------------------------------------
+--------------------------------------------------------------------------------------------------------------------------
+ {07-11-2016  03:02:39} 	  line {492}	 of {Spwashi/Controller/API/API.php};
+	0 	=>		 arr(0)[
+	]
+		1 => str     : 	Section
+
+ {07-11-2016  03:02:39} 	  line {113}	 of {Spwashi/Controller/API/API.php};
+	0 => str     : 	after init from
+	1 => object  : 	[{"_words":[],"id":6,"title":"-","subtitle":"","content":"Related concepts to force include: thrust, which increases the velocity of an object; drag, which decreases the velocity of an object; and torque, which produces changes in rotational speed of an object. In an extended body, each part usually applies forces on the adjacent parts; the distribution of such forces through the body is the so-called mechanical stress. Pressure is a simple type of stress. Stress usually causes deformation of solid materials, or flow in fluids.","content_location":"","ent_id":"sec_070716Poo40kPL8ZcamcY","words":"","user_id":11,"has_title":0,"section_type":1,"update_dt":"2016-07-07 06:10:02","creation_dt":"2016-07-07 06:09:48","_model_type":"Section","relationships":{"items":{"dictionaries":{"index":"dictionaries","items":{"9":{"_meta":{"_key":null,"_list":[],"_ids":[],"_linked_entities":[]},"_map":{"id":70,"section_id":6,"dictionary_id":9,"section_type":null,"section_role":null,"position":1,"update_dt":null,"creation_dt":"2016-07-11 03:02:23","_model_type":"DictionarySectionMap","relationships":null,"_permissions":{"edit":false,"view":false,"destroy":false}},"position":1,"model":null}},"_meta":{"_key":"dictionary_id","_list":[9],"_ids":[],"_linked_entities":["Dictionary","Section"]}}}},"_permissions":{"edit":true,"view":true,"destroy":true}},{"_words":[],"id":16,"title":"Force","subtitle":"","content":"An action which, when acting unopposed, can cause an object to accelerate","content_location":"","ent_id":"sec_0707166_VVzouunjVwWYf","words":"force","user_id":11,"has_title":0,"section_type":5,"update_dt":"2016-07-10 22:49:18","creation_dt":"2016-07-07 15:10:14","_model_type":"Section","relationships":{"items":{"dictionaries":{"index":"dictionaries","items":{"9":{"_meta":{"_key":null,"_list":[],"_ids":[],"_linked_entities":[]},"_map":{"id":67,"section_id":16,"dictionary_id":9,"section_type":null,"section_role":null,"position":3,"update_dt":null,"creation_dt":"2016-07-07 15:10:21","_model_type":"DictionarySectionMap","relationships":null,"_permissions":{"edit":false,"view":false,"destroy":false}},"position":3,"model":null}},"_meta":{"_key":"dictionary_id","_list":[9],"_ids":[],"_linked_entities":["Dictionary","Section"]}}}},"_permissions":{"edit":true,"view":true,"destroy":true}}]
+
+--------------------------------------------------------------------------------------------------------------------------
+-------------------------{07-11-2016  03:07:30}---------------------------------------------------------------------------
+--------------------------------------------------------------------------------------------------------------------------
+ {07-11-2016  03:07:30} 	  line {915}	 of {Spwashi/Controller/API/API.php};
+	-->		Could not set the property relationship_type in class Spwashi\Model\Map\DictionarySectionMap
+
+ {07-11-2016  03:07:30} 	  line {915}	 of {Spwashi/Controller/API/API.php};
+	-->		Could not set the property user_id in class Spwashi\Model\Map\DictionarySectionMap
+
+--------------------------------------------------------------------------------------------------------------------------
+-------------------------{07-11-2016  03:11:59}---------------------------------------------------------------------------
+--------------------------------------------------------------------------------------------------------------------------
+ {07-11-2016  03:11:59} 	  line {915}	 of {Spwashi/Controller/API/API.php};
+	-->		Could not set the property relationship_type in class Spwashi\Model\Map\DictionarySectionMap
+
+ {07-11-2016  03:11:59} 	  line {915}	 of {Spwashi/Controller/API/API.php};
+	-->		Could not set the property user_id in class Spwashi\Model\Map\DictionarySectionMap
+
+--------------------------------------------------------------------------------------------------------------------------
+-------------------------{07-11-2016  03:19:10}---------------------------------------------------------------------------
+--------------------------------------------------------------------------------------------------------------------------
+ {07-11-2016  03:19:10} 	  line {915}	 of {Spwashi/Controller/API/API.php};
+	-->		Could not set the property relationship_type in class Spwashi\Model\Map\DictionarySectionMap
+
+ {07-11-2016  03:19:10} 	  line {915}	 of {Spwashi/Controller/API/API.php};
+	-->		Could not set the property user_id in class Spwashi\Model\Map\DictionarySectionMap
+

@@ -86,6 +86,7 @@
         "Sm-Core-SmView":            "Sm/Core/SmView",
         "Sm-Core-util":              "Sm/Core/util",
 
+        "Sm-Entities-Section-Abstraction-ModalEdit":                            "Sm/Entities/Section/Abstraction/ModalEdit",
         "Sm-Entities-Abstraction-mixins-SidebarModule":                         "Sm/Entities/Abstraction/SidebarModule",
         "Sm-Entities-Abstraction-ModalEdit":                                    "Sm/Entities/Abstraction/ModalEdit",
         "Sm-Entities-Page-Wrapper":                                             "Sm/Entities/Page/Wrapper",

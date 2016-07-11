@@ -116,7 +116,7 @@ require(['require', 'Emitter', 'Sm'],
                                         $target = parents[0];
                                         target  = $target;
                                     }
-                                    target.dataset.action && self.emit(target.dataset.action, self, self.get_content_element(), target.dataset.data || '', target.dataset, e);
+                                    target.dataset.action && self.emit(target.dataset.action, target.dataset.data || '', target.dataset, e);
                                     target.dataset.action && e.stopPropagation();
                                     return true;
                                 }

@@ -18,6 +18,7 @@ require([
     require(['Sm-Entities-Section-View'], function () {});
     require(['Sm-Entities-Section-Garage'], function () {});
     require(['Sm-Entities-Section-Model'], function () {});
+    require(['Sm-Entities-Section-Abstraction-ModalEdit'], function () {});
     require(['Sm-Entities-Section-RelationshipAbstraction-pivots_RelationshipIndex'], function () {});
     Sm.loaded.when_loaded([
         'Entities_Section_MvCombo',

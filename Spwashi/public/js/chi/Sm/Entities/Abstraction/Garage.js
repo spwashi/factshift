@@ -47,20 +47,21 @@ require(['require', 'Class', 'Sm'], function (require, Class) {
             /**
              * Check to see that an MvCombo has all of the properties necessary to deal with it correctly, return everything we need to know about it
              * @param Mv_
+             * @param config
              * @return {*}
              * @private
              */
-            _get_details_from_MvCombo: function (Mv_) {
+            _get_details_from_MvCombo: function (Mv_, config) {
                 if (!Mv_ || typeof Mv_ !== "object") {
                     Mv_ = {};
                 }
                 var Model_     = Mv_.Model;
                 var attributes = Model_ ? Model_.attributes : (Mv_.attributes ? Mv_.attributes : Mv_);
                 if (!attributes) attributes = {};
-
-                var type = attributes[this.subtype_identifier];
+                config                      = config || {};
+                var type                    = config.display_subtype || attributes[this.subtype_identifier];
                 if (!type) {type = "standard";}
-                var template_type = Sm.Entities[this.type].Meta.get_type('index', type);
+                var template_type = Sm.Entities[this.type].Meta.get_type(type, 'index');
                 if (!template_type) template_type = 'standard';
                 return {
                     Model:         Model_,
@@ -79,6 +80,7 @@ require(['require', 'Class', 'Sm'], function (require, Class) {
              * @param settings.outer_string_name
              * @param settings.inner_template_string
              * @param settings.template_index
+             * @param settings.config
              * @param settings.outer_template_string
              * @param is_synchronous                    Are we to return a promise?
              * @return {*}
@@ -96,34 +98,35 @@ require(['require', 'Class', 'Sm'], function (require, Class) {
                 is_synchronous            = (is_synchronous != undefined) ? !!is_synchronous : true;
                 var self                  = this;
                 //Try to see if we can use the MvCombo
-                var V = this._get_details_from_MvCombo(MvCombo_or_data);
+                var V = this._get_details_from_MvCombo(MvCombo_or_data, settings.config);
                 //If it turns out that we couldn't, return a default element
                 if (!V) {
                     var def = self._default('could not validate');
                     return !is_synchronous ? (new Promise(function (resolve) {resolve(def);})) : def;
                 }
-                var self_type        = this.type;
+                var self_type           = this.type;
                 /**
                  * A copy of the Model's attributes (not a reference)
-                 * @type {{}}
+                 * @type {{}|*}
                  */
-                var model_attributes = V.attributes || MvCombo_or_data;
+                var model_attributes    = V.attributes || MvCombo_or_data;
+                model_attributes.config = settings.config || {};
                 /**
                  * The name of the subtype we are dealing with. This might be an ID or a string.
                  * @type {string}
                  */
-                var subtype          = V.subtype;
+                var subtype             = V.subtype;
                 /**
                  * The name of the template type that we are going to use to generate the element. This is a string based on the subtype of the entity (an example would be image for Section)
                  * @type {string}
                  */
-                var template_type    = V.template_type;
+                var template_type       = V.template_type;
                 var finished_entity_string;
                 /**
                  * Whether or not we should continue to try to resolve. If there is a timer going, after a while we should just give up
                  * @type {boolean}
                  */
-                var keep_resolving   = true;
+                var keep_resolving      = true;
 
 
                 var timer = false;
@@ -311,6 +314,13 @@ require(['require', 'Class', 'Sm'], function (require, Class) {
              * @param Mv_              The MvCombo that we are generatng an
              * @param is_synchronous
              * @param settings
+             * @param settings.fallback
+             * @param settings.outer_string_name
+             * @param settings.inner_string_name
+             * @param settings.inner_template_string
+             * @param settings.template_type
+             * @param settings.outer_template_string
+             * @param settings.config
              * @return {*}
              */
             generate: function (type, Mv_, is_synchronous, settings) {
@@ -340,7 +350,8 @@ require(['require', 'Class', 'Sm'], function (require, Class) {
                     inner_string_name:     settings.inner_string_name,
                     inner_template_string: settings.inner_template_string,
                     template_type:         settings.template_type,
-                    outer_template_string: settings.outer_template_string
+                    outer_template_string: settings.outer_template_string,
+                    config:                settings.config || {}
                 }, !!is_synchronous);
             },
 
@@ -465,9 +476,9 @@ require(['require', 'Class', 'Sm'], function (require, Class) {
                 var _template     = Sm.Entities[this.type].templates._template;
                 /**
                  * @callback Sm.Entities.Abstraction.Garage~on_add
-                 * @param {Sm.Core.MvCombo} MvCombo
-                 * @param {Sm.Core.SmView} View
-                 * @param {string} relationship_index
+                 * @param {Sm.Entities.Section.View}    parameters.View
+                 * @param {HTMLElement}                 parameters.container_element
+                 * @param {string}                      parameters.relationship_index
                  */
                 callback          = typeof callback === "function" ? callback : false;
                 /**
@@ -478,7 +489,8 @@ require(['require', 'Class', 'Sm'], function (require, Class) {
                 var appendedViews = [];
                 for (var loop_rel_index in relevant_relationships) {
                     if (!relevant_relationships.hasOwnProperty(loop_rel_index)) continue;
-                    var holder = $elem.children('.' + loop_rel_index + '-container');
+                    var holder             = $elem.children('.' + loop_rel_index + '-container');
+                    var relationship_outer = _template[loop_rel_index + '_relationship_outer'] ? _template[loop_rel_index + '_relationship_outer'] : _template.relationship_outer;
                     if (holder[0]) {
                         var related_views = relevant_relationships[loop_rel_index];
                         for (var k = 0; k < related_views.length; k++) {
@@ -488,9 +500,15 @@ require(['require', 'Class', 'Sm'], function (require, Class) {
                             if (!View_.MvCombo) continue;
                             if (appendedViews.indexOf(View_.MvCombo.r_id) > -1) View_ = View_.clone();
 
-                            var outer_string = _template.relationship_outer.replace('__CONTENT__', '').replace('__R_ID__', Relationship_.Identity.r_id).replace('__MV_R_ID__', Mv_ ? Mv_.r_id : 'null');
-                            var $outer       = $(outer_string);
-                            var content      = $outer.find('.content');
+                            var outer_string = relationship_outer.replace('__CONTENT__', '').replace('__R_ID__', Relationship_.Identity.r_id).replace('__MV_R_ID__', Mv_ ? Mv_.r_id : 'null');
+                            var params       = {
+                                View:               View_,
+                                container_element:  outer_string,
+                                relationship_index: loop_rel_index
+                            };
+                            if (callback) callback(params);
+                            var $outer  = $(params.container_element);
+                            var content = $outer.find('.content');
                             if (content[0]) {
                                 content[0].appendChild(View_.get_rendered('Element'));
                                 holder[0].appendChild($outer[0]);
@@ -499,7 +517,6 @@ require(['require', 'Class', 'Sm'], function (require, Class) {
                             } else {
                                 Sm.CONFIG.DEBUG && console.log($outer, content, View_);
                             }
-                            if (callback) callback(View_.MvCombo, View_, loop_rel_index);
                         }
                     } else {
                         Sm.CONFIG.DEBUG && console.log(holder);

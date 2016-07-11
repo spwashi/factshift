@@ -29,6 +29,22 @@ require(['require', 'Sm',
                 settings                = settings || {};
                 settings.display_type   = 'inline';
                 settings.always_display = ['definitions'];
+                /**
+                 * @type {Sm.Entities.Abstraction.Garage~on_add}
+                 * @param {Sm.Entities.Section.View}    parameters.View
+                 * @param {HTMLElement}                 parameters.container_element
+                 * @param {string}                      parameters.relationship_index
+                 */
+                settings.on_append      = function (parameters) {
+                    var View               = parameters.View;
+                    var container_element  = parameters.container_element;
+                    var relationship_index = parameters.relationship_index;
+                    var MvCombo_           = View.MvCombo;
+                    if (relationship_index == 'definitions') {
+                        var title                    = MvCombo_.Model.get('title') || ' - ';
+                        parameters.container_element = parameters.container_element.replace('__TITLE__', title)
+                    }
+                };
                 return Sm.Entities.Abstraction.Garage.prototype.relationships.apply(this, [
                     Mv_,
                     synchronous,
@@ -42,15 +58,14 @@ require(['require', 'Sm',
                 var Garage_          = this;
                 var config           = {
                     relationship_index_list: ['definitions'],
-                    /** @type {Sm.Entities.Abstraction.Garage~on_add} on_append */
                     /**
                      * @type {Sm.Entities.Abstraction.Garage~on_add}
-                     * @param {Sm.Core.MvCombo}             MvCombo
-                     * @param {Sm.Entities.Section.View}    View
-                     * @param {string}                      relationship_index
+                     * @param {Sm.Entities.Section.View}    parameters.View
+                     * @param {HTMLElement}                 parameters.container_element
+                     * @param {string}                      parameters.relationship_index
                      */
-                    on_append:               function (MvCombo, View, relationship_index) {
-                        Sm.CONFIG.DEBUG && console.log(View.queryPermission('view'));
+                    on_append:               function (parameters) {
+                        var View               = parameters.View;
                         View.setPermission('focus', false);
                         View.mark_added();
                     }

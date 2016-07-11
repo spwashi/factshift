@@ -35,7 +35,7 @@ require([
             }
         }
         Sm.loaded.add('Dimension__core');
-        Sm.loaded.when_loaded(['Entities_Dimension_Garage'], function () {Sm.loaded.add('Dimension')});
+        Sm.loaded.when_loaded(['Entities_Dimension_Garage'], function () {Sm.loaded.add('Dimension')}, 'Dimension');
         Sm.CONFIG.DEBUG && console.log(' --- Dimension has been loaded!');
         Sm.Extras.visual_debug('Dimension has been loaded!');
     }, 'Dimension');

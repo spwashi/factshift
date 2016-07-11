@@ -28,11 +28,11 @@ define(['Emitter'], function (Emitter) {
             this.events         = [];
             this._callbacks     = {};
             this.MvMaps         = {
-                loaded_MVs:   {},
-                focused_MVs:  {},
-                selected_MVs: {},
-                active_MVs:   {},
-                deleted_MVs:  {}
+                loaded_MVs:    {},
+                focused_MVs:   {},
+                selected_MVs:  {},
+                active_MVs:    {},
+                destroyed_MVs: {}
             };
             this.loaded_ent_ids = {};
 
@@ -81,12 +81,15 @@ define(['Emitter'], function (Emitter) {
         relationship_aliases:              {},
         /**
          * Get the either the index or the ID of the entity based on a provided index or ID
-         * @param what_to_get
          * @param identifier
+         * @param what_to_get
          * @return {*}
          */
-        get_type:                          function (what_to_get, identifier) {
+        get_type:                          function (identifier, what_to_get) {
             var types = this.types;
+            if (!!types[identifier]) {
+                return what_to_get == 'index' ? identifier : types[identifier];
+            }
             for (var t in types) {
                 if (!types.hasOwnProperty(t)) continue;
                 if (t == identifier || types[t] == identifier) return what_to_get == 'index' ? t : types[t];
@@ -180,11 +183,31 @@ define(['Emitter'], function (Emitter) {
             return false;
         },
         get_MVs:                           function (type) {
-            //Sm.CONFIG.DEBUG && console.log(type, this.MvMaps[type], /loaded|active|focused|selected|deleted/.test(type));
-            if (/loaded|active|focused|selected|deleted/.test(type)) return this.MvMaps[type + "_MVs"];
+            //Sm.CONFIG.DEBUG && console.log(type, this.MvMaps[type], /loaded|active|focused|selected|destroyed/.test(type));
+            if (/loaded|active|focused|selected|destroyed/.test(type)) return this.MvMaps[type + "_MVs"];
         },
         /**
-         * Add Mv as type (linked, active, deleted, focused, selected)
+         * Check to see if an MV is loaded, active, focused, selected, etc.
+         * @param {string}                                              type_to_check   The Index to look in (loaded, active, focused, selected, etc.)
+         * @param {Sm.Core.Identifier|Sm.Core.SmView|Sm.Core.MvCombo}   Id              The ID, MvCombo, or a View with the Identity to search for
+         * @return {boolean}
+         */
+        MV_is:                             function (type_to_check, Id) {
+            if (!Id) return false;
+            if (Id.Identity) {
+                Id = Id.Identity;
+            } else if (Id.MvCombo) {
+                Id = Id.MvCombo.Identity;
+            }
+            var rid = Id.r_id;
+            if (!rid) return false;
+
+            type_to_check = type_to_check + '_MVs';
+
+            return (this[type_to_check] && this[type_to_check][rid]);
+        },
+        /**
+         * Add Mv as type (linked, active, destroyed, focused, selected)
          * @alias Sm.Core.Meta#add_MV_as
          * @param {string}              type_to_add
          * @param {Sm.Core.Identifier}    Id
@@ -197,6 +220,10 @@ define(['Emitter'], function (Emitter) {
             var MvMaps = this.MvMaps;
             this.type !== false && Sm.Core.Meta.add_MV_as(type_to_add, Id);
             switch (type_to_add) {
+                case 'destroyed':
+                    MvMaps.destroyed_MVs[rid] = true;
+                    return this;
+                    break;
                 case 'loaded':
                     MvMaps.loaded_MVs[rid] = Id;
                     break;
@@ -216,7 +243,7 @@ define(['Emitter'], function (Emitter) {
             return this;
         },
         /**
-         * Remove Mv as type (linked, active, deleted, focused, selected)
+         * Remove Mv as type (linked, active, destroyed, focused, selected)
          * @alias Sm.Core.Meta#remove_MV_as
          * @param {string}              type_to_remove
          * @param {Sm.Core.Identifier}    Id

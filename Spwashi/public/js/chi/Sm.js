@@ -82,22 +82,30 @@ require([
             clearTimeout(waiting.timeout);
             var fn      = waiting.fn;
             delete this._waiting[name];
-            return fn();
+            fn();
         },
         _bb:                   {},
         when_loaded:           function (dependencies, fn, name, time_out) {
             var self = Sm.loaded;
             if (name)this._bb[name] = true;
             return new Promise(function (p_res, reject) {
-                var n_r      = function (fn_) { p_res(fn_());};
+                var n_r      = function (fn_) {
+                    var s = fn_();
+                    p_res(s);
+                    return s;
+                };
                 dependencies = self._correct_dependencies(dependencies);
                 if (!name) name = dependencies.join ? dependencies.join(',') : dependencies + '-';
                 name         = name.toLowerCase().trim();
                 var other_fn = fn;
-                if (typeof fn !== "function") fn = function () {return other_fn;};
+                if (typeof fn !== "function") fn = function () {
+                    Sm.CONFIG.DEBUG && console.log('no_fn ' + name);
+                    return other_fn;
+                };
                 if (!dependencies.length) {
-                    self.add(name);
-                    return n_r(fn);
+                    var r_ = n_r(fn);
+                    self.add(name, 'when_loaded');
+                    return r_;
                 } else {
                     for (var i = 0; i < dependencies.length; i++) {
                         var d             = dependencies[i];
@@ -111,6 +119,7 @@ require([
                             var d_s = self._correct_dependencies(waiting.dependencies);
                             if (!d_s.length) return p_res(self.add(name, 'timeout'));
                             self._waiting[name].timeout = false;
+                            Sm.CONFIG.DEBUG && console.log('timeout -- ', d_s);
                             return reject(d_s);
                         }, time_out || 15000),
                         fn:           n_r.bind(null, fn),

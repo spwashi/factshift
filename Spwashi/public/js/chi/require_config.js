@@ -35,6 +35,7 @@ require.config({
 
         /////////////////
         "Sm-Entities-Abstraction-ModalEdit":            CHI_URL + "Sm/Entities/Abstraction/ModalEdit",
+        "Sm-Entities-Section-Abstraction-ModalEdit":    CHI_URL + "Sm/Entities/Section/Abstraction/ModalEdit",
         "Sm-Entities-Abstraction-mixins-SidebarModule": CHI_URL + "Sm/Entities/Abstraction/SidebarModule",
 
         /////////////////

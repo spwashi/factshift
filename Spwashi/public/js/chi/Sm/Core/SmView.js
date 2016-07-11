@@ -138,7 +138,7 @@ require(['require', 'backbone', 'jquery', 'underscore', 'Cocktail', 'Sm-Entities
                     this.queryPermission('view') && this.$el.addClass('can-view');
                     this.queryPermission('relate') && this.$el.addClass('can-relate');
                     this.queryPermission('edit') && this.$el.addClass('can-edit');
-                    this.queryPermission('drag') && this.$el.addClass('can-drag');
+                    this.queryPermission('edit') && this.$el.addClass('can-drag');
                     this.queryPermission('focus') && this.$el.addClass('can-focus');
                     this.status.is_permissions_init = true;
                     return this;
@@ -628,6 +628,7 @@ require(['require', 'backbone', 'jquery', 'underscore', 'Cocktail', 'Sm-Entities
                             SelfMvCombo: SelfMvCombo,
                             map_index:   other_map_index
                         });
+                    if (OtherMvCombo.queryStatus('destroyed')) return Promise.reject(OtherMvCombo.r_id, " - does not exist");
                     if (!OtherMvCombo) return Promise.reject('There is no other MV');
 
                     /**
@@ -836,7 +837,7 @@ require(['require', 'backbone', 'jquery', 'underscore', 'Cocktail', 'Sm-Entities
                 },
                 /**
                  * Find the closest parent element relative to this View that is defined a parent Element
-                 * @return {{Relationship: *, el: *}}
+                 * @return {{Relationship: *, el: *, other_MV_type: string|boolean}}
                  */
                 find_closest_relationship:     function () {
                     var $closest_relationship_holder = this.$el.closest('[data-relationship-r_id]');
@@ -845,11 +846,19 @@ require(['require', 'backbone', 'jquery', 'underscore', 'Cocktail', 'Sm-Entities
                     if ($closest_relationship_holder.length) {
                         var relationship_r_id = $closest_relationship_holder.data('relationship-r_id');
                         Relationship_         = Sm.Core.Identifier.identify({r_id: relationship_r_id});
-                        Sm.CONFIG.DEBUG && console.log(Relationship_, relationship_r_id);
+                    }
+                    var other_relationship_type = false;
+                    if (Relationship_) {
+                        if (Relationship_.linked_entities[0] != this.type) {
+                            other_relationship_type = Relationship_.linked_entities[0];
+                        } else if (Relationship_.linked_entities[1] && Relationship_.linked_entities[1] != this.type) {
+                            other_relationship_type = Relationship_.linked_entities[1];
+                        }
                     }
                     return {
-                        Relationship: Relationship_,
-                        el:           $closest_relationship_holder[0]
+                        Relationship:  Relationship_,
+                        el:            $closest_relationship_holder[0],
+                        other_MV_type: other_relationship_type
                     }
                 },
                 /**
@@ -967,9 +976,18 @@ require(['require', 'backbone', 'jquery', 'underscore', 'Cocktail', 'Sm-Entities
                         var Identity = selected[mv_combo_r_id];
                         MvCombos.push(Identity.getResource())
                     }
-                    var Modal = new Sm.Entities.Abstraction.Modal.Edit({
-                        MvCombo:   [MvCombo_],
-                        self_type: MvCombo_.type
+                    var type =
+                            Sm.Entities[this.type].Abstraction &&
+                            Sm.Entities[this.type].Abstraction.Modal &&
+                            Sm.Entities[this.type].Abstraction.Modal.Edit
+                                ? Sm.Entities[this.type].Abstraction.Modal.Edit
+                                : Sm.Entities.Abstraction.Modal.Edit;
+
+                    var Modal = new type({
+                        MvCombo:             [MvCombo_],
+                        self_type:           MvCombo_.type,
+                        display_type:        settings.display_type,
+                        relationship_object: settings.relationship_object
                     });
                     Modal.open();
                 },
@@ -1068,14 +1086,11 @@ require(['require', 'backbone', 'jquery', 'underscore', 'Cocktail', 'Sm-Entities
                  */
                 for (var j = replaced_MVs.length; j--;) {
                     var replaced_MV_r_id = replaced_MVs[j];
-                    Sm.CONFIG.DEBUG && console.log(replaced_MV_r_id);
                     /** @type {Sm.Core.MvCombo} */
                     var RemovedMV        = items[replaced_MV_r_id] || Sm.Core.Identifier.identify(replaced_MV_r_id);
-                    //Sm.CONFIG.DEBUG && console.log(RemovedMV, Sm.Core.Identifier.registry, Sm.Core.Identifier.registry[replaced_MV_r_id]);
                     if (!RemovedMV) continue;
                     /** @type {Sm.Core.SmView} */
                     var ReplacedView = RemovedMV.getView({strict: true, reference_element: referenceElement});
-                    Sm.CONFIG.DEBUG && console.log(replaced_MV_r_id, ReplacedView);
                     if (!RemovedFirstView) {
                         RemovedFirstView = ReplacedView;
                         continue;

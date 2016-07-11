@@ -163,7 +163,13 @@ require(['require'], function (require) {
                 var Relationship_Obj = this.find_closest_relationship();
                 var Relationship_    = Relationship_Obj.Relationship;
                 var relElem          = Relationship_Obj.el;
-
+                var other_MV_type    = Relationship_Obj.other_MV_type;
+                var is_dictionary    = false;
+                if (!!Relationship_ && Relationship_ !== null && Relationship_ !== undefined) {
+                    is_dictionary = Relationship_.linked_entities[0] == 'Dictionary' || Relationship_.linked_entities[1] == 'Dictionary';
+                } else {
+                    Relationship_ = false;
+                }
                 /**    SCALE    */
                 if ($target.closest('.pan')[0]) {
                     if ($target.hasClass('left')) {
@@ -176,7 +182,13 @@ require(['require'], function (require) {
                 }/**    EDIT    */
                 else if (this.queryPermission('edit') && $target.hasClass('edit') && $target.hasClass('button')) {
                     var edit_config = {};
-                    if (Relationship_) edit_config.display_type = 'inline';
+                    if (Relationship_) {
+                        edit_config.display_type        = 'preview';
+                        edit_config.relationship_object = {
+                            Relationship:  Relationship_,
+                            other_MV_type: other_MV_type
+                        }
+                    }
                     this.prompt_edit(edit_config);
                 }/**    DEBUG  */
                 else if ($target.hasClass('debug') && $target.hasClass('button') && Sm.CONFIG.DEBUG) {
@@ -209,14 +221,7 @@ require(['require'], function (require) {
                     !this.MvCombo.queryStatus('selected') ? this.MvCombo.select(this) : this.MvCombo.deselect(this);
                 }
                 else {
-                    var is_dictionary = false;
-                    if (!!Relationship_ && Relationship_ !== null && Relationship_ !== undefined) {
-                        is_dictionary = Relationship_.linked_entities[0] == 'Dictionary' || Relationship_.linked_entities[1] == 'Dictionary';
-                    } else {
-                        Relationship_ = false;
-                    }
                     if (Relationship_ !== null && Relationship_ && is_dictionary) {
-                        Sm.CONFIG.DEBUG && console.log('is_dictionary');
                         var content_location = this.MvCombo.Model.get('content_location');
                         if (content_location && content_location.length) {
                             Sm.Core.util.follow_link(content_location, false);
@@ -323,7 +328,7 @@ require(['require'], function (require) {
                             self.PivotViewAid = new Sm.Extras.ViewAid({
                                 element: $pivot_display[0],
                                 events:  {
-                                    pivot: function (View_Aid, va_content_element, data, dataset) {
+                                    pivot: function (data, dataset) {
                                         var View = self;
                                         if (reference_used && data !== 'home') {
                                             View = ReferencedMvCombo.getView({

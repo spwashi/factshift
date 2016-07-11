@@ -2,7 +2,9 @@
  * Created by Sam Washington on 7/8/16.
  */
 require(['require', 'Class', 'Sm', 'Sm/Extras/Modal'], function (require, Class) {
-    Sm.loaded.when_loaded('Extras_Modal', function () {
+    Sm.CONFIG.DEBUG && console.log('11 - medit');
+    Sm.loaded.when_loaded(['Extras_Modal'], function () {
+        Sm.CONFIG.DEBUG && console.log(Sm.Extras.Modal);
         Sm.Entities.Abstraction.Modal      = Sm.Entities.Abstraction.Modal || {};
         /**
          * @alias Sm.Entities.Abstraction.Modal.Edit
@@ -13,15 +15,19 @@ require(['require', 'Class', 'Sm', 'Sm/Extras/Modal'], function (require, Class)
              *
              * @param settings
              * @param settings.MvCombo
+             * @param settings.self_type
+             * @param settings.display_type
+             * @param settings.relationship_object
              */
             init:               function (settings) {
                 settings       = settings || {};
                 var MvComboArr = settings.MvCombo;
                 this.self_type = settings.self_type || false;
-                if (!!MvComboArr && MvComboArr.constructor !== Array) {
-                    MvComboArr = [MvComboArr];
+                if (!!MvComboArr && MvComboArr.constructor !== Array) MvComboArr = [MvComboArr];
+                if (settings.relationship_object) {
+                    this.relationship_object = settings.relationship_object;
                 }
-                this.display_type = settings.display_type || 'full.modal';
+                this.display_type = (settings.display_type || 'full') + '.modal';
                 /**
                  * @alias Sm.Entities.Abstraction.Modal.Edit.MvComboArr
                  * @type {Array<Sm.Core.MvCombo>}
@@ -30,7 +36,7 @@ require(['require', 'Class', 'Sm', 'Sm/Extras/Modal'], function (require, Class)
                 this.ViewArr      = [];
 
                 var res    = Sm.Extras.Modal.prototype.init.apply(this, arguments);
-                Sm.Entities.Abstraction.Modal.Edit.generate_element.call(this);
+                this.create_modal_element();
                 var events = ['save', 'before_save', 'after_save', 'open', 'close', 'view_relationships', 'add_entity', 'select'];
                 for (var i = 0; i < events.length; i++) {
                     var ev_name = events[i];
@@ -76,7 +82,6 @@ require(['require', 'Class', 'Sm', 'Sm/Extras/Modal'], function (require, Class)
 
                     _Model.clear({silent: true});
                     _Model.set(response_model, {silent: true});
-                    Sm.CONFIG.DEBUG && console.log(response_model.content_location);
                     this.update();
                     var changed_arr = [];
                     for (var attr in changed_attributes) {
@@ -95,7 +100,6 @@ require(['require', 'Class', 'Sm', 'Sm/Extras/Modal'], function (require, Class)
                         }
                     }
                     var self = this;
-                    Sm.CONFIG.DEBUG && console.log(changed_attributes, response_model, _Model.attributes, _Model);
                     MvCombo_.forEachView(function () {
                         /** @type {Sm.Core.SmView|*}  */
                         var View = this;
@@ -129,15 +133,12 @@ require(['require', 'Class', 'Sm', 'Sm/Extras/Modal'], function (require, Class)
                     return (this.changed_attributes = _Model.changedAttributes());
                 }
                 return {};
-            }
-        });
+            },
 
-        Sm.Entities.Abstraction.Modal.Edit.generate_element = function () {
-            if (this.MvComboArr.length === 1) {
-                var MvCombo_  = this.MvComboArr[0];
+            create_modal_element: function () {
                 var self      = this;
                 var self_type = this.self_type;
-                return Sm.Entities[self_type].Garage.generate(this.display_type + '.modal', MvCombo_).catch(function (reason) {
+                return this.generate_element().catch(function (reason) {
                     alert('There was an error - 1 - ' + reason);
                 }).then(function (result) {
                     if (self.status.is_open) {
@@ -149,9 +150,20 @@ require(['require', 'Class', 'Sm', 'Sm/Extras/Modal'], function (require, Class)
                 }).catch(function (reason) {
                     alert('There was an error - ' + reason);
                 });
+            },
+            generate_element:     function (config) {
+                if (this.MvComboArr.length === 1) {
+                    var MvCombo_  = this.MvComboArr[0];
+                    var self_type = this.self_type;
+                    Sm.CONFIG.DEBUG && console.log(config);
+                    return Sm.Entities[self_type].Garage.generate(this.display_type + '.modal', MvCombo_, false, {
+                        config: config
+                    });
+                }
+                return Promise.reject("Could not figure out how to generate this element");
             }
-            return Promise.reject("Could ot figure out what to do");
-        };
+        });
+
 
         /**
          * @typedef {function}  Sm.Entities.Abstraction.Modal.Edit.on_event
@@ -176,7 +188,6 @@ require(['require', 'Class', 'Sm', 'Sm/Extras/Modal'], function (require, Class)
                     silent: true,
                     patch:  true
                 }).then(function (result) {
-                    Sm.CONFIG.DEBUG && console.log(result.message.model.content_location);
                     return self.resolve('after_save', result);
                 });
             }
@@ -204,7 +215,11 @@ require(['require', 'Class', 'Sm', 'Sm/Extras/Modal'], function (require, Class)
             }
         };
         Sm.Entities.Abstraction.Modal.Edit.on_view_relationships = function () {
-            if (!this.self_type) return;
+            Sm.CONFIG.DEBUG && console.log('click');
+            if (!this.self_type) {
+                Sm.CONFIG.DEBUG && console.log("No self type in this modal!");
+                return;
+            }
             if (this.MvComboArr.length !== 1) {
                 Sm.CONFIG.DEBUG && console.log("Not sure what to do in this situation!");
                 return;
@@ -235,15 +250,18 @@ require(['require', 'Class', 'Sm', 'Sm/Extras/Modal'], function (require, Class)
                 Sm.CONFIG.DEBUG && console.log(e);
             });
         };
-        Sm.Entities.Abstraction.Modal.Edit.on_add_entity         = function () {};
+        Sm.Entities.Abstraction.Modal.Edit.on_add_entity         = function () {
+            Sm.CONFIG.DEBUG && console.log(arguments);
+        };
         Sm.Entities.Abstraction.Modal.Edit.on_select             = function () {
             var self = this;
             this.resolve('save').then(function (res) {
                 Sm.CONFIG.DEBUG && console.log(res);
-                Sm.Entities.Abstraction.Modal.Edit.generate_element.call(self);
+                self.create_modal_element();
             }).catch(function (res) {
                 Sm.CONFIG.DEBUG && console.log(res);
             });
         };
+        return 'THIS HAS BEEN CALLED';
     }, 'Entities_Abstraction_Modal_Edit');
 });

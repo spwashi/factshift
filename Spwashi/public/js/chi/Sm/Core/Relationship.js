@@ -150,7 +150,6 @@ define(['Class', 'Sm'], function (Class) {
             var all_resolve_arr = [];
 
             var url  = Sm.urls.api.generate({Relationship: this});
-            Sm.CONFIG.DEBUG && console.log(url);
             var self = this;
             return Promise.resolve($.ajax({
                 url:         url,

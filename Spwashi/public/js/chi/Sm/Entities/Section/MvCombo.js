@@ -195,34 +195,6 @@ require(['require', 'Sm', 'Sm-Entities-Section-Model', 'Sm-Core-MvCombo'], funct
                     self_index:          self_index,
                     other_index:         other_index
                 }
-            },
-            /**
-             * @alias Sm.Core.MvCombo#_prompt_destroy
-             * @param settings
-             * @param settings.View
-             * @param settings.then_args
-             * @param events
-             * @param events.success
-             * @param events.cancel
-             * @param events.fail
-             * @method
-             */
-            _prompt_destroy:                   function (settings, events) {
-                events = events || {};
-                if (confirm('Are you sure you want to delete ' + this.type + ' ' + this.Identity.ent_id)) {
-                    return this._continue_destroy({
-                        then_arg: settings.then_args || [events.success, events.fail]
-                    })
-                }
-                var Wrapper_ = this.Wrapper;
-                var Mv_      = this;
-                var View     = settings.View;
-                typeof events.cancel === "function" && events.cancel({
-                    Wrapper: Wrapper_,
-                    MvCombo: Mv_,
-                    View:    View
-                });
-                return Promise.reject();
             }
         });
         /**

@@ -1839,6 +1839,29 @@ body > .row,
 .concept.preview.spwashi-concept.preview > .button-control {
   display: block;
 }
+.choose-container > .options {
+  width: 100%;
+  zoom: 1;
+}
+.choose-container > .options:after {
+  clear: both;
+}
+.choose-container > .options:before,
+.choose-container > .options:after {
+  content: '\0020';
+  display: block;
+  overflow: hidden;
+  visibility: hidden;
+  width: 0;
+  height: 0;
+}
+.choose-container > .options > button {
+  width: 42%;
+  float: right;
+}
+.choose-container > .options > button:first-child {
+  float: left;
+}
 .view_relationship-container .relationship-container > .content {
   margin-left: 20px;
 }

@@ -36,9 +36,12 @@ require.config({
         /////////////////
         "Sm-Entities-Abstraction-ModalEdit":            CHI_URL + "Sm/Entities/Abstraction/ModalEdit",
         "Sm-Entities-Section-Abstraction-ModalEdit":    CHI_URL + "Sm/Entities/Section/Abstraction/ModalEdit",
+        "Sm-Entities-Abstraction-ModalDestroy":         CHI_URL + "Sm/Entities/Abstraction/ModalDestroy",
         "Sm-Entities-Abstraction-mixins-SidebarModule": CHI_URL + "Sm/Entities/Abstraction/SidebarModule",
 
         /////////////////
+        "Sm-Entities-Abstraction-templates-_template":                          CHI_URL + "Sm/Entities/Abstraction/templates/_template",
+        "Sm-Entities-Abstraction-Garage":                                       CHI_URL + "Sm/Entities/Abstraction/Garage",
         "Sm-Entities-Page-Wrapper":                                             CHI_URL + "Sm/Entities/Page/Wrapper",
         "Sm-Entities-Page-MvCombo":                                             CHI_URL + "Sm/Entities/Page/MvCombo",
         "Sm-Entities-Page-View":                                                CHI_URL + "Sm/Entities/Page/View",

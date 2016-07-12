@@ -294,9 +294,9 @@ require(['require'], function (require) {
                         }
                         /** @type {string} This is the template that will be used to create the View aid */
                         var generated_view_aid_template = selfSm.Garage.generate({
-                            outer_string_name: 'pivot_display',
-                            synchronous:       true,
-                            data:              self_relationship_subtype_object
+                            type:        'pivot_display.',
+                            synchronous: true,
+                            data:        self_relationship_subtype_object
                         });
                         //Create an actual element for the pivot display
                         /** @type {jQuery} An element for the pivot display */

@@ -56,7 +56,7 @@ require(['require', 'Sm',
                 var word             = settings.word || false;
                 var title            = settings.title || word;
                 var Garage_          = this;
-                var config           = {
+                var parameters       = {
                     relationship_index_list: ['definitions'],
                     /**
                      * @type {Sm.Entities.Abstraction.Garage~on_add}
@@ -65,7 +65,7 @@ require(['require', 'Sm',
                      * @param {string}                      parameters.relationship_index
                      */
                     on_append:               function (parameters) {
-                        var View               = parameters.View;
+                        var View = parameters.View;
                         View.setPermission('focus', false);
                         View.mark_added();
                     }
@@ -92,15 +92,15 @@ require(['require', 'Sm',
 
                     return Mv_.reduce(function (P, MvCombo_) {
                         return P.then(function () {
-                            var def_rels                    = MvCombo_.define_word(word);
-                            config.listed_relationships_obj = {
+                            var def_rels                        = MvCombo_.define_word(word);
+                            parameters.listed_relationships_obj = {
                                 definitions: def_rels
                             };
-                            return Garage_.relationships(MvCombo_, false, config).then(append_content);
+                            return Garage_.relationships(MvCombo_, false, parameters).then(append_content);
                         });
                     }, Promise.resolve());
                 } else {
-                    return this.relationships(Mv_, false, config).then(append_content);
+                    return this.relationships(Mv_, false, parameters).then(append_content);
                 }
             }
         });

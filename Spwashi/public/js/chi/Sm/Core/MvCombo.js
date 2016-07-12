@@ -204,7 +204,7 @@ require(['require', 'Sm', 'Sm-Core-util', 'Emitter'], function (require) {
             });
 
             if (this.ent_id) this.setStatus('has_ent_id', true);
-            this.setStatus('completed', (Id.id && Id.ent_id && Id.ent_id.length));
+            this.setStatus('completed', !!(Id.id && Id.ent_id && Id.ent_id.length));
 
             var _destroy = this.add_bound('_destroy', this.destroy);
             var _focus   = this.add_bound('_focus', this.focus);
@@ -1133,10 +1133,38 @@ require(['require', 'Sm', 'Sm-Core-util', 'Emitter'], function (require) {
          * @private
          */
         _prompt_destroy:                   function (settings) {
-            if (confirm('Are you sure you want to delete ' + this.type + ' ' + this.Identity.ent_id)) {
-                return this._continue_destroy(settings);
-            }
-            return Promise.reject('canceled destroy');
+            var self = this;
+            var Modal;
+            var P    = new Promise(function (resolve, reject) {
+                var MvCombo_ = self;
+                var type     =
+                        Sm.Entities[self.type].Abstraction &&
+                        Sm.Entities[self.type].Abstraction.Modal &&
+                        Sm.Entities[self.type].Abstraction.Modal.Destroy
+                            ? Sm.Entities[self.type].Abstraction.Modal.Destroy
+                            : Sm.Entities.Abstraction.Modal.Destroy;
+
+                Modal = new type({
+                    MvCombo:        [MvCombo_],
+                    self_type:      MvCombo_.type,
+                    display_type:   settings.display_type,
+                    promise_object: {
+                        resolve: resolve,
+                        reject:  reject
+                    }
+                });
+                Modal.open();
+            });
+            return P.then(function (b) {
+                Sm.CONFIG.DEBUG && console.log(b);
+                Modal.close();
+                return self._continue_destroy(settings);
+            }).catch(function (boon) {
+                Modal.close();
+                Sm.CONFIG.DEBUG && console.log(boon);
+                Sm.CONFIG.DEBUG && console.log("Rejected the promise");
+                throw boon;
+            });
         },
         /**
          * @alias Sm.Core.MvCombo#_prompt_alias
@@ -1183,7 +1211,7 @@ require(['require', 'Sm', 'Sm-Core-util', 'Emitter'], function (require) {
             return (d ? d : Promise.reject()).then(function (response) {
                 if (response && response.success) return response;
                 throw response.error;
-            }).then(Wrapper.destroy_MV.bind(Wrapper)).then(function () {self.setStatus('destroyed', true);});
+            }).then(Wrapper.destroy_MV.bind(Wrapper, this)).then(function () {self.setStatus('destroyed', true);});
         },
         /**
          *

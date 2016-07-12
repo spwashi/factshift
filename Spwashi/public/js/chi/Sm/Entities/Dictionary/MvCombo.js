@@ -122,15 +122,15 @@ require(['require', 'Sm', 'Sm-Entities-Dictionary-Model', 'Sm-Core-MvCombo'], fu
                     var RelationshipIndex = rel_details.RelationshipIndex;
                     var OtherView         = rel_details.OtherView;
                     var map_indices       = rel_details.map_indices;
-                    if (OtherMvCombo.type == 'Section') {
-                        if (OtherMvCombo.Model) {
-                            var words = OtherMvCombo.Model.get('words') || '';
-                            if (words.length) {
-                                var _words = words.split(',');
-                                for (var i = 0; i < _words.length; i++) {
-                                    var w = _words[i];
-                                    SelfMvCombo.add_word(w, OtherMvCombo);
-                                }
+                    if (OtherMvCombo.type == 'Section' && OtherMvCombo.Model) {
+                        Sm.CONFIG.DEBUG && console.log(OtherMvCombo, ' -- add to dictionary');
+                        var words = OtherMvCombo.Model.get('words') || '';
+                        Sm.CONFIG.DEBUG && console.log(words);
+                        if (words.length) {
+                            var _words = words.split(',');
+                            for (var i = 0; i < _words.length; i++) {
+                                var w = _words[i];
+                                SelfMvCombo.add_word(w, OtherMvCombo);
                             }
                         }
                     }

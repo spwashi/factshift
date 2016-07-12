@@ -12,7 +12,7 @@
         'tooltipster',
         'select2',
         'inflection',
-        'Sm/Entities/Abstraction/Garage',
+        'Sm-Entities-Abstraction-Garage',
         'require_config',
 //----------------------------------------------
         'Sm-Entities-Collection-main',
@@ -86,7 +86,10 @@
         "Sm-Core-SmView":            "Sm/Core/SmView",
         "Sm-Core-util":              "Sm/Core/util",
 
+        "Sm-Entities-Abstraction-templates-_template":                          "Sm/Entities/Abstraction/templates/_template",
+        "Sm-Entities-Abstraction-Garage":                                       "Sm/Entities/Abstraction/Garage",
         "Sm-Entities-Section-Abstraction-ModalEdit":                            "Sm/Entities/Section/Abstraction/ModalEdit",
+        "Sm-Entities-Abstraction-ModalDestroy":                                 "Sm/Entities/Abstraction/ModalDestroy",
         "Sm-Entities-Abstraction-mixins-SidebarModule":                         "Sm/Entities/Abstraction/SidebarModule",
         "Sm-Entities-Abstraction-ModalEdit":                                    "Sm/Entities/Abstraction/ModalEdit",
         "Sm-Entities-Page-Wrapper":                                             "Sm/Entities/Page/Wrapper",

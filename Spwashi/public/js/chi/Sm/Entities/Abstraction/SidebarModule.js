@@ -11,7 +11,7 @@ require(['require', 'backbone', 'jquery', 'underscore', 'Cocktail', 'Sm-Entities
             var self        = this;
             var desc        = self.elements.description_container || this.get_rendered('description_container');
             if (desc) {
-                Sm.Entities[this.type].Garage.generate('preview', MvCombo_, false).then(function (result) {
+                Sm.Entities[this.type].Garage.generate('preview', MvCombo_).then(function (result) {
                     self.elements.description_container.innerHTML = result;
                     self.init_button_control_events();
                 });

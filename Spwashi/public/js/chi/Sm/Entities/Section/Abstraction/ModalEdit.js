@@ -2,7 +2,6 @@
  * Created by Sam Washington on 7/10/16.
  */
 require(['require', 'Class', 'Sm', 'Sm/Extras/Modal', 'Sm-Entities-Abstraction-ModalEdit'], function (require, Class) {
-    Sm.CONFIG.DEBUG && console.log('22 - medit');
     Sm.loaded.when_loaded('Entities_Abstraction_Modal_Edit', function () {
         Sm.Entities.Section.Abstraction            = Sm.Entities.Section.Abstraction || {};
         Sm.Entities.Section.Abstraction.Modal      = Sm.Entities.Section.Abstraction.Modal || {};

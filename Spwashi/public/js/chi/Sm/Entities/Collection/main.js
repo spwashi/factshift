@@ -3,7 +3,7 @@
  */
 
 require([
-    'require', 'Sm', 'Sm-Core-Core', 'Sm/Entities/Abstraction/Garage'
+    'require', 'Sm', 'Sm-Core-Core', 'Sm-Entities-Abstraction-Garage'
 ], function (require) {
     /**
      * Loads the Collection definition (not necessarily on every page)

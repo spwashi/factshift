@@ -1,7 +1,7 @@
 /**
  * Created by Sam Washington on 1/4/16.
  */
-require(['require', 'Class', 'Sm'], function (require, Class) {
+require(['require', 'Class', 'Sm', 'Sm-Entities-Abstraction-templates-_template'], function (require, Class) {
     require('Sm');
     require('Class');
 
@@ -58,14 +58,15 @@ require(['require', 'Class', 'Sm'], function (require, Class) {
                 var Model_     = Mv_.Model;
                 var attributes = Model_ ? Model_.attributes : (Mv_.attributes ? Mv_.attributes : Mv_);
                 if (!attributes) attributes = {};
-                config                      = config || {};
-                var type                    = config.display_subtype || attributes[this.subtype_identifier];
+                config        = config || {};
+                var self_type = this.type;
+                var type      = config.display_subtype || attributes[this.subtype_identifier];
                 if (!type) {type = "standard";}
-                var template_type = Sm.Entities[this.type].Meta.get_type(type, 'index');
+                var template_type = Sm.Entities[self_type].Meta.get_type(type, 'index');
                 if (!template_type) template_type = 'standard';
                 return {
                     Model:         Model_,
-                    attributes:    Sm.Core.util.merge_objects(attributes, {_type: template_type}),
+                    attributes:    Sm.Core.util.merge_objects(attributes, {_type: template_type, type: self_type}),
                     subtype:       type,
                     template_type: template_type
                 }
@@ -307,52 +308,154 @@ require(['require', 'Class', 'Sm'], function (require, Class) {
                     return this._default(e);
                 }
             },
+            _combine_string:           function (attributes, string) {
+                var underscore_template = _.template(string);
+                return underscore_template(attributes);
+            },
+            _generate_one:             function (template_arr, input, settings) {
+                settings           = settings || {};
+                var is_synchronous = !!settings.synchronous;
+                var default_val    = settings.default_value !== false ? settings.default_value || "full" : false;
+                var check          = input.indexOf("preview") > -1;
+
+                var template        = template_arr[0];
+                var backup_template = template_arr[1] || template;
+                var original_input  = input;
+                /**
+                 * An array of indices to search for.
+                 * We iterate through this array and return the last string that we can
+                 * @type {Array}
+                 */
+                var to_try          = [];
+//Get the subtype (e.g. (edit) from the string inline.modal(edit)
+                var subtype_test = /\((.+)\)/.exec(input);
+                var subtype      = !!subtype_test && subtype_test[1] ? subtype_test[1] : false;
+                subtype && (input = input.replace(subtype_test[0], ""));
+
+                var ms_test = /\[(.+)\]/.exec(input);
+                var m_s     = !!ms_test && ms_test[1] ? ms_test[1] : false;
+                m_s && (input = input.replace(ms_test[0], ""));
+//What are we looking for? This will generally be something like .modal or .body. If neither were specified, default to "body"
+                var i_a_test = /\.(.*)(\b|$)/.exec(input);
+                var i_a      = !!i_a_test && i_a_test[1] ? i_a_test[1] : false;
+                if (i_a) input = input.replace(i_a_test[0], "");
+
+//If we didn't specify anything, assume that we are trying to pull the "full" version
+                input = (input.length ? input : "full").replace(".", "");
+
+                !!i_a && to_try.push(i_a);
+                !!subtype && to_try.push(subtype);
+                !!m_s && to_try.push(m_s);
+                input.length && to_try.push(input);
+
+                var complete_fallback  = Sm.Entities.Abstraction.templates._template;
+                var fallback           = backup_template || complete_fallback;
+                var preferred_template = template || backup_template;
+                var string             = false;
+
+                var replace_object = {};
+                var replace        = settings.replace || false;
+                if (replace) {
+                    delete  settings.replace;
+                    //settings.default_value = false;
+                    settings.synchronous = true;
+                    for (var index in replace) {
+                        if (!replace.hasOwnProperty(index)) continue;
+                        var to_search         = original_input.replace(i_a, replace[index]);
+                        replace_object[index] = this._generate_one([preferred_template, fallback], to_search, settings);
+                    }
+                }
+                var fn      = function (obj, subtype, previous) {
+                    var res = false;
+                    if (typeof obj === "boolean" || typeof obj === "number") return obj;
+                    if (typeof obj === "string") res = obj;
+                    if (obj && subtype) {
+                        if (typeof obj === "string") {
+                            res = obj;
+                        } else if (typeof obj === "function") {
+                            res = obj();
+                        } else if (obj[subtype]) res = obj[subtype];
+                        else res = false;
+                    }
+                    if (!res && !!default_val && previous[0] && subtype != default_val) res = fn(obj, default_val, previous);
+                    return res;
+                };
+                var self    = this;
+                var resolve = function (string) {
+                    var processed_string = settings.attributes ? self._combine_string(settings.attributes, string) : string;
+                    for (var index in replace_object) {
+                        if (!replace_object.hasOwnProperty(index)) continue;
+                        processed_string = processed_string.replace(index, replace_object[index]);
+                    }
+                    return is_synchronous ? processed_string : Promise.resolve(processed_string);
+                };
+                var p       = [];
+                /**
+                 * Iterate through the array of whatever we are looking for and try to pull the last string from it.
+                 * If we get to a point where we cannot find something that we are looking for, we fallback to a default string.
+                 */
+                for (var i = 0; i < to_try.length; i++) {
+                    //The current thing that we are looking for
+                    var tt = to_try[i];
+                    //This is the last thing that we looked for
+                    p.splice(0, 0, i ? to_try[i - 1] : false);
+                    //Top level object, there for everything
+                    complete_fallback  = fn(complete_fallback, tt, p) || false;
+                    fallback           = fn(fallback, tt, p) || complete_fallback || false;
+                    preferred_template = fn(preferred_template, tt, p) || fallback || false;
+
+                    //If the primary object is a string already, we are okay and should stop looking.
+                    if (typeof preferred_template === "string") return resolve(preferred_template);
+                }
+                return resolve("__CONTENT__");
+            },
 
             /**
-             *
+             * @alias Sm.Entities.Abstraction.Garage
              * @param type
-             * @param Mv_              The MvCombo that we are generatng an
-             * @param is_synchronous
+             * @param data              The MvCombo that we are generatng an
              * @param settings
-             * @param settings.fallback
-             * @param settings.outer_string_name
-             * @param settings.inner_string_name
-             * @param settings.inner_template_string
-             * @param settings.template_type
-             * @param settings.outer_template_string
-             * @param settings.config
+             * @param {{}}              settings.config
+             * @param {string}          settings.type
+             * @param {string}          settings.data
+             * @param {boolean=false}   settings.synchronous
              * @return {*}
              */
-            generate: function (type, Mv_, is_synchronous, settings) {
+            generate: function (type, data, settings) {
+                var config;
+                settings = settings || {};
                 if (typeof type === "object") {
-                    settings       = type;
-                    type           = settings.type || settings.outer_string_name;
-                    Mv_            = settings.MvCombo || settings.data || {};
-                    is_synchronous = settings.synchronous;
+                    settings = type;
+                    type     = settings.type;
+                    data     = settings.MvCombo || settings.data || {};
+                    config   = settings.config || {};
                 }
-                settings                   = settings || {};
-                type                       = (type || ' ').toLowerCase();
-                var is_modal               = type.indexOf('modal') > -1;
-                type                       = type.replace('.modal', '');
-                var type_arr               = type.split('.');
-                type                       = type_arr[0];
-                settings.inner_string_name = type_arr[0] || settings.inner_string_name;
-                var _args                  = arguments;
-                if (this[type]) return this[type].apply(this, [
-                    Mv_, is_synchronous, settings
-                ]);
+                var is_synchronous = !!settings.synchronous || false;
+                if (type == "relationships") return this.relationships(data, is_synchronous, settings);
+                var V      = this._get_details_from_MvCombo(data, config || {});
+                var t      = Sm.Entities[this.type].templates;
+                var self   = this;
+                var res    = function () {
+                    var templates = [
+                        t[V.template_type] || t.standard,
+                        t._template
+                    ];
+                    type          = (type || '').toLowerCase();
+                    if (type.indexOf(".") < 0) type += ".body";
+                    var outer_name = type.replace(/(body|modal|relationships)/, "$1_outer");
+                    var outer      = "__CONTENT__";
+                    if (outer_name != type)
+                        outer = self._generate_one(templates, outer_name, {
+                            synchronous: true,
+                            replace:     {__BUTTON_CONTROL__: "button_control"}
+                        });
+                    var inner = self._generate_one(templates, type, {synchronous: true});
 
-                return this._rt(Mv_, {
-                    template_index:        type,
-                    is_modal:              is_modal,
-                    fallback:              settings.fallback || 'full',
-                    outer_string_name:     settings.outer_string_name,
-                    inner_string_name:     settings.inner_string_name,
-                    inner_template_string: settings.inner_template_string,
-                    template_type:         settings.template_type,
-                    outer_template_string: settings.outer_template_string,
-                    config:                settings.config || {}
-                }, !!is_synchronous);
+                    return self._combine_string(V.attributes, outer.replace(/__CONTENT__/ig, inner));
+                };
+                var result = res();
+                var r      = is_synchronous ? result : Promise.resolve(result);
+                return r;
             },
 
             /**
@@ -499,7 +602,6 @@ require(['require', 'Class', 'Sm'], function (require, Class) {
                             var Relationship_ = related_views[k].Relationship;
                             if (!View_.MvCombo) continue;
                             if (appendedViews.indexOf(View_.MvCombo.r_id) > -1) View_ = View_.clone();
-
                             var outer_string = relationship_outer.replace('__CONTENT__', '').replace('__R_ID__', Relationship_.Identity.r_id).replace('__MV_R_ID__', Mv_ ? Mv_.r_id : 'null');
                             var params       = {
                                 View:               View_,
@@ -510,7 +612,8 @@ require(['require', 'Class', 'Sm'], function (require, Class) {
                             var $outer  = $(params.container_element);
                             var content = $outer.find('.content');
                             if (content[0]) {
-                                content[0].appendChild(View_.get_rendered('Element'));
+                                var v = View_.get_rendered('Element');
+                                content[0].appendChild(v);
                                 holder[0].appendChild($outer[0]);
                                 appendedViews.push(View_.MvCombo.r_id);
                                 View_.mark_added();

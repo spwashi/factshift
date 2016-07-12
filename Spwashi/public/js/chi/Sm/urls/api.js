@@ -17,7 +17,7 @@ define(['require', 'Sm', 'Sm/urls/main'], function (require) {
     Sm.urls     = Sm.urls || {};
     Sm.urls.api = {
         /**
-         *
+         * @alias Sm.urls.api.generate
          * @param settings
          * @param settings.type
          * @param settings.MvCombo

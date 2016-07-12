@@ -1451,3 +1451,66 @@
  {07-11-2016  03:19:10} 	  line {915}	 of {Spwashi/Controller/API/API.php};
 	-->		Could not set the property user_id in class Spwashi\Model\Map\DictionarySectionMap
 
+--------------------------------------------------------------------------------------------------------------------------
+-------------------------{07-11-2016  14:32:54}---------------------------------------------------------------------------
+--------------------------------------------------------------------------------------------------------------------------
+ {07-11-2016  14:32:54} 	  line {915}	 of {Spwashi/Controller/API/API.php};
+	-->		Could not set the property relationship_type in class Spwashi\Model\Map\DictionarySectionMap
+
+ {07-11-2016  14:32:54} 	  line {915}	 of {Spwashi/Controller/API/API.php};
+	-->		Could not set the property user_id in class Spwashi\Model\Map\DictionarySectionMap
+
+--------------------------------------------------------------------------------------------------------------------------
+-------------------------{07-11-2016  16:10:56}---------------------------------------------------------------------------
+--------------------------------------------------------------------------------------------------------------------------
+ {07-11-2016  16:10:56} 	  line {72}	 of {Spwashi/scripts/page/process_page_create.php};
+	-->		Could not generate a proper URL in Spwashi for route named spwashi_page_edit
+
+--------------------------------------------------------------------------------------------------------------------------
+-------------------------{07-11-2016  16:30:20}---------------------------------------------------------------------------
+--------------------------------------------------------------------------------------------------------------------------
+ {07-11-2016  16:30:20} 	 code {42S22} line {130}	 of {Sm/Database/Abstraction/Sql.php};
+	0 => str     : 	SQLSTATE[42S22]: Column not found: 1054 Unknown column 'table2.relationship_type' in 'where clause'
+	1 => str     : 	
+		UPDATE section_section_map AS tbl SET tbl.position = tbl.position + 1 WHERE tbl.primary_section_id = 4 AND tbl.secondary_section_id != 13 AND table2.relationship_type = 1 
+
+--------------------------------------------------------------------------------------------------------------------------
+-------------------------{07-11-2016  16:31:22}---------------------------------------------------------------------------
+--------------------------------------------------------------------------------------------------------------------------
+ {07-11-2016  16:31:22} 	 code {42S22} line {130}	 of {Sm/Database/Abstraction/Sql.php};
+	0 => str     : 	SQLSTATE[42S22]: Column not found: 1054 Unknown column 'table2.relationship_type' in 'where clause'
+	1 => str     : 	
+		UPDATE section_section_map AS tbl SET tbl.position = tbl.position + 1 WHERE tbl.primary_section_id = 4 AND tbl.secondary_section_id != 13 AND table2.relationship_type = 1 
+
+--------------------------------------------------------------------------------------------------------------------------
+-------------------------{07-12-2016  00:28:49}---------------------------------------------------------------------------
+--------------------------------------------------------------------------------------------------------------------------
+ {07-12-2016  00:28:49} 	 code {42S22} line {130}	 of {Sm/Database/Abstraction/Sql.php};
+	0 => str     : 	SQLSTATE[42S22]: Column not found: 1054 Unknown column 'table2.relationship_type' in 'where clause'
+	1 => str     : 	
+		UPDATE section_section_map AS tbl SET tbl.position = tbl.position + 1 WHERE tbl.primary_section_id = 2 AND tbl.secondary_section_id != 25 AND table2.relationship_type = 1 
+
+--------------------------------------------------------------------------------------------------------------------------
+-------------------------{07-12-2016  01:31:09}---------------------------------------------------------------------------
+--------------------------------------------------------------------------------------------------------------------------
+ {07-12-2016  01:31:09} 	 code {42S22} line {130}	 of {Sm/Database/Abstraction/Sql.php};
+	0 => str     : 	SQLSTATE[42S22]: Column not found: 1054 Unknown column 'table2.relationship_type' in 'where clause'
+	1 => str     : 	
+		UPDATE section_section_map AS tbl SET tbl.position = tbl.position + 1 WHERE tbl.primary_section_id = 4 AND tbl.secondary_section_id != 27 AND table2.relationship_type = 1 
+
+--------------------------------------------------------------------------------------------------------------------------
+-------------------------{07-12-2016  02:44:14}---------------------------------------------------------------------------
+--------------------------------------------------------------------------------------------------------------------------
+ {07-12-2016  02:44:14} 	 code {42S22} line {130}	 of {Sm/Database/Abstraction/Sql.php};
+	0 => str     : 	SQLSTATE[42S22]: Column not found: 1054 Unknown column 'table2.relationship_type' in 'where clause'
+	1 => str     : 	
+		UPDATE section_section_map AS tbl SET tbl.position = tbl.position + 1 WHERE tbl.primary_section_id = 6 AND tbl.secondary_section_id != 28 AND table2.relationship_type = 1 
+
+--------------------------------------------------------------------------------------------------------------------------
+-------------------------{07-12-2016  02:44:27}---------------------------------------------------------------------------
+--------------------------------------------------------------------------------------------------------------------------
+ {07-12-2016  02:44:27} 	 code {42S22} line {130}	 of {Sm/Database/Abstraction/Sql.php};
+	0 => str     : 	SQLSTATE[42S22]: Column not found: 1054 Unknown column 'table2.relationship_type' in 'where clause'
+	1 => str     : 	
+		UPDATE section_section_map AS tbl SET tbl.position = tbl.position + 1 WHERE tbl.primary_section_id = 6 AND tbl.secondary_section_id != 29 AND table2.relationship_type = 1 
+

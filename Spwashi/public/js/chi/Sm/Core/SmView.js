@@ -1,7 +1,7 @@
 /**
  * Created by Sam Washington on 12/17/15.
  */
-require(['require', 'backbone', 'jquery', 'underscore', 'Cocktail', 'Sm-Entities-Abstraction-ModalEdit'],
+require(['require', 'backbone', 'jquery', 'underscore', 'Cocktail', 'Sm-Entities-Abstraction-ModalEdit', 'Sm-Entities-Abstraction-ModalDestroy' ],
         /**
          * @lends Cocktail
          * @lends Backbone
@@ -417,11 +417,12 @@ require(['require', 'backbone', 'jquery', 'underscore', 'Cocktail', 'Sm-Entities
                     this.display_type    = settings.display_type || this.display_type || 'full';
                     //Sm.CONFIG.DEBUG  && settings.display_type && console.log(settings.display_type);
                     if (!synchronous)
-                        return Garage_.generate(this.display_type, MvCombo_, false).then(post_render_func).catch(function (error) {
+                        return Garage_.generate(this.display_type, MvCombo_).then(post_render_func).catch(function (error) {
                             Sm.CONFIG.DEBUG && console.log(error);
                         });
                     else {
-                        return post_render_func(Garage_.generate(this.display_type, MvCombo_, true))
+                        Sm.CONFIG.DEBUG && console.log("should_be_synchronous");
+                        return post_render_func(Garage_.generate(this.display_type, MvCombo_, {synchronous: true}))
                     }
                 },
                 /**
@@ -1154,6 +1155,9 @@ require(['require', 'backbone', 'jquery', 'underscore', 'Cocktail', 'Sm-Entities
                             if (!FirstView) FirstView = CurrentView;
                             if (forEachView) forEachView.call(CurrentView);
                             return CurrentView;
+                        }).catch(function (res) {
+                            Sm.CONFIG.DEBUG && console.log(res);
+                            throw res;
                         });
 
                     };

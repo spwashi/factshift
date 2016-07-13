@@ -19,6 +19,9 @@
          background: lighten(@module_header_color, 55%);
       }
       > .content {
+         &.no-button-control {
+            padding-right: auto;
+         }
          padding-right: 30px;
       }
       > header {
@@ -63,9 +66,6 @@
    }
    .button-control {
       right: 5px;
-   }
-   .form {
-      padding: 10px;
    }
    .content {
       background: @module_color;

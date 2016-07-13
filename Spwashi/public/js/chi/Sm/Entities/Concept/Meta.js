@@ -2,19 +2,19 @@
  * Created by Sam Washington on 1/25/16.
  */
 require(['require', 'Sm-Core-Meta'], function (require) {
-    var ConceptMeta                           = Sm.Core.Meta.base_constructor.extend({
-        relationship_type_obj            : {
+    var ConceptMeta                = Sm.Core.Meta.Proto.extend({
+        relationship_type_obj:             {
 
             /**
              * @type {relationship_type_info_obj}
              */
             sections: {
-                MvType         : 'Section',
-                index          : 'section',
-                id             : null,
-                primary_key    : 'concept_id',
-                secondary_key  : 'section_id',
-                is_reciprocal  : false,
+                MvType:          'Section',
+                index:           'section',
+                id:              null,
+                primary_key:     'concept_id',
+                secondary_key:   'section_id',
+                is_reciprocal:   false,
                 linked_entities: ['Concept', 'Section']
             },
 
@@ -22,12 +22,12 @@ require(['require', 'Sm-Core-Meta'], function (require) {
              * @type {relationship_type_info_obj}
              */
             concepts: {
-                MvType         : 'Section|Page|Concept',
-                index          : 'section|page|concept',
-                id             : null,
-                primary_key    : 'section_id|page_id|primary_concept_id',
-                secondary_key  : 'concept_id|concept_id|primary_concept_id',
-                is_reciprocal  : true,
+                MvType:          'Section|Page|Concept',
+                index:           'section|page|concept',
+                id:              null,
+                primary_key:     'section_id|page_id|primary_concept_id',
+                secondary_key:   'concept_id|concept_id|primary_concept_id',
+                is_reciprocal:   true,
                 linked_entities: ['Concept', 'Section|Page|Concept']
             },
 
@@ -35,12 +35,12 @@ require(['require', 'Sm-Core-Meta'], function (require) {
              * @type {relationship_type_info_obj}
              */
             pages: {
-                MvType         : 'Page',
-                index          : 'page',
-                id             : null,
-                primary_key    : 'concept_id',
-                secondary_key  : 'page_id',
-                is_reciprocal  : false,
+                MvType:          'Page',
+                index:           'page',
+                id:              null,
+                primary_key:     'concept_id',
+                secondary_key:   'page_id',
+                is_reciprocal:   false,
                 linked_entities: ['Page', 'Concept']
             }
         },
@@ -60,8 +60,8 @@ require(['require', 'Sm-Core-Meta'], function (require) {
             return [];
         }
     });
-    Sm.Entities.Concept.Meta                  = new ConceptMeta({type: 'Concept'});
-    Sm.Entities.Concept.Meta.base_constructor = ConceptMeta;
-    var self_type                             = 'Concept';
+    Sm.Entities.Concept.Meta       = new ConceptMeta({type: 'Concept'});
+    Sm.Entities.Concept.Meta.Proto = ConceptMeta;
+    var self_type                  = 'Concept';
     Sm.loaded.add('Entities_' + self_type + '_Meta');
 });

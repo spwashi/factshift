@@ -83,8 +83,9 @@ require(['require', 'Sm', 'Sm-Core-util', 'Emitter'], function (require) {
          * @param {String=}             settings.ent_id           A ent_id that is meant to correspond with this MvCombo - used as a backup
          * @param {Sm.Core.Identifier}  settings.Identifier     If there is, for some reason, a preexisting Identity, use that
          */
-        init:                              function (settings) {
+        init:                         function (settings) {
             this.type                  = settings.type || this.type || 'MvCombo';
+            this.object_type           = "MvCombo";
             settings                   = settings || {};
             this._callbacks            = {};
             this.status                = {};
@@ -197,7 +198,7 @@ require(['require', 'Sm', 'Sm-Core-util', 'Emitter'], function (require) {
                 },
                 /**
                  * @alias Sm.Core.MvCombo.r_id
-                 * @type {Sm.Core.MvCombo.Identity.r_id|*}  */
+                 * @type {Sm.Core.MvCombo.Identity.r_id|Sm.Core.Identifier.r_id*}  */
                 r_id:   {
                     get: get_fn('r_id')
                 }
@@ -218,7 +219,7 @@ require(['require', 'Sm', 'Sm-Core-util', 'Emitter'], function (require) {
          * @return {Object<string, Sm.Core.Relationship>|boolean}
          * @protected
          */
-        _create_relationship_holder:       function (is_reciprocal) {
+        _create_relationship_holder:  function (is_reciprocal) {
             var new_obj = {};
 
             if (!Sm.Entities[this.type]) return false;
@@ -242,7 +243,7 @@ require(['require', 'Sm', 'Sm-Core-util', 'Emitter'], function (require) {
                 var index = Meta_.get_relationship_type({type: 'index'}, r_t);
 
                 var ModelRelationshipIndex = false;
-                Sm.Entities[this.type].RelationshipAbstraction && (ModelRelationshipIndex = Sm.Entities[this.type].RelationshipAbstraction[index + '_RelationshipIndex']);
+                Sm.Entities[this.type].Abstraction && Sm.Entities[this.type].Abstraction.Relationship && (ModelRelationshipIndex = Sm.Entities[this.type].Abstraction.Relationship[index + '_RelationshipIndex']);
                 ModelRelationshipIndex     = ModelRelationshipIndex || Sm.Core.RelationshipIndex;
 
                 new_obj[r_t] = new ModelRelationshipIndex({
@@ -267,7 +268,7 @@ require(['require', 'Sm', 'Sm-Core-util', 'Emitter'], function (require) {
          * @returns {*}
          * @private
          */
-        _initModel:                        function (Model) {
+        _initModel:                   function (Model) {
             var sm_type = Sm.Entities[this.type];
             if (!sm_type) return false;
             var ModelType_ = sm_type.Model;
@@ -312,8 +313,17 @@ require(['require', 'Sm', 'Sm-Core-util', 'Emitter'], function (require) {
             this.ent_id = ent_id || false;
             return (Model || {});
         },
+        refresh_model:                function (m) {
+            m         = m || {};
+            var Model = this.Model;
+            if (m._permissions) {
+                this.setPermission(m._permissions);
+                delete m._permissions;
+            }
+            Model.set(m, {silent: true});
+        },
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        setPermission:                     function (permission, value) {
+        setPermission:                function (permission, value) {
             if (typeof permission === "string") {
                 this._permissions[permission] = value;
             } else if (typeof permission === "object") {
@@ -323,10 +333,10 @@ require(['require', 'Sm', 'Sm-Core-util', 'Emitter'], function (require) {
                 }
             }
         },
-        queryPermission:                   function (permission) {
+        queryPermission:              function (permission) {
             return permission && this._permissions[permission] ? this._permissions[permission] : null;
         },
-        setStatus:                         function (status, value) {
+        setStatus:                    function (status, value) {
             if (typeof status === "string") {
                 this.status[status] = value;
             } else if (typeof status === "object") {
@@ -336,7 +346,7 @@ require(['require', 'Sm', 'Sm-Core-util', 'Emitter'], function (require) {
                 }
             }
         },
-        queryStatus:                       function (status) {
+        queryStatus:                  function (status) {
             return status && this.status[status] ? this.status[status] : null;
         },
         /**
@@ -347,7 +357,7 @@ require(['require', 'Sm', 'Sm-Core-util', 'Emitter'], function (require) {
          * @see Sm.Core.MvCombo._initModel
          * @private
          */
-        _prepare_known_relationships:      function (relationships) {
+        _prepare_known_relationships: function (relationships) {
             relationships = relationships || {};
             var self_type = this.type;
             for (var relationship_index in relationships) {
@@ -456,7 +466,7 @@ require(['require', 'Sm', 'Sm-Core-util', 'Emitter'], function (require) {
          * @param {string=}                  settings.display_type     The display type of the element. I feel like this is a code smell
          * @return {*}
          */
-        addView:                           function (View, context_element, settings) {
+        addView:                      function (View, context_element, settings) {
             settings        = settings || {};
             var self_entity = Sm.Entities[this.type];
 
@@ -534,7 +544,7 @@ require(['require', 'Sm', 'Sm-Core-util', 'Emitter'], function (require) {
          * @alias Sm.Core.MvCombo#removeView
          * @param cid
          */
-        removeView:                        function (cid) {
+        removeView:                   function (cid) {
             if (cid in this.Views) delete  this.Views[cid];
 
             var ViewToRemove;
@@ -556,7 +566,7 @@ require(['require', 'Sm', 'Sm-Core-util', 'Emitter'], function (require) {
          * @param {string=}         settings.display_type         How should the view be displayed
          * @return {*}
          */
-        getView:                           function (settings) {
+        getView:                      function (settings) {
             settings              = settings || {};
             var cid               = settings.cid || false;
             var reference_element = settings.reference_element || false;
@@ -599,7 +609,7 @@ require(['require', 'Sm', 'Sm-Core-util', 'Emitter'], function (require) {
          * @param {function}    callback        The function to be run
          * @param {Array=}      callback_args   Arguments to be applied to the function
          */
-        forEachView:                       function (callback, callback_args) {
+        forEachView:                  function (callback, callback_args) {
             if (typeof callback === "function") {
                 var view_ids = this.ViewList;
                 for (var v = 0; v < view_ids.length; v++) {
@@ -609,25 +619,25 @@ require(['require', 'Sm', 'Sm-Core-util', 'Emitter'], function (require) {
             }
         },
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        focus:                             function (settings, View) {
+        focus:                        function (settings, View) {
             this.do_standard_interaction('focus', settings, View);
         },
-        blur:                              function (settings, View) {
+        blur:                         function (settings, View) {
             this.do_standard_interaction('blur', settings, View);
         },
-        activate:                          function (settings, View) {
+        activate:                     function (settings, View) {
             this.do_standard_interaction('activate', settings, View);
         },
-        select:                            function (settings, View) {
+        select:                       function (settings, View) {
             this.do_standard_interaction('select', settings, View);
         },
-        deselect:                          function (settings, View) {
+        deselect:                     function (settings, View) {
             this.do_standard_interaction('deselect', settings, View);
         },
-        deactivate:                        function (settings, View) {
+        deactivate:                   function (settings, View) {
             this.do_standard_interaction('deactivate', settings, View);
         },
-        do_standard_interaction:           function (action, settings, View) {
+        do_standard_interaction:      function (action, settings, View) {
             action                       = action || 'focus';
             var status_name, is_negative = false;
             var action_index             = action;
@@ -721,7 +731,7 @@ require(['require', 'Sm', 'Sm-Core-util', 'Emitter'], function (require) {
          * @param MvIdentity {string|{}|Sm.Core.MvCombo|*|Sm.Core.Identity} The Identity, MvCombo, or r_id of the Identity of the MvCombo that we are looking for
          * @return {Sm.Core.Relationship|boolean}
          */
-        getRelationship:                   function (MvIdentity) {
+        getRelationship:              function (MvIdentity) {
             if (!MvIdentity) return false;
 
             if (MvIdentity.Identity) MvIdentity = MvIdentity.Identity;
@@ -739,7 +749,7 @@ require(['require', 'Sm', 'Sm-Core-util', 'Emitter'], function (require) {
          * @return {{relationship: Sm.Core.Relationship|boolean, self_map_index: string|boolean, secondary_map_index: string|boolean}}
          * @private
          */
-        _get_relationship_details:         function (settings) {
+        _get_relationship_details:    function (settings) {
             settings          = settings || {};
             var Mv            = settings.MvCombo;
             var type          = Mv.type;
@@ -798,7 +808,7 @@ require(['require', 'Sm', 'Sm-Core-util', 'Emitter'], function (require) {
          * @return {{map: *, reciprocity_matters: boolean, self_index: string, other_index: string}}
          * @private
          */
-        _relationship_detail_hook:         function (type, settings, map, lowercase_type) {
+        _relationship_detail_hook:    function (type, settings, map, lowercase_type) {
             var reciprocity_matters = false;
             var other_index         = lowercase_type + '_id';
             var self_index          = this.type.toLowerCase() + '_id';
@@ -841,7 +851,7 @@ require(['require', 'Sm', 'Sm-Core-util', 'Emitter'], function (require) {
          * @param {Sm.Core.Relationship=}ReciprocalRelationship            The other relationship. What are we reciprocating?
          * @return {Promise}
          */
-        add_relationship:                  function (OtherMvCombo, settings, ReciprocalRelationship) {
+        add_relationship:             function (OtherMvCombo, settings, ReciprocalRelationship) {
             this.relationship_map  = this.relationship_map || {};
             settings               = settings || {};
             var silent             = !!settings.silent;
@@ -1003,64 +1013,6 @@ require(['require', 'Sm', 'Sm-Core-util', 'Emitter'], function (require) {
         },
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////
         /**
-         * This is the final mutation point for the relationships and is meant to be overridden in inheriting classes.
-         * All this does is ask for the details to create the relationship. Things like position prompting, relationship index deciding, etc
-         * @see Sm.Core.MvCombo._prompt_relationship_add
-         * @param OtherMvCombo
-         * @param settings
-         * @return {Promise}
-         * @protected
-         */
-        _continue_prompt_relationship_add: function (OtherMvCombo, settings) {
-            var self_Sm = Sm.Entities[this.type];
-            if (!self_Sm) return Promise.reject('No SM');
-            var Meta_    = self_Sm.Meta;
-            var opposite = false;
-            return (new Promise(function (resolve, reject) {
-                var potential_relationships = Meta_.get_possible_relationship_indices({OtherMvCombo: OtherMvCombo, is_reciprocal: settings.is_reciprocal});
-                //If there is only one possible relationship based on the type or whatever, that's the one we're going to use. No need to prompt
-                if (potential_relationships.length == 1) settings.relationship_index = potential_relationships[0];
-                if (!settings.relationship_index) {
-                    //If we can't find stuff out about the relationship, don't even bother
-                    if (!Meta_ || !Meta_.get_relationship_type) {
-                        reject();
-                        return;
-                    }
-
-                    //Ask about where to add the relationship
-                    settings.relationship_index = prompt('What is the relationship type?');
-                    if (settings.relationship_index.indexOf('reciprocal_') === 0 || settings.relationship_index.indexOf('!') === 0) {
-                        settings.relationship_index = settings.relationship_index.replace('reciprocal_', '').replace('!', '');
-                        opposite                    = true;
-                        Sm.CONFIG.DEBUG && console.log(settings.relationship_index, opposite);
-                    }
-                    settings.relationship_index = Meta_.get_relationship_type({type: 'index'}, settings.relationship_index);
-                }
-                if (!settings.relationship_index) {
-                    reject && reject();
-                    return;
-                }
-                // Ask about which position to add the relationship
-                if (!settings.position && settings.position !== 0) {
-                    settings.position     = prompt('At which position should we add the relationship?');
-                    settings.position     = settings.position || 0;
-                    settings.map.position = settings.position;
-                    //6 4 7 8 5 1 2
-                }
-
-                //Should we clone the View, or just relocate it? This is useful if we are replacing a relationship versus adding a new one
-                //todo temporary, not good for debugging
-                if (!!settings.OtherView && !!settings.OtherView.MvCombo) {
-                    var clone = true || parseInt(prompt('Clone?'));
-                    settings.OtherView.MvCombo.blur();
-                    if (!!clone) (settings.OtherView = settings.OtherView.clone());
-                }
-                resolve({
-                    opposite: opposite
-                });
-            }));
-        },
-        /**
          * Build the MvCombo in a "new relationship" scenario. Called from Sm.Core.MvCombo._prompt_relationship_add
          * Meant to be overridden
          * @see Sm.Core.MvCombo._prompt_relationship_add
@@ -1069,7 +1021,7 @@ require(['require', 'Sm', 'Sm-Core-util', 'Emitter'], function (require) {
          * @return {Promise}
          * @private
          */
-        _build_other_MV:                   function (otherWrapper, settings) {
+        _build_other_MV:              function (otherWrapper, settings) {
             return otherWrapper.build_MV(settings);
         },
         /**
@@ -1081,47 +1033,97 @@ require(['require', 'Sm', 'Sm-Core-util', 'Emitter'], function (require) {
          * @return {*}
          * @private
          */
-        _prompt_relationship_add:          function (OtherMvCombo, settings) {
+        _prompt_relationship_add:     function (OtherMvCombo, settings) {
             settings          = settings || {};
             settings.map      = settings.map || {};
             settings.position = settings.map.position = (settings.position || settings.map.position);
-            var self               = this;
-            settings.prompt_called = settings.prompt_called || 0;
-            settings.prompt_called++;
-            if (settings.prompt_called == 3) return Promise.reject('Error adding relationship');
-            if (!OtherMvCombo && !settings.type) return Promise.reject('No relationship and no type');
-
-            //If the Other MvCombo doesn't exist, try to create it
-            if (!OtherMvCombo) {
-                var otherSm = Sm.Entities[settings.type];
-                if (!otherSm) return Promise.reject('No type to accompany ' + settings.type);
-                /**
-                 * @type Sm.Core.MvWrapper
-                 */
-                var otherWrapper = otherSm.Wrapper;
-                if (!otherWrapper || settings.prompt_called == 2) return Promise.reject('Called twice and still no MvCombo');
-
-                //After we build the other MV, try to add the relationship
-                //Because this function is called in a function it calls (add_relationship), check to see how many times the exchange has gone. After trying a couple of times, stop to prevent a loop
-                return this._build_other_MV(otherWrapper, settings)
-                    .then(function (result) {return self.add_relationship(result, settings);})
-                    .catch(function (error) {
-                               Sm.CONFIG.DEBUG && console.log(error);
-                               throw error;
-                           });
-            }
+            var self        = this;
             settings.prompt = false;
             self.blur();
+            var Modal;
+            var P           = new Promise(function (resolve, reject) {
+                var MvCombo_ = self;
+                //See if this class has an AddRelationship Modal Dialog. If not, use the default
+                var type =
+                        Sm.Entities[self.type].Abstraction &&
+                        Sm.Entities[self.type].Abstraction.Modal &&
+                        Sm.Entities[self.type].Abstraction.Modal.AddRelationship
+                            ? Sm.Entities[self.type].Abstraction.Modal.AddRelationship
+                            : Sm.Entities.Abstraction.Modal.AddRelationship;
+                //Create the Modal Dialog
+                Modal = new type({
+                    MvCombo:        [MvCombo_],
+                    self_type:      MvCombo_.type,
+                    display_type:   'full',
+                    promise_object: {
+                        resolve: resolve,
+                        reject:  reject
+                    }
+                });
 
-            return this._continue_prompt_relationship_add(OtherMvCombo, settings).then(function (result) {
-                if (result && result.opposite) {
-                    Sm.CONFIG.DEBUG && console.log(result, OtherMvCombo);
-                    return OtherMvCombo.add_relationship(self, settings);
-                } else {
-                    return self.add_relationship(OtherMvCombo, settings);
+                //Try to open the Dialog
+                try {
+                    Modal.open();
+                } catch (e) {
+                    Sm.CONFIG.DEBUG && console.log('core_MvCombo,pra,-1', e);
                 }
+            });
+            var self_Sm     = Sm.Entities[this.type];
+            if (!self_Sm) return Promise.reject('No SM');
+            var Meta_ = self_Sm.Meta;
+
+            var opposite = false;
+
+
+            return P.catch(function (e) {
+                //DEBUG
+                Sm.CONFIG.DEBUG && console.log('core_MvCombo,pra,0', e);
+                throw e;
+            }).then(function (r) {
+                settings.map                       = settings.map || {};
+                settings.map.relationship_subindex = Meta_.get_relationship_type({type: 'id', sub: true}, r.relationship_subindex);
+
+                var relationship_index = r.relationship_index || false;
+
+                if (relationship_index.indexOf('reciprocal_') === 0 || relationship_index.indexOf('!') === 0) {
+                    relationship_index = relationship_index.replace('reciprocal_', '').replace('!', '');
+                    opposite           = true;
+                }
+                settings.relationship_index = Meta_.get_relationship_type({type: 'index'}, relationship_index);
+                settings.OtherMvComboType   = Meta_.get_relationship_type({type: 'MvType'}, relationship_index);
+                if (r.relationship_subindex) delete r.relationship_subindex;
+                if (r.relationship_index) delete r.relationship_index;
+                settings.position = parseInt(r.position || 0);
+                settings.map      = Sm.Core.util.merge_objects(settings.map, r);
+                return settings;
+            }).catch(function (e) {
+                //DEBUG
+                Sm.CONFIG.DEBUG && console.log('core_MvCombo,pra,1', e);
+                throw e;
+            }).then(function (add_relationship_settings) {
+                Sm.CONFIG.DEBUG && console.log(add_relationship_settings, opposite);
+                var OtherMvComboType = add_relationship_settings.OtherMvComboType || false;
+                var P2;
+                if (OtherMvCombo) P2 = Promise.resolve();
+                else {
+                    var OtherSm = Sm.Entities[OtherMvComboType];
+                    if (OtherSm && OtherSm.Wrapper) P2 = self._build_other_MV(OtherSm.Wrapper, settings);
+                    else P2 = Promise.reject("Could not resolve the MvCombo type " + OtherMvComboType);
+                }
+                Modal && Modal.close();
+                return P2.then(function (OtherMvCombo) {
+                    Sm.CONFIG.DEBUG && console.log('core_MvCombo,pra,1.5', OtherMvCombo);
+                    //If this relationship is reciprocal, add it to the Other MvCombo
+                    if (add_relationship_settings && opposite) {
+                        Sm.CONFIG.DEBUG && console.log(add_relationship_settings, OtherMvCombo);
+                        return OtherMvCombo.add_relationship(self, add_relationship_settings);
+                    } else {
+                        return self.add_relationship(OtherMvCombo, add_relationship_settings);
+                    }
+                });
             }).catch(function (error) {
-                Sm.CONFIG.DEBUG && console.log(error);
+                //DEBUG
+                Sm.CONFIG.DEBUG && console.log('core_MvCombo,pra,2', error);
                 throw error;
             });
         },
@@ -1132,7 +1134,7 @@ require(['require', 'Sm', 'Sm-Core-util', 'Emitter'], function (require) {
          * @return {Promise}
          * @private
          */
-        _prompt_destroy:                   function (settings) {
+        _prompt_destroy:              function (settings) {
             var self = this;
             var Modal;
             var P    = new Promise(function (resolve, reject) {
@@ -1155,7 +1157,10 @@ require(['require', 'Sm', 'Sm-Core-util', 'Emitter'], function (require) {
                 });
                 Modal.open();
             });
-            return P.then(function (b) {
+            return P.catch(function (e) {
+                Sm.CONFIG.DEBUG && console.log('core_MvCombo,destroy', e);
+                throw e;
+            }).then(function (b) {
                 Sm.CONFIG.DEBUG && console.log(b);
                 Modal.close();
                 return self._continue_destroy(settings);
@@ -1173,7 +1178,7 @@ require(['require', 'Sm', 'Sm-Core-util', 'Emitter'], function (require) {
          * @return {Promise}
          * @private
          */
-        _prompt_save:                      function (settings) {
+        _prompt_save:                 function (settings) {
             if (confirm('Are you sure you want to save ' + this.type + ' ' + this.Identity.ent_id)) {
                 return this._continue_save(settings)
             }
@@ -1186,7 +1191,7 @@ require(['require', 'Sm', 'Sm-Core-util', 'Emitter'], function (require) {
          * @returns {*}
          * @private
          */
-        _continue_save:                    function (settings) {
+        _continue_save:               function (settings) {
             var Model = this.Model;
             if (!Model) return Promise.reject(Sm.Errors.NonexistentModelError);
             var s    = Model.save(null, {patch: true, wait: true, silent: !!settings.silent}).then(function (res) {
@@ -1202,7 +1207,7 @@ require(['require', 'Sm', 'Sm-Core-util', 'Emitter'], function (require) {
          * @return {Promise}
          * @private
          */
-        _continue_destroy:                 function (settings) {
+        _continue_destroy:            function (settings) {
             var Model = this.Model;
             if (!Model) return Promise.reject(Sm.Errors.NonexistentModelError);
             var Wrapper = Sm.Entities[this.type].Wrapper;
@@ -1222,7 +1227,7 @@ require(['require', 'Sm', 'Sm-Core-util', 'Emitter'], function (require) {
          * @param settings.
          * @return {Promise}
          */
-        save:                              function (settings) {
+        save:                         function (settings) {
             try {
                 settings     = settings || {};
                 var prompt   = !!settings.prompt;
@@ -1244,7 +1249,7 @@ require(['require', 'Sm', 'Sm-Core-util', 'Emitter'], function (require) {
          * @param View
          * @return {*}
          */
-        destroy:                           function (settings, View) {
+        destroy:                      function (settings, View) {
             var prompt   = !!settings.prompt;
             var Wrapper_ = Sm.Entities[this.type].Wrapper;
             var self     = this;
@@ -1254,6 +1259,29 @@ require(['require', 'Sm', 'Sm-Core-util', 'Emitter'], function (require) {
                 return results;
             });
         },
+        fetch:                        function () {
+            var Identity = this.Identity;
+            var type     = this.type;
+            var Wrapper  = Sm.Entities[this.type].Wrapper;
+            return Promise.resolve($.ajax({
+                method: "GET",
+                url:    Sm.urls.api.generate({
+                    type:    type,
+                    MvCombo: this,
+                    id:      Identity.id
+                })
+            })).then(function (result) {
+                if (result && result.success) {
+                    var MvCombo = Wrapper.init_MvCombo({
+                        model: result.data
+                    });
+                    return Promise.resolve(MvCombo);
+                }
+                return Promise.reject("Could not save model");
+            }).catch(function (e) {
+                Sm.CONFIG.DEBUG && console.log(e);
+            });
+        },
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////
         /**
          * Return a relationship index or false
@@ -1261,14 +1289,19 @@ require(['require', 'Sm', 'Sm-Core-util', 'Emitter'], function (require) {
          * @param {boolean=false}                       is_reciprocal
          * @return {Sm.Core.RelationshipIndex|boolean}
          */
-        getRelationshipIndex:              function (type, is_reciprocal) {
-            is_reciprocal     = !!is_reciprocal;
+        getRelationshipIndex:         function (type, is_reciprocal) {
+            is_reciprocal = !!is_reciprocal;
+            if (type.indexOf('reciprocal') > -1) {
+                is_reciprocal = true;
+                type          = type.replace('reciprocal_', '');
+                Sm.CONFIG.DEBUG && console.log(type);
+            }
             var relationships = is_reciprocal ? this.reciprocal_relationships : this.relationships;
             if (relationships[type]) return relationships[type];
             return false;
         },
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        toJSON:                            function () {
+        toJSON:                       function () {
             var Model = this.Model;
             return Model.attributes;
         }
@@ -1350,7 +1383,7 @@ require(['require', 'Sm', 'Sm-Core-util', 'Emitter'], function (require) {
                 Sm.Core.MvWrapper.register_MV_replacement(obj.replaced_MVs, obj.replacement_MVs, parameters.replacement_indices);
             }
 
-            return obj;
+            return Promise.resolve(obj);
         };
 
         if (parameters.iterations > 10) return get_return_value();
@@ -1389,19 +1422,21 @@ require(['require', 'Sm', 'Sm-Core-util', 'Emitter'], function (require) {
         }
 
         //Iterate through all of this MvCombo's items/relationships to see if they need to be added to an array
+        var all = [];
         for (var j = 0; j < MvComboList.length; j++) {
             /** @type {Sm.Entities.Section.MvCombo} */
             var SecondMvCombo = MvComboList[j];
+            Sm.CONFIG.DEBUG && console.log(SecondMvCombo.r_id);
 
             if (array_to_search.indexOf(SecondMvCombo.Identity.r_id) < 0) {
                 parameters.MvCombo       = SecondMvCombo;
                 parameters.is_reciprocal = !is_reciprocal;
                 parameters.relationship  = relationships[j];
                 parameters.is_not_first  = true;
-                Sm.Core.MvCombo.replace_MV(parameters)
+                all.push(Sm.Core.MvCombo.replace_MV(parameters));
             }
         }
-        return get_return_value(true);
+        return Promise.all(all).then(get_return_value.bind(this, true));
     };
     Sm.loaded.when_loaded('Core_MvWrapper', function () {
         Sm.loaded.add('Core_MvCombo');

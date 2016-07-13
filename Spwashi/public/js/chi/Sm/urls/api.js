@@ -32,26 +32,26 @@ define(['require', 'Sm', 'Sm/urls/main'], function (require) {
          */
         generate: function (settings) {
             try {
-                settings = !!settings && typeof  settings === 'object' ? settings : {};
+                settings         = !!settings && typeof  settings === 'object' ? settings : {};
                 var BASE_API_URL = Sm.urls.base_url + 'api/';
-                if(settings.Relationship){
+                if (settings.Relationship) {
                     var Relationship = settings.Relationship;
-                    var map_links = Relationship._map_links;
-                    var unjoined_url   = [];
+                    var map_links    = Relationship._map_links;
+                    var unjoined_url = [];
                     for (var index in map_links) {
                         if (!map_links.hasOwnProperty(index)) continue;
                         /** @type {Sm.Core.Identifier} The Identity of the linked MvCombos */
                         var Identity = map_links[index];
-                        Sm.CONFIG.DEBUG && console.log(Identity);
+                        //Sm.CONFIG.DEBUG && console.log(Identity);
                         if (Identity.type && Identity.id) unjoined_url.push(Identity.type + '/' + Identity.id);
                     }
                     return BASE_API_URL + unjoined_url.join('/');
                 }
-                if(settings.url) {
+                if (settings.url) {
                     return BASE_API_URL + settings.url.replace('//', '/');
                 }
-                var _Mv  = settings.MvCombo;
-                var id   = settings.id;
+                var _Mv = settings.MvCombo;
+                var id  = settings.id;
                 if (!id && !!_Mv) id = _Mv.id;
                 id            = id || null;
                 var fetch     = settings.fetch;
@@ -95,7 +95,7 @@ define(['require', 'Sm', 'Sm/urls/main'], function (require) {
 
                 return BASE_API_URL + url.replace('//', '/');
             } catch (e) {
-                Sm.CONFIG.DEBUG && console.log(e);
+                Sm.CONFIG.DEBUG && console.log('api - ',    e);
                 return '';
             }
         }

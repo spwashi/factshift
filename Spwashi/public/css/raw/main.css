@@ -698,6 +698,9 @@ ul.lst > li.lst-tag.word {
 .modal .modal-content > .content {
   padding-right: 30px;
 }
+.modal .modal-content > .content.no-button-control {
+  padding-right: auto;
+}
 .modal .modal-content > header {
   padding: 20px 15px;
   background-color: rgba(79, 117, 120, 0.8);
@@ -750,9 +753,6 @@ ul.lst > li.lst-tag.word {
 }
 .modal .button-control {
   right: 5px;
-}
-.modal .form {
-  padding: 10px;
 }
 .modal .content {
   background: #f6f7f7;
@@ -822,7 +822,6 @@ textarea {
 form,
 .form {
   border-bottom: thin solid transparent;
-  margin-bottom: 20px;
 }
 form hr,
 .form hr {

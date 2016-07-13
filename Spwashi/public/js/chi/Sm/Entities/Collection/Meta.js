@@ -2,7 +2,7 @@
  * Created by Sam Washington on 1/25/16.
  */
 require(['require', 'Sm-Core-Meta'], function (require) {
-    var CollectionMeta                           = Sm.Core.Meta.base_constructor.extend({
+    var CollectionMeta                           = Sm.Core.Meta.Proto.extend({
         relationship_type_obj:             {
 
             /**
@@ -40,7 +40,7 @@ require(['require', 'Sm-Core-Meta'], function (require) {
         }
     });
     Sm.Entities.Collection.Meta                  = new CollectionMeta({type: 'Collection'});
-    Sm.Entities.Collection.Meta.base_constructor = CollectionMeta;
+    Sm.Entities.Collection.Meta.Proto = CollectionMeta;
     var self_type = 'Collection';
     Sm.loaded.add('Entities_' + self_type + '_Meta');
 });

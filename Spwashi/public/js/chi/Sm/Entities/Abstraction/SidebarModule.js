@@ -1,7 +1,7 @@
 /**
  * Created by Sam Washington on 7/9/16.
  */
-require(['require', 'backbone', 'jquery', 'underscore', 'Cocktail', 'Sm-Entities-Abstraction-ModalEdit'], function (require, Backbone, $, _, Cocktail) {
+require(['require', 'backbone', 'jquery', 'underscore', 'Cocktail', 'Sm-Entities-Abstraction-Modal-ModalEdit'], function (require, Backbone, $, _, Cocktail) {
     Sm.Entities.Abstraction.mixins.SidebarModule = {
         focus:                function () {
             if (this.status.is_focused) return this;

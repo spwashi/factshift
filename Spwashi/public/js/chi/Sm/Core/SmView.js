@@ -1,7 +1,11 @@
 /**
  * Created by Sam Washington on 12/17/15.
  */
-require(['require', 'backbone', 'jquery', 'underscore', 'Cocktail', 'Sm-Entities-Abstraction-ModalEdit', 'Sm-Entities-Abstraction-ModalDestroy' ],
+require(['require', 'backbone', 'jquery',
+        'underscore', 'Cocktail',
+        'Sm-Entities-Abstraction-Modal-ModalEdit',
+        'Sm-Entities-Abstraction-Modal-AddRelationship',
+        'Sm-Entities-Abstraction-Modal-ModalDestroy'],
         /**
          * @lends Cocktail
          * @lends Backbone
@@ -152,6 +156,7 @@ require(['require', 'backbone', 'jquery', 'underscore', 'Cocktail', 'Sm-Entities
                  */
                 initialize:       function (settings) {
                     settings                  = settings || {};
+                    this.object_type          = "SmView";
                     _.extend(this, Backbone.Events);
                     this.elements             = {};
                     /**
@@ -224,7 +229,7 @@ require(['require', 'backbone', 'jquery', 'underscore', 'Cocktail', 'Sm-Entities
                     this.MvCombo = settings.MvCombo || null;
 
                     this.display_type = settings.display_type ? settings.display_type : (this.display_type ? this.display_type : 'full');
-
+                    this.setStatus('modal', (this.display_type.indexOf("modal") >= 0));
                     _.extend(this, Backbone.Events);
                     Sm.loaded.when_loaded('Extras_Draggable', function () {
                         Sm.Extras.Draggable.mixin.call(self, {
@@ -366,7 +371,7 @@ require(['require', 'backbone', 'jquery', 'underscore', 'Cocktail', 'Sm-Entities
                         up_to_date: true
                     });
                     this.delegateEvents(this.events());
-                    this.init_button_control_events.call(this);
+                    this.init_button_control_events();
                     this.post_add_hook();
                 },
                 post_add_hook:   function () {
@@ -415,13 +420,12 @@ require(['require', 'backbone', 'jquery', 'underscore', 'Cocktail', 'Sm-Entities
                     };
                     var Garage_          = Sm.Entities[self_type].Garage;
                     this.display_type    = settings.display_type || this.display_type || 'full';
-                    //Sm.CONFIG.DEBUG  && settings.display_type && console.log(settings.display_type);
-                    if (!synchronous)
+                    this.setStatus('modal', (this.display_type.indexOf("modal") >= 0));
+                    if (!synchronous) {
                         return Garage_.generate(this.display_type, MvCombo_).then(post_render_func).catch(function (error) {
                             Sm.CONFIG.DEBUG && console.log(error);
                         });
-                    else {
-                        Sm.CONFIG.DEBUG && console.log("should_be_synchronous");
+                    } else {
                         return post_render_func(Garage_.generate(this.display_type, MvCombo_, {synchronous: true}))
                     }
                 },
@@ -429,8 +433,9 @@ require(['require', 'backbone', 'jquery', 'underscore', 'Cocktail', 'Sm-Entities
                  * @alias Sm.Core.SmView#get_rendered
                  * @param what
                  * @return {*}
+                 * @param no_cache
                  */
-                get_rendered:    function (what) {
+                get_rendered:    function (what, no_cache) {
                     if (!what) return false;
                     if (what == 'Element') {
                         if (!this.queryStatus('rendered')) {
@@ -443,7 +448,13 @@ require(['require', 'backbone', 'jquery', 'underscore', 'Cocktail', 'Sm-Entities
                     } else if (what == '$Element') {
                         return (this.$el = $(this.get_rendered('Element')));
                     }
-                    if (this._rendering_callbacks[what]) return this._rendering_callbacks[what].call(this);
+                    if (this._rendering_callbacks[what]) {
+                        var w_grand_scheme_of_things = what.replace(/rendered_|_element/, "");
+                        if (this.elements[w_grand_scheme_of_things] && no_cache) {
+                            delete this.elements[w_grand_scheme_of_things];
+                        }
+                        return this._rendering_callbacks[what].call(this);
+                    }
                     if (what.indexOf('_element') < 0) what += '_element';
                     if (this._rendering_callbacks[what]) return this._rendering_callbacks[what].call(this);
                     if (what.indexOf('rendered_') < 0) what = 'rendered_' + what;
@@ -460,7 +471,6 @@ require(['require', 'backbone', 'jquery', 'underscore', 'Cocktail', 'Sm-Entities
                  * @return {*}
                  */
                 begin_add_relationship: function (settings) {
-                    /**NOTE: calls continue relationship_add**/
                     settings = settings || {};
                     var View_, MvCombo_;
                     if (!!settings.View) {
@@ -484,7 +494,7 @@ require(['require', 'backbone', 'jquery', 'underscore', 'Cocktail', 'Sm-Entities
                          * todo temporary
                          * Catch the error, log it, throw it
                          */
-                        Sm.CONFIG.DEBUG && console.log(e);
+                        Sm.CONFIG.DEBUG && console.log('SmView,bar,1', e);
                         throw e;
                     }).then(function (result) {
                         /**
@@ -749,16 +759,52 @@ require(['require', 'backbone', 'jquery', 'underscore', 'Cocktail', 'Sm-Entities
                  */
                 init_button_control_events: function () {
                     var self                   = this;
-                    var button_control_element = this.get_rendered('button_control');
+                    var button_control_element = this.get_rendered('button_control', true);
                     //Sm.CONFIG.DEBUG && console.log(button_control_element);
                     if (button_control_element && typeof button_control_element === "object") {
                         button_control_element.onclick = function (e) {
                             var target  = e.target;
                             var $target = $(target);
+
+                            var Relationship_Obj = self.find_closest_relationship();
+                            var Relationship_    = Relationship_Obj.Relationship;
+                            var relElem          = Relationship_Obj.el;
+                            var other_MV_type    = Relationship_Obj.other_MV_type;
+
                             if (self.queryPermission('edit') && $target.hasClass('edit') && $target.hasClass('button')) {
-                                self.prompt_edit();
+                                var edit_config = {};
+                                if (Relationship_) {
+                                    edit_config.display_type        = 'preview';
+                                    edit_config.relationship_object = {
+                                        Relationship:  Relationship_,
+                                        other_MV_type: other_MV_type
+                                    }
+                                }
+                                self.prompt_edit(edit_config);
+                            } else if ($target.hasClass('debug') && $target.hasClass('button') && Sm.CONFIG.DEBUG) {
+                                Sm.CONFIG.DEBUG && console.log(self.cid, ' -- ', self.MvCombo, self.MvCombo.Identity.r_id, self.MvCombo.Model.attributes);
                             } else if (self.queryPermission('relate') && $target.hasClass('add') && $target.hasClass('button')) {
-                                this.begin_add_relationship();
+                                self.begin_add_relationship();
+                            } else if (self.queryPermission('destroy') && $target.hasClass('delete') && $target.hasClass('button')) {
+                                /** If self  is in a relationship container ... */
+                                if (Relationship_) {
+                                    Relationship_.destroy({silent: false}).then(function () {
+                                        /** Check to see what we're deleting the section from [Section, Dictionary, ...] */
+                                        if (Relationship_.linked_entities) {
+                                            /** Always remove the View itself */
+                                            self.destroy();
+                                            /** Then remove the relationship element */
+                                            relElem && relElem.parentNode.removeChild(relElem);
+                                            /** If we are deleting it from  a Section */
+                                            if (Relationship_.linked_entities[0] == 'Section' && Relationship_.linked_entities[1] == 'Section') {}
+                                            /** If we are deleting it from a Dictionary */
+                                            else if (Relationship_.linked_entities[0] == 'Dictionary' || Relationship_.linked_entities[1] == 'Dictionary') {}
+                                        }
+                                    });
+                                } else {
+                                    self.MvCombo.destroy({prompt: true}, self);
+                                }
+
                             }
                         }
                     }
@@ -871,13 +917,15 @@ require(['require', 'backbone', 'jquery', 'underscore', 'Cocktail', 'Sm-Entities
                         display_type: this.display_type,
                         synchronous:  true
                     });
-                    this.old_el &&
-                    (this.old_el != rendered_element) &&
-                    this.old_el.parentNode &&
-                    this.old_el.parentNode.replaceChild(rendered_element, this.old_el);
-                    this.old_el          = old_el;
+                    if (this.old_el && this.old_el != rendered_element && this.old_el.parentNode) {
+                        this.old_el.parentNode.replaceChild(rendered_element, this.old_el);
+                    }
+                    this.old_el = old_el;
                     this.refresh_element(rendered_element);
                     this.refresh_all();
+                    if (this.queryStatus('focused')) this.focus();
+                    if (this.queryStatus('selected')) this.select();
+                    return [this.el, rendered_element, old_el];
                 },
 
                 /**
@@ -886,7 +934,7 @@ require(['require', 'backbone', 'jquery', 'underscore', 'Cocktail', 'Sm-Entities
                  * @returns Sm.Core.SmView
                  */
                 focus:      function () {
-                    if (this.queryStatus('focused')) return this;
+                    //if (this.queryStatus('focused')) return this;
                     this.init_permissions({if_not_init: true});
                     this.setStatus('focused', true);
                     this.get_rendered('$Element').addClass('focused');
@@ -898,7 +946,7 @@ require(['require', 'backbone', 'jquery', 'underscore', 'Cocktail', 'Sm-Entities
                  * @returns Sm.Core.SmView
                  */
                 blur:       function () {
-                    if (!this.queryStatus('focused')) return this;
+                    //if (!this.queryStatus('focused')) return this;
                     this.setStatus('focused', false);
                     this.$el.removeClass('focused');
                     return this;
@@ -990,6 +1038,7 @@ require(['require', 'backbone', 'jquery', 'underscore', 'Cocktail', 'Sm-Entities
                         display_type:        settings.display_type,
                         relationship_object: settings.relationship_object
                     });
+                    this.blur();
                     Modal.open();
                 },
 
@@ -1010,10 +1059,10 @@ require(['require', 'backbone', 'jquery', 'underscore', 'Cocktail', 'Sm-Entities
                         this.init_elements();
                         changed_attributes = Object.keys(this.elements)
                     }
-                    Sm.CONFIG.DEBUG && console.log(changed_attributes);
+                    Sm.CONFIG.DEBUG && console.log('SmView,update,2', changed_attributes);
                     var type            = this.type.toLowerCase();
                     var type_identifier = type + '_type';
-                    Sm.CONFIG.DEBUG && console.log(type_identifier);
+                    Sm.CONFIG.DEBUG && console.log('SmView,update,2', type_identifier);
                     if (changed_attributes.indexOf(type_identifier) > -1) {
                         this.mark_unrendered();
                         this.replaceOldElement();

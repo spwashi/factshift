@@ -2,7 +2,7 @@
  * Created by Sam Washington on 1/25/16.
  */
 require(['require', 'Sm-Core-Meta'], function (require) {
-    var DummyMeta                           = Sm.Core.Meta.base_constructor.extend({
+    var DummyMeta                           = Sm.Core.Meta.Proto.extend({
         relationship_type_obj: {
 
             /**
@@ -33,5 +33,5 @@ require(['require', 'Sm-Core-Meta'], function (require) {
         }
     });
     Sm.Entities.Dummy.Meta                  = new DummyMeta({type: 'Dummy'});
-    Sm.Entities.Dummy.Meta.base_constructor = DummyMeta;
+    Sm.Entities.Dummy.Meta.Proto = DummyMeta;
 });

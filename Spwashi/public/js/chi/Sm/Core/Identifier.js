@@ -12,7 +12,7 @@ require(['require', 'Class', 'Sm-Core-util'], function (require) {
      * An object containing identification details about a particular resource
      * @alias Sm.Core.Identifier
      * @class Sm.Core.Identifier
-     * @property {string|r_id}  r_id
+     * @property {string|r_id|Sm.Core.Identifier.r_id}  r_id
      */
     var Identifier = Sm.Core.Identifier = Class.extend({
         /**

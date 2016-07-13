@@ -163,6 +163,9 @@ define(['jquery', 'Sm'], function ($) {
             }
             return str;
         },
+        uc_first:                      function (s) {
+            return s && s[0].toUpperCase() + s.slice(1);
+        },
         isEmpty:                       function (el) {
             el = $(el);
             return !$.trim(el.html())

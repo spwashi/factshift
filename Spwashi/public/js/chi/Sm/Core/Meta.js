@@ -17,7 +17,7 @@ define(['Emitter'], function (Emitter) {
      * @prop {function} get_relationship_type               {@link Sm.Core.Meta#get_relationship_type}
      *
      */
-    var Meta                      = Emitter.extend({
+    var Meta           = Emitter.extend({
         CONFIG:                            {
             DEBUG:       false,
             EDIT:        false,
@@ -68,6 +68,32 @@ define(['Emitter'], function (Emitter) {
             text:            6
         },
         relationship_type_obj:             {},
+        relationship_subtype_obj:          {
+            eli5:            {
+                name: 'ELI5',
+                id:   1
+            },
+            thing_explainer: {
+                name: 'Thing Explainer',
+                id:   2
+            },
+            image:           {
+                name: 'Image',
+                id:   3
+            },
+            video:           {
+                name: 'Video',
+                id:   4
+            },
+            audio:           {
+                name: 'Audio',
+                id:   5
+            },
+            text:            {
+                name: 'Text',
+                id:   6
+            }
+        },
         /**
          * Return an Array containing the possible ways that something can be related to another entity based on some properties
          */
@@ -97,6 +123,26 @@ define(['Emitter'], function (Emitter) {
             return false;
         },
         /**
+         * @alias Sm.Core.Meta.get_named_relationship_indices
+         * @param {{}=}         settings
+         * @param {boolean}     settings.sub
+         * @return {{}}
+         */
+        get_named_relationship_indices:    function (settings) {
+            settings                       = settings || {};
+            var sub                        = !!settings.sub;
+            var relationship_type_obj      = sub ? this.relationship_subtype_obj : this.relationship_type_obj;
+            var named_relationship_indices = {};
+            for (var index in relationship_type_obj) {
+                if (!relationship_type_obj.hasOwnProperty(index)) continue;
+                var rel_obj = relationship_type_obj[index];
+                var name    = rel_obj.name || rel_obj.index_singular || false;
+                name        = Sm.Core.util.uc_first(name);
+                if (name && !rel_obj.is_only_reciprocal) named_relationship_indices[name] = index;
+            }
+            return named_relationship_indices;
+        },
+        /**
          * Return an Array containing the possible ways that something can be related to another entity based on some properties
          * @alias Sm.Core.Meta#get_possible_relationship_indices
          * @param settings
@@ -120,6 +166,7 @@ define(['Emitter'], function (Emitter) {
          * @return {string|boolean|int}
          */
         get_relationship_type:             function (settings, identifier) {
+            var self_type             = this.type || false;
             /** NOTE: this is where iterates over object to find return type**.
              settings                  = settings || {};
              /** @type {boolean} Whether the relationship is reciprocal. If so, could possibly change the guess of what the relationship is based on the map */
@@ -135,9 +182,7 @@ define(['Emitter'], function (Emitter) {
              * @type {Meta.relationship_type_obj|{}}
              */
             var relationship_type_obj = !!settings.sub ? this.relationship_subtypes : this.relationship_type_obj;
-            /** @type {boolean} Whether or not we are getting the ID */
-            var get_id                = (type == 'id');
-            /** @type {string|int} The index of the relationship*/
+            /** @type {string|int|boolean} The index of the relationship*/
             var index;
             identifier                = identifier || map.relationship_type || false;
             /** @type {*} The object of the Entities that are in the Sm namespace */
@@ -149,13 +194,17 @@ define(['Emitter'], function (Emitter) {
             for (var relationship_type_index in relationship_type_obj) {
                 if (!relationship_type_obj.hasOwnProperty(relationship_type_index)) continue;
                 var rel_type = relationship_type_obj[relationship_type_index];
-                /** @type {string} Either the index or the ID based on what we want to retrieve */
-                index        = !!get_id && !!rel_type.id ? rel_type.id : relationship_type_index;
-
-                if (get_id) {
+                if (type == 'id') {
+                    index = rel_type.id || false;
                     if (rel_type.id) index = rel_type.id;
                     else index = parseInt(rel_type);
+                } else if (type == 'MvType') {
+                    index = rel_type.MvType || self_type || false;
+                } else {
+                    index = relationship_type_index;
                 }
+
+
                 if (rel_type == identifier) return index;
                 // If the Identifier matches the type index, return what we want because it's a match}
                 if (identifier == relationship_type_index) return index;
@@ -167,6 +216,7 @@ define(['Emitter'], function (Emitter) {
                 // If the identifier matches the id, return that
                 if (!!rel_type.id && identifier == rel_type.id) return index;
             }
+            //todo see if this next part makes sense
             /**
              * Search the SmEntities to find out what the other type in the map would be. If it's reciprocal, we return the other type based on the
              */
@@ -175,10 +225,15 @@ define(['Emitter'], function (Emitter) {
                 //guess the other type
                 var probable_other_id = this.lower_singular[entity_type] + '_id';
                 //If that's in the map, return the index of the entity we're on if it's not reciprocal. Otherwise, return the relationship index of this entity
-                if (probable_other_id in map) return is_reciprocal ? this.lower_plural[entity_type] : this.lower_plural[this.type];
+                if (probable_other_id in map) {
+                    if (type == 'id') return false;
+                    else if (type == 'MvType') return entity_type;
+                    else
+                        return (is_reciprocal ? this.lower_plural[entity_type] : this.lower_plural[this.type]) || false;
+                }
             }
             if (!!settings.sub) {
-                Sm.CONFIG.DEBUG && console.log(rel_type);
+                Sm.CONFIG.DEBUG && console.log('core_meta,grt,0',rel_type);
             }
             return false;
         },
@@ -270,9 +325,9 @@ define(['Emitter'], function (Emitter) {
     /**
      * @property lower_plural
      */
-    Sm.Core.Meta                  = new Meta({
+    Sm.Core.Meta       = new Meta({
         type: false
     });
-    Sm.Core.Meta.base_constructor = Meta;
+    Sm.Core.Meta.Proto = Meta;
     Sm.loaded.add('Core_Meta');
 });

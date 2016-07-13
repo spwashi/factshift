@@ -70,7 +70,6 @@ require(['require', 'Sm', 'Sm-Entities-Dictionary-Model', 'Sm-Core-MvCombo'], fu
                 //Sm.CONFIG.DEBUG && console.log(new_ones, old_ones);
                 for (var i = 0; i < new_ones.length; i++) {
                     var word = new_ones[i];
-                    Sm.CONFIG.DEBUG && console.log(word);
                     this.add_word(word, Definition);
                 }
                 for (var j = 0; j < old_ones.length; j++) {
@@ -123,9 +122,7 @@ require(['require', 'Sm', 'Sm-Entities-Dictionary-Model', 'Sm-Core-MvCombo'], fu
                     var OtherView         = rel_details.OtherView;
                     var map_indices       = rel_details.map_indices;
                     if (OtherMvCombo.type == 'Section' && OtherMvCombo.Model) {
-                        Sm.CONFIG.DEBUG && console.log(OtherMvCombo, ' -- add to dictionary');
                         var words = OtherMvCombo.Model.get('words') || '';
-                        Sm.CONFIG.DEBUG && console.log(words);
                         if (words.length) {
                             var _words = words.split(',');
                             for (var i = 0; i < _words.length; i++) {

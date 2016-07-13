@@ -344,7 +344,7 @@ define(['Class', 'Sm'], function (Class) {
          */
         get_listed_items:             function (context_id) {
             context_id  = context_id || 0;
-            var context = this.contexts[context_id];
+            var context = this.contexts[context_id + ''];
             //var items   = context.items;
             var list    = context._meta._list;
             var items   = context.items;
@@ -357,7 +357,7 @@ define(['Class', 'Sm'], function (Class) {
                 var item_id = list[i];
                 if (!items[item_id]) continue;
                 var Relationship = items[item_id];
-                var OtherMvCombo = Sm.Core.Identifier.retrieve(item_id);
+                var OtherMvCombo = Sm.Core.Identifier.retrieve({r_id: item_id});
                 if (!OtherMvCombo) continue;
                 OtherMvCombo = OtherMvCombo.getResource();
                 ret_obj.items.push(OtherMvCombo);

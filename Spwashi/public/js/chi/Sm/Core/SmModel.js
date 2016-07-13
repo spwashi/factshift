@@ -14,12 +14,13 @@ define(['backbone', 'Sm/urls/main'], function (Backbone) {
             }
         },
         initialize: function (settings) {
-            settings     = settings || {};
+            settings         = settings || {};
+            this.object_type = "SmModel";
             /**
              *
              * @type {*|Sm.Core.MvCombo}
              */
-            this.MvCombo = settings.MvCombo || null;
+            this.MvCombo     = settings.MvCombo || null;
             if ('MvCombo' in this.attributes) {
                 delete this.attributes.MvCombo;
                 delete settings.MvCombo;

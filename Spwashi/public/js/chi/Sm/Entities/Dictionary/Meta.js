@@ -6,7 +6,7 @@ require(['require', 'Sm-Core-Meta'], function (require) {
      * @alias Sm.Entities.Dictionary.Meta
      * @augments Sm.Core.Meta
      */
-    var DictionaryMeta                           = Sm.Core.Meta.base_constructor.extend({
+    var DictionaryMeta                           = Sm.Core.Meta.Proto.extend({
         relationship_type_obj            : {
             /**
              * @type {relationship_type_info_obj}
@@ -56,7 +56,7 @@ require(['require', 'Sm-Core-Meta'], function (require) {
 
     });
     Sm.Entities.Dictionary.Meta                  = new DictionaryMeta({type: 'Dictionary'});
-    Sm.Entities.Dictionary.Meta.base_constructor = DictionaryMeta;
+    Sm.Entities.Dictionary.Meta.Proto = DictionaryMeta;
     var self_type                                = 'Dictionary';
     Sm.loaded.add('Entities_' + self_type + '_Meta');
 });

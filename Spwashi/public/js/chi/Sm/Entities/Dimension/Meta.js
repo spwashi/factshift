@@ -2,7 +2,7 @@
  * Created by Sam Washington on 1/25/16.
  */
 require(['require', 'Sm-Core-Meta'], function (require) {
-    var DimensionMeta                           = Sm.Core.Meta.base_constructor.extend({
+    var DimensionMeta                           = Sm.Core.Meta.Proto.extend({
         relationship_type_obj            : {
             /**
              * @type {relationship_type_info_obj}
@@ -52,7 +52,7 @@ require(['require', 'Sm-Core-Meta'], function (require) {
         }
     });
     Sm.Entities.Dimension.Meta                  = new DimensionMeta({type: 'Dimension'});
-    Sm.Entities.Dimension.Meta.base_constructor = DimensionMeta;
+    Sm.Entities.Dimension.Meta.Proto = DimensionMeta;
     var self_type                               = 'Dimension';
     Sm.loaded.add('Entities_' + self_type + '_Meta');
 });

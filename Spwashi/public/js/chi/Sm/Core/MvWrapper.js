@@ -184,7 +184,7 @@ require(['require', 'Class', 'Sm', 'Sm-Core-Identifier'], function (require, Cla
          */
         init_MvCombo: function (settings) {
             var _model_Identifier = settings.model || settings.Model || (settings.id ? {id: settings.id} : {});
-            if (!_model_Identifier) Sm.CONFIG.DEBUG && console.log(_.clone(settings));
+            if (!_model_Identifier) Sm.CONFIG.DEBUG && console.log('no mi - ', _.clone(settings));
             settings         = settings || {};
             settings.CONFIG  = this.CONFIG;
             settings.Wrapper = this;
@@ -204,6 +204,8 @@ require(['require', 'Class', 'Sm', 'Sm-Core-Identifier'], function (require, Cla
                         id:     m.id || false,
                         ent_id: m.ent_id || false
                     });
+                    OldMv.refresh_model(m);
+                    OldMv.setStatus("completed", true);
                     var view  = settings.View || settings.view;
                     OldMv.addView(view);
                     return OldMv;
@@ -659,7 +661,6 @@ require(['require', 'Class', 'Sm', 'Sm-Core-Identifier'], function (require, Cla
      */
     Sm.Core.MvWrapper.register_MV_replacement = function (D_ReplacedMvComboList, M_ReplacementMvComboList, replacement_indices) {
         if (!replacement_indices) {
-            Sm.CONFIG.DEBUG && console.log(replacement_indices);
             return false;
         }
         if (!M_ReplacementMvComboList || !D_ReplacedMvComboList) return false;

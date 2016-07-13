@@ -7,11 +7,11 @@ require(['require'], function (require) {
             type:                 'Page',
             identifier:           '.spwashi-page',
             _rendering_callbacks: {
-                button_control_element: function () {
+                button_control: function () {
                     if (!!this.elements.button_control) return this.elements.button_control;
                     var matching = this.get_rendered('$Element').children('.button-control');
                     return this.elements.button_control = (matching[0] ? matching[0] : false);
-                },
+                }
             },
             additional_events:    {
                 click: function (e) {

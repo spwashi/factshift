@@ -144,7 +144,7 @@ require(['require', 'Emitter', 'Sm'],
                                 for (var j = 0; j < e_callback_fn_or_arr.length; j++) {
                                     fn = e_callback_fn_or_arr[j];
                                     if (!fn || typeof fn.bind !== "function") {
-                                        Sm.CONFIG.DEBUG && console.log(fn);
+                                        Sm.CONFIG.DEBUG && console.log('ViewAid,iee,0,cannot bind ', fn);
                                         continue;
                                     }
                                     this.on(e_name, fn.bind(this));
@@ -152,7 +152,7 @@ require(['require', 'Emitter', 'Sm'],
                             } else {
                                 fn = e_callback_fn_or_arr;
                                 if (!fn || typeof fn.bind !== "function") {
-                                    Sm.CONFIG.DEBUG && console.log(fn);
+                                    Sm.CONFIG.DEBUG && console.log('ViewAid,iee,1,cannot bind ' + e_name, fn);
                                     continue;
                                 }
                                 this.on(e_name, fn.bind(this));
@@ -163,10 +163,20 @@ require(['require', 'Emitter', 'Sm'],
                             var content_element = self.get_content_element();
                             var selects         = $(content_element).find('select');
                             for (var i = 0; i < selects.length; i++) {
-                                var select_element = selects[i];
-                                select_element.addEventListener('change', function (e) {
-                                    self.emit('select', e);
-                                })
+                                var select_element  = selects[i];
+                                /**
+                                 *
+                                 * @param {HTMLSelectElement} select_element
+                                 * @return {Function}
+                                 */
+                                var change_event_fn = function (select_element) {
+                                    return function (e) {
+                                        var options  = select_element.options;
+                                        var selected = options[select_element.selectedIndex];
+                                        self.emit('select', selected.value, selected.dataset, e);
+                                    }
+                                };
+                                select_element.addEventListener('change', change_event_fn(select_element))
                             }
                         });
                     }

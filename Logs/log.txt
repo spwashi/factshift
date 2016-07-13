@@ -1514,3 +1514,31 @@
 	1 => str     : 	
 		UPDATE section_section_map AS tbl SET tbl.position = tbl.position + 1 WHERE tbl.primary_section_id = 6 AND tbl.secondary_section_id != 29 AND table2.relationship_type = 1 
 
+--------------------------------------------------------------------------------------------------------------------------
+-------------------------{07-13-2016  20:16:36}---------------------------------------------------------------------------
+--------------------------------------------------------------------------------------------------------------------------
+ {07-13-2016  20:16:36} 	  line {915}	 of {Spwashi/Controller/API/API.php};
+	-->		Could not set the property relationship_subindex in class Spwashi\Model\Map\SectionSectionMap
+
+--------------------------------------------------------------------------------------------------------------------------
+-------------------------{07-13-2016  20:17:00}---------------------------------------------------------------------------
+--------------------------------------------------------------------------------------------------------------------------
+ {07-13-2016  20:17:00} 	  line {915}	 of {Spwashi/Controller/API/API.php};
+	-->		Could not set the property relationship_subindex in class Spwashi\Model\Map\SectionSectionMap
+
+ {07-13-2016  20:17:00} 	 code {42S22} line {130}	 of {Sm/Database/Abstraction/Sql.php};
+	0 => str     : 	SQLSTATE[42S22]: Column not found: 1054 Unknown column 'table2.relationship_type' in 'where clause'
+	1 => str     : 	
+		UPDATE section_section_map AS tbl SET tbl.position = tbl.position + 1 WHERE tbl.primary_section_id = 13 AND tbl.secondary_section_id != 31 AND table2.relationship_type = 4 
+
+--------------------------------------------------------------------------------------------------------------------------
+-------------------------{07-13-2016  20:32:33}---------------------------------------------------------------------------
+--------------------------------------------------------------------------------------------------------------------------
+ {07-13-2016  20:32:33} 	  line {915}	 of {Spwashi/Controller/API/API.php};
+	-->		Could not set the property relationship_subindex in class Spwashi\Model\Map\SectionSectionMap
+
+ {07-13-2016  20:32:33} 	 code {42S22} line {130}	 of {Sm/Database/Abstraction/Sql.php};
+	0 => str     : 	SQLSTATE[42S22]: Column not found: 1054 Unknown column 'table2.relationship_type' in 'where clause'
+	1 => str     : 	
+		UPDATE section_section_map AS tbl SET tbl.position = tbl.position + 1 WHERE tbl.primary_section_id = 13 AND tbl.secondary_section_id != 32 AND table2.relationship_type = 4 
+

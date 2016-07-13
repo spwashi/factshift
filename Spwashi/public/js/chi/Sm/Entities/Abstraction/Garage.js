@@ -52,261 +52,30 @@ require(['require', 'Class', 'Sm', 'Sm-Entities-Abstraction-templates-_template'
              * @private
              */
             _get_details_from_MvCombo: function (Mv_, config) {
-                if (!Mv_ || typeof Mv_ !== "object") {
-                    Mv_ = {};
+                var template_type;
+                var type;
+                var self_type;
+                var attributes;
+                if (!Mv_ || typeof Mv_ !== "object") Mv_ = {};
+                var Model_ = Mv_.Model;
+                try {
+                    attributes = Model_ ? Model_.attributes : (Mv_.attributes ? Mv_.attributes : Mv_);
+                    if (!attributes) attributes = {};
+                    config        = config || {};
+                    self_type     = this.type;
+                    type          = config.display_subtype || attributes[this.subtype_identifier] || "standard";
+                    template_type = Sm.Entities[self_type].Meta.get_type(type, 'index') || "standard";
+                    attributes    = Sm.Core.util.merge_objects(attributes, {_type: template_type, type: self_type});
+                } catch (e) {
+                    Sm.CONFIG.DEBUG && console.log('abstraction_garage_GDFM', e);
+                    throw e;
                 }
-                var Model_     = Mv_.Model;
-                var attributes = Model_ ? Model_.attributes : (Mv_.attributes ? Mv_.attributes : Mv_);
-                if (!attributes) attributes = {};
-                config        = config || {};
-                var self_type = this.type;
-                var type      = config.display_subtype || attributes[this.subtype_identifier];
-                if (!type) {type = "standard";}
-                var template_type = Sm.Entities[self_type].Meta.get_type(type, 'index');
-                if (!template_type) template_type = 'standard';
                 return {
                     Model:         Model_,
-                    attributes:    Sm.Core.util.merge_objects(attributes, {_type: template_type, type: self_type}),
+                    attributes:    attributes,
                     subtype:       type,
                     template_type: template_type
-                }
-            },
-            /**
-             * Generate a string to create an element based on the attributes of an MV
-             * @param MvCombo_or_data
-             * @param settings
-             * @param settings.inner_string_name        What are we creating? [full, preview, inline, tab, tag?]
-             * @param settings.is_modal                 Is this for a modal dialog?
-             * @param settings.fallback                 If the function doesn't exist, what should we use as backup?
-             * @param settings.outer_string_name
-             * @param settings.inner_template_string
-             * @param settings.template_index
-             * @param settings.config
-             * @param settings.outer_template_string
-             * @param is_synchronous                    Are we to return a promise?
-             * @return {*}
-             * @param inner_template_string
-             */
-            _rt:                       function (MvCombo_or_data, settings, is_synchronous, inner_template_string) {
-                settings                  = settings || {};
-                var is_modal              = settings.is_modal;
-                var fallback              = settings.fallback || 'full';
-                var outer_string_name     = settings.outer_string_name || (!!is_modal ? 'modal_outer' : 'outer');
-                var outer_template_string = settings.outer_template_string || false;
-                var template_index        = (settings.template_index || fallback || '').trim().toLowerCase();
-                /**This is the name of the type of element we are creating. full? inline? preview? tab? tag? */
-                var inner_string_name     = settings.inner_string_name;
-                is_synchronous            = (is_synchronous != undefined) ? !!is_synchronous : true;
-                var self                  = this;
-                //Try to see if we can use the MvCombo
-                var V = this._get_details_from_MvCombo(MvCombo_or_data, settings.config);
-                //If it turns out that we couldn't, return a default element
-                if (!V) {
-                    var def = self._default('could not validate');
-                    return !is_synchronous ? (new Promise(function (resolve) {resolve(def);})) : def;
-                }
-                var self_type           = this.type;
-                /**
-                 * A copy of the Model's attributes (not a reference)
-                 * @type {{}|*}
-                 */
-                var model_attributes    = V.attributes || MvCombo_or_data;
-                model_attributes.config = settings.config || {};
-                /**
-                 * The name of the subtype we are dealing with. This might be an ID or a string.
-                 * @type {string}
-                 */
-                var subtype             = V.subtype;
-                /**
-                 * The name of the template type that we are going to use to generate the element. This is a string based on the subtype of the entity (an example would be image for Section)
-                 * @type {string}
-                 */
-                var template_type       = V.template_type;
-                var finished_entity_string;
-                /**
-                 * Whether or not we should continue to try to resolve. If there is a timer going, after a while we should just give up
-                 * @type {boolean}
-                 */
-                var keep_resolving      = true;
-
-
-                var timer = false;
-
-                /**
-                 * This is a function that is run when resolving a promise or when we are ready to return a string (depending on if we are calling this function synchronously
-                 * @return {string|boolean}
-                 */
-                var when_ready_callback = function () {
-                    if (!keep_resolving) return false;
-                    var body_name = !!is_modal ? 'modal' : 'body',
-                        default_template_obj,
-                        index_template_obj,
-                        body;
-
-                    /**
-                     * We only need to do this if there is either no outer template or no inner template
-                     */
-                    if (!outer_template_string || !inner_template_string) {
-                        /**
-                         * This is the template index that is tailored to a specific Entity subtype
-                         * @type {object}
-                         */
-                        index_template_obj = Sm.Entities[self_type].templates[template_type];
-
-                        /**
-                         * This contains the default object types
-                         */
-                        default_template_obj = Sm.Entities[self_type].templates._template;
-                        /**
-                         * If there is no index object and this is NOT the "standard" one,
-                         * make the index object the standard. Otherwise, just use the default.
-                         */
-                        if (!index_template_obj) {
-                            if (template_type != 'standard'
-                                && Sm.loaded.is_loaded('Entities_' + self_type + '_templates_standard')
-                                && Sm.Entities[self_type].templates.standard) {
-                                //use the standard template object
-                                index_template_obj = Sm.Entities[self_type].templates.standard;
-                            } else {
-                                //use the default template object as a last-ditch effort to create something
-                                index_template_obj = default_template_obj;
-                            }
-                        }
-                        /** If we have an inner string (full, inline, tag, tab) and that kind of thing matters for the index template obj, */
-                        if (!!inner_string_name && (index_template_obj[inner_string_name] || '').length) {
-                            inner_template_string = index_template_obj[inner_string_name];
-                        } else if (!!inner_string_name && (default_template_obj[inner_string_name] || '').length) {
-                            /** Otherwise if it exists in the default obj, use that*/
-                            inner_template_string = default_template_obj[inner_string_name];
-                        }
-                    }
-                    /**
-                     * If there is no outer template string, make one.
-                     */
-                    if (!outer_template_string) {
-                        if (!!index_template_obj[outer_string_name]) {
-                            if (typeof index_template_obj[outer_string_name] === "string") {
-                                outer_template_string = index_template_obj[outer_string_name];
-                            }
-                            /**
-                             * Check to see if the preferred template has an "outer"
-                             */
-                            if (!outer_template_string && !!index_template_obj[outer_string_name]
-                                && !!index_template_obj[outer_string_name][template_index]) {
-                                outer_template_string = index_template_obj[outer_string_name][template_index];
-                            } else {
-                                Sm.CONFIG.DEBUG && console.log('Error checking ', template_type, ' ', template_index, ' ', outer_string_name);
-                            }
-                        } else {
-                            //Sm.CONFIG.DEBUG && console.log('Does not exist ', index, ' ', template_index, ' ', outer_string_name);
-                        }
-                        if (!outer_template_string && !!default_template_obj[outer_string_name]) {
-                            if (!outer_template_string && typeof default_template_obj[outer_string_name] === "string") {
-                                outer_template_string = default_template_obj[outer_string_name];
-                            }
-                            /**
-                             * If the outer template string was not found and we didn't look for it in the fallback index,
-                             * look for it in the fallback index of the default template
-                             */
-                            if (!outer_template_string && !!default_template_obj[outer_string_name][template_index]) {
-                                outer_template_string = default_template_obj[outer_string_name][template_index];
-                            }
-                            if (!outer_template_string && template_index != fallback && !!default_template_obj[outer_string_name][fallback]) {
-                                outer_template_string = default_template_obj[outer_string_name][fallback];
-                            }
-                        }
-                    }
-//ssh://codozsqq@host32.registrar-servers.com:21098/home/codozsqq/public_html/
-                    //default string!
-                    if (!outer_template_string) {
-                        outer_template_string = '<div>__CONTENT__</div>';
-                    }
-                    var cache_name = outer_string_name + template_index + (inner_string_name || body_name);
-                    if (!outer_template_string.length) outer_template_string = '__CONTENT__';
-
-                    if (!inner_template_string) {
-                        index_template_obj.cache = index_template_obj.cache || {};
-                        if (!!index_template_obj.cache[cache_name]) {
-                            timer && clearTimeout(parseInt(timer));
-                            finished_entity_string = index_template_obj.cache[cache_name](model_attributes);
-                            return finished_entity_string;
-                        }
-                        if ((!index_template_obj[body_name] || !index_template_obj[body_name][template_index] )
-                            && !!default_template_obj[body_name] && !!default_template_obj[body_name][template_index]) {
-                            index_template_obj[body_name]                 = index_template_obj[body_name] || {};
-                            index_template_obj[body_name][template_index] = default_template_obj[body_name][template_index]
-                        }
-                        if (!index_template_obj[body_name]) {
-                            if (template_type != 'standard'
-                                && Sm.loaded.is_loaded('Entities_' + self_type + '_templates_standard')
-                                && Sm.Entities[self_type].templates.standard[body_name]) {
-                                index_template_obj[body_name] = Sm.Entities[self_type].templates.standard[body_name];
-                            } else {
-                                throw "No Index Template  '" + body_name + "'  to match in " + self_type + " Garage";
-                            }
-                        }
-                        body = index_template_obj[body_name][template_index] || index_template_obj[body_name]['full'];
-
-                        if (!default_template_obj) throw "No Template to match " + self_type;
-                        if (!body) throw "No Index Template '" + body_name + '.' + template_index + "' to match " + self_type;
-                        if (!default_template_obj[outer_string_name]) throw "No Outer Template to match " + outer_string_name + ' - ';
-                        inner_template_string = body;
-                    }
-
-                    /**
-                     * Generate the controls for whatever we just made
-                     */
-                    {
-                        var _it_button_control_obj = !!is_modal && !!index_template_obj.modal_button_control
-                            ? index_template_obj.modal_button_control
-                            : index_template_obj.button_control;
-                        if (!_it_button_control_obj) {
-                            _it_button_control_obj = !!is_modal && !!default_template_obj.modal_button_control
-                                ? default_template_obj.modal_button_control
-                                : default_template_obj.button_control;
-                        }
-                        var button_control;
-                        if (typeof _it_button_control_obj === "string") {
-                            button_control = _it_button_control_obj;
-                        } else {
-                            button_control = _it_button_control_obj ? _it_button_control_obj[template_index] : false;
-                        }
-                        if (!button_control && template_index != fallback && !!default_template_obj.button_control[fallback]) {
-                            button_control = default_template_obj.button_control[fallback];
-                        }
-                    }
-
-                    outer_template_string =
-                        outer_template_string
-                            .replace('__CONTENT__', inner_template_string)
-                            .replace('__BUTTON_CONTROL__', button_control || '');
-
-                    /**
-                     * Cache the Underscore template to be used later
-                     * @type {*|{function}}
-                     */
-                    var underscore_template                              = _.template(outer_template_string);
-                    index_template_obj.cache[template_index + body_name] = underscore_template;
-                    timer && clearTimeout(parseInt(timer));
-                    finished_entity_string                               = underscore_template(model_attributes);
-                    return finished_entity_string;
                 };
-
-                try {
-                    if (!is_synchronous) {
-                        var wait = 'Entities_' + self_type + '_templates__template';
-                        var name = '_Entities_' + self_type + '_Garage.' + template_index;
-                        return Sm.loaded.when_loaded(wait, when_ready_callback, name, 7000).catch(function () {
-                            var e = "Could not load '" + wait + "' in time for '" + name + "'";
-                            Sm.CONFIG.DEBUG && console.log(e);
-                            throw e;
-                        });
-                    } else {
-                        return when_ready_callback();
-                    }
-                } catch (e) {
-                    return this._default(e);
-                }
             },
             _combine_string:           function (attributes, string) {
                 var underscore_template = _.template(string);
@@ -339,13 +108,13 @@ require(['require', 'Class', 'Sm', 'Sm-Entities-Abstraction-templates-_template'
                 var i_a_test = /\.(.*)(\b|$)/.exec(input);
                 var i_a      = !!i_a_test && i_a_test[1] ? i_a_test[1] : false;
                 if (i_a) input = input.replace(i_a_test[0], "");
-
+                //.[]()
 //If we didn't specify anything, assume that we are trying to pull the "full" version
                 input = (input.length ? input : "full").replace(".", "");
 
                 !!i_a && to_try.push(i_a);
-                !!subtype && to_try.push(subtype);
                 !!m_s && to_try.push(m_s);
+                !!subtype && to_try.push(subtype);
                 input.length && to_try.push(input);
 
                 var complete_fallback  = Sm.Entities.Abstraction.templates._template;
@@ -454,8 +223,7 @@ require(['require', 'Class', 'Sm', 'Sm-Entities-Abstraction-templates-_template'
                     return self._combine_string(V.attributes, outer.replace(/__CONTENT__/ig, inner));
                 };
                 var result = res();
-                var r      = is_synchronous ? result : Promise.resolve(result);
-                return r;
+                return is_synchronous ? result : Promise.resolve(result);
             },
 
             /**

@@ -19,7 +19,7 @@ require(['require', 'Sm-Core-Meta'], function (require) {
      * @augments Sm.Core.Meta
      * @property  {{}}types
      */
-    var SectionMeta = Sm.Core.Meta.base_constructor.extend({
+    var SectionMeta = Sm.Core.Meta.Proto.extend({
         relationship_type_obj:             {
             /**
              * @type {relationship_type_info_obj}
@@ -130,21 +130,21 @@ require(['require', 'Sm-Core-Meta'], function (require) {
              * @type {relationship_type_info_obj}
              */
             sections:     {
-                MvType:          'Collection|Dimension|Concept',
-                index_singular:  'collection|dimension|concept',
-                primary_key:     'collection_id|dimension_id|concept_id',
-                secondary_key:   'section_id',
-                is_reciprocal:   true,
-                linked_entities: ['Section', 'Collection|Dimension|Concept']
+                MvType:             'Collection|Dimension|Concept',
+                index_singular:     'collection|dimension|concept',
+                primary_key:        'collection_id|dimension_id|concept_id',
+                secondary_key:      'section_id',
+                is_only_reciprocal: true,
+                linked_entities:    ['Section', 'Collection|Dimension|Concept']
             },
             concepts:     {
-                MvType:          'Concept',
-                index:           'concept',
-                id:              null,
-                primary_key:     'section_id',
-                secondary_key:   'concept_id',
-                is_reciprocal:   false,
-                linked_entities: ['Section', 'Concept']
+                MvType:             'Concept',
+                index:              'concept',
+                id:                 null,
+                primary_key:        'section_id',
+                secondary_key:      'concept_id',
+                is_only_reciprocal: false,
+                linked_entities:    ['Section', 'Concept']
             }
         },
         /**
@@ -160,6 +160,11 @@ require(['require', 'Sm-Core-Meta'], function (require) {
             table:      6,
             list:       7,
             mirror:     8
+        },
+        get_named_relationship_indices:    function (settings) {
+            var res      = Sm.Core.Meta.Proto.prototype.get_named_relationship_indices.apply(this, arguments);
+            res["Macro"] = "reciprocal_micros";
+            return res;
         },
         get_possible_relationship_indices: function (settings) {
             if (!settings) return [null];
@@ -180,7 +185,7 @@ require(['require', 'Sm-Core-Meta'], function (require) {
     });
     try {
         Sm.Entities.Section.Meta                  = new SectionMeta({type: 'Section'});
-        Sm.Entities.Section.Meta.base_constructor = SectionMeta;
+        Sm.Entities.Section.Meta.Proto = SectionMeta;
         var self_type                             = 'Section';
         Sm.loaded.add('Entities_' + self_type + '_Meta');
     } catch (e) {

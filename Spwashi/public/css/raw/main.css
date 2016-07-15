@@ -771,13 +771,6 @@ ul.lst > li.lst-tag.word {
   vertical-align: middle;
   content: "";
 }
-.modal-blur {
-  -webkit-filter: blur(3px);
-  -moz-filter: blur(3px);
-  -o-filter: blur(3px);
-  -ms-filter: blur(3px);
-  filter: blur(3px);
-}
 .modal-content {
   width: 600px;
   min-width: 40%;
@@ -1160,7 +1153,10 @@ body > .row,
 #add-concept {
   width: 500px;
 }
-.relationship-index-container .select2-selection .select2-selection__choice {
+.relationship-container .select2-selection {
+  width: 300px;
+}
+.relationship-container .select2-selection .select2-selection__choice {
   padding: 5px;
 }
 .sm-tooltip {

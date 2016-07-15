@@ -200,6 +200,9 @@ define(['Emitter'], function (Emitter) {
                     else index = parseInt(rel_type);
                 } else if (type == 'MvType') {
                     index = rel_type.MvType || self_type || false;
+                } else if (type == 'name') {
+                    index = rel_type.name || rel_type.index_singular || false;
+                    index = Sm.Core.util.uc_first(index);
                 } else {
                     index = relationship_type_index;
                 }
@@ -227,13 +230,12 @@ define(['Emitter'], function (Emitter) {
                 //If that's in the map, return the index of the entity we're on if it's not reciprocal. Otherwise, return the relationship index of this entity
                 if (probable_other_id in map) {
                     if (type == 'id') return false;
-                    else if (type == 'MvType') return entity_type;
-                    else
-                        return (is_reciprocal ? this.lower_plural[entity_type] : this.lower_plural[this.type]) || false;
+                    else if (type == 'MvType' || type == 'name') return entity_type;
+                    else return (is_reciprocal ? this.lower_plural[entity_type] : this.lower_plural[this.type]) || false;
                 }
             }
             if (!!settings.sub) {
-                Sm.CONFIG.DEBUG && console.log('core_meta,grt,0',rel_type);
+                Sm.CONFIG.DEBUG && console.log('core_meta,grt,0', rel_type);
             }
             return false;
         },

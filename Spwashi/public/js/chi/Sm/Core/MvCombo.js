@@ -559,7 +559,7 @@ require(['require', 'Sm', 'Sm-Core-util', 'Emitter'], function (require) {
         /**
          * Retrieve a view based on the cid, or a reference element
          * @alias Sm.Core.MvCombo#getView
-         * @param settings
+         * @param {{}=}             settings
          * @param {string=}         settings.cid                  The cid, unique id created by Backbone.js, of the View
          * @param {HTMLElement=}    settings.reference_element    An element that is related to this View in the desired way
          * @param {boolean=false}   settings.strict               Should we create the View if we couldn't find it?
@@ -1073,15 +1073,15 @@ require(['require', 'Sm', 'Sm-Core-util', 'Emitter'], function (require) {
             var Meta_ = self_Sm.Meta;
 
             var opposite = false;
-
+            Sm.CONFIG.DEBUG && console.log(arguments);
 
             return P.catch(function (e) {
                 //DEBUG
                 Sm.CONFIG.DEBUG && console.log('core_MvCombo,pra,0', e);
                 throw e;
             }).then(function (r) {
-                settings.map                       = settings.map || {};
-                settings.map.relationship_subindex = Meta_.get_relationship_type({type: 'id', sub: true}, r.relationship_subindex);
+                settings.map                      = settings.map || {};
+                settings.map.relationship_subtype = Meta_.get_relationship_type({type: 'id', sub: true}, r.relationship_subindex);
 
                 var relationship_index = r.relationship_index || false;
 
@@ -1104,7 +1104,7 @@ require(['require', 'Sm', 'Sm-Core-util', 'Emitter'], function (require) {
                 Sm.CONFIG.DEBUG && console.log(add_relationship_settings, opposite);
                 var OtherMvComboType = add_relationship_settings.OtherMvComboType || false;
                 var P2;
-                if (OtherMvCombo) P2 = Promise.resolve();
+                if (OtherMvCombo) P2 = Promise.resolve(OtherMvCombo);
                 else {
                     var OtherSm = Sm.Entities[OtherMvComboType];
                     if (OtherSm && OtherSm.Wrapper) P2 = self._build_other_MV(OtherSm.Wrapper, settings);

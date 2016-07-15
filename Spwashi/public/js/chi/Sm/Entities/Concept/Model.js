@@ -10,7 +10,13 @@ require(['require', 'Sm-Core-SmModel'], function (require) {
      * @see     Sm.Core.Model
      * @class   Sm.Entities.Concept.Model
      */
-    Sm.Entities.Concept.Model                = Sm.Core.SmModel.extend({});
+    Sm.Entities.Concept.Model                = Sm.Core.SmModel.extend({
+        defaults: {
+            title : '-',
+            subtitle : '-',
+            description : '-'
+        }
+    });
     Sm.Entities.Concept.Model.prototype.type = 'Concept';
     Sm.loaded.add('Entities_Concept_Model');
 });

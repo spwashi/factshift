@@ -13,12 +13,13 @@ require(['jquery'], function ($) {
             //
             if (!Sm.Core.util.isElement(element_to_search)) return;
 
-            var target          = settings.target || false;
-            var word            = settings.word;
-            var classname       = settings.className || '';
+            var target    = settings.target || false;
+            var word      = settings.word;
+            var classname = settings.className || '';
             classname += ' sm-highlight';
-            var dataset         = settings.dataset || {};
-            dataset.word        = dataset.word || word;
+            var dataset   = settings.dataset || {};
+            dataset.word  = dataset.word || word;
+            if (!word.trim) Sm.CONFIG.DEBUG && console.log(word);
             word                = word.trim();
             var word_len        = word.length;
             var number_of_nodes = 0;

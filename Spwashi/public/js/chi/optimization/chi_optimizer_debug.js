@@ -72,7 +72,7 @@
     paths:          {
         jquery:      '../vendor/jquery.min',
         tooltipster: '../vendor/jquery.tooltipster.min',
-        select2:     '../vendor/jquery.select2.full.min',
+        select2:     '../vendor/select2',
         Promise:     '../std/Promise',
         SmHighlight: '../std/sm_highlight',
         backbone:    '../vendor/backbone',

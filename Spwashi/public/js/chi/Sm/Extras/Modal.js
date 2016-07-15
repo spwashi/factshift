@@ -177,10 +177,15 @@ require(['require', 'Emitter', 'Sm'], function (require, Emitter) {
                 }
             },
             generate_element:     function (config) {
-                if (this.MvComboArr.length === 1) {
-                    var MvCombo_  = this.MvComboArr[0];
-                    var self_type = this.self_type;
-                    return Sm.Entities[self_type].Garage.generate(this.display_type, MvCombo_, {config: config});
+                try {
+                    if (this.MvComboArr.length === 1) {
+                        var MvCombo_  = this.MvComboArr[0];
+                        var self_type = this.self_type;
+                        return Sm.Entities[self_type].Garage.generate(this.display_type, MvCombo_, {config: config});
+                    }
+                } catch (e) {
+                    Sm.CONFIG.DEBUG && console.log('Modal,ge,0', e);
+                    return Promise.reject(e);
                 }
                 return Promise.reject("Could not figure out how to generate this element");
             },

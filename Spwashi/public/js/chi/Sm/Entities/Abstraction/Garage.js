@@ -19,7 +19,7 @@ require(['require', 'Class', 'Sm', 'Sm-Entities-Abstraction-templates-_template'
              * @param type_identifier   {string} The index in the Model's properties that lets us know what kind of Entity subtype we're dealing with.
              *                                   For example, this could be "section_type" letting us know that the section type is what tells us that a section is standard or an image or something like that
              */
-            init:                      function (type, type_identifier) {
+            init:            function (type, type_identifier) {
                 /**
                  * The Entity type that the Garage deals with (e.g. Section)
                  * @type {string}
@@ -38,7 +38,7 @@ require(['require', 'Class', 'Sm', 'Sm-Entities-Abstraction-templates-_template'
              * @return {Element}
              * @private
              */
-            _default:                  function (e) {
+            _default:        function (e) {
                 Sm.CONFIG.DEBUG && console.log(e);
                 var div       = document.createElement('div');
                 div.className = 'empty';
@@ -51,7 +51,7 @@ require(['require', 'Class', 'Sm', 'Sm-Entities-Abstraction-templates-_template'
              * @return {*}
              * @private
              */
-            _get_details_from_MvCombo: function (Mv_, config) {
+            _normalize_data: function (Mv_, config) {
                 var template_type;
                 var type;
                 var self_type;
@@ -70,22 +70,36 @@ require(['require', 'Class', 'Sm', 'Sm-Entities-Abstraction-templates-_template'
                     Sm.CONFIG.DEBUG && console.log('abstraction_garage_GDFM', e);
                     throw e;
                 }
-                return {
+
+                var data = {
                     Model:         Model_,
                     attributes:    attributes,
                     subtype:       type,
                     template_type: template_type
                 };
+
+                if (!!Mv_.object_type && Mv_.object_type == 'MvCombo') {
+                    data.MvCombo = Mv_;
+                }
+                return data;
             },
-            _combine_string:           function (attributes, string) {
+            _combine_string: function (attributes, string) {
                 var underscore_template = _.template(string);
                 return underscore_template(attributes);
             },
-            _generate_one:             function (template_arr, input, settings) {
+            /**
+             *
+             * @param template_arr
+             * @param input
+             * @param settings
+             * @param settings.default_value
+             * @param settings.synchronous
+             * @private
+             */
+            _generate_one:   function (template_arr, input, settings) {
                 settings           = settings || {};
                 var is_synchronous = !!settings.synchronous;
                 var default_val    = settings.default_value !== false ? settings.default_value || "full" : false;
-                var check          = input.indexOf("preview") > -1;
 
                 var template        = template_arr[0];
                 var backup_template = template_arr[1] || template;
@@ -190,7 +204,7 @@ require(['require', 'Class', 'Sm', 'Sm-Entities-Abstraction-templates-_template'
              * @param {boolean=false}   settings.synchronous
              * @return {*}
              */
-            generate: function (type, data, settings) {
+            generate:       function (type, data, settings) {
                 var config;
                 settings = settings || {};
                 if (typeof type === "object") {
@@ -199,19 +213,20 @@ require(['require', 'Class', 'Sm', 'Sm-Entities-Abstraction-templates-_template'
                     data     = settings.MvCombo || settings.data || {};
                     config   = settings.config || {};
                 }
-                var is_synchronous = !!settings.synchronous || false;
-                if (type == "relationships") return this.relationships(data, is_synchronous, settings);
-                var V      = this._get_details_from_MvCombo(data, config || {});
+                var is_synchronous  = !!settings.synchronous || false;
+                var normalized_data = this._normalize_data(data, config || {});
+                if (type == 'relationships') type = 'full.relationship';
+                if (/\.relationship/.test(type)) return this._relationships(type, normalized_data, settings);
                 var t      = Sm.Entities[this.type].templates;
                 var self   = this;
                 var res    = function () {
                     var templates = [
-                        t[V.template_type] || t.standard,
+                        t[normalized_data.template_type] || t.standard,
                         t._template
                     ];
                     type          = (type || '').toLowerCase();
                     if (type.indexOf(".") < 0) type += ".body";
-                    var outer_name = type.replace(/(body|modal|relationships)/, "$1_outer");
+                    var outer_name = type.replace(/(body|modal|relationship)/, "$1_outer");
                     var outer      = "__CONTENT__";
                     if (outer_name != type)
                         outer = self._generate_one(templates, outer_name, {
@@ -220,181 +235,164 @@ require(['require', 'Class', 'Sm', 'Sm-Entities-Abstraction-templates-_template'
                         });
                     var inner = self._generate_one(templates, type, {synchronous: true});
 
-                    return self._combine_string(V.attributes, outer.replace(/__CONTENT__/ig, inner));
+                    return self._combine_string(normalized_data.attributes, outer.replace(/__CONTENT__/ig, inner));
                 };
                 var result = res();
                 return is_synchronous ? result : Promise.resolve(result);
             },
+            _relationships: function (type, normalized_data, settings) {
+                /** @type {Sm.Core.MvCombo}  */
+                var MvCombo = normalized_data.MvCombo;
+                var t       = Sm.Entities[this.type].templates;
+                var Meta    = Sm.Entities[this.type].Meta;
 
-            /**
-             *
-             * @param {Sm.Core.MvCombo} Mv_
-             * @param is_synchronous Are we running this synchronously, or should we return a promise? (Allows for server stuff)
-             * @param settings
-             * @param settings.relationship_RIDs
-             * @param settings.listed_relationships_obj
-             * @param settings.always_display
-             * @param settings.context_id
-             * @param settings.display_type
-             * @param {Sm.Entities.Abstraction.Garage~on_add}    settings.on_append
-             * @param settings.always_display Relationship indices that we are always going to show (even if empty)
-             * @return {*}
-             */
-            relationships:                 function (Mv_, is_synchronous, settings) {
-                settings = settings || {};
-                if (!Mv_) return is_synchronous ? false : Promise.resolve(false);
-                var relationship_index_list = settings.relationship_index_list || [];
-                if (!relationship_index_list.length) {
-                    var _rels = Mv_.relationships || [];
-                    for (var _rel_name in _rels) {
-                        if (!_rels.hasOwnProperty(_rel_name)) continue;
-                        relationship_index_list.push(_rel_name);
+                var templates  = [t[normalized_data.template_type] || t.standard, t._template];
+                var context_id = settings.context_id || 0;
+                //If we didn't specify the relationships that we want, assume that we want all of them
+                var relationship_indices = settings.relationship_indices || [];
+                var _rels                = Meta.get_named_relationship_indices();
+
+                type                             = type.replace('ips', 'ip');
+
+                if (!relationship_indices.length) {
+                    for (var pretty_name in _rels) {
+                        if (!_rels.hasOwnProperty(pretty_name)) continue;
+                        relationship_indices.push([_rels[pretty_name], pretty_name]);
                     }
                 }
-                /** @type {{relationship_container: '', relationship_index_container: '', relationship_outer: ''}} The template object of this Entity  */
-                var _template                          = Sm.Entities[this.type].templates._template;
-                _template.relationship_index_container = _template.relationship_index_container || '__CONTENT__';
-                /**
-                 * If we can't find the necessary part sof the template, return an empty string
-                 */
-                if (!_template
-                    || !_template.relationship_container
-                    || !_template.relationship_outer) {
-                    return is_synchronous ? '' : Promise.resolve('');
-                }
+                var __orc_t_nom                  = type.replace(/(relationship)/, '$1_outer');
+                var outer_relationship_container =
+                        this._generate_one(templates, __orc_t_nom, {synchronous: true});
+                var orc_content                  = '';
+                var relevant_relationships       = {};
+                var display_type                 = settings.display_type || 'preview';
 
-                /**
-                 * The context_id (context of the relationship if applicable) is based on the settings, or it is the default
-                 * @type {number}
-                 */
-                var context_id                  = settings.context_id || 0,
-                    rel_index_string            = _template.relationship_index_container,
-                    rel_index_inner_string      = '',
-                    relevant_relationships      = {},
-                    obj_of_listed_relationships = settings.listed_relationships_obj || {};
-                for (var i = 0; i < relationship_index_list.length; i++) {
-                    var relationship_index = relationship_index_list[i];
-                    if (!relationship_index) continue;
-                    var relationship_index_content = '';
+                var appended_views = {};
+                var callback       = settings.on_append || false;
+                if (typeof  callback !== "function") callback = false;
 
-                    var relationships = [], related_items = [];
+                var $rel_index_list = [];
 
-
-                    /**
-                     * The relationship index with the first character capitalized
-                     * @type {string}
-                     */
-                    var rel_index_to_upper            = relationship_index.charAt(0).toUpperCase() + relationship_index.slice(1);
-                    /**
-                     * Each relationship index will get its own element. This is the basic template for that element.
-                     * @type {string}
-                     * @private
-                     */
-                    var relationship_container_string =
-                            _template.relationship_container
-                                .replace('__TITLE__', rel_index_to_upper);
-                    /**q
-                     * If the relationship_RIDs for this index is a falsey value, there are no relationships that we are going to deal with specifically.
-                     * Pull all of the known relationships
-                     */
-                    /** @type {Sm.Core.RelationshipIndex} The RelationshipIndex that we are going to be dealing with */
-                    var RelationshipIndex = Mv_.getRelationshipIndex(relationship_index);
+                for (var i = 0; i < relationship_indices.length; i++) {
+                    var relationship_index        = relationship_indices[i][0];
+                    var name                      = relationship_indices[i][1];
+                    var __ris_t_nom               = type.replace(/(relationship)/, '$1[relationship_index](' + relationship_index + ')');
+                    var relationship_index_string = this._generate_one(templates, __ris_t_nom, {synchronous: true});
+                    //Replace the generic "__TITLE__" string with the display name of the relationship
+                    relationship_index_string = relationship_index_string.replace('__TITLE__', name);
+                    var RelationshipIndex     = MvCombo.getRelationshipIndex(relationship_index);
+                    if (!RelationshipIndex) Sm.CONFIG.DEBUG && console.log('abs_gar,_el,-1.5', relationship_index);
                     if (!RelationshipIndex) continue;
+                    var relationship_object = RelationshipIndex.get_listed_items(context_id);
 
-                    var relationship_object                    = obj_of_listed_relationships[relationship_index] || RelationshipIndex.get_listed_items(context_id);
-                    related_items                              = relationship_object.items || [];
-                    relationships                              = relationship_object.relationships || [];
                     relevant_relationships[relationship_index] = [];
-                    var display_type                           = settings.display_type || 'preview';
-                    for (var k = 0; k < related_items.length; k++) {
-                        /** @type {Sm.Core.MvCombo} The MvCombo that is being related ot the original  */
-                        var OtherMvCombo = related_items[k];
-                        var Relationship = relationships[k];
-                        var OtherView    = OtherMvCombo.getView({display_type: display_type});
-                        OtherView.render({synchronous: true, display_type: display_type});
-
-                        relevant_relationships[relationship_index].push({
-                            MvCombo:      OtherMvCombo,
-                            Relationship: Relationship,
-                            View:         OtherView
-                        })
-                    }
 
 
-                    rel_index_inner_string += relationship_container_string
-                        .replace('__CONTENT__', relationship_index_content)
-                        .replace('__TYPE__', relationship_index)
-                        .replace('__R_ID__', Mv_.r_id);
+                    relationship_index_string =
+                        relationship_index_string
+                            .replace('__TYPE__', relationship_index)
+                            .replace('__R_ID__', MvCombo.r_id)
+                            .replace('__CONTENT__', '');
+
+                    var $relationship_index_string = this._populate_relationship_index({
+                        $relationship_index_string: $(relationship_index_string),
+                        relationship_index:         relationship_index,
+                        relationship_object:        relationship_object,
+                        type:                       type,
+                        display_type:               display_type,
+                        appended_views:             appended_views,
+                        templates:                  templates,
+                        MvCombo:                    MvCombo
+                    });
+                    if ($relationship_index_string) $rel_index_list.push($relationship_index_string);
                 }
-                var inner_string = rel_index_string
-                    .replace('__BUTTON_CONTROL__', '')
-                    .replace('__CONTENT__', rel_index_inner_string);
 
-                return this._continue_relationship_render(relevant_relationships, inner_string, is_synchronous, settings.on_append, Mv_);
+                //NOTE: I understand that this is inefficient - it's the result of two separate functions being merged together. I don't have the time right now to correct those errors.
+
+                var result = outer_relationship_container.replace('__CONTENT__', '');
+                result     = result.length ? result : '<div class="content"></div>';
+                var $elem  = $(result);
+                for (var j = 0; j < $rel_index_list.length; j++) {
+                    var $rel_index = $rel_index_list[j];
+                    $elem.append($rel_index);
+                }
+
+                return !!settings.synchronous ? $elem[0] : Promise.resolve($elem[0]);
             },
+
             /**
              *
-             * @param relevant_relationships
-             * @param {string}              inner_string            The string that will serve as the overall container for everything
-             * @param {boolean}             is_synchronous          Whether or not we should return a string or a promise
-             * @param {function}            callback                A function to be run on every View
+             * @param parameters
+             * @param parameters.$relationship_index_string
+             * @param parameters.relationship_index
+             * @param parameters.relationship_object
+             * @param parameters.type
+             * @param parameters.display_type
+             * @param parameters.templates
+             * @param parameters.MvCombo
+             * @param parameters.appended_views
              * @return {*}
-             * @private
-             * @param {Sm.Core.MvCombo}     Mv_                     The MvCombo who the relationships belong to
+             * @protected
              */
-            _continue_relationship_render: function (relevant_relationships, inner_string, is_synchronous, callback, Mv_) {
-                var $elem         = $(inner_string);
-                var _template     = Sm.Entities[this.type].templates._template;
-                /**
-                 * @callback Sm.Entities.Abstraction.Garage~on_add
-                 * @param {Sm.Entities.Section.View}    parameters.View
-                 * @param {HTMLElement}                 parameters.container_element
-                 * @param {string}                      parameters.relationship_index
-                 */
-                callback          = typeof callback === "function" ? callback : false;
-                /**
-                 * An array of Views that have already been appended to the Element (shouldn't happen).
-                 * This is meant to let us know which views need to be cloned
-                 * @type {Array}
-                 */
-                var appendedViews = [];
-                for (var loop_rel_index in relevant_relationships) {
-                    if (!relevant_relationships.hasOwnProperty(loop_rel_index)) continue;
-                    var holder             = $elem.children('.' + loop_rel_index + '-container');
-                    var relationship_outer = _template[loop_rel_index + '_relationship_outer'] ? _template[loop_rel_index + '_relationship_outer'] : _template.relationship_outer;
-                    if (holder[0]) {
-                        var related_views = relevant_relationships[loop_rel_index];
-                        for (var k = 0; k < related_views.length; k++) {
-                            var View_         = related_views[k].View;
-                            /** @type {Sm.Core.Relationship} */
-                            var Relationship_ = related_views[k].Relationship;
-                            if (!View_.MvCombo) continue;
-                            if (appendedViews.indexOf(View_.MvCombo.r_id) > -1) View_ = View_.clone();
-                            var outer_string = relationship_outer.replace('__CONTENT__', '').replace('__R_ID__', Relationship_.Identity.r_id).replace('__MV_R_ID__', Mv_ ? Mv_.r_id : 'null');
-                            var params       = {
-                                View:               View_,
-                                container_element:  outer_string,
-                                relationship_index: loop_rel_index
-                            };
-                            if (callback) callback(params);
-                            var $outer  = $(params.container_element);
-                            var content = $outer.find('.content');
-                            if (content[0]) {
-                                var v = View_.get_rendered('Element');
-                                content[0].appendChild(v);
-                                holder[0].appendChild($outer[0]);
-                                appendedViews.push(View_.MvCombo.r_id);
-                                View_.mark_added();
-                            } else {
-                                Sm.CONFIG.DEBUG && console.log($outer, content, View_);
-                            }
-                        }
-                    } else {
-                        Sm.CONFIG.DEBUG && console.log(holder);
-                    }
+            _populate_relationship_index: function (parameters) {
+                var $relationship_index_string = parameters.$relationship_index_string;
+                var relationship_index         = parameters.relationship_index;
+                var relationship_object        = parameters.relationship_object;
+                var type                       = parameters.type || '.relationships';
+                var display_type               = parameters.display_type || 'preview';
+                var templates                  = parameters.templates;
+                var appended_views             = parameters.appended_views;
+                var MvCombo                    = parameters.MvCombo;
+
+                var $ris_content = $relationship_index_string.children('.content').eq(0) || false;
+
+                if (!$ris_content) Sm.CONFIG.DEBUG && console.log('abs_garage,_rel,-1', $relationship_index_string);
+                if (!$ris_content) return false;
+
+                var related_items = relationship_object.items || [];
+                var relationships = relationship_object.relationships || [];
+                var _count        = relationship_object.count || 0;
+                for (var k = 0; k < _count; k++) {
+                    var OtherMvCombo = related_items[k];
+                    var Relationship = relationships[k];
+
+                    var relationship_template_name = type.replace(/(relationship)/, '$1[relationship](' + relationship_index + ')');
+                    var relationship_string        = this._generate_one(templates, relationship_template_name, {synchronous: true});
+                    relationship_string            =
+                        relationship_string
+                            .replace('__R_ID__', Relationship.Identity.r_id)
+                            .replace('__MV_R_ID__', MvCombo ? MvCombo.r_id : 'null')
+                            .replace('__CONTENT__', '');
+                    this._append_relationship(OtherMvCombo, $ris_content, relationship_index, relationship_string, appended_views, display_type);
+
                 }
-                var result = $elem[0];
-                return is_synchronous ? result : Promise.resolve(result);
+                return $relationship_index_string;
+            },
+            _append_relationship:         function (OtherMvCombo, $ris_content, relationship_index, relationship_string, appended_views, display_type) {
+                display_type  = display_type || "full";
+                var OtherView =
+                        !appended_views[OtherMvCombo.r_id] ?
+                            OtherMvCombo.getView()
+                            : appended_views[OtherMvCombo.r_id].clone();
+
+                OtherView.render({synchronous: true, display_type: display_type});
+                var params    = {
+                    View:               OtherView,
+                    container_element:  relationship_string,
+                    relationship_index: relationship_index
+                };
+                var $outer    = $(params.container_element);
+                var $content  = $outer.find('.content');
+                if ($content[0]) {
+                    var v_element                     = OtherView.get_rendered('Element');
+                    $content[0].appendChild(v_element);
+                    $ris_content[0].appendChild($outer[0]);
+                    appended_views[OtherMvCombo.r_id] = appended_views[OtherMvCombo.r_id] || OtherView;
+                    OtherView.mark_added();
+                } else {
+                    Sm.CONFIG.DEBUG && console.log($outer, $content, OtherView);
+                }
+                return true;
             }
         });
         Sm.loaded.add('Entities_Abstraction_Garage');

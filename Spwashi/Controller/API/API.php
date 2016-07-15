@@ -925,12 +925,6 @@ class API {
 	 * @param null       $last_result
 	 * @param Endpoint[] $endpoint_array
 	 * @return mixed
-	 * @internal param bool $next_endpoint
-	 * @internal param bool $is_last
-	 *
-	 *
-	 * @internal param $req_data
-	 * @internal param $settings
 	 */
 	public function post($primary_model, $request_data, $last_result = null, &$endpoint_array = []) {
 		$result = static::check_save_or_add($request_data, $primary_model, $endpoint_array);

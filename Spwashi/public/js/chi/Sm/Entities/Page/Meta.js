@@ -2,11 +2,11 @@
  * Created by Sam Washington on 1/25/16.
  */
 require(['require', 'Sm-Core-Meta'], function (require) {
-    var PageMeta                           = Sm.Core.Meta.Proto.extend({
+    var PageMeta                = Sm.Core.Meta.Proto.extend({
         relationship_type_obj:             {
             concepts:   {
                 MvType:             'Concept',
-                index:              'concept',
+                index_singular:     'concept',
                 id:                 null,
                 primary_key:        'page_id',
                 secondary_key:      'concept_id',
@@ -18,7 +18,7 @@ require(['require', 'Sm-Core-Meta'], function (require) {
              */
             dimensions: {
                 MvType:             'Dimension',
-                index:              'dimension',
+                index_singular:     'dimension',
                 id:                 null,
                 primary_key:        'page_id',
                 secondary_key:      'dimension_id',
@@ -30,7 +30,7 @@ require(['require', 'Sm-Core-Meta'], function (require) {
              */
             sections:   {
                 MvType:             'Section',
-                index:              'section',
+                index_singular:     'section',
                 id:                 null,
                 primary_key:        'page_id',
                 secondary_key:      'section_id',
@@ -43,7 +43,7 @@ require(['require', 'Sm-Core-Meta'], function (require) {
              */
             pages: {
                 MvType:             'Section|Concept',
-                index:              'section|concept',
+                index_singular:     'section|concept',
                 id:                 null,
                 primary_key:        'section_id|concept_id',
                 secondary_key:      'page_id',
@@ -68,8 +68,8 @@ require(['require', 'Sm-Core-Meta'], function (require) {
         }
 
     });
-    Sm.Entities.Page.Meta                  = new PageMeta({type: 'Page'});
+    Sm.Entities.Page.Meta       = new PageMeta({type: 'Page'});
     Sm.Entities.Page.Meta.Proto = PageMeta;
-    var self_type                          = 'Page';
+    var self_type               = 'Page';
     Sm.loaded.add('Entities_' + self_type + '_Meta');
 });

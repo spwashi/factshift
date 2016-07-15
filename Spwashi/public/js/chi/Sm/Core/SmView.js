@@ -234,7 +234,7 @@ require(['require', 'backbone', 'jquery',
                     Sm.loaded.when_loaded('Extras_Draggable', function () {
                         Sm.Extras.Draggable.mixin.call(self, {
                             can_start:  function () {
-                                return Sm.CONFIG.DRAG_MODE;
+                                return Sm.CONFIG.DRAG_MODE && !self.queryStatus('modal');
                             },
                             can_accept: function (dragged, data) {
                                 return true;
@@ -379,6 +379,11 @@ require(['require', 'backbone', 'jquery',
                     Sm.loaded.when_loaded('Vendor_MathJax', function () {
                         self.setStatus && self.setStatus('math_init', true);
                         MathJax.Hub.Queue(["Typeset", MathJax.Hub]);
+                    });
+                    Sm.loaded.when_loaded('Entities_Dictionary_Wrapper', function () {
+                        Sm.Entities.Dictionary.Wrapper.highlight_word(null, {
+                            element: self.get_rendered('Element')
+                        })
                     });
                 },
                 /**
@@ -859,6 +864,7 @@ require(['require', 'backbone', 'jquery',
                     }, '_SmView_SetElement', 20000);
                 },
                 renderDragMirror:              function (el) {
+                    if (this.queryStatus('modal')) return false;
                     var clone                 = el.cloneNode(true);
                     var rect                  = clone.getBoundingClientRect();
                     var wrap_thing            = document.createElement('div');
@@ -1193,8 +1199,8 @@ require(['require', 'backbone', 'jquery',
                             var last_el                  = PreviousView.el;
                             //this is where we are appending the View
                             Sm.Core.util.insertAfter(CurrentView.el, last_el);
-                            CurrentView.mark_added();
                             CurrentView.referenceElement = el.parentNode;
+                            CurrentView.mark_added();
                             //Remove the View that we haven't removed yet, say that we have removed it
                             if (!has_been_removed && PreviousView.cid == RemovedFirstView.cid) {
                                 RemovedFirstView.remove();

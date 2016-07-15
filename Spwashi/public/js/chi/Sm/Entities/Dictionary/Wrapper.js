@@ -111,10 +111,11 @@ require(['require', 'Sm-Entities-Dictionary-main', 'Sm-Core-MvWrapper'], functio
              */
             highlight_word:    function (word_or_words, settings) {
                 settings = settings || {};
-                if (word_or_words + '' == '[object Array]') {
+                if (word_or_words === null) word_or_words = Object.keys(this.highlighted_words);
+                if (word_or_words.constructor === Array) {
                     for (var i = 0; i < word_or_words.length; i++) {
                         var word = word_or_words[i];
-                        this.highlight_word(word)
+                        this.highlight_word(word, settings)
                     }
                 } else {
                     var element                           = settings.element || document.body;

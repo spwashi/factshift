@@ -19,7 +19,6 @@ use Spwashi\Model\Type\SectionType;
 /** @var string $s_subtitle */
 /** @var string $s_content_location */
 /** @var string $s_content */
-
 ?>
 
 <section id="Section-<?= $s_id ?>" class="active spwashi-section spwashi-entity type-<?= SectionType::get_name_from_type($s_type) ?> <?= !$s_has_title ? 'no-title' : '' ?>"
@@ -42,7 +41,7 @@ use Spwashi\Model\Type\SectionType;
         <div class="dev id"><?= $s_id ?></div>
         <h3 class="title"><?= $s_title ?></h3>
     </header>
-    <?php switch ($s_type) :
+    <?php switch ($s_type) {
         case SectionType::TYPE_DEFINITION : ?>
             <ul data-ent_id="<?= $s_ent_id ?>" class="lst tag-container synonym-container entity-container"></ul>
             <div class="content"><?= $s_content ?></div>
@@ -68,7 +67,7 @@ use Spwashi\Model\Type\SectionType;
 
                 <div class="content"><?= $s_content ?></div>
             </div>
-        <? endswitch; ?>
+        <?php } ?>
     <div class="focus lower"></div>
     <div data-ent_id="<?= $s_ent_id ?>" data-relationship_index="composition" class="relationship-container composition-container entity-container">{{o_composition}}</div>
     <div data-ent_id="<?= $s_ent_id ?>" data-relationship_index="children" class="relationship-container children-container entity-container">{{o_children}}</div>

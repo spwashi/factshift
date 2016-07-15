@@ -17,54 +17,22 @@ require(['require', 'Sm',
     ], function () {
 
         var GarageClass               = Sm.Entities.Abstraction.Garage.extend({
-            /**
-             * @alias {Sm.Entities.Dictionary.Garage#relationships}
-             * @override {Sm.Entities.Abstraction.Garage#relationships}
-             * @param Mv_
-             * @param synchronous
-             * @param settings
-             * @return {*}
-             */
-            relationships:      function (Mv_, synchronous, settings) {
-                settings                = settings || {};
-                settings.display_type   = 'inline';
-                settings.always_display = ['definitions'];
-                /**
-                 * @type {Sm.Entities.Abstraction.Garage~on_add}
-                 * @param {Sm.Entities.Section.View}    parameters.View
-                 * @param {HTMLElement}                 parameters.container_element
-                 * @param {string}                      parameters.relationship_index
-                 */
-                settings.on_append      = function (parameters) {
-                    var View               = parameters.View;
-                    var container_element  = parameters.container_element;
-                    var relationship_index = parameters.relationship_index;
-                    var MvCombo_           = View.MvCombo;
-                    if (relationship_index == 'definitions') {
-                        var title                    = MvCombo_.Model.get('title') || ' - ';
-                        parameters.container_element = parameters.container_element.replace('__TITLE__', title)
-                    }
-                };
-                return Sm.Entities.Abstraction.Garage.prototype.relationships.apply(this, [
-                    Mv_,
-                    synchronous,
-                    settings
-                ]);
+            _append_relationship: function (OtherMvCombo, $ris_content, relationship_index, relationship_string, appended_views, display_type) {
+                Sm.CONFIG.DEBUG && console.log(OtherMvCombo);
+                if (relationship_index && relationship_index == 'definitions') {
+                    var title    = OtherMvCombo.Model.get('title') || ' - ';
+                    arguments[3] = relationship_string.replace('__TITLE__', title)
+                } else {
+                }
+                return Sm.Entities.Abstraction.Garage.prototype._append_relationship.apply(this, arguments);
             },
-            definition_tooltip: function (Mv_, synchronous, settings) {
+            definition_tooltip:   function (Mv_, synchronous, settings) {
                 settings             = settings || {};
                 var word             = settings.word || false;
                 var title            = settings.title || word;
                 var Garage_          = this;
                 var parameters       = {
-                    relationship_index_list: ['definitions'],
-                    /**
-                     * @type {Sm.Entities.Abstraction.Garage~on_add}
-                     * @param {Sm.Entities.Section.View}    parameters.View
-                     * @param {HTMLElement}                 parameters.container_element
-                     * @param {string}                      parameters.relationship_index
-                     */
-                    on_append:               function (parameters) {
+                    on_append: function (parameters) {
                         var View = parameters.View;
                         View.setPermission('focus', false);
                         View.mark_added();
@@ -92,15 +60,11 @@ require(['require', 'Sm',
 
                     return Mv_.reduce(function (P, MvCombo_) {
                         return P.then(function () {
-                            var def_rels                        = MvCombo_.define_word(word);
-                            parameters.listed_relationships_obj = {
-                                definitions: def_rels
-                            };
-                            return Garage_.relationships(MvCombo_, false, parameters).then(append_content);
+                            return Garage_.generate('relationships', MvCombo_).then(append_content);
                         });
                     }, Promise.resolve());
                 } else {
-                    return this.relationships(Mv_, false, parameters).then(append_content);
+                    return Garage_.generate('relationships', Mv_).then(append_content);
                 }
             }
         });

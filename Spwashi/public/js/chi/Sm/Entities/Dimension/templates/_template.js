@@ -6,20 +6,8 @@
  */
 require(['require', 'Sm-Entities-Dimension-main'], function (require) {
     Sm.Entities.Dimension.templates._template = {
-        outer:          {
-            full:    '',
-            preview: '',
-            inline:  '',
-            tab:     '',
-            tag:     ''
-        },
-        button_control: {
-            full:    '',
-            preview: '',
-            inline:  '',
-            tab:     '',
-            tag:     ''
-        }
+        body: '<div class="title" ><%- title %></div>\n <div class="description" > - <%- description %></div>',
+        body_outer: '<div data-ent_id="<%- ent_id %>" data-id="<%- id %>" class="spwashi-dimension spwashi-entity <% if(_type){ %>type-<%- _type %><% } %> ">\n    __CONTENT__\n</div>'
     };
     Sm.loaded.add('Entities_Dimension_templates__template');
 });

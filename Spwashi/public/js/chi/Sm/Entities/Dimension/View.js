@@ -52,8 +52,7 @@ require(['require'], function (require) {
                     if (!this.MvCombo || !this.MvCombo.Identity.ent_id || !this.MvCombo.Identity.ent_id.length) return false;
                     var matching_element_list = $('.section-container[data-ent_id=' + this.MvCombo.Identity.ent_id + ']');
                     if (!matching_element_list.length) {return false;}
-                    Sm.CONFIG.DEBUG && console.log(matching_element_list[0]);
-                    return this.elements.section_holder = matching_element_list[0];
+                        return this.elements.section_holder = matching_element_list[0];
                 }
             },
             focus:                  function () {

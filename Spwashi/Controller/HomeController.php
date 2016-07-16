@@ -21,9 +21,7 @@ class HomeController extends SpwashiController {
 		return $v;
 	}
 	public function example_2() {
-		return $this->view
-			->insertContent(View::create('examples/text_2.php')
-			                    ->enforceTemplate('content.php'))
-			->setTitle('Example Text 2', 'Original text taken from http://www.cs.colby.edu/maxwell/courses/tutorials/maketutor/');
+		$v = View::create('examples/text_2.php');
+		return $v;
 	}
 }

@@ -23,72 +23,66 @@ $config = [
 		'relationships'         => [
 			'_dummies'    => [
 				//The type of Entity that is being related to
-				'model_type'         => 'Dummy',
+				'model_type'      => 'Dummy',
 				//The singular index of these relationships
-				'index_singular'     => 'dummy',
+				'index_singular'  => 'dummy',
 				//The textual representation of the relationship type, singular
-				'name'               => 'Dummy',
+				'name'            => 'Dummy',
 				//The textual representation of the relationship type, plural
-				'name_plural'        => '_Dummies',
+				'name_plural'     => '_Dummies',
 				//The ID of the relationship type
-				'id'                 => null,
+				'id'              => null,
 				//The primary key of the relationship - the one that /has/ the relationship. Done with respect to the entity that has the relationship (e.g. primary_[entity]_id or [entity]_id).
 				//Flipped if the relationship is only reciprocal
-				'primary_key'        => '[entity]_id',
+				'primary_key'     => '[entity]_id',
 				//The secondary key of the relationship. Opposite of the primary key.
-				'secondary_key'      => 'dummy_id',
-				//Whether or not this relationship type is only had reciprocally (e.g. "section" has no "sections" index, but that is the relationship type that it is in every other relationship.
-				//todo consider automating/removing?
-				'is_only_reciprocal' => false,
+				'secondary_key'   => 'dummy_id',
 				//The entities that are linked in this relationship
-				'linked_entities'    => ['Dummy', 'Entity']
+				'linked_entities' => ['Dummy', 'Entity']
 			],
 			'children'    => [
-				'model_type'         => '[Entity]',
-				'index_singular'     => 'child',
-				'id'                 => 1,
-				'primary_key'        => 'primary_[entity]_id',
-				'secondary_key'      => 'secondary_[entity]_id',
-				'is_only_reciprocal' => false,
-				'linked_entities'    => ['[Entity]', '[Entity]']
+				'model_type'      => '[Entity]',
+				'index_singular'  => 'child',
+				'id'              => 1,
+				'primary_key'     => 'primary_[entity]_id',
+				'secondary_key'   => 'secondary_[entity]_id',
+				'linked_entities' => ['[Entity]', '[Entity]']
 			],
 			'micros'      => [
-				'model_type'         => '[Entity]',
-				'index_singular'     => 'micro',
-				'id'                 => 4,
-				'primary_key'        => 'primary_[entity]_id',
-				'secondary_key'      => 'secondary_[entity]_id',
-				'is_only_reciprocal' => false,
-				'linked_entities'    => ['[Entity]', '[Entity]']
+				'model_type'      => '[Entity]',
+				'index_singular'  => 'micro',
+				'id'              => 4,
+				'primary_key'     => 'primary_[entity]_id',
+				'secondary_key'   => 'secondary_[entity]_id',
+				'linked_entities' => ['[Entity]', '[Entity]']
 			],
 			'composition' => [
-				'model_type'         => '[Entity]',
-				'index_singular'     => 'composition',
-				'id'                 => 2,
-				'primary_key'        => 'primary_[entity]_id',
-				'secondary_key'      => 'secondary_[entity]_id',
-				'is_only_reciprocal' => false,
-				'linked_entities'    => ['[Entity]', '[Entity]']
+				'model_type'      => '[Entity]',
+				'index_singular'  => 'composition',
+				'id'              => 2,
+				'primary_key'     => 'primary_[entity]_id',
+				'secondary_key'   => 'secondary_[entity]_id',
+				'linked_entities' => ['[Entity]', '[Entity]']
 			],
 			'pivots'      => [
-				'model_type'         => '[Entity]',
-				'index_singular'     => 'pivot',
-				'id'                 => 5,
-				'primary_key'        => 'primary_[entity]_id',
-				'secondary_key'      => 'secondary_[entity]_id',
-				'is_only_reciprocal' => false,
-				'linked_entities'    => ['[Entity]', '[Entity]']
+				'model_type'      => '[Entity]',
+				'index_singular'  => 'pivot',
+				'id'              => 5,
+				'primary_key'     => 'primary_[entity]_id',
+				'secondary_key'   => 'secondary_[entity]_id',
+				'linked_entities' => ['[Entity]', '[Entity]']
 			],
-			'sections'    => ['_standard' => true, 'model_type' => 'Section', 'is_only_reciprocal' => false],
-			'pages'       => ['_standard' => true, 'model_type' => 'Page', 'is_only_reciprocal' => false],
-			'collections' => ['_standard' => true, 'model_type' => 'Collection', 'is_only_reciprocal' => false],
-			'dimensions'  => ['_standard' => true, 'model_type' => 'Dimension', 'is_only_reciprocal' => false],
-			'concepts'    => ['_standard' => true, 'model_type' => 'Concept', 'is_only_reciprocal' => false],
+			'sections'    => ['model_type' => 'Section'],
+			'users'       => ['model_type' => 'User'],
+			'pages'       => ['model_type' => 'Page'],
+			'collections' => ['model_type' => 'Collection'],
+			'dimensions'  => ['model_type' => 'Dimension'],
+			'concepts'    => ['model_type' => 'Concept'],
 		]
 	],
 	'models' => [
-		'Section'    => [
-			'prefix'        => '_sec',
+		'Section'              => [
+			'prefix'        => 'sec_',
 			'table'         => 'sections',
 			'relationships' => [
 				'_inherit'     => [
@@ -101,22 +95,12 @@ $config = [
 						'collections',
 						'dimensions',
 						'concepts',
+						'users'
 					]
 				],
-				'sections'     => ['_standard' => true, 'model_type' => ['Collection', 'Dimension', 'Concept'], 'is_only_reciprocal' => true],
-
+				'users'        => ['existent' => false],
 				'dictionaries' => [
-					'_standard'          => true,
-					'model_type'         => 'Dictionary',
-					'is_only_reciprocal' => false,
-				],
-				'definitions'  => [
-					'model_type'         => 'Dictionary',
-					'index_singular'     => 'definition',
-					'secondary_key'      => 'dictionary_id',
-					'primary_key'        => 'section_id',
-					'is_only_reciprocal' => true,
-					'linked_entities'    => ['Section', 'Dictionary']
+					'model_type' => 'Dictionary',
 				],
 			],
 			'properties'    => [
@@ -146,7 +130,7 @@ $config = [
 				'api_gettable' => '*'
 			]
 		],
-		'Collection' => [
+		'Collection'           => [
 			'prefix'        => 'coll',
 			'table'         => 'collections',
 			'relationships' => [
@@ -171,7 +155,7 @@ $config = [
 				'api_gettable' => '*'
 			]
 		],
-		'Concept'    => [
+		'Concept'              => [
 			'prefix'        => 'ccp_',
 			'table'         => 'concepts',
 			'relationships' => [
@@ -183,7 +167,7 @@ $config = [
 				'api_gettable' => []
 			]
 		],
-		'Page'       => [
+		'Page'                 => [
 			'prefix'        => 'page',
 			'table'         => 'pages',
 			'relationships' => [
@@ -195,7 +179,7 @@ $config = [
 				'api_gettable' => []
 			]
 		],
-		'Dimension'  => [
+		'Dimension'            => [
 			'prefix'        => 'dim_',
 			'table'         => 'dimensions',
 			'relationships' => [
@@ -218,10 +202,56 @@ $config = [
 				'api_gettable' => '*'
 			]
 		],
-		'Dictionary' => [
-			'table'         => 'dictionaries',
+		'User'                 => [
+			'prefix'        => 'usr_',
+			'table'         => 'users',
 			'relationships' => [
 				'_inherit' => ['_' => ['sections', 'pages']]
+			],
+			'properties'    => [
+				'all'          => [
+					'id',
+					'first_name',
+					'last_name',
+					'email',
+					'alias',
+					'ent_id',
+					'password',
+					'user_type',
+					'status_id',
+					'user_status_reason_id',
+					'profile_image_id',
+					'update_dt',
+					'creation_dt',
+				],
+				'api_settable' => [
+					'first_name',
+					'last_name',
+					'email',
+					'alias',
+				],
+				'api_gettable' => [
+					'first_name',
+					'last_name',
+					'email',
+					'alias',
+					'update_dt',
+					'creation_dt',
+					'user_type'
+				]
+			]
+		],
+		'Dictionary'           => [
+			'table'         => 'dictionaries',
+			'relationships' => [
+				'_inherit'    => ['_' => ['pages']],
+				'definitions' => [
+					'model_type'      => 'Section',
+					'index_singular'  => 'definition',
+					'secondary_key'   => 'section_id',
+					'primary_key'     => 'dictionary_id',
+					'linked_entities' => ['Dictionary', 'Section']
+				],
 			],
 			'properties'    => [
 				'all'          => [
@@ -240,88 +270,102 @@ $config = [
 				'api_gettable' => '*'
 			]
 		],
-	],
-	'maps'   => [
+
 		'CollectionSectionMap' => [
-			'table_name'      => 'collection_section_map',
-			'linked_entities' => ['Collection', 'Section'],
-			'prefix'          => 'csm_',
-			'properties'      => [
+			'table'      => 'collection_section_map',
+			'prefix'     => 'csm_',
+			'properties' => [
 				'all'          => [],
 				'api_settable' => [],
 				'api_gettable' => []
 			]],
 		'DictionarySectionMap' => [
-			'table_name'      => 'dictionary_section_map',
-			'linked_entities' => ['Dictionary', 'Section'],
-			'prefix'          => 'dcsm',
-			'properties'      => [
+			'table'      => 'dictionary_section_map',
+			'prefix'     => 'dcsm',
+			'properties' => [
 				'all'          => [],
 				'api_settable' => [],
 				'api_gettable' => []
 			]],
 		'DimensionSectionMap'  => [
-			'table_name'      => 'dimension_section_map',
-			'linked_entities' => ['Dimension', 'Section'],
-			'prefix'          => 'dmsm',
-			'properties'      => [
+			'table'      => 'dimension_section_map',
+			'prefix'     => 'dmsm',
+			'properties' => [
 				'all'          => [],
 				'api_settable' => [],
 				'api_gettable' => []
 			]],
 		'PageDimensionMap'     => [
-			'table_name'      => 'page_dimension_map',
-			'linked_entities' => ['Page', 'Dimension'],
-			'prefix'          => 'pdm_',
-			'properties'      => [
+			'table'      => 'page_dimension_map',
+			'prefix'     => 'pdm_',
+			'properties' => [
 				'all'          => [],
 				'api_settable' => [],
 				'api_gettable' => []
 			]],
 		'ConceptPageMap'       => [
-			'table_name'      => 'concept_page_map',
-			'linked_entities' => ['Concept', 'Page'],
-			'prefix'          => 'cpm_',
-			'properties'      => [
+			'table'      => 'concept_page_map',
+			'prefix'     => 'cpm_',
+			'properties' => [
 				'all'          => [],
 				'api_settable' => [],
 				'api_gettable' => []
 			]],
 		'SectionUserMap'       => [
-			'table_name'      => 'section_user_map',
-			'linked_entities' => ['Section', 'User'],
-			'prefix'          => false,
-			'properties'      => [
-				'all'          => [],
-				'api_settable' => [],
-				'api_gettable' => []
-			]],
-		'UserSectionMap'       => [
-			'table_name'      => 'user_section_map',
-			'linked_entities' => ['User', 'Section'],
-			'prefix'          => false,
-			'properties'      => [
+			'table'      => 'section_user_map',
+			'alias_for'  => 'sections.user_id',
+			'properties' => [
 				'all'          => [],
 				'api_settable' => [],
 				'api_gettable' => []
 			]],
 		'SectionSectionMap'    => [
-			'table_name'      => 'section_section_map',
-			'linked_entities' => ['Section', 'Section'],
-			'prefix'          => '____',
-			'properties'      => [
-				'all'          => [],
-				'api_settable' => [],
-				'api_gettable' => []
+			'table'      => 'section_section_map',
+			'prefix'     => 'ssm_',
+			'properties' => [
+				'all'          => [
+					'id',
+					'primary_section_id',
+					'secondary_section_id',
+					'position',
+					'relationship_type',
+					'relationship_subtype',
+					'relationship_status',
+					'user_id',
+					'adopts_children',
+					'update_dt',
+					'creation_dt'
+					//'universe_id'
+				],
+				'api_settable' => [
+					'secondary_section_id',
+					'relationship_type',
+					'relationship_subtype',
+					'primary_section_id',
+					'position',
+				],
+				'api_gettable' => '*'
 			]],
 		'SectionConceptMap'    => [
-			'table_name'      => 'section_concept_map',
-			'linked_entities' => ['Section', 'Concept'],
-			'prefix'          => '____',
-			'properties'      => [
-				'all'          => [],
-				'api_settable' => [],
-				'api_gettable' => []
+			'table'      => 'section_concept_map',
+			'prefix'     => 'scpm',
+			'properties' => [
+				'all'          => [
+					'id',
+					'section_id',
+					'concept_id',
+					'update_dt',
+					'position',
+					'universe_id',
+					'creation_dt'
+				],
+				'api_settable' => [
+					'section_id',
+					'concept_id',
+					'position',
+					'universe_id',
+				],
+				'api_gettable' => '*'
 			]],
 	]
 ];

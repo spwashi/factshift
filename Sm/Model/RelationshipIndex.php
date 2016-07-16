@@ -15,21 +15,21 @@ use Sm\Core\Inflector;
  * Each Model can have relationships. These relationships are stored in relationship indices called RelatorRemixes.\
  * Each different index is stored in a RelatorRemix that the class holds for convenience. Maybe not have a native RelatorRemix? todo"
  * @package Sm\Model
- * @property RelatorRemix $micros
- * @property RelatorRemix $composition
- * @property RelatorRemix $children
- * @property RelatorRemix $pivots
- * @property RelatorRemix $collections
- * @property RelatorRemix $dimensions
- * @property RelatorRemix $dictionaries
- * @property RelatorRemix $collections_tmp
- * @property RelatorRemix $users
- * @property RelatorRemix $sections
- * @property RelatorRemix $concepts
- * @property RelatorRemix $pages
- * @property RelatorRemix $universes
+ * @property RelationshipIndex $micros
+ * @property RelationshipIndex $composition
+ * @property RelationshipIndex $children
+ * @property RelationshipIndex $pivots
+ * @property RelationshipIndex $collections
+ * @property RelationshipIndex $dimensions
+ * @property RelationshipIndex $dictionaries
+ * @property RelationshipIndex $collections_tmp
+ * @property RelationshipIndex $users
+ * @property RelationshipIndex $sections
+ * @property RelationshipIndex $concepts
+ * @property RelationshipIndex $pages
+ * @property RelationshipIndex $universes
  */
-class RelatorRemix implements \JsonSerializable {
+class RelationshipIndex implements \JsonSerializable {
 	/** @var $_meta RelationshipMeta */
 	public    $_meta;
 	protected $properties = [];
@@ -79,7 +79,7 @@ class RelatorRemix implements \JsonSerializable {
 	 */
 	public function &__get($name) {
 		if (!isset($this->properties[$name])) {
-			$this->properties[$name] = new RelatorRemix([], $name, false, $name . ' in ' . $this->own_table);
+			$this->properties[$name] = new RelationshipIndex([], $name, false, $name . ' in ' . $this->own_table);
 		}
 		$this->gotten[$name] = true;
 		return $this->properties[$name];
@@ -91,14 +91,14 @@ class RelatorRemix implements \JsonSerializable {
 	 * @param            $mapped_table
 	 * @param array      $relationship_index
 	 * @param bool|false $index
-	 * @return array|RelatorRemix
+	 * @return array|RelationshipIndex
 	 */
 	public function init_rel($mapped_table, $relationship_index = [], $index = false) {
 		$own_table          = $this->own_table;
 		$singular_own_table = Inflector::singularize($own_table);
 		$singular_k         = Inflector::singularize($mapped_table);
-		if (!($relationship_index instanceof RelatorRemix))
-			$relationship_index = new RelatorRemix(isset($relationship_index['_meta']) ? [$relationship_index['_meta']] : [], $mapped_table, false, $mapped_table . ' in - ' . $this->own_table);
+		if (!($relationship_index instanceof RelationshipIndex))
+			$relationship_index = new RelationshipIndex(isset($relationship_index['_meta']) ? [$relationship_index['_meta']] : [], $mapped_table, false, $mapped_table . ' in - ' . $this->own_table);
 		if ($index !== false) {
 			$relationship_index->index = $index;
 		}
@@ -152,7 +152,7 @@ class RelatorRemix implements \JsonSerializable {
 	/**
 	 * Get all of the items (organized by position) from this RelatorRemix. This either returns a RelatorRemix array, Relationship array, or Model array
 	 * @param bool|false $only_models If we only want to get the Models from the RelatorRemix, we put those in an array and return it
-	 * @return Relationship[]|Model[]|RelatorRemix[]
+	 * @return Relationship[]|Model[]|RelationshipIndex[]
 	 */
 	public function get_items($only_models = false) {
 		$item = [];
@@ -207,7 +207,7 @@ class RelatorRemix implements \JsonSerializable {
 	 * Retrieve the relationship index at a specific index. If there is none, create one
 	 * @param string $index        The index we are trying to find a relationship at
 	 * @param string $mapped_table The name of the table to base it on
-	 * @return RelatorRemix
+	 * @return RelationshipIndex
 	 */
 	public function &get_map_rel($index, $mapped_table) {
 		if (!isset($this->properties[$index])) {
@@ -219,7 +219,7 @@ class RelatorRemix implements \JsonSerializable {
 
 	/**
 	 * Add a relationship ar a specified index (or just append)
-	 * @param Relationship|RelatorRemix $relationship
+	 * @param Relationship|RelationshipIndex $relationship
 	 * @param bool|false                $identifier What is the identifier of the Relationship we're adding? Add that to the list if it isn't there already
 	 *                                              todo splicing
 	 */

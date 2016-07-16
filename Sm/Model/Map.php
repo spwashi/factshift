@@ -24,12 +24,12 @@ abstract class Map extends Model implements \JsonSerializable {
 	public static $default_properties   = [];
 	public static $primary_identifier   = null;
 	public static $secondary_identifier = null;
-
+	public        $models               = [];
 	public function __construct($properties = null, $check_change = false) {
 		parent::__construct($properties, $check_change);
 		static::__initialize();
-		$this->{static::$primary_identifier}   = new Model;
-		$this->{static::$secondary_identifier} = new Model;
+		$this->models[static::$primary_identifier]   = new Model;
+		$this->models[static::$secondary_identifier] = new Model;
 	}
 	public static function get_primary_identifier($model = false) {
 		static::__initialize();
@@ -60,6 +60,7 @@ abstract class Map extends Model implements \JsonSerializable {
 		try {
 			return parent::find($id, $attributes, $extras);
 		} catch (ModelNotFoundException $e) {
+			Log::init(func_get_args())->log_it();
 			throw new MapNotFoundException($e->getMessage(), $e->getCode());
 		}
 	}
@@ -83,15 +84,11 @@ abstract class Map extends Model implements \JsonSerializable {
 	protected static function __initialize() {
 		$res = parent::__initialize();
 		if ($res) {
-			static::$_mapped = ModelMeta::get_default_class_properties(static::class, 'mapped');
-			$ids             = ModelMeta::get_default_class_properties(static::class, 'ids');
+			static::$_mapped = ModelMeta::_get_def_props(static::class, ModelMeta::FIND_MAPPED);
+			$ids             = ModelMeta::_get_def_props(static::class, ModelMeta::FIND_IDS);
 			if ($ids && isset($ids[0])) {
 				static::$primary_identifier = $ids[0];
 				if (isset($ids[1])) static::$secondary_identifier = $ids[1];
-				Log::init([
-					          'primary'   => static::$primary_identifier,
-					          'secondary' => static::$secondary_identifier
-				          ])->log_it();
 				return;
 			}
 			$primary_identifier   = ModelMeta::convert_to_id(static::$_mapped[0]);
@@ -111,167 +108,19 @@ abstract class Map extends Model implements \JsonSerializable {
 		$convert_0            = ModelMeta::convert_to_id($bet_arr[0]);
 		$convert_1            = ModelMeta::convert_to_id($bet_arr[1]);
 		if ($convert_0 == $primary_identifier || "primary_{$convert_0}" == $primary_identifier) {
-			$this->{$primary_identifier}   = $bet_arr[0];
-			$this->{$secondary_identifier} = $bet_arr[1];
+			$this->models[$primary_identifier]   = $bet_arr[0];
+			$this->models[$secondary_identifier] = $bet_arr[1];
 			$this->set([
 				           $primary_identifier   => $bet_arr[0]->id,
 				           $secondary_identifier => $bet_arr[1]->id
 			           ]);
 		} else if ($convert_1 == $primary_identifier || "secondary_{$convert_0}" == $primary_identifier) {
-			$this->{$primary_identifier}   = $bet_arr[0];
-			$this->{$secondary_identifier} = $bet_arr[1];
+			$this->models[$primary_identifier]   = $bet_arr[0];
+			$this->models[$secondary_identifier] = $bet_arr[1];
 			$this->set([
 				           $primary_identifier   => $bet_arr[1]->id,
 				           $secondary_identifier => $bet_arr[0]->id
 			           ]);
-		}
-	}
-	/**
-	 * Instantiate objects from a table based on provided details in an array
-	 *
-	 * @param array|string|int $id                The id to search the mapping table for or an array of row values to
-	 *                                            math
-	 * @param Model            $model_to_return   A new object that is of the class to return
-	 *
-	 * @param array            $extras            model_id =>
-	 *                                            The name of the model to find in the database (E.g. user_id in
-	 *                                            user_group_map). As a default, the model id is the name of the table
-	 *                                            without an s with an added _id
-	 *
-	 *                                            holder_index =>
-	 *                                            The property to set in the Model's class, storing the map details
-	 *
-	 *                                            holder_assoc =>
-	 *                                            If this exists, the map details will be stored in an array ordered by
-	 *                                            this property. If this property is an integer, the array will just be
-	 *                                            numeric (non-associative)
-	 *
-	 *                                            walk=>
-	 *                                            A function that is to be run for each element in the return map array
-	 *
-	 *                                            order_by =>
-	 *                                            Adds a clause (exactly) for how you want to order the returned maps.
-	 *                                            e.g. [order_by =>
-	 *                                            ['page_collection_map.position']
-	 *
-	 * @return array|\Sm\Model\Abstraction\Model[]
-	 * @throws ModelNotFoundException
-	 */
-	public static function map($id, Model $model_to_return, $extras = []) {
-		static::__initialize();
-
-		$model_id_name = isset ($extras['model_id']) ? $extras['model_id'] : null;
-		$order_by      = isset ($extras['order_by']) ? $extras['order_by'] : null;
-
-		try {
-			/** @var \Sm\Database\Sql $sql */
-			if (!IoC::resolveSql($sql)) return false;
-
-			$self_table_name = static::$table_name;
-
-			if (is_array($id)) {
-				$is_start = true;
-				foreach ($id as $column_name => $column_value) {
-					if (is_numeric($id)) continue;
-					if (!$is_start) {
-						$sql->where('AND');
-					}
-
-					$is_start = false;
-					$sql->bind([$column_name => $column_value])
-					    ->where("{$self_table_name}.{$column_name} = :{$column_name}");
-				}
-			} else {
-				$self_identifier = is_numeric($id) ? static::$main_int_key : static::$main_string_key;
-				$sql->bind(['id' => $id])
-				    ->where("{$self_table_name}.{$self_identifier} = :id");
-			}
-
-			# Get the details about the other table
-			$int_key     = $model_to_return->getMainIntegerKey();
-			$model_table = $model_to_return->getTableName();
-			if (!isset($model_id_name)) {
-				$model_id_name = ModelMeta::convert_to_id($model_to_return);
-			}
-			# We select everything from the MTR's table
-			$select_arr = [$model_table . '.*'];
-			/**
-			 * Make it so the properties from the mapping class are distinguishable from the ones that are not by appending the tablename
-			 * E.g. select t_t_map.id AS t_t_map_id
-			 */
-			foreach (static::$default_properties as $name => $var) {
-				if (substr($name, 0, 1) != '_') {
-					$select_arr[static::$table_name . '.' . $name] = static::$table_name . '_' . $name;
-				}
-			}
-			/**
-			 * Link the map table and the table of the model we're looking for
-			 */
-			$sql->where("AND {$self_table_name}.{$model_id_name} = {$model_table}.{$int_key}")
-			    ->select($select_arr)
-			    ->from([$model_to_return->getTableName(), static::$table_name]);
-
-			/**
-			 * Add an 'ORDER_BY' query
-			 */
-			if ($order_by) {
-				$sql->buildQry();
-				$sql->setQry($sql->getQry() . ' ORDER BY ' . $order_by . ' ASC');
-			}
-			#We try to find all
-			$output = $sql->run()->output('all');
-
-			$model_array        = [];
-			$holder_index       = isset($extras['holder_index']) ? $extras['holder_index'] : '_' . static::$table_name;
-			$holder_assoc_index = isset($extras['holder_assoc']) ? $extras['holder_assoc'] : $model_id_name;
-
-			if (!is_array($output)) throw new ModelNotFoundException('No models were found');
-			foreach ($output as $key => $object_value) {
-				$obj = clone($model_to_return);
-				#We are going to add the relationships at the specified index in the model's relationships array
-				/** @var RelatorRemix $holder */
-				$holder =& $obj->map_remix->$holder_index;
-
-				/**
-				 * Iterate through the properties of the tables and
-				 */
-				$property_list = [];
-				foreach ($object_value as $object_name => $value) {
-					if (strpos($object_name, static::$table_name) === 0) {
-						$_index = substr($object_name, strlen(static::$table_name) + 1);;
-						$property_list[$_index] = $value;
-						unset($object_value[$object_name]);
-					}
-				}
-				$relationship = new Relationship(new static($property_list));
-				/**
-				 * todo work on this
-				 * This is the way that we order each different entity in the relationship.
-				 * For example, we could have each different entity put in the array by position or some sort of ID
-				 */
-				if ($holder_assoc_index && isset($property_list[$holder_assoc_index])) {
-					$holder->_meta->_key = $holder_assoc_index;
-					#This is the biggest todo. This says nothing about which entities are being related!
-					$holder->_meta->_linked_entities = [
-						$model_to_return->getModelType(),
-					];
-					$holder->push($relationship, $property_list[$holder_assoc_index]);
-				} else {
-					$holder->push($relationship);
-				}
-				$end           = $obj->set($object_value, false);
-				$model_array[] = $end;
-				unset ($holder);
-			}
-
-			# This is if we have to iterate over the list and run a function for each item
-			if (isset($extras['walk']) && is_callable($extras['walk'])) {
-				array_walk($model_array, $extras['walk']);
-			}
-
-			return $model_array;
-		} catch (\Exception $e) {
-			return [];
 		}
 	}
 
@@ -395,21 +244,20 @@ abstract class Map extends Model implements \JsonSerializable {
 		#If we already know the ID, just remove the Model
 		if (isset($this->_properties['id']) && is_int($this->_properties['id'])) {
 			$result = !!$this->remove();
-//			$result = false;
-			if ($this->{$primary_identifier} instanceof Model)
-				$p_id = $this->{$primary_identifier}->id ?: isset($this->_properties);
+			if ($this->models[$primary_identifier] instanceof Model)
+				$p_id = $this->models[$primary_identifier]->id ?: isset($this->_properties);
 		} else {
-			if (!$model_1 && static::$primary_identifier && $this->{static::$primary_identifier}) {
-				$model_1 = $this->{static::$primary_identifier};
-				$model_2 = $this->{static::$secondary_identifier};
+			if (!$model_1 && static::$primary_identifier && $this->models[static::$primary_identifier]) {
+				$model_1 = $this->models[static::$primary_identifier];
+				$model_2 = $this->models[static::$secondary_identifier];
 			}
 
 			#These are the IDs of the primary and secondary models, by default they are false
 			$p_id = $s_id = false;
 			if ($model_1 instanceof Model && $model_2 instanceof Model) {
 				$this->init_models([$model_1, $model_2]);
-				$p_id = $this->{$primary_identifier}->id;
-				$s_id = $this->{$secondary_identifier}->id;
+				$p_id = $this->models[$primary_identifier]->id;
+				$s_id = $this->models[$secondary_identifier]->id;
 			} else {
 				/**
 				 * For both of the model arrays, try to convert them to actual Models
@@ -419,7 +267,7 @@ abstract class Map extends Model implements \JsonSerializable {
 					$primary_identifier = $model_1['index'];
 					if (ModelMeta::table_exists($primary_identifier)) {
 						$primary_identifier = ModelMeta::convert_to_id($primary_identifier);
-						$model_1            = ModelMeta::table_to_class($primary_identifier, ['id' => $p_id]);
+						$model_1            = ModelMeta::convert_to_class($primary_identifier, ['id' => $p_id]);
 					}
 				}
 				if (is_array($model_2) && isset($model_2['index']) && isset($model_2['id'])) {
@@ -427,7 +275,7 @@ abstract class Map extends Model implements \JsonSerializable {
 					$secondary_identifier = $model_2['index'];
 					if (ModelMeta::table_exists($secondary_identifier)) {
 						$secondary_identifier = ModelMeta::convert_to_id($secondary_identifier);
-						$model_2              = ModelMeta::table_to_class($secondary_identifier, ['id' => $s_id]);
+						$model_2              = ModelMeta::convert_to_class($secondary_identifier, ['id' => $s_id]);
 					}
 				}
 				if ($primary_identifier == $secondary_identifier) {

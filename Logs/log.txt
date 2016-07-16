@@ -1,0 +1,8 @@
+--------------------------------------------------------------------------------------------------------------------------
+-------------------------{07-16-2016  22:11:19}---------------------------------------------------------------------------
+--------------------------------------------------------------------------------------------------------------------------
+ {07-16-2016  22:11:19} 	 code {42S02} line {325}	 of {Sm/Model/Model.php};
+	0 => str     : 	SQLSTATE[42S02]: Base table or view not found: 1146 Table 'codozsqq_spwashi2.section_user_map' doesn't exist
+	1 => str     : 	
+		 SELECT sections.*, map.id AS section_user_map_id, map.user_id AS section_user_map_user_id FROM sections, section_user_map AS map WHERE  map.user_id = :id AND map.id = sections.id 
+

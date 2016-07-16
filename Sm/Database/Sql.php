@@ -52,7 +52,7 @@ class Sql extends Abstraction\Sql {
 
     public function run($log = false) {
         if (!$this->connection) {
-            Log::init('Could not execute query because of moot connection to Database', 'log', debug_backtrace()[0])->log_it();
+            Log::init('Could not execute query because of moot connection to Database', debug_backtrace()[0], 'log')->log_it();
         }
         $this->buildQry();
         try {
@@ -84,7 +84,7 @@ class Sql extends Abstraction\Sql {
         } catch (\Exception $e) {
             $qry = str_replace("\n", "\n\t\t", $this->qry);
             $qry = "\n\t\t" . $qry;
-            Log::init([$e->getMessage(), $qry], 'log', debug_backtrace()[0], $e->getCode())->log_it();
+            Log::init([$e->getMessage(), $qry], debug_backtrace()[0], 'log', $e->getCode())->log_it();
         }
         return $this;
     }
@@ -121,7 +121,7 @@ class Sql extends Abstraction\Sql {
                         break;
                 }
             } catch (\Exception $e) {
-                Log::init($e->getMessage(), 'log', null, $e->getCode())->log_it();
+                Log::init($e->getMessage(), null, 'log', $e->getCode())->log_it();
             }
         }
         return false;

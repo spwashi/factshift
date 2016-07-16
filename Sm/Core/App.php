@@ -251,7 +251,7 @@ class App {
      */
     public function __get($value) {
         if ($value != 'name' && (static::$instance == null || !isset(static::$instance->$value))) {
-            Log::init("Could not App::get the value {$value}", 'log', debug_backtrace()[0])->log_it();
+            Log::init("Could not App::get the value {$value}", debug_backtrace()[0], 'log')->log_it();
             return '';
         }
         return static::$instance->$value;

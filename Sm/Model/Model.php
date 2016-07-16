@@ -131,7 +131,7 @@ class Model extends Abstraction\Model {
 				throw new \Exception;
 			}
 		} catch (\Exception $e) {
-			throw new ModelNotFoundException('Could Not Find' . static::getModelType() . ' -> ' . json_encode(func_get_args()), ModelNotFoundException::REASON_NOT_FOUND);
+			throw new ModelNotFoundException('Could not find self type - ' . static::getModelType() . ' -> ' . json_encode(func_get_args()), ModelNotFoundException::REASON_NOT_FOUND);
 		}
 	}
 	/**
@@ -196,11 +196,11 @@ class Model extends Abstraction\Model {
 				$model           = $type;
 			} else if (is_string($type)) {
 				# If we're dealing with a string, convert it to a tablename and create a class from it
-				$type = ModelMeta::convert_to_tablename($type);
+				$type = ModelMeta::model_type_to($type, ModelMeta::TYPE_TABLE);
 				if (ModelMeta::table_exists($type)) {
 					$model_tablename = $type;
 				}
-				$model = ModelMeta::table_to_class($model_tablename);
+				$model = ModelMeta::convert_to_class($model_tablename);
 			}
 			#If we were unsuccessful, throw an error
 			if (!$model) throw new ModelNotFoundException('Could not find ' . $type);
@@ -224,7 +224,7 @@ class Model extends Abstraction\Model {
 			/** @var string The name of the table that links the entities together */
 			$map_table_name = isset($extras['map_table']) ? $extras['map_table'] : false;
 			$map_table_name = !$map_table_name && isset($self_rel->_meta->_table) ? $self_rel->_meta->_table : $map_table_name;
-			$map_table_name = $map_table_name ?: ModelMeta::get_map(static::$table_name, $model_tablename);
+			$map_table_name = $map_table_name ?: ModelMeta::get_map_between(static::$table_name, $model_tablename);
 
 			#If we couldn't guess the name of the Map table, throw an error
 			if (!$map_table_name || !ModelMeta::table_exists($map_table_name)) {
@@ -240,7 +240,7 @@ class Model extends Abstraction\Model {
 
 			#Try to make a class that maps the two relationships together
 			/** @var Map $map_class A class that links two entities together */
-			$map_class = ModelMeta::table_to_class($map_table_name);
+			$map_class = ModelMeta::convert_to_class($map_table_name);
 			if (!$map_class) throw new ModelNotFoundException('No map class');
 			$actual_map_name = $map_table_name;
 			$map_table_name  = ModelMeta::get_table_alias($map_class) ?: $map_table_name;
@@ -386,7 +386,7 @@ class Model extends Abstraction\Model {
 				/**
 				 * Create a Map class based on the properties of the map. If
 				 */
-				$_map                     = ModelMeta::table_to_class($actual_map_name, $properties_of_map) ?: $properties_of_map;
+				$_map                     = ModelMeta::convert_to_class($actual_map_name, $properties_of_map) ?: $properties_of_map;
 				$self_relationship        = new Relationship();
 				$self_relationship->model = $secondary_model;
 				$self_relationship->_map  = $_map;
@@ -474,7 +474,7 @@ class Model extends Abstraction\Model {
 				$this->_properties[$property] = $val;
 			} else {
 				$classname = get_class($this);
-				Log::init("Could not set the property {$property} in class {$classname}", 'log', debug_backtrace()[1])->log_it();
+				Log::init("Could not set the property {$property} in class {$classname}", debug_backtrace()[1], 'log')->log_it();
 			}
 		}
 		return $this;

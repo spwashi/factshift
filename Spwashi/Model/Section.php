@@ -66,7 +66,7 @@ class Section extends Model {
         if ($this->section_type != SectionType::TYPE_MIRROR) return $this;
         $content_location = $this->content_location;
         if (!ModelMeta::is_ent_id($content_location)) return $this;
-        $mirrored_resource        = ModelMeta::ent_id_to_class($content_location);
+        $mirrored_resource        = ModelMeta::convert_to_class($content_location);
         $this->_mirror_properties = $mirrored_resource;
         $this->_embed_properties  = [];
 

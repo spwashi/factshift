@@ -7,7 +7,7 @@
 
 namespace Spwashi\Controller\API;
 
-use Sm\Model\RelatorRemix;
+use Sm\Model\RelationshipIndex;
 use Spwashi\Libs\DataHandling\DictionaryHandler;
 use Spwashi\Model\Dictionary;
 use Spwashi\Model\Map\DictionarySectionMap;

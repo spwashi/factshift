@@ -13,26 +13,51 @@ use Sm\Development\Log;
 use Sm\Model\Abstraction\Model;
 
 class ModelMeta {
+	const TYPE_TABLE      = 'TYPE_TABLE';
+	const TYPE_CLASSNAME  = 'TYPE_CLASSNAME';
+	const TYPE_PREFIX     = 'TYPE_PREFIX';
+	const TYPE_PROPERTIES = 'TYPE_PROPERTIES';
+	const TYPE_MODEL_TYPE = 'TYPE_MODEL_TYPE';
+	const TYPE_CLASS      = 'TYPE_CLASS';
+
+	const FIND_API_SET                  = 'api_settable';
+	const FIND_API_GET                  = 'api_gettable';
+	const FIND_DEFAULT                  = 'all';
+	const FIND_RELATIONSHIPS            = 'relationships';
+	const FIND_RECIPROCAL_RELATIONSHIPS = 'reciprocal_relationships';
+	const FIND_MAPPED                   = 'linked_entities';
+	const FIND_IDS                      = 'mapped';
+
 	protected static $table_to_class    = [];
 	protected static $prefix_to_table   = [];
 	protected static $class_properties  = [];
 	protected static $class_init_status = [];
 	protected static $mapped_props      = [];
-	public static    $fake_tables       = [];
+	protected static $fake_tables       = [];
+
+	protected static $bb_class_properties;
+	protected static $bb_model_type_to_classname;
+	protected static $bb_table_to_model_type;
+	protected static $bb_prefix_to_model_type;
+	protected static $bb_mapped_props;
+	protected static $bb_fake_table_to_alias;
+
 	public static function table_exists($tablename) {
 		if (!is_string($tablename))
-			Log::init(func_get_args(), 'log', debug_backtrace()[0])->log_it();
-		return array_key_exists($tablename, static::$table_to_class);
+			Log::init(func_get_args(), debug_backtrace()[0], 'log')->log_it();
+		return array_key_exists($tablename, static::$bb_table_to_model_type);
 	}
 	public static function get_table_alias($model) {
-		if ($model instanceof Model) $model = static::convert_to_tablename($model);
-
-		return isset(static::$fake_tables[$model]) ? static::$fake_tables[$model] : false;
+		if ($model instanceof Model) $model = static::model_type_to($model, ModelMeta::TYPE_TABLE);
+		$alias = static::$bb_fake_table_to_alias[$model] ?? false;
+		if (strpos($alias, '.')) $alias = explode('.', $alias)[0];
+		return $alias;
 	}
 	public static function _register(array $array) {
-		$_                         = $array['_'] ?? [];             //A model Model
-		$marked_relationships      = [];                            //Array of the relationships that we know about
-		$app_name                  = App::_()->name;                //Name of the current application
+		$_                    = $array['_'] ?? [];             //A model Model
+		$marked_relationships = [];                            //Array of the relationships that we know about
+		$app_name             = App::getBootingAppName() ?: App::_()->name;      //Name of the current application
+		var_dump($app_name);
 		$namespace                 = $app_name . '\\Model\\';       //Namespace of the classes
 		$search                    = ['models', 'maps', 'types'];   //The types of objects there are
 		$models                    = $array['models'] ?? [];        //The Models that we are dealing with
@@ -198,8 +223,12 @@ class ModelMeta {
 					} else {
 						$map_keys = $convert_to_something($le, 'id');
 					}
+					if ($map_keys[0] == $map_keys[1]) {
+						$map_keys[0] = "primary_{$map_keys[0]}";
+						$map_keys[1] = "secondary_{$map_keys[1]}";
+					}
 				}
-				$static_mapped_props[$current_model_type] = $map_keys;
+				$current_properties['mapped'] = $static_mapped_props[$current_model_type] = $map_keys;
 			}
 			if ($table_name) $static_table_to_model_type[$table_name] = $current_model_type;
 			if (!$table_is_existent) $static_fake_table_to_alias[$table_name] = $table_alias;
@@ -207,6 +236,7 @@ class ModelMeta {
 			$static_class_properties[$current_model_type]        = $current_properties;
 			$static_model_type_to_classname[$current_model_type] = $n_class;
 		}
+		//Add the reciprocal relationships
 		foreach ($reciprocal_relationships as $model_type => $rel_array_array) {
 			if (!($static_class_properties[$model_type] ?? false)) {
 				Log::init(['Could not add relationship', $model_type => $rel_array_array])->log_it();
@@ -238,14 +268,20 @@ class ModelMeta {
 				$model_reciprocal_relationship['linked_entities']    = $le;
 				$model_reciprocal_relationship['is_only_reciprocal'] = true;
 				$ak_relationships[$rec_index]                        = $model_reciprocal_relationship;
-//				var_dump([$model_reciprocal_relationship, $rec_model_type, $model_type]);
 			}
 			$static_class_properties[$model_type]['reciprocal_relationships'] = $ak_relationships;
 		}
 
+		static::$bb_class_properties        = $static_class_properties;
+		static::$bb_model_type_to_classname = $static_model_type_to_classname;
+		static::$bb_table_to_model_type     = $static_table_to_model_type;
+		static::$bb_prefix_to_model_type    = $static_prefix_to_model_type;
+		static::$bb_mapped_props            = $static_mapped_props;
+		static::$bb_fake_table_to_alias     = $static_fake_table_to_alias;
+
 		return ([
-			'class_properties'         => $static_class_properties,
 			'reciprocal_relationships' => $reciprocal_relationships,
+			'class_properties'         => $static_class_properties,
 			'model_type_to_classname'  => $static_model_type_to_classname,
 			'table_to_model_type'      => $static_table_to_model_type,
 			'prefix_to_model_type'     => $static_prefix_to_model_type,
@@ -255,11 +291,18 @@ class ModelMeta {
 	}
 	public static function dump() {
 		return [
-			'table_to_class'   => static::$table_to_class,
-			'prefix_to_table'  => static::$prefix_to_table,
-			'class_properties' => static::$class_properties,
-			'mapped_props'     => static::$mapped_props,
-			'fake_tables'      => static::$fake_tables
+			'bb_class_properties'        => static::$bb_class_properties,
+			'bb_model_type_to_classname' => static::$bb_model_type_to_classname,
+			'bb_table_to_model_type'     => static::$bb_table_to_model_type,
+			'bb_prefix_to_model_type'    => static::$bb_prefix_to_model_type,
+			'bb_mapped_props'            => static::$bb_mapped_props,
+			'bb_fake_table_to_alias'     => static::$bb_fake_table_to_alias,
+
+			'table_to_class'             => static::$table_to_class,
+			'prefix_to_table'            => static::$prefix_to_table,
+			'class_properties'           => static::$class_properties,
+			'mapped_props'               => static::$mapped_props,
+			'fake_tables'                => static::$fake_tables
 		];
 	}
 	public static function register($array) {
@@ -346,50 +389,29 @@ class ModelMeta {
 	 * @return string
 	 */
 	public static function getTablePrefixFromEnt_id($string) {
-		if (strlen($string) >= 3) {
-			return (substr($string, 0, 4));
-		}
+		if (!is_string($string)) return false;
+		if (strlen($string) >= 3) return (substr($string, 0, 4));
 		return $string;
 	}
-	/**
-	 * Get the default properties of a Model according to the App's models.php file
-	 * @param $class_name
-	 * @param $type ['standard' (the properties of the class and default properties),
-	 *              'relationships' (default relationship information, used in the RelatorRemix),
-	 *              'api' (The properties that can be set via the API),
-	 *              'api_settable']
-	 *
-	 * @return array
-	 */
-	public static function get_default_class_properties($class_name, $type = null) {
-		$class_name = '\\' . trim($class_name, '\\');
+
+	public static function _get_def_props($to_convert, $type = ModelMeta::FIND_DEFAULT) {
+		$model_type = static::model_type_to($to_convert, static::TYPE_MODEL_TYPE);
+		if (!$model_type) return [];
+		$class_properties = static::$bb_class_properties[$model_type];
 		switch ($type) {
-			default:
-			case 'standard':
-				#Properties of the class and their default values
-				$type = 'standard';
+			case (static::FIND_API_SET):
+			case (static::FIND_API_GET):
+			case (static::FIND_DEFAULT):
+				return $class_properties['properties'][$type] ?? [];
 				break;
-			case 'id':
-			case 'ids':
-				$type = 'ids';
-				break;
-			case 'mapped':
-				#The array of mapped entities in a map class (e.g. [sections, collections]
-				if (!isset(static::$class_properties[$class_name])) return [];
-				return static::$mapped_props[$class_name];
-			case 'relationships':
-				# For the main relator remix, this will contain all of the known relationship indices ad some information on them
-				$type = 'relationships';
-				break;
-			case 'api':
-			case 'api_settable':
-				#The properties that can be set via API
-				$type = 'api_settable';
+			case (static::FIND_RELATIONSHIPS):
+			case (static::FIND_MAPPED):
+			case (static::FIND_IDS):
+			case (static::FIND_RECIPROCAL_RELATIONSHIPS):
+				return $class_properties[$type] ?? [];
 				break;
 		}
-
-		if (!isset(static::$class_properties[$class_name])) return [];
-		return static::$class_properties[$class_name][$type];
+		return [];
 	}
 
 	/**
@@ -417,7 +439,6 @@ class ModelMeta {
 	public static function is_ent_id($string) {
 		return (is_string($string) && strlen($string) == \Sm\Model\Model::TOTAL_ENT_ID_LENGTH && array_key_exists(substr($string, 0, 4), static::$prefix_to_table));
 	}
-
 	/**
 	 * Check to see if something could be the id of a class
 	 * @param $string
@@ -427,184 +448,89 @@ class ModelMeta {
 		return is_numeric($string) && !is_float($string);
 	}
 	/**
-	 * Get the table that maps between two different entities
-	 * @param \Sm\Model\Model|string $one
-	 * @param \Sm\Model\Model|string $two
-	 * @param bool                   $lax If it's lax, return the name of the table that would map the two entities if it existed (why?)
-	 * @return bool|string
-	 */
-	public static function get_map($one, $two, $lax = false) {
-		$s_table_singular = Inflector::singularize(static::convert_to_tablename($one, true));
-		$m_table_singular = Inflector::singularize(static::convert_to_tablename($two, true));
-		$map_table_name   = static::table_exists("{$s_table_singular}_{$m_table_singular}_map") ? "{$s_table_singular}_{$m_table_singular}_map" : false;
-		$map_table_name   = !$map_table_name || static::table_exists("{$m_table_singular}_{$s_table_singular}_map") ? "{$m_table_singular}_{$s_table_singular}_map" : $map_table_name;
-		return static::table_exists($map_table_name) ? $map_table_name : ($lax ? $map_table_name : false);
-	}
-	/**
-	 * Get a class that maps between two different entities
-	 * @param \Sm\Model\Model|string $one Entity in question
-	 * @param \Sm\Model\Model|string $two Entity in question
-	 * @return Map
-	 * @throws ModelNotFoundException
-	 */
-	public static function get_map_class($one, $two) {
-		$res = static::get_map($one, $two, true);
-		if (!$res) {
-			$one = static::convert_to_tablename($one);
-			$two = static::convert_to_tablename($two);
-			throw new ModelNotFoundException("No mapping class between {$one} and {$two}", ModelNotFoundException::REASON_NO_MATCHING_CLASS);
-		}
-		return static::table_to_class($res);
-	}
-
-	/**
-	 * Given a Model or tablename, convert that to a table name
-	 * @param \Sm\Model\Model|string $table_name
-	 * @return bool|mixed|string
-	 */
-	public static function convert_to_classname($table_name) {
-		if (!$table_name) return false;
-		if (is_string($table_name)) {
-			$table_name = Inflector::pluralize(strtolower($table_name));
-			$table_name = str_replace('maps', 'map', $table_name);
-		} else if ($table_name instanceof Model) {
-			$table_name = $table_name->getModelType();
-		}
-		return $table_name;
-	}
-
-	/**
 	 * Convert an entity to the standard id form of it e.g. dimensions yields dimension_id
 	 * @param $table_name
 	 * @return bool|string
 	 */
 	public static function convert_to_id($table_name) {
 		if (!$table_name) return false;
-		$table_name = static::convert_to_tablename($table_name);
+		$table_name = static::model_type_to($table_name, static::TYPE_TABLE);
 		if ($table_name) return Inflector::singularize($table_name) . '_id';
 		return false;
 	}
 
-	/**
-	 * Convert an entity into a tablename (Based on some string or Model, get the name of the table it should represent)
-	 * @param \Sm\Model\Model|string $entity
-	 * @param bool|false             $lax Should we return what the tablename <i>should</i> be?
-	 * @return bool|mixed|string
-	 */
-	public static function convert_to_tablename($entity, $lax = false) {
-		$table_name = '';
-		if (is_string($entity)) {
-			$table_name = Inflector::pluralize(str_replace('_id', '', strtolower($entity)));
-			$table_name = str_replace('maps', 'map', $table_name);
-		} else if ($entity instanceof \Sm\Model\Model) {
-			$table_name = $entity->getTableName();
+	public static function model_type_to($to_convert, $convert_to = ModelMeta::TYPE_MODEL_TYPE) {
+		$model_type = $table_name = $prefix = $classname = null;
+		if ($to_convert instanceof Model) {
+			$model_type = $to_convert->getModelType();
+			$classname  = get_class($to_convert);
+			if ($to_convert instanceof \Sm\Model\Model) $table_name = $to_convert->getTableName();
+			$prefix = static::getTablePrefixFromEnt_id($to_convert->ent_id);
 		}
-		return isset(static::$table_to_class[$table_name]) ? $table_name : ($lax ? $table_name : false);
-	}
-	/**
-	 * @param       $table_name
-	 *
-	 * @param array $attributes
-	 *
-	 * @return \Sm\Model\Model
-	 * @throws \Sm\Model\ModelNotFoundException
-	 */
-	public static function table_to_class($table_name, $attributes = []) {
-		$table_name = is_string($table_name) && strlen($table_name) ? $table_name : '__no table__';
-		$table_name = Inflector::pluralize(strtolower($table_name));
-		$table_name = str_replace('maps', 'map', $table_name);
-		if (isset(static::$table_to_class[$table_name])) {
-			$class_part = static::$table_to_class[$table_name];
-			if (class_exists($class_part, true))
-				return new $class_part($attributes);
+		if (is_string($to_convert)) {
+			if (strpos($to_convert, '\\')) {
+				$name_arr   = explode('\\', $to_convert);
+				$to_convert = $name_arr[count($name_arr) - 1];
+			}
+			if (static::$bb_class_properties[$to_convert] ?? false) {
+				$model_type = $to_convert;
+				$table_name = array_search($model_type, static::$bb_table_to_model_type) ?: false;
+			}
+			if (static::$bb_table_to_model_type[$to_convert] ?? false) {
+				$model_type = static::$bb_table_to_model_type[$to_convert];
+				$table_name = $to_convert;
+			}
+			if (!$model_type??false) {
+				$prefix     = static::getTablePrefixFromEnt_id($to_convert);
+				$model_type = static::$bb_prefix_to_model_type[$prefix] ?? false;
+				$table_name = $model_type ? static::model_type_to($model_type, static::TYPE_TABLE) : false;
+			}
 		}
-		$table_name = str_replace('__s', '__', $table_name);
-//		Log::init([func_get_args(), debug_backtrace()])->log_it();
-		throw new ModelNotFoundException("No matching class for {$table_name}", ModelNotFoundException::REASON_NO_MATCHING_CLASS);
-	}
-	/**
-	 * Given an ent_id, find the entity associated with it
-	 * @param $ent_id
-	 * @return bool|static
-	 * @throws ModelNotFoundException
-	 */
-	public static function ent_id_to_class($ent_id) {
-		$prefix = static::getTablePrefixFromEnt_id($ent_id);
-		if (!$prefix) throw new ModelNotFoundException('No matching class', ModelNotFoundException::REASON_NO_MATCHING_CLASS);
-		$model = static::prefix_to_class($prefix);
-		if (!$model) throw new ModelNotFoundException('No matching class', ModelNotFoundException::REASON_NO_MATCHING_CLASS);
-		return $model->find(['ent_id' => $ent_id]);
-	}
+		if ($model_type && !(static::$bb_class_properties[$model_type] ?? false)) $model_type = false;
+		if ($table_name && !(static::$bb_table_to_model_type[$table_name] ?? false)) $table_name = false;
 
-	/**
-	 * Given the name of a table, return the absoulute classname associated with it
-	 * @param $table_name
-	 * @return bool
-	 */
-	public static function table_to_classname($table_name) {
-		if (isset(static::$table_to_class[$table_name])) {
-			return static::$table_to_class[$table_name];
-		} else {
-			return false;
-		}
-	}
-
-	/**
-	 * Given a classname. get the table associated with it
-	 * @param $classname
-	 * @return bool|mixed
-	 */
-	public static function classname_to_table($classname) {
-		$classname = '\\' . trim($classname, '\\');
-		$res       = array_search($classname, static::$table_to_class);
-		if ($res) return $res;
-		return false;
-	}
-
-	/**
-	 * Given the prefix of an ent_id, return an instance of a class that matches
-	 * @param       $prefix
-	 * @param array $attributes
-	 * @return bool|\Sm\Model\Model
-	 * @throws ModelNotFoundException
-	 */
-	public static function prefix_to_class($prefix, $attributes = []) {
-		if (isset(static::$prefix_to_table[$prefix])) {
-			return static::table_to_class(static::$prefix_to_table[$prefix], $attributes);
+		switch ($convert_to) {
+			case (static::TYPE_MODEL_TYPE):
+				if ($model_type) return $model_type;
+				if ($table_name) return static::$bb_table_to_model_type[$table_name] ?? false;
+				if ($prefix) return static::$bb_prefix_to_model_type[$prefix] ?? false;
+				break;
+			case (static::TYPE_TABLE):
+				if ($table_name) return $table_name;
+				if ($model_type) array_search($model_type, static::$bb_table_to_model_type) ?: false;
+				break;
+			case (static::TYPE_CLASSNAME):
+				if ($model_type) return static::$bb_model_type_to_classname[$model_type] ?? false;
+				if ($classname) return $classname;
+				if ($table_name) return static::$bb_table_to_model_type[static::$bb_table_to_model_type[$table_name]??0] ??false;
+				break;
+			case (static::TYPE_PREFIX):
+				if ($prefix) return $prefix;
+				if ($model_type) return array_search($model_type, static::$bb_prefix_to_model_type) ?: false;
+				break;
+			case (static::TYPE_PROPERTIES):
+				if ($model_type) return static::$bb_class_properties[$model_type] ?? false;
+				return static::$bb_class_properties[static::model_type_to($to_convert, static::TYPE_MODEL_TYPE) ?: 0] ?? false;
+				break;
+			case (static::TYPE_CLASS):
+				$classname = $classname ?: static::model_type_to($model_type ?: $table_name ?: $prefix ?: false, static::TYPE_CLASSNAME);
+				if ($classname) return new $classname;
+				break;
 		}
 		return false;
 	}
-
-	/**
-	 * Given the name of a table, get the ent_id prefix associated with it
-	 * @param $table
-	 * @return bool|mixed
-	 */
-	public static function table_to_prefix($table) {
-		$res = array_search($table, static::$prefix_to_table);
-		if ($res) return $res;
-		return false;
+	public static function get_map_between($one, $two, $convert_to = ModelMeta::TYPE_TABLE) {
+		$one = static::model_type_to($one, static::TYPE_MODEL_TYPE);
+		$two = static::model_type_to($two, static::TYPE_MODEL_TYPE);
+		return static::model_type_to("{$one}{$two}Map", $convert_to) ?: static::model_type_to("{$two}{$one}Map", $convert_to) ?: false;
 	}
-
-	/**
-	 * Get the name of the class associated with a particular prefix
-	 * @param $classname
-	 * @return bool|mixed
-	 */
-	public static function classname_to_prefix($classname) {
-		$classname = '\\' . trim($classname, '\\');
-		$table     = static::classname_to_table($classname);
-		if (!$table) return false;
-		return static::table_to_prefix($table);
-	}
-
-	/**
-	 * Given the singular version of a table, get the classname from it
-	 * @param $singular
-	 * @return \Sm\Model\Model
-	 * @throws ModelNotFoundException
-	 */
-	public static function singular_to_class($singular) {
-		return static::table_to_class(Inflector::pluralize($singular));
+	public static function convert_to_class($to_convert, $attributes = []) {
+		/** @var $model \Sm\Model\Model */
+		$model = static::model_type_to($to_convert, static::TYPE_CLASS);
+		if ($model) {
+			if ($attributes && !(is_array($attributes) && empty($attributes))) $model->set($attributes, false);
+			return $model;
+		}
+		throw new ModelNotFoundException(json_encode(['No matching class', func_get_args()]), ModelNotFoundException::REASON_NO_MATCHING_CLASS);
 	}
 }

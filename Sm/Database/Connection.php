@@ -21,7 +21,7 @@ class Connection extends Abstraction\Connection {
 			$this->connection->setAttribute(\PDO::ATTR_ERRMODE, \PDO::ERRMODE_EXCEPTION);
 			$this->connection->setAttribute(\PDO::ATTR_EMULATE_PREPARES, false);
 		} catch (\PDOException $e) {
-			Log::init($e->getMessage(), 'log', $e->getCode())->log_it();
+			Log::init($e->getMessage(), $e->getCode(), 'log')->log_it();
 			return $this;
 		}
 		$this->host = $this->password = $this->database = $this->username = null;

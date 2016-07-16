@@ -162,9 +162,25 @@ $config = [
 				'_inherit' => ['_' => ['sections', 'pages']]
 			],
 			'properties'    => [
-				'all'          => [],
-				'api_settable' => [],
-				'api_gettable' => []
+				'all'          => [
+					'id',
+					'title',
+					'alias',
+					'subtitle',
+					'description',
+					'ent_id',
+					'directory',
+					'user_id',
+					'update_dt',
+					'creation_dt'
+					//                'namespace_id'
+				],
+				'api_settable' => [
+					'title',
+					'subtitle',
+					'description',
+				],
+				'api_gettable' => '*'
 			]
 		],
 		'Page'                 => [
@@ -174,9 +190,26 @@ $config = [
 				'_inherit' => ['_' => ['sections', 'pages']]
 			],
 			'properties'    => [
-				'all'          => [],
-				'api_settable' => [],
-				'api_gettable' => []
+				'all'          => [
+					'id',
+					'title',
+					'alias',
+					'subtitle',
+					'ent_id',
+					'directory',
+					'description',
+					'context',
+					'redirect_url',
+					'user_id',
+					'update_dt',
+					'creation_dt',
+				],
+				'api_settable' => [
+					'title',
+					'subtitle',
+					'description',
+				],
+				'api_gettable' => '*'
 			]
 		],
 		'Dimension'            => [
@@ -243,6 +276,7 @@ $config = [
 		],
 		'Dictionary'           => [
 			'table'         => 'dictionaries',
+			'prefix'        => 'dic_',
 			'relationships' => [
 				'_inherit'    => ['_' => ['pages']],
 				'definitions' => [
@@ -283,41 +317,108 @@ $config = [
 			'table'      => 'dictionary_section_map',
 			'prefix'     => 'dcsm',
 			'properties' => [
-				'all'          => [],
-				'api_settable' => [],
-				'api_gettable' => []
+				'all'          => [
+					'id',
+					'section_id',
+					'dictionary_id',
+					'section_type',
+					'section_role',
+					'position',
+					'update_dt',
+					'creation_dt',
+				],
+				'api_settable' => [
+					'section_id',
+					'dictionary_id',
+					'section_type',
+					'section_role',
+					'position',
+				],
+				'api_gettable' => '*'
 			]],
 		'DimensionSectionMap'  => [
 			'table'      => 'dimension_section_map',
 			'prefix'     => 'dmsm',
 			'properties' => [
-				'all'          => [],
-				'api_settable' => [],
-				'api_gettable' => []
+				'all'          => [
+					'id',
+					'section_id',
+					'dimension_id',
+					'section_type',
+					'section_role',
+					'position',
+					'update_dt',
+					'creation_dt',
+				],
+				'api_settable' => [
+					'section_id',
+					'dimension_id',
+					'section_type',
+					'section_role',
+					'position',
+				],
+				'api_gettable' => '*'
 			]],
 		'PageDimensionMap'     => [
 			'table'      => 'page_dimension_map',
 			'prefix'     => 'pdm_',
 			'properties' => [
-				'all'          => [],
-				'api_settable' => [],
-				'api_gettable' => []
+				'all'          => [
+					'id',
+					'page_id',
+					'dimension_id',
+					'position',
+					'update_dt',
+					'creation_dt',
+					'dimension_role',
+				],
+				'api_settable' => [
+					'page_id',
+					'dimension_id',
+					'position',
+					'dimension_role',
+				],
+				'api_gettable' => '*'
 			]],
 		'ConceptPageMap'       => [
 			'table'      => 'concept_page_map',
 			'prefix'     => 'cpm_',
 			'properties' => [
-				'all'          => [],
-				'api_settable' => [],
-				'api_gettable' => []
+				'all'          => [
+					'id',
+					'page_id',
+					'description',
+					'concept_id',
+					'universe_id',
+					'position',
+					'update_dt',
+					'creation_dt',
+					'relationship_type',
+				],
+				'api_settable' => [
+					'page_id',
+					'concept_id',
+					'position',
+					'universe_id',
+					'relationship_type',
+					'description',
+					'creation_dt',
+				],
+				'api_gettable' => '*'
 			]],
 		'SectionUserMap'       => [
 			'table'      => 'section_user_map',
 			'alias_for'  => 'sections.user_id',
 			'properties' => [
-				'all'          => [],
-				'api_settable' => [],
-				'api_gettable' => []
+				'all'          => [
+					'id',
+					'user_id'
+				],
+				'api_settable' => [
+					'id',
+					'user_id'
+				],
+				'api_gettable' => '*'
 			]],
 		'SectionSectionMap'    => [
 			'table'      => 'section_section_map',

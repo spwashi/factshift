@@ -8,7 +8,7 @@
 namespace Sm\Model\Abstraction;
 
 use Sm\Model\ModelMeta;
-use Sm\Model\RelatorRemix;
+use Sm\Model\RelationshipIndex;
 
 /**
  * Class Model
@@ -18,7 +18,7 @@ use Sm\Model\RelatorRemix;
  * @property int          $ent_id                      Unique Model identifier
  * @property string       $creation_dt                 Datetime of creation
  * @property string       $update_dt                   Datetime of row update
- * @property RelatorRemix $map_remix                   An array of relationships the model has
+ * @property RelationshipIndex $map_remix                   An array of relationships the model has
  */
 abstract class Model implements \JsonSerializable {
 	/** @var string The name of the table that we are going to be dealing with */
@@ -43,7 +43,7 @@ abstract class Model implements \JsonSerializable {
 	protected static $default_properties = [];
 	/** @var array */
 	protected $_properties = [];
-	/** @var RelatorRemix */
+	/** @var RelationshipIndex */
 	protected $_relationships = null;
 	/** @var bool|string When did we last find the permissions of this class? todo */
 	protected $_permissions_found = false;
@@ -68,14 +68,14 @@ abstract class Model implements \JsonSerializable {
 	}
 	protected static function __initialize() {
 		if (!ModelMeta::is_init(static::class)) {
-			static::$default_properties = ModelMeta::get_default_class_properties(static::class);
+			static::$default_properties = ModelMeta::_get_def_props(static::class, ModelMeta::FIND_DEFAULT);
 
-			static::$table_prefix = ModelMeta::classname_to_prefix(static::class);
+			static::$table_prefix = ModelMeta::model_type_to(static::class, ModelMeta::TYPE_PREFIX);
 			static::$table_prefix = static::$table_prefix ?: '';
-			$tmp                  = ModelMeta::classname_to_table(static::class);
+			$tmp                  = ModelMeta::model_type_to(static::class, ModelMeta::TYPE_TABLE);
 			static::$table_name   = $tmp ?: static::$table_name;
 
-			static::$api_settable_properties = ModelMeta::get_default_class_properties(static::class, 'api');
+			static::$api_settable_properties = ModelMeta::_get_def_props(static::class, ModelMeta::FIND_API_SET);
 			ModelMeta::add_as_init(static::class);
 			return true;
 		}
@@ -151,7 +151,7 @@ abstract class Model implements \JsonSerializable {
 	 *
 	 * @param $name
 	 *
-	 * @return array|\Sm\Model\RelatorRemix
+	 * @return array|\Sm\Model\RelationshipIndex
 	 */
 	public function &__get($name) {
 		static::__initialize();
@@ -160,9 +160,9 @@ abstract class Model implements \JsonSerializable {
 		 * This property holds information about all of the different relationships that this Model is a part of
 		 */
 		if ($name == 'map_remix') {
-			$this->_relationships = ($this->_relationships instanceof RelatorRemix)
+			$this->_relationships = ($this->_relationships instanceof RelationshipIndex)
 				? $this->_relationships
-				: new RelatorRemix(ModelMeta::get_default_class_properties(static::class, 'relationships'), static::$table_name, true);
+				: new RelationshipIndex(ModelMeta::_get_def_props(static::class, ModelMeta::FIND_RELATIONSHIPS), static::$table_name, true);
 			return $this->_relationships;
 		}
 

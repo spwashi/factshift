@@ -137,7 +137,7 @@ abstract class View {
                 $template_value = Util::includeWithVariables($template_or_view, [], true, false);
             } catch (\Exception $e) {
                 $msg = $e->getMessage();
-                Log::init("Error includeWithVariables: {$msg} -- {$template_or_view}", 'log', debug_backtrace()[0])->log_it();
+                Log::init("Error includeWithVariables: {$msg} -- {$template_or_view}", debug_backtrace()[0], 'log')->log_it();
                 return $this;
             }
             $get_clean      = ob_get_clean();

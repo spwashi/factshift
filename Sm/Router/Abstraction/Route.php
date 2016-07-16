@@ -102,7 +102,7 @@ abstract class Route {
         $arguments = is_array($arguments) ? $arguments : [$arguments];
         $APP_NAME  = App::_()->name;
         if (!isset(static::$named[$APP_NAME][$name])) {
-            Log::init("Could not generate a proper URL in {$APP_NAME} for route named {$name}", 'log', debug_backtrace()[0])->log_it();
+            Log::init("Could not generate a proper URL in {$APP_NAME} for route named {$name}", debug_backtrace()[0], 'log')->log_it();
             return $default ?: App::_()->base_url;
         }
         /** @var Route $route */

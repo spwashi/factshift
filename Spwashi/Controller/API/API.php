@@ -15,7 +15,7 @@ use Sm\Model\Model;
 use Sm\Model\ModelIterator;
 use Sm\Model\ModelMeta;
 use Sm\Model\ModelNotFoundException;
-use Sm\Model\RelatorRemix;
+use Sm\Model\RelationshipIndex;
 use Spwashi\Libs\API\APIResponse;
 use Spwashi\Libs\DataHandling\UpdatedForm;
 use Spwashi\Libs\Session\Session;
@@ -39,7 +39,7 @@ class API {
 				$name_arr = explode('\\', static::class);
 				return str_replace('API', '', $name_arr[count($name_arr) - 1]);
 		endswitch;
-		return ModelMeta::convert_to_tablename($key);
+		return ModelMeta::model_type_to($key, ModelMeta::TYPE_TABLE);
 	}
 
 	/**
@@ -67,10 +67,10 @@ class API {
 
 	/**
 	 * @param                                  $req_method
-	 * @param Model|ModelIterator|RelatorRemix $last_result
+	 * @param Model|ModelIterator|RelationshipIndex $last_result
 	 * @param Endpoint[]                       $endpoint_array
 	 * @param array                            $req_data
-	 * @return Model|ModelIterator|RelatorRemix
+	 * @return Model|ModelIterator|RelationshipIndex
 	 */
 	public function handle_request($req_method, &$last_result, &$endpoint_array = [], &$req_data) {
 		//If there are no more elements in the endpoint array, return the last result and call it a day`
@@ -97,7 +97,7 @@ class API {
 			$result              = false;
 			if ($previous_result_value instanceof Model) {
 				$model_type = $previous_result_value->getModelType();
-				$model_type = ModelMeta::convert_to_tablename($model_type);
+				$model_type = ModelMeta::model_type_to($model_type, ModelMeta::TYPE_TABLE);
 				$model_type = Inflector::singularize($model_type);
 				/** @see API::init_from_() */
 				$init_function = static::class . "::init_from_{$model_type}";
@@ -137,7 +137,7 @@ class API {
 				if (!$end_result->user_can('view')) {
 					return false;
 				}
-			} else if (($end_result instanceof RelatorRemix) && $Endpoint_identifier) {
+			} else if (($end_result instanceof RelationshipIndex) && $Endpoint_identifier) {
 				$end_result = $end_result->get_item_at_index($end_result->locate_Model($Endpoint_identifier))->model;
 			}
 
@@ -159,7 +159,7 @@ class API {
 				foreach ($SelfEndpoint as $endpoint) {
 					$callback_result               = $callback($prev_result, $endpoint);
 					$result[$endpoint->identifier] = $callback_result;
-					if ($callback_result instanceof RelatorRemix) {
+					if ($callback_result instanceof RelationshipIndex) {
 						$callback_result = ($callback_result);
 					}
 					Log::init(['in_call_callback_loop', $callback_result, $prev_result])->log_it();
@@ -168,7 +168,7 @@ class API {
 						$not_model_ids[] = $endpoint->identifier;
 					}
 				}
-				if ($prev_result instanceof RelatorRemix) {
+				if ($prev_result instanceof RelationshipIndex) {
 					if ($has_not_model) {
 						$prev_result->hide($not_model_ids);
 					}
@@ -181,7 +181,7 @@ class API {
 
 		if (is_array($last_result) || $last_result instanceof \Iterator) {
 			$result        = [];
-			$iterate_over  = $last_result instanceof RelatorRemix ? $last_result->get_items(true) : $last_result;
+			$iterate_over  = $last_result instanceof RelationshipIndex ? $last_result->get_items(true) : $last_result;
 			$has_not_model = false;
 			$not_model_ids = [];
 			foreach ($iterate_over as $key => $value) {
@@ -196,7 +196,7 @@ class API {
 			}
 			if ($last_result instanceof ModelIterator) {
 				$result = $has_not_model ? $result : $last_result;
-			} else if ($last_result instanceof RelatorRemix && !$has_not_model) {
+			} else if ($last_result instanceof RelationshipIndex && !$has_not_model) {
 				$result = $last_result;
 				$last_result->hide($not_model_ids);
 			}
@@ -273,7 +273,7 @@ class API {
 		 *
 		 * @type Model
 		 */
-		$class = ModelMeta::table_to_class($resource_name);
+		$class = ModelMeta::convert_to_class($resource_name);
 		if (!$class) return false;
 		if ($identifier) {
 			try {
@@ -305,8 +305,8 @@ class API {
 			# only operate on the indexes (not the values)
 			if ($index % 2 !== 0 && $index != 0) continue;
 			# Make sure the table name is the way we think it should be
-			$tablename  = ModelMeta::convert_to_tablename($tablename);
-			$class_name = ModelMeta::table_to_classname($tablename);
+			$tablename  = ModelMeta::model_type_to($tablename, ModelMeta::TYPE_TABLE, ModelMeta::TYPE_TABLE);
+			$class_name = ModelMeta::model_type_to($tablename, ModelMeta::TYPE_CLASSNAME);
 			if (!$class_name) continue;
 
 			$class_name_arr = explode('\\', $class_name);
@@ -445,7 +445,7 @@ class API {
 	 * @param string|integer|null $identifier    This is the identifier associated with the current endpoint (this one)
 	 * @param Endpoint            $endpoint      This is the endpoint that we are currently dealing with
 	 * @param array               $req_data
-	 * @return bool|ModelIterator|RelatorRemix
+	 * @return bool|ModelIterator|RelationshipIndex
 	 * @throws ModelNotFoundException
 	 */
 	protected static function init_from_($primary_model, $identifier, $endpoint, $req_data) {
@@ -466,7 +466,7 @@ class API {
 
 				try {
 					Log::init($primary_model)->log_it();
-					$map = ModelMeta::get_map_class($primary_model, $other_model);
+					$map = ModelMeta::get_map_between($primary_model, $other_model, ModelMeta::TYPE_CLASS);
 					Log::init($map)->log_it();
 					$other_id = $map->get_secondary_identifier($primary_model);
 					$self_id  = $map->get_primary_identifier($primary_model);
@@ -498,7 +498,7 @@ class API {
 				Log::init($e)->log_it();
 			}
 			if ($relationship_type_id) {
-				/** @var RelatorRemix $RelationshipIndex */
+				/** @var RelationshipIndex $RelationshipIndex */
 				$RelationshipIndex = $primary_model->map_remix->{$relationship_type_index};
 				$result            = $RelationshipIndex;
 			} else {
@@ -527,7 +527,7 @@ class API {
 		$classname = str_replace('API', '', $name_arr[count($name_arr) - 1]);
 
 		try {
-			$class = ModelMeta::table_to_class($classname);
+			$class = ModelMeta::convert_to_class($classname);
 			if ($identifier) return $class->find($identifier);
 			else return $class;
 		} catch (\Exception $e) {
@@ -586,7 +586,7 @@ class API {
 			];
 		} else {
 			try {
-				$actual_map = ModelMeta::get_map_class($primary_model, $secondary_model);
+				$actual_map = ModelMeta::get_map_between($primary_model, $secondary_model, ModelMeta::TYPE_CLASS);
 			} catch (ModelNotFoundException $e) {
 				$api_response          = new APIResponse;
 				$api_response->message = "There is no way to relate these two entities";
@@ -778,7 +778,7 @@ class API {
 			/** @var Model $secondary_model */
 			if (ModelMeta::is_ent_id($random_id)) {
 				try {
-					$secondary_model      = ModelMeta::ent_id_to_class($random_id);
+					$secondary_model      = ModelMeta::convert_to_class($random_id);
 					$secondary_model_type = $secondary_model->getModelType();
 				} catch (ModelNotFoundException $e) {
 					$api_response          = new APIResponse;
@@ -796,7 +796,7 @@ class API {
 				if (!$validate_identity($current_identity, $random_id)) continue;
 				$secondary_model_type = $current_identity['type'];
 				try {
-					$secondary_model = ModelMeta::table_to_class($secondary_model_type)->find(['id' => $current_identity['id']]);
+					$secondary_model = ModelMeta::convert_to_class($secondary_model_type)->find(['id' => $current_identity['id']]);
 				} catch (ModelNotFoundException $e) {
 					$api_response          = new APIResponse;
 					$api_response->message = "Could not properly identify resource";
@@ -888,7 +888,7 @@ class API {
 	}
 	public static function init_model_from_endpoint(Endpoint $endpoint) {
 		try {
-			return ModelMeta::table_to_class($endpoint->class_type)->find($endpoint->identifier);
+			return ModelMeta::convert_to_class($endpoint->class_type)->find($endpoint->identifier);
 		} catch (\Exception $e) {
 			$api_response          = new APIResponse;
 			$api_response->success = false;
@@ -989,7 +989,7 @@ class API {
 			$secondary_model = static::init_model_from_endpoint($secondary_endpoint);
 			if ($secondary_model instanceof APIResponse) return $secondary_model;
 			try {
-				$map_class                 = ModelMeta::get_map_class($primary_model, $secondary_model);
+				$map_class                 = ModelMeta::get_map_between($primary_model, $other_model, ModelMeta::TYPE_CLASS);
 				$map                       = $map_class->find(['between' => [$primary_model, $secondary_model]]);
 				$api_response->success     = !!$map->remove_relationship($primary_model, $secondary_model);
 				$api_response->data['map'] = $map;

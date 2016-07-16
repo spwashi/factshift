@@ -39,8 +39,8 @@ return [
                 \Sm\Helper\Helper::register(require $path . 'helpers.php');
             if (in_array('routes.php', $files))
                 \Sm\Router\Touter::register(require $path . 'routes.php');
-            if (in_array('models.php', $files))
-                \Sm\Model\ModelMeta::register(require $path . 'models.php');
+            if (in_array('_models.php', $files))
+                \Sm\Model\ModelMeta::_register(require $path . '_models.php');
             return true;
         } else {
             return false;

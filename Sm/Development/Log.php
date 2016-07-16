@@ -32,7 +32,7 @@ class Log extends \Exception {
 		}
 		return $this;
 	}
-	public static function init($message, $type = 'log', $backtrace = null, $code = 200) {
+	public static function init($message, $backtrace = null, $type = 'log', $code = 200) {
 		if (!isset($backtrace)) {
 			$backtrace = debug_backtrace()[0];
 		}

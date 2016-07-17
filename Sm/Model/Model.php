@@ -207,7 +207,7 @@ class Model extends Abstraction\Model {
 
 			#Not sure why I did this, but we create a reference to a RelatorRemix based on the relationship to the secondary tablename
 			#todo figure out why this exists. I think it was to find information about the table, but I don't know
-			$self_rel =& $self->map_remix->{$model_tablename};
+			$self_rel =& $self->maps->{$model_tablename};
 
 			/**
 			 * Find out what the proper identifiers are.
@@ -331,9 +331,9 @@ class Model extends Abstraction\Model {
 
 			#----------------------------
 			/** @var string The name of the index at which to add the relationship. Defaults to the table name of the secondary table */
-			$holder_index = isset($extras['holder_index']) ? $extras['holder_index'] : ($is_secondary ? static::$table_name : $model_tablename);
+			$relationship_index = isset($extras['holder_index']) ? $extras['holder_index'] : ($is_secondary ? static::$table_name : $model_tablename);
 			/** @var string The name of the index at which to add the relationship in the secondary Model. Defaults to the name of the primary table */
-			$reciprocal_holder_index = isset($extras['reciprocal_holder_index'])
+			$reciprocal_relationship_index = isset($extras['reciprocal_holder_index'])
 				? $extras['reciprocal_holder_index']
 				: ($is_secondary ? $model_tablename : static::$table_name);
 			#----------------------------
@@ -342,14 +342,14 @@ class Model extends Abstraction\Model {
 			$holder_assoc_index = isset($extras['holder_association']) ? $extras['holder_association'] : $model_identifier;
 			/** @var string This is the way that we associate Models in the RelatorRemix for the other Model. Could be by position or date added, defaults to the modelID */
 			$reciprocal_holder_assoc_index = isset($extras['reciprocal_holder_association']) ? $extras['reciprocal_holder_association'] : $self_identifier;
-			/** @var callable $holder_hook This is a function that will be run on each found Model that places them in the correct index based on the properties of the map or object */
+			/** @var callable $rel_index_hook This is a function that will be run on each found Model that places them in the correct index based on the properties of the map or object */
 			#----------------------------
 
-			$holder_hook = isset($extras['holder_hook']) && is_callable($extras['holder_hook'])
+			$rel_index_hook = isset($extras['holder_hook']) && is_callable($extras['holder_hook'])
 				? $extras['holder_hook']
 				: false;
-			/** @var callable $reciprocal_holder_hook This is a function that will be run on each found Model that places them in the correct index based on the properties of the map or object */
-			$reciprocal_holder_hook = isset($extras['reciprocal_holder_hook']) && is_callable($extras['reciprocal_holder_hook'])
+			/** @var callable $rec_rel_index_hook This is a function that will be run on each found Model that places them in the correct index based on the properties of the map or object */
+			$rec_rel_index_hook = isset($extras['reciprocal_holder_hook']) && is_callable($extras['reciprocal_holder_hook'])
 				? $extras['reciprocal_holder_hook']
 				: false;
 			#----------------------------
@@ -372,15 +372,15 @@ class Model extends Abstraction\Model {
 				/**
 				 * Get the proper index of the relationships
 				 */
-				if ($holder_hook) {
-					$holder =& $holder_hook($this, $properties_of_map, $object_properties, $is_secondary, true);
+				if ($rel_index_hook) {
+					$RelationshipIndex =& $rel_index_hook($this, $properties_of_map, $object_properties, $is_secondary, true);
 				} else {
-					$holder =& $this->map_remix->get_map_rel($holder_index, $model_tablename);
+					$RelationshipIndex =& $this->maps->getRelationshipIndex($relationship_index, $model_tablename);
 				}
-				if ($reciprocal_holder_hook) {
-					$reciprocal_holder =& $reciprocal_holder_hook($secondary_model, $properties_of_map, $object_properties, !$is_secondary, true);
+				if ($rec_rel_index_hook) {
+					$ReciprocalRelationshipIndex =& $rec_rel_index_hook($secondary_model, $properties_of_map, $object_properties, !$is_secondary, true);
 				} else {
-					$reciprocal_holder =& $secondary_model->map_remix->get_map_rel($reciprocal_holder_index, static::$table_name);
+					$ReciprocalRelationshipIndex =& $secondary_model->maps->getRelationshipIndex($reciprocal_relationship_index, static::$table_name);
 				}
 				#----------------------------
 				/**
@@ -394,20 +394,19 @@ class Model extends Abstraction\Model {
 				#Store each relationship in the proper holder at the holder_assoc_index (again, this is the index that distinguishes each relationship)
 				if (isset($properties_of_map[$holder_assoc_index])) {
 					$model_array[$properties_of_map[$holder_assoc_index]] = $secondary_model;
-					$holder->push($self_relationship, $properties_of_map[$holder_assoc_index]);
+					$RelationshipIndex->push($self_relationship, $properties_of_map[$holder_assoc_index]);
 				} else {
-					$model_array[]          = $secondary_model;
-					$holder->_meta->_list[] = $properties_of_map['id'];
-					$holder->push($self_relationship, $properties_of_map['id']);
+					$model_array[] = $secondary_model;
+					$RelationshipIndex->push($self_relationship, $properties_of_map['id']);
 				}
 
 				$reciprocal_relationship       = new Relationship();
 				$reciprocal_relationship->_map = $_map;
 				#Store each relationship in the proper holder at the holder_assoc_index (again, this is the index that distinguishes each relationship)
 				if (isset($properties_of_map[$reciprocal_holder_assoc_index])) {
-					$reciprocal_holder->push($reciprocal_relationship, $properties_of_map[$reciprocal_holder_assoc_index]);
+					$ReciprocalRelationshipIndex->push($reciprocal_relationship, $properties_of_map[$reciprocal_holder_assoc_index]);
 				} else {
-					$reciprocal_holder->push($reciprocal_relationship, $properties_of_map['id']);
+					$ReciprocalRelationshipIndex->push($reciprocal_relationship, $properties_of_map['id']);
 				}
 
 				if (isset($properties_of_map['position'])) {
@@ -417,14 +416,14 @@ class Model extends Abstraction\Model {
 
 				#todo wrong order?
 				#Label which entities are being linked in this class
-				$holder->_meta->_linked_entities = $reciprocal_holder->_meta->_linked_entities = [
+				$RelationshipIndex->_meta->_linked_entities = $ReciprocalRelationshipIndex->_meta->_linked_entities = [
 					static::getModelType(),
 					$model->getModelType(),
 				];
 				#Set the properties of the Secondary Model, but don't mark change
 				$secondary_model->set($object_properties, false);
-				unset ($holder);
-				unset ($reciprocal_holder);
+				unset ($RelationshipIndex);
+				unset ($ReciprocalRelationshipIndex);
 			}
 
 			if (isset($extras['walk']) && is_callable($extras['walk']) && !empty($model_array)) {

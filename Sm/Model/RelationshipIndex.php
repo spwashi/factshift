@@ -7,8 +7,6 @@
 
 namespace Sm\Model;
 
-use Sm\Core\Inflector;
-
 /**
  * Class Relator
  * A container for Relationships or Relationship containers\
@@ -42,14 +40,13 @@ class RelationshipIndex implements \JsonSerializable {
 	protected $gotten      = [];
 	protected $hidden      = [];
 	protected $is_beginner = false;
-	public function __construct($properties, $own_table, $is_beginner = false, $by = false) {
+	public function __construct($own_table) {
 		$this->own_table = $own_table;
 		$this->index     = $own_table;
-		foreach ($properties as $key => $value) {
-			if ($key) $this->properties[$key] = $this->init_rel($key, $value, $key);
-		}
-		$this->is_beginner = $is_beginner;
-		$this->_meta       = new RelationshipMeta();
+		$this->_meta     = new RelationshipMeta();
+	}
+	public function setIndex($index) {
+		$this->index = $index ?: $this->index;
 	}
 	public function jsonSerialize() {
 		$properties = ['index' => $this->index, 'items' => []];
@@ -78,56 +75,7 @@ class RelationshipIndex implements \JsonSerializable {
 	 * @return mixed
 	 */
 	public function &__get($name) {
-		if (!isset($this->properties[$name])) {
-			$this->properties[$name] = new RelationshipIndex([], $name, false, $name . ' in ' . $this->own_table);
-		}
-		$this->gotten[$name] = true;
 		return $this->properties[$name];
-	}
-	/**
-	 * Create a relationship index based on another index. If we have an index (say, 'children') that we are mapping relationships in,
-	 * this creates and initializes a relationship holder with that index based on the table specified (say, 'sections'). This is useful if distinguishing muptliple relationships
-	 * that come from the same table
-	 * @param            $mapped_table
-	 * @param array      $relationship_index
-	 * @param bool|false $index
-	 * @return array|RelationshipIndex
-	 */
-	public function init_rel($mapped_table, $relationship_index = [], $index = false) {
-		$own_table          = $this->own_table;
-		$singular_own_table = Inflector::singularize($own_table);
-		$singular_k         = Inflector::singularize($mapped_table);
-		if (!($relationship_index instanceof RelationshipIndex))
-			$relationship_index = new RelationshipIndex(isset($relationship_index['_meta']) ? [$relationship_index['_meta']] : [], $mapped_table, false, $mapped_table . ' in - ' . $this->own_table);
-		if ($index !== false) {
-			$relationship_index->index = $index;
-		}
-		if (!isset($relationship_index->_meta->_key) || trim($relationship_index->_meta->_key) == '') {
-			$_key                            = ($own_table != $mapped_table) ? "{$singular_k}_id" : "secondary_{$singular_k}_id";
-			$relationship_index->_meta->_key = $_key;
-		}
-
-		if (!isset($relationship_index->_meta->_table)) {
-			$table_name = "{$singular_own_table}_{$singular_k}_map";
-			if (ModelMeta::table_exists($table_name)) {
-				$relationship_index->_meta->_table = $table_name;
-			} else {
-				$table_name = "{$singular_k}_{$singular_own_table}_map";
-				if (ModelMeta::table_exists($table_name)) $relationship_index->_meta->_table = $table_name;
-			}
-		}
-
-		if (!isset($relationship_index->_meta->_ids) || !is_array($relationship_index->_meta->_ids)) {
-			if ($own_table != $mapped_table) {
-				$relationship_index->_meta->_ids = ["{$singular_own_table}_id", "{$singular_k}_id"];
-			} else {
-				$relationship_index->_meta->_ids = ["primary_{$singular_own_table}_id", "secondary_{$singular_k}_id"];
-			}
-		}
-		if (!isset($relationship_index->_meta->_list)) {
-			$relationship_index->_meta->_list = [];
-		}
-		return $relationship_index;
 	}
 
 	/**
@@ -156,23 +104,16 @@ class RelationshipIndex implements \JsonSerializable {
 	 */
 	public function get_items($only_models = false) {
 		$item = [];
-		if ($this->is_beginner) {
-			foreach ($this->properties as $name => $property) {
-				if (!isset($this->gotten[$name]) && $this->is_beginner) continue;
-				$item[] = $property;
-			}
-		} else {
-			usort($this->_meta->_list, function ($a, $b) {
-				if (is_object($this->properties[$a]) && $this->properties[$a]->position)
-					return strcmp($this->properties[$a]->position, $this->properties[$b]->position);
-				return 0;
-			});
-			foreach ($this->_meta->_list as $id) {
-				if (!isset($this->properties[$id])) continue;
-				if (isset($this->hidden[$id])) continue;
-				$item[$id] = $this->properties[$id];
-				if ($only_models && $item[$id]->model) $item[$id] = $item[$id]->model;
-			}
+		usort($this->_meta->_list, function ($a, $b) {
+			if (is_object($this->properties[$a]) && $this->properties[$a]->position)
+				return strcmp($this->properties[$a]->position, $this->properties[$b]->position);
+			return 0;
+		});
+		foreach ($this->_meta->_list as $id) {
+			if (!isset($this->properties[$id])) continue;
+			if (isset($this->hidden[$id])) continue;
+			$item[$id] = $this->properties[$id];
+			if ($only_models && $item[$id]->model) $item[$id] = $item[$id]->model;
 		}
 		return $item;
 	}
@@ -204,24 +145,10 @@ class RelationshipIndex implements \JsonSerializable {
 	}
 
 	/**
-	 * Retrieve the relationship index at a specific index. If there is none, create one
-	 * @param string $index        The index we are trying to find a relationship at
-	 * @param string $mapped_table The name of the table to base it on
-	 * @return RelationshipIndex
-	 */
-	public function &get_map_rel($index, $mapped_table) {
-		if (!isset($this->properties[$index])) {
-			$this->properties[$index] = $this->init_rel($mapped_table, [], $index);
-		}
-		$this->gotten[$index] = true;
-		return $this->properties[$index];
-	}
-
-	/**
 	 * Add a relationship ar a specified index (or just append)
 	 * @param Relationship|RelationshipIndex $relationship
-	 * @param bool|false                $identifier What is the identifier of the Relationship we're adding? Add that to the list if it isn't there already
-	 *                                              todo splicing
+	 * @param bool|false                     $identifier What is the identifier of the Relationship we're adding? Add that to the list if it isn't there already
+	 *                                                   todo splicing
 	 */
 	public function push($relationship, $identifier = false) {
 		if ($identifier) {

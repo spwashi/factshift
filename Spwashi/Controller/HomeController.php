@@ -18,7 +18,7 @@ class HomeController extends SpwashiController {
 
 	public function example() {
 		$v = View::create(App::_()->path . '/drivers/_models.php', [], false);
-		return $v;
+		return 'e8hq2R83';
 	}
 	public function example_2() {
 		$v = View::create('examples/text_2.php');

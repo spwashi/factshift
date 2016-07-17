@@ -478,7 +478,7 @@ class API {
 					}
 				}
 				$find_arr[$other_id] = $other_model->id;
-				$result              = $primary_model->findType($other_model, $find_arr)->map_remix->{$table_name};
+				$result              = $primary_model->findType($other_model, $find_arr)->maps->{$table_name};
 				Log::init($result)->log_it();
 			} catch (ModelNotFoundException $e) {
 				Log::init(['init_from_', $e->getMessage()])->log_it();
@@ -499,11 +499,11 @@ class API {
 			}
 			if ($relationship_type_id) {
 				/** @var RelationshipIndex $RelationshipIndex */
-				$RelationshipIndex = $primary_model->map_remix->{$relationship_type_index};
+				$RelationshipIndex = $primary_model->maps->{$relationship_type_index};
 				$result            = $RelationshipIndex;
 			} else {
 				/** @var $primary_model Section */
-				$maps = $primary_model->map_remix->get_items();
+				$maps = $primary_model->maps->get_items();
 				foreach ($maps as $relator) {
 					$items = $relator->get_items(true);
 					foreach ($items as $key => $vv) {
@@ -666,12 +666,12 @@ class API {
 				$primary_model->findSections();
 				$rel_type                  = isset($proposed_meta['_index']) ? RelationshipType::get_type_from_name($proposed_meta['_index']) : null;
 				$relationship_index        = RelationshipType::get_name_from_type($rel_type, true);
-				$actual_maps               = $primary_model->map_remix->{$relationship_index};
+				$actual_maps               = $primary_model->maps->{$relationship_index};
 				$request_data['rel_index'] = $relationship_index;
 				$request_data['rel_type']  = $rel_type;
 			} else {
 				$primary_model->findType($proposed_meta['_key']);
-				$actual_maps = $primary_model->map_remix->{$proposed_meta['_key']};
+				$actual_maps = $primary_model->maps->{$proposed_meta['_key']};
 			}
 		} catch (\Exception $e) {
 			$api_response          = new APIResponse();

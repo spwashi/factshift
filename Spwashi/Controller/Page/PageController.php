@@ -139,10 +139,10 @@ class PageController extends SpwashiController {
 			} catch (\Exception $e) {
 				$concepts = new ModelIterator();
 			}
-			$dims = $current_page->map_remix->dimensions;
+			$dims = $current_page->maps->dimensions;
 			/** @var Dimension $current_dimension */
 			$current_dimension     = $dims->get_item_at_index($dims->_meta->_list[0])->model;
-			$current_section_array = $current_dimension ? $current_dimension->findSections()->map_remix->sections->get_items(true) : [];
+			$current_section_array = $current_dimension ? $current_dimension->findSections()->maps->sections->get_items(true) : [];
 			$generated_sections    = SectionFactory::generate_sections($current_section_array, $is_edit, function (Model &$section) {
 				return ($section->findType(new Concept));
 			});

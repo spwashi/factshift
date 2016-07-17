@@ -83,22 +83,22 @@ class Section extends Model {
              * The content of the WHAT will be the embedded content of the page
              */
             $page->findType('dimensions', ['dimension_role' => DimensionRole::OVERVIEW]);
-            $page_dimension_relationships = $page->map_remix->dimensions;
+            $page_dimension_relationships = $page->maps->dimensions;
 
-            $pdm_rels = $page->map_remix->dimensions;
+            $pdm_rels = $page->maps->dimensions;
             if (!empty($pdm_rels->_meta->_list)) {
                 $relationships = [];
                 $dimension_id  = $pdm_rels->_meta->_list[0];
                 /** @var Dimension $dimension */
                 if ($pdm_rels->has($dimension_id) && $dimension = $pdm_rels->get_item_at_index($dimension_id)->model) {
                     $dimension->findSections(['section_role' => SectionRole::WHAT]);
-                    $sections = $dimension->map_remix->sections;
+                    $sections = $dimension->maps->sections;
                     if (!empty($sections->_meta->_list)) {
                         $section_id = $sections->_meta->_list[0];
                         if ($sections->has($section_id) && $section = $sections->get_item_at_index($section_id)->model) {
                             /** @var Section $section */
                             $content       = $section->content;
-                            $relationships = clone($section->map_remix);
+                            $relationships = clone($section->maps);
                         }
                     }
                 }
@@ -164,7 +164,7 @@ class Section extends Model {
         $model->findSections($settings_arr);
 
         $ret_arr = [];
-        foreach ($model->map_remix->get_items() as $key => $relationship_index) {
+        foreach ($model->maps->get_items() as $key => $relationship_index) {
             foreach ($relationship_index->get_items(true) as $k => $rel_index_model) {
                 if (isset($rel_index_model)) {
                     $ret_arr[] = $rel_index_model;
@@ -275,8 +275,8 @@ class Section extends Model {
             default :
                 break;
         }
-        $ret = $self->map_remix->get_map_rel($prefix . $index, 'sections');
-        $no  = $self->map_remix->{$prefix . $index};
+        $ret = $self->maps->getRelationshipIndex($prefix . $index, 'sections');
+        $no  = $self->maps->{$prefix . $index};
         return $ret;
     }
 

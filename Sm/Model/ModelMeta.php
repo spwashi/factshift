@@ -57,7 +57,6 @@ class ModelMeta {
 		$_                    = $array['_'] ?? [];             //A model Model
 		$marked_relationships = [];                            //Array of the relationships that we know about
 		$app_name             = App::getBootingAppName() ?: App::_()->name;      //Name of the current application
-		var_dump($app_name);
 		$namespace                 = $app_name . '\\Model\\';       //Namespace of the classes
 		$search                    = ['models', 'maps', 'types'];   //The types of objects there are
 		$models                    = $array['models'] ?? [];        //The Models that we are dealing with

@@ -53,7 +53,7 @@ class SectionFactory {
             ];
             $tree_child_holder    = &$arr[$section->title]['children'];
         }
-        $maps = $section->map_remix;
+        $maps = $section->maps;
 
         foreach ($maps->children->get_items(true) as $id => $child_model) {
             if (strpos($id, '_') === 0) continue;

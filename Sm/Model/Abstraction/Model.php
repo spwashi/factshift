@@ -9,6 +9,7 @@ namespace Sm\Model\Abstraction;
 
 use Sm\Model\ModelMeta;
 use Sm\Model\RelationshipIndex;
+use Sm\Model\RelationshipIndexContainer;
 
 /**
  * Class Model
@@ -18,7 +19,7 @@ use Sm\Model\RelationshipIndex;
  * @property int          $ent_id                      Unique Model identifier
  * @property string       $creation_dt                 Datetime of creation
  * @property string       $update_dt                   Datetime of row update
- * @property RelationshipIndex $map_remix                   An array of relationships the model has
+ * @property RelationshipIndex $maps                   An array of relationships the model has
  */
 abstract class Model implements \JsonSerializable {
 	/** @var string The name of the table that we are going to be dealing with */
@@ -159,10 +160,10 @@ abstract class Model implements \JsonSerializable {
 		 * The "maps" property is a magic property that creates a relationship holder dynamically.
 		 * This property holds information about all of the different relationships that this Model is a part of
 		 */
-		if ($name == 'map_remix') {
-			$this->_relationships = ($this->_relationships instanceof RelationshipIndex)
+		if ($name == 'maps') {
+			$this->_relationships = ($this->_relationships instanceof RelationshipIndexContainer)
 				? $this->_relationships
-				: new RelationshipIndex(ModelMeta::_get_def_props(static::class, ModelMeta::FIND_RELATIONSHIPS), static::$table_name, true);
+				: new RelationshipIndexContainer(ModelMeta::_get_def_props(static::class, ModelMeta::FIND_RELATIONSHIPS), $this);
 			return $this->_relationships;
 		}
 
@@ -180,7 +181,7 @@ abstract class Model implements \JsonSerializable {
 	public function __set($name, $value) {
 		static::__initialize();
 		//Map remix is a readonly property as it is not actually something that exists in the class
-		if ($name == 'map_remix') return;
+		if ($name == 'maps') return;
 		if ($name != "ent_id" && strpos($name, '_id')) {
 			if ($value instanceof Model) {
 				return;

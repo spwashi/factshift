@@ -64,7 +64,7 @@ $urls['view'] = Toute::generate_url('spwashi_page_view', [$page->context, $page-
 		</div>
 		<div id="dimension-container" class="dimension-container no-selection entity-container">
 			<ul class="lst">
-				<?php foreach ($page->map_remix->dimensions->get_items(true) as $dimension): ?>
+				<?php foreach ($page->maps->dimensions->get_items(true) as $dimension): ?>
 					<?php
 					/** @var Spwashi\Model\Dimension $dimension */
 					if (!($dimension instanceof \Spwashi\Model\Dimension) || ($dimension->title == '' || $dimension->ent_id == '')) continue;

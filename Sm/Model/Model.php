@@ -16,8 +16,9 @@ use Spwashi\Libs\Session\Session;
  * Class Model
  * todo add a way to check if a property is actually part of a class before using it when finding
  * @package Sm\Model
- * @property int $id
- * @property int $ent_id
+ * @property int                        $id
+ * @property int                        $ent_id
+ * @property RelationshipIndexContainer $maps
  */
 class Model extends Abstraction\Model {
 	const ADDED_ENT_ID_LENGTH = 15;
@@ -169,7 +170,7 @@ class Model extends Abstraction\Model {
 	/**
 	 * @param string|Model     $type                 The table to map to
 	 * @param array|string|int $attributes_to_search The ID or attributes to search the mapping table for (e.g. collection_id)
-	 * @param array            $extras               is_secondary       =>
+	 * @param array            $extras               is_reciprocal       =>
 	 *                                               Whether or not we are finding the primary or secondary relationships of the class
 	 *                                               Useful if there is a one way relationship kind of thing
 	 *
@@ -183,60 +184,45 @@ class Model extends Abstraction\Model {
 	 * @throws \Exception
 	 */
 	public function findType($type, $attributes_to_search = null, $extras = []) {
-		$model_tablename = false;
-		$model           = false;
-		$self            = new static();
-		$is_secondary    = isset($extras['is_secondary']) && $extras['is_secondary'] ? true : false;
+		/** @var Model $model */
+		$model = null;
+		/** @var Model $self */
+		$self          = new static();
+		$is_reciprocal = isset($extras['is_reciprocal']) && $extras['is_reciprocal'] ? true : false;
+		/** @var RelationshipIndexContainer $maps */
+		$maps = $self->maps;
 		try {
-			/**
-			 * Convert the type to a tablename, get a model Model to work with
-			 */
+			//This just tells us a little bit about what we are about to find
+			$self_rel =& $maps->getRelationshipIndex($type);
+
+			#If we couldn't add the relationship
+			if (!$self_rel) Log::init("Could not create a relationship for {$type} in " . $this->getModelType())->log_it();
+			if (!$self_rel) return $this;
+			#The "type" is the other table name. We just do this because we are
+			$model_tablename = $self_rel->get_other_tablename() ?: null;
+			/** @var $relationship_index string The index at which the relationship will reside. */
+			$relationship_index = $self_rel->get_relationship_index();
+
 			if ($type instanceof Model) {
 				$model_tablename = $type->getTableName();
 				$model           = $type;
-			} else if (is_string($type)) {
-				# If we're dealing with a string, convert it to a tablename and create a class from it
-				$type = ModelMeta::model_type_to($type, ModelMeta::TYPE_TABLE);
-				if (ModelMeta::table_exists($type)) {
-					$model_tablename = $type;
-				}
-				$model = ModelMeta::convert_to_class($model_tablename);
 			}
+			$model_tablename = $model_tablename ?? ModelMeta::convert_to_something($type, ModelMeta::TYPE_TABLE);
+			$model           = $model ?? ModelMeta::convert_to_class($model_tablename);
+
 			#If we were unsuccessful, throw an error
-			if (!$model) throw new ModelNotFoundException('Could not find ' . $type);
+			if (!($model ?? false)) throw new ModelNotFoundException(['Could not find' => [$type, $model_tablename, $model]]);
 
-			#Not sure why I did this, but we create a reference to a RelatorRemix based on the relationship to the secondary tablename
-			#todo figure out why this exists. I think it was to find information about the table, but I don't know
-			$self_rel =& $self->maps->{$model_tablename};
-
-			/**
-			 * Find out what the proper identifiers are.
-			 * If the relationship is secondary (E.g. we are finding all relationships where this is the CHILD and not the PARENT),
-			 * deal with them accordingly. This only really matters in the case where the primary class and the secondary class are from the sabe table
-			 */
-			$self_identifier  = false;
-			$model_identifier = false;
-
-			/**
-			 * Try to figure out the name of the Map table by combining the names of each Model's tablea= and seeing what works.
-			 * If the relationship has a known table, this will likely be unnecessary
-			 */
 			/** @var string The name of the table that links the entities together */
-			$map_table_name = isset($extras['map_table']) ? $extras['map_table'] : false;
-			$map_table_name = !$map_table_name && isset($self_rel->_meta->_table) ? $self_rel->_meta->_table : $map_table_name;
-			$map_table_name = $map_table_name ?: ModelMeta::get_map_between(static::$table_name, $model_tablename);
+			$map_table_name = $self_rel->_meta->_table ?? ModelMeta::get_map_between(static::$table_name, $model_tablename);
 
 			#If we couldn't guess the name of the Map table, throw an error
 			if (!$map_table_name || !ModelMeta::table_exists($map_table_name)) {
 				throw new ModelNotFoundException('Could not adequately map ' . $map_table_name);
 			}
 
-			#todo this is imperfect linking.
 			#Make an array holding the names of the linked entity types
-			$self_rel->_meta->_linked_entities = [
-				static::getModelType(),
-				$model->getModelType(),
-			];
+			$self_rel->_meta->_linked_entities = $self_rel->_meta->_linked_entities ?? [static::getModelType(), $model->getModelType()];
 
 			#Try to make a class that maps the two relationships together
 			/** @var Map $map_class A class that links two entities together */
@@ -247,18 +233,19 @@ class Model extends Abstraction\Model {
 
 			$__secondary_identifier = $map_class->get_secondary_identifier($this);
 			$__primary_identifier   = $map_class->get_primary_identifier($this);
-			if ($is_secondary) {
+			if ($is_reciprocal) {
 				$self_identifier  = $__secondary_identifier;
 				$model_identifier = $__primary_identifier;
 			} else {
 				$self_identifier  = $__primary_identifier;
 				$model_identifier = $__secondary_identifier;
 			}
-//			Log::init([$self_identifier, $model_identifier])->log_it();
+
 			#Get the SQL class ready to run some queries
 			/** @var \Sm\Database\Sql $sql */
 			if (!IoC::resolveSql($sql)) return false;
 
+			/** @var string $map_alias_name The name to use in the SQL query as the map. Not important, arbitrarily chosen */
 			$map_alias_name = 'map';
 			#Check to see if there are any attributes to add to the query to qualify it
 			if (is_array($attributes_to_search)) {
@@ -276,7 +263,6 @@ class Model extends Abstraction\Model {
 					$is_start = false;
 
 					#If the column value is an array, iterate through it to add other options via ORing
-					#todo figure this out
 					if (is_array($column_value)) {
 						$is_c_start = true;
 						$string     = '(';
@@ -295,32 +281,23 @@ class Model extends Abstraction\Model {
 				}
 			} else {
 				if (!isset($attributes_to_search)) $attributes_to_search = $this->id;
-				$sql->bind(['id' => $attributes_to_search])
-				    ->where("{$map_alias_name}.{$self_identifier} = :id");
+				$sql->bind(['id' => $attributes_to_search]);
+				$sql->where("{$map_alias_name}.{$self_identifier} = :id");
 			}
 
 			$select_arr = [$model_tablename . '.*'];
-			/**
-			 * Make it so the properties from the mapping class are distinguishable from the ones that are not
-			 */
+
+			#Make it so the properties from the mapping class are distinguishable from the ones that are not
 			foreach ($map_class->getDefaultProperties() as $name => $var) {
-				if (substr($name, 0, 1) != '_') {
-					$select_arr["{$map_alias_name}.{$name}"] = "{$map_table_name}_{$name}";
-				}
+				#Not sure why this is here. If the first character is an underscore, skip it? I think these are "fake" properties, not sure what.
+				if (substr($name, 0, 1) != '_') $select_arr["{$map_alias_name}.{$name}"] = "{$map_table_name}_{$name}";
 			}
 			#Because we are selecting from the Secondary table and the map table, link the two by the 2Model IDs
 			$sql->where("AND {$map_alias_name}.{$model_identifier} = {$model_tablename}.id")
 			    ->select($select_arr)
-			    ->from([$model_tablename, $map_table_name => $map_alias_name]);
+				#Select from the mapped model's table and the mapped table as "map" or whatever it was set to
+				->from([$model_tablename, $map_table_name => $map_alias_name]);
 
-			#If there's an order_by extra, use it
-			$order_by = isset ($extras['order_by']) ? $extras['order_by'] : null;
-			if ($order_by) {
-				$order_by = str_replace($map_table_name, $map_alias_name, $order_by);
-				$sql->buildQry()
-				    ->setQry($sql->getQry() . ' ORDER BY ' . $order_by . ' ASC');
-			}
-//			Log::init($sql->buildQry()->getQry())->log_it();
 			#Generate an output similar to the PDO::fetchAll
 			$output = $sql->run()->output('all');
 			#If there was no output, say we couldn't find any
@@ -330,14 +307,6 @@ class Model extends Abstraction\Model {
 			$model_array = [];
 
 			#----------------------------
-			/** @var string The name of the index at which to add the relationship. Defaults to the table name of the secondary table */
-			$relationship_index = isset($extras['holder_index']) ? $extras['holder_index'] : ($is_secondary ? static::$table_name : $model_tablename);
-			/** @var string The name of the index at which to add the relationship in the secondary Model. Defaults to the name of the primary table */
-			$reciprocal_relationship_index = isset($extras['reciprocal_holder_index'])
-				? $extras['reciprocal_holder_index']
-				: ($is_secondary ? $model_tablename : static::$table_name);
-			#----------------------------
-
 			/** @var string This is the way that we associate Models in the RelatorRemix. Could be by position or date added, defaults to the modelID */
 			$holder_assoc_index = isset($extras['holder_association']) ? $extras['holder_association'] : $model_identifier;
 			/** @var string This is the way that we associate Models in the RelatorRemix for the other Model. Could be by position or date added, defaults to the modelID */
@@ -345,15 +314,7 @@ class Model extends Abstraction\Model {
 			/** @var callable $rel_index_hook This is a function that will be run on each found Model that places them in the correct index based on the properties of the map or object */
 			#----------------------------
 
-			$rel_index_hook = isset($extras['holder_hook']) && is_callable($extras['holder_hook'])
-				? $extras['holder_hook']
-				: false;
-			/** @var callable $rec_rel_index_hook This is a function that will be run on each found Model that places them in the correct index based on the properties of the map or object */
-			$rec_rel_index_hook = isset($extras['reciprocal_holder_hook']) && is_callable($extras['reciprocal_holder_hook'])
-				? $extras['reciprocal_holder_hook']
-				: false;
-			#----------------------------
-
+			#Iterate through the output, create the models, add them to the proper relationship index
 			foreach ($output as $key => $object_properties) {
 				$secondary_model = clone($model);
 				#----------------------------
@@ -369,27 +330,14 @@ class Model extends Abstraction\Model {
 					}
 				}
 				#----------------------------
-				/**
-				 * Get the proper index of the relationships
-				 */
-				if ($rel_index_hook) {
-					$RelationshipIndex =& $rel_index_hook($this, $properties_of_map, $object_properties, $is_secondary, true);
-				} else {
-					$RelationshipIndex =& $this->maps->getRelationshipIndex($relationship_index, $model_tablename);
-				}
-				if ($rec_rel_index_hook) {
-					$ReciprocalRelationshipIndex =& $rec_rel_index_hook($secondary_model, $properties_of_map, $object_properties, !$is_secondary, true);
-				} else {
-					$ReciprocalRelationshipIndex =& $secondary_model->maps->getRelationshipIndex($reciprocal_relationship_index, static::$table_name);
-				}
+				$RelationshipIndex           =& $this->maps->getRelationshipIndex($relationship_index, $properties_of_map, $is_reciprocal);
+				$ReciprocalRelationshipIndex =& $secondary_model->maps->getRelationshipIndex(static::$table_name, $properties_of_map, !$is_reciprocal);
 				#----------------------------
 				/**
 				 * Create a Map class based on the properties of the map. If
 				 */
-				$_map                     = ModelMeta::convert_to_class($actual_map_name, $properties_of_map) ?: $properties_of_map;
-				$self_relationship        = new Relationship();
-				$self_relationship->model = $secondary_model;
-				$self_relationship->_map  = $_map;
+				$_map              = ModelMeta::convert_to_class($actual_map_name, $properties_of_map) ?: new Model($properties_of_map);
+				$self_relationship = new Relationship($_map, $secondary_model);
 
 				#Store each relationship in the proper holder at the holder_assoc_index (again, this is the index that distinguishes each relationship)
 				if (isset($properties_of_map[$holder_assoc_index])) {
@@ -400,8 +348,7 @@ class Model extends Abstraction\Model {
 					$RelationshipIndex->push($self_relationship, $properties_of_map['id']);
 				}
 
-				$reciprocal_relationship       = new Relationship();
-				$reciprocal_relationship->_map = $_map;
+				$reciprocal_relationship = new Relationship($_map);
 				#Store each relationship in the proper holder at the holder_assoc_index (again, this is the index that distinguishes each relationship)
 				if (isset($properties_of_map[$reciprocal_holder_assoc_index])) {
 					$ReciprocalRelationshipIndex->push($reciprocal_relationship, $properties_of_map[$reciprocal_holder_assoc_index]);
@@ -409,17 +356,12 @@ class Model extends Abstraction\Model {
 					$ReciprocalRelationshipIndex->push($reciprocal_relationship, $properties_of_map['id']);
 				}
 
-				if (isset($properties_of_map['position'])) {
-					$self_relationship->position       = $properties_of_map['position'];
-					$reciprocal_relationship->position = $properties_of_map['position'];
-				}
+				if (isset($properties_of_map['position'])) $self_relationship->position = $properties_of_map['position'];
 
 				#todo wrong order?
 				#Label which entities are being linked in this class
-				$RelationshipIndex->_meta->_linked_entities = $ReciprocalRelationshipIndex->_meta->_linked_entities = [
-					static::getModelType(),
-					$model->getModelType(),
-				];
+				$RelationshipIndex->_meta->_linked_entities           = $RelationshipIndex->_meta->_linked_entities ?? [static::getModelType(), $model->getModelType()];
+				$ReciprocalRelationshipIndex->_meta->_linked_entities = $ReciprocalRelationshipIndex->_meta->_linked_entities ?? [$model->getModelType(), static::getModelType()];
 				#Set the properties of the Secondary Model, but don't mark change
 				$secondary_model->set($object_properties, false);
 				unset ($RelationshipIndex);
@@ -433,7 +375,7 @@ class Model extends Abstraction\Model {
 		} catch (\Exception $e) {
 			$message = $e->getMessage();
 			if (strlen($message) && $e->getCode() !== ModelNotFoundException::REASON_NOT_FOUND) {
-				Log::init($message)->log_it();
+				Log::init([$message, func_get_args()])->log_it();
 				throw $e;
 			} else if ($e instanceof ModelNotFoundException) {
 				throw $e;

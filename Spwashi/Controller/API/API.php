@@ -39,7 +39,7 @@ class API {
 				$name_arr = explode('\\', static::class);
 				return str_replace('API', '', $name_arr[count($name_arr) - 1]);
 		endswitch;
-		return ModelMeta::model_type_to($key, ModelMeta::TYPE_TABLE);
+		return ModelMeta::convert_to_something($key, ModelMeta::TYPE_TABLE);
 	}
 
 	/**
@@ -97,7 +97,7 @@ class API {
 			$result              = false;
 			if ($previous_result_value instanceof Model) {
 				$model_type = $previous_result_value->getModelType();
-				$model_type = ModelMeta::model_type_to($model_type, ModelMeta::TYPE_TABLE);
+				$model_type = ModelMeta::convert_to_something($model_type, ModelMeta::TYPE_TABLE);
 				$model_type = Inflector::singularize($model_type);
 				/** @see API::init_from_() */
 				$init_function = static::class . "::init_from_{$model_type}";
@@ -305,8 +305,8 @@ class API {
 			# only operate on the indexes (not the values)
 			if ($index % 2 !== 0 && $index != 0) continue;
 			# Make sure the table name is the way we think it should be
-			$tablename  = ModelMeta::model_type_to($tablename, ModelMeta::TYPE_TABLE, ModelMeta::TYPE_TABLE);
-			$class_name = ModelMeta::model_type_to($tablename, ModelMeta::TYPE_CLASSNAME);
+			$tablename  = ModelMeta::convert_to_something($tablename, ModelMeta::TYPE_TABLE, ModelMeta::TYPE_TABLE);
+			$class_name = ModelMeta::convert_to_something($tablename, ModelMeta::TYPE_CLASSNAME);
 			if (!$class_name) continue;
 
 			$class_name_arr = explode('\\', $class_name);

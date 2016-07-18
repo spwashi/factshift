@@ -7,6 +7,8 @@
 
 namespace Sm\Model;
 
+use Sm\Development\Log;
+
 /**
  * Class Relator
  * A container for Relationships or Relationship containers\
@@ -30,9 +32,11 @@ namespace Sm\Model;
 class RelationshipIndex implements \JsonSerializable {
 	/** @var $_meta RelationshipMeta */
 	public    $_meta;
-	protected $properties = [];
+	protected $items = [];
 	protected $index;
-	protected $own_table;
+	/** @var $other_table_name string The name of the table that was being mapped */
+	protected $other_table_name;
+	protected $is_reciprocal = false;
 	/**
 	 * We only want to serialize the values that we've actually dealt with
 	 * @var array
@@ -40,31 +44,52 @@ class RelationshipIndex implements \JsonSerializable {
 	protected $gotten      = [];
 	protected $hidden      = [];
 	protected $is_beginner = false;
-	public function __construct($own_table) {
-		$this->own_table = $own_table;
-		$this->index     = $own_table;
-		$this->_meta     = new RelationshipMeta();
+	public function __construct($properties, $index = false) {
+		if (is_string($properties)) {
+			Log::init([$properties, $index])->log_it();
+			return;
+		}
+		$le = $properties['linked_entities'] ?? [];
+		if (!$le) Log::init($properties)->log_it();
+		if (strpos($index, 'reciprocal_') > -1) $this->is_reciprocal = true;
+
+		$own_table              = ModelMeta::get_map_between($le[0] ?? false, $le[1] ?? false, ModelMeta::TYPE_TABLE);
+		$this->other_table_name = ModelMeta::convert_to_something($properties['model_type'] ?? false, ModelMeta::TYPE_TABLE);
+		$this->index            = $index;
+		$pk                     = $properties['primary_key'] ?? false;
+		$sk                     = $properties['secondary_key'] ?? false;
+		$this->_meta            = new RelationshipMeta($le,
+		                                               $own_table,
+		                                               $sk ?? false,
+		                                               [$pk, $sk]);
 	}
 	public function setIndex($index) {
 		$this->index = $index ?: $this->index;
 	}
 	public function jsonSerialize() {
-		$properties = ['index' => $this->index, 'items' => []];
-		foreach ($this->properties as $name => $val) {
+		$properties = ['index' => $this->index, 'items' => [], 'is_reciprocal' => $this->is_reciprocal];
+		foreach ($this->items as $name => $val) {
 			if (strpos($name, '_tmp')) {
-				unset($this->properties[$name]);
+				unset($this->items[$name]);
 				continue;
 			}
-			if (!isset($this->gotten[$name]) && $this->is_beginner) continue;
 			if (isset($this->hidden[$name])) continue;
 			$properties['items'][$name] = $val;
 			if (strpos($this->index, 'reciprocal') === 0) {
 				$properties['items'][$name]->model = null;
 			}
 		}
-		if (!$this->is_beginner) $properties['_meta'] = $this->_meta;
-		else unset($properties['index']);
+		$properties['_meta'] = $this->_meta;
 		return $properties;
+	}
+	public function getMapTableName() {
+		return $this->_meta->_table ?? false;
+	}
+	public function get_other_tablename() {
+		return $this->other_table_name;
+	}
+	public function get_relationship_index() {
+		return $this->index;
 	}
 	public function __debugInfo() {
 		return $this->jsonSerialize();
@@ -75,7 +100,7 @@ class RelationshipIndex implements \JsonSerializable {
 	 * @return mixed
 	 */
 	public function &__get($name) {
-		return $this->properties[$name];
+		return $this->items[$name];
 	}
 
 	/**
@@ -84,7 +109,7 @@ class RelationshipIndex implements \JsonSerializable {
 	 * @return bool
 	 */
 	public function has($identifier) {
-		return isset($this->properties[$identifier]);
+		return isset($this->items[$identifier]);
 	}
 
 	public function hide($identifier) {
@@ -105,14 +130,14 @@ class RelationshipIndex implements \JsonSerializable {
 	public function get_items($only_models = false) {
 		$item = [];
 		usort($this->_meta->_list, function ($a, $b) {
-			if (is_object($this->properties[$a]) && $this->properties[$a]->position)
-				return strcmp($this->properties[$a]->position, $this->properties[$b]->position);
+			if (is_object($this->items[$a]) && $this->items[$a]->position)
+				return strcmp($this->items[$a]->position, $this->items[$b]->position);
 			return 0;
 		});
 		foreach ($this->_meta->_list as $id) {
-			if (!isset($this->properties[$id])) continue;
+			if (!isset($this->items[$id])) continue;
 			if (isset($this->hidden[$id])) continue;
-			$item[$id] = $this->properties[$id];
+			$item[$id] = $this->items[$id];
 			if ($only_models && $item[$id]->model) $item[$id] = $item[$id]->model;
 		}
 		return $item;
@@ -123,7 +148,7 @@ class RelationshipIndex implements \JsonSerializable {
 	 * @return int|string
 	 */
 	public function locate_Model($Model) {
-		foreach ($this->properties as $key => $value) {
+		foreach ($this->items as $key => $value) {
 			if ($value === $Model) return $key;
 			if ($Model instanceof Model) {
 				if ($key == $Model->id || $key == $Model->ent_id || $key == $Model->getModelType() . '|' . $Model->id) return $key;
@@ -140,7 +165,7 @@ class RelationshipIndex implements \JsonSerializable {
 	 * @return Relationship
 	 */
 	public function get_item_at_index($identifier) {
-		if ($identifier && $this->has($identifier)) return $this->properties[$identifier];
+		if ($identifier && $this->has($identifier)) return $this->items[$identifier];
 		return new Relationship();
 	}
 
@@ -152,15 +177,15 @@ class RelationshipIndex implements \JsonSerializable {
 	 */
 	public function push($relationship, $identifier = false) {
 		if ($identifier) {
-			if (!array_key_exists($identifier, $this->properties)) {
+			if (!array_key_exists($identifier, $this->items)) {
 				$this->_meta->_list[] = $identifier;
 			}
-			$this->properties[$identifier] = $relationship;
+			$this->items[$identifier] = $relationship;
 		} else {
-			if (!in_array($relationship, $this->properties)) {
+			if (!in_array($relationship, $this->items)) {
 				$this->_meta->_list[] = $identifier;
 			}
-			$this->properties[] = $relationship;
+			$this->items[] = $relationship;
 		}
 	}
 }

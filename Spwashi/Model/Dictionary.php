@@ -23,7 +23,6 @@ use Spwashi\Model\Map\SectionDictionaryMap;
  * @property int               $dictionary_type The type of dictionary we are dealing with
  * @property string            $description     A description of the dictionary
  * @property string            $ent_id            A unique, random key for identifying a dictionary
- * @property \Sm\Model\Relator map
  */
 class Dictionary extends Model implements \JsonSerializable {
     public static $default_properties;
@@ -47,13 +46,13 @@ class Dictionary extends Model implements \JsonSerializable {
                 $section->get_mirror_properties();
             };
 
-        $is_secondary = isset($settings['is_secondary']) && $settings['is_secondary'] ? true : false;
+        $is_reciprocal = isset($settings['is_reciprocal']) && $settings['is_reciprocal'] ? true : false;
         $to_find      = [];
         if (isset($settings['section_role'])) {
             $to_find['section_role'] = $settings['section_role'];
         }
         return $this->findType('sections', $to_find, [
-            'is_secondary' => $is_secondary,
+            'is_reciprocal' => $is_reciprocal,
             'walk'         => $walk
         ]);
     }

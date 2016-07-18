@@ -187,7 +187,7 @@ $config = [
 			'prefix'        => 'page',
 			'table'         => 'pages',
 			'relationships' => [
-				'_inherit' => ['_' => ['sections', 'pages']]
+				'_inherit' => ['_' => ['sections', 'dimensions', 'concepts']]
 			],
 			'properties'    => [
 				'all'          => [

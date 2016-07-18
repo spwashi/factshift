@@ -87,7 +87,7 @@ class PageController extends SpwashiController {
 				}
 			}
 
-			if (ModelMeta::is_ent_id($context_or_ent_id) && ModelMeta::getTablePrefixFromEnt_id($context_or_ent_id) === ModelMeta::model_type_to(Page::class, ModelMeta::TYPE_PREFIX)) {
+			if (ModelMeta::is_ent_id($context_or_ent_id) && ModelMeta::getTablePrefixFromEnt_id($context_or_ent_id) === ModelMeta::convert_to_something(Page::class, ModelMeta::TYPE_PREFIX)) {
 				$current_page = Page::find(['ent_id' => $context_or_ent_id], ['alias', 'context']);
 				$q_s_arr      = [];
 				if ($is_edit) {

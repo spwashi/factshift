@@ -15,11 +15,11 @@ use Sm\Model\RelationshipIndexContainer;
  * Class Model
  *
  * @package Sm\Model\Abstraction
- * @property int          $id                          Unique row identifier
- * @property int          $ent_id                      Unique Model identifier
- * @property string       $creation_dt                 Datetime of creation
- * @property string       $update_dt                   Datetime of row update
- * @property RelationshipIndex $maps                   An array of relationships the model has
+ * @property int                        $id                          Unique row identifier
+ * @property int                        $ent_id                      Unique Model identifier
+ * @property string                     $creation_dt                 Datetime of creation
+ * @property string                     $update_dt                   Datetime of row update
+ * @property RelationshipIndexContainer $maps                        An array of relationships the model has
  */
 abstract class Model implements \JsonSerializable {
 	/** @var string The name of the table that we are going to be dealing with */
@@ -71,9 +71,9 @@ abstract class Model implements \JsonSerializable {
 		if (!ModelMeta::is_init(static::class)) {
 			static::$default_properties = ModelMeta::_get_def_props(static::class, ModelMeta::FIND_DEFAULT);
 
-			static::$table_prefix = ModelMeta::model_type_to(static::class, ModelMeta::TYPE_PREFIX);
+			static::$table_prefix = ModelMeta::convert_to_something(static::class, ModelMeta::TYPE_PREFIX);
 			static::$table_prefix = static::$table_prefix ?: '';
-			$tmp                  = ModelMeta::model_type_to(static::class, ModelMeta::TYPE_TABLE);
+			$tmp                  = ModelMeta::convert_to_something(static::class, ModelMeta::TYPE_TABLE);
 			static::$table_name   = $tmp ?: static::$table_name;
 
 			static::$api_settable_properties = ModelMeta::_get_def_props(static::class, ModelMeta::FIND_API_SET);
@@ -163,7 +163,7 @@ abstract class Model implements \JsonSerializable {
 		if ($name == 'maps') {
 			$this->_relationships = ($this->_relationships instanceof RelationshipIndexContainer)
 				? $this->_relationships
-				: new RelationshipIndexContainer(ModelMeta::_get_def_props(static::class, ModelMeta::FIND_RELATIONSHIPS), $this);
+				: new RelationshipIndexContainer(ModelMeta::_get_def_props(static::class, ModelMeta::FIND_BOTH_RELATIONSHIPS), $this);
 			return $this->_relationships;
 		}
 

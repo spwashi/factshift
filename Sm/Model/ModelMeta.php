@@ -25,45 +25,148 @@ class ModelMeta {
 	const FIND_DEFAULT                  = 'all';
 	const FIND_RELATIONSHIPS            = 'relationships';
 	const FIND_RECIPROCAL_RELATIONSHIPS = 'reciprocal_relationships';
+	const FIND_BOTH_RELATIONSHIPS       = '_find_both_relationships_';
 	const FIND_MAPPED                   = 'linked_entities';
 	const FIND_IDS                      = 'mapped';
 
-	protected static $table_to_class    = [];
-	protected static $prefix_to_table   = [];
-	protected static $class_properties  = [];
 	protected static $class_init_status = [];
-	protected static $mapped_props      = [];
-	protected static $fake_tables       = [];
 
+	private static $loading_reciprocals = [];
+
+	protected static $bb_rels_to_rel_types = [];
 	protected static $bb_class_properties;
 	protected static $bb_model_type_to_classname;
 	protected static $bb_table_to_model_type;
 	protected static $bb_prefix_to_model_type;
 	protected static $bb_mapped_props;
 	protected static $bb_fake_table_to_alias;
-
+	private static   $rel_properties       = [
+		'index_singular',
+		'id',
+		'name',
+		'name_plural',
+		'primary_key',
+		'secondary_key',
+		'is_only_reciprocal',
+		'linked_entities',
+		'alias_for'
+	];
 	public static function table_exists($tablename) {
-		if (!is_string($tablename))
+		if (!is_string($tablename)) {
 			Log::init(func_get_args(), debug_backtrace()[0], 'log')->log_it();
+			return false;
+		}
 		return array_key_exists($tablename, static::$bb_table_to_model_type);
 	}
 	public static function get_table_alias($model) {
-		if ($model instanceof Model) $model = static::model_type_to($model, ModelMeta::TYPE_TABLE);
+		if ($model instanceof Model) $model = static::convert_to_something($model, ModelMeta::TYPE_TABLE);
 		$alias = static::$bb_fake_table_to_alias[$model] ?? false;
 		if (strpos($alias, '.')) $alias = explode('.', $alias)[0];
 		return $alias;
 	}
+	/**
+	 * @param        $name
+	 * @param string $what
+	 * @return string
+	 */
+	public static function def_convert_to_something($name, $what = 'id') {
+		if (is_array($name)) {
+			foreach ($name as $k => $nn) {
+				$name[$k] = static::def_convert_to_something($nn, $what);
+			}
+		} else {
+			$name = strtolower($name);
+			switch ($what) {
+				case 'id':
+				default:
+					$name .= '_id';
+					break;
+				case 'name':
+					$name = ucfirst(Inflector::singularize($name) ?: '');
+					break;
+				case 'name_plural':
+					$name = strpos($name, ' ') ? $name : Inflector::pluralize($name);
+					$name = ucfirst($name ?: '');
+					break;
+				case 'index_singular':
+				case 'index':
+					$name = Inflector::singularize($name);
+					break;
+				case 'table':
+					$name = Inflector::pluralize($name);
+					$name = str_replace('maps', 'map', Inflector::underscore($name));
+					break;
+			}
+		}
+		return $name;
+	}
+	private static function replace_with_self($string, $self) {
+		if (is_array($string)) {
+			foreach ($string as $k => $_string) {
+				$string[$k] = static::replace_with_self($_string, $self);
+			}
+		}
+		if (!is_string($string) || !is_string($self)) return $string;
+		return str_replace(['[Entity]', '[entity]', '[entities]'], [$self, strtolower($self), strtolower(Inflector::pluralize($self))], $string);
+	}
+	public static function create_standard_relationship($rel_index, $owner, $r_info, $rel = null) {
+		$to_check           = static::$rel_properties;
+		$relationship_index = $rel_index ?? null;
+		if (!$relationship_index) return false;
+		$current_model_type   = $owner;
+		$table_name           = static::def_convert_to_something($owner, 'table') ?: false;
+		$rel                  = $rel ?? [];
+		$rel['existent']      = $r_info['existent'] ?? $rel['existent'] ?? !isset($r_info['alias_for']) ?? !isset($r_info['alias_for']);
+		$r_info['model_type'] = static::replace_with_self($r_info['model_type'] ??$rel['model_type']?? $current_model_type, $current_model_type);
+		foreach ($to_check as $value) {
+			$boon        = $r_info[$value] ?? $rel[$value] ?? false;
+			$rel[$value] = static::replace_with_self($boon, $r_info['model_type']);
+		}
+		$rel['model_type']    = $r_info['model_type'] ?? false;
+		$r_model_type         = $rel['model_type'];
+		$rel['primary_key']   = $rel['primary_key'] ?: static::def_convert_to_something($current_model_type);
+		$rel['secondary_key'] = $rel['secondary_key'] ?: static::def_convert_to_something($r_info['model_type']);
+		if ($rel['existent']) unset($rel['alias_for']);
+		else $rel['alias_for'] = $rel['alias_for'] ?: ($table_name ?? strtolower(Inflector::pluralize($current_model_type))) . ".{$rel['secondary_key']}";
+		$rel['index_singular']       = $rel['index_singular'] ?: static::def_convert_to_something($relationship_index, 'index_singular');
+		$rel['name']                 = $rel['name'] ?: static::def_convert_to_something($relationship_index, 'name');
+		$rel['name_plural']          = $rel['name_plural'] ?: static::def_convert_to_something($relationship_index, 'name_plural');
+		$le                          = $rel['linked_entities'] = $rel['linked_entities'] ?: [$current_model_type, $r_info['model_type']];
+		$rel['existent']             = $rel['existent'] ?? true;
+		$relationship_index_adjusted = $relationship_index;
+		if (!($rel['is_only_reciprocal'] ?? false)) {
+			$_relationship_arr = ['index' => $relationship_index, 'relationship' => $rel, 'model_type' => $current_model_type];
+			if (is_array($r_model_type)) {
+				foreach ($r_model_type as $m_type) {
+					static::$loading_reciprocals[$m_type]   = static::$loading_reciprocals[$m_type] ?? [];
+					static::$loading_reciprocals[$m_type][] = $_relationship_arr;
+				}
+			} else if ($r_model_type) {
+				static::$loading_reciprocals[$r_model_type]   = static::$loading_reciprocals[$r_model_type] ?? [];
+				static::$loading_reciprocals[$r_model_type][] = $_relationship_arr;
+			} else {
+				var_dump([$current_model_type, $rel, $relationship_index]);
+			}
+		} else {
+			$relationship_index_adjusted = 'reciprocal_' . $relationship_index;
+		}
+		$join_1                                                              = implode('|', $le);
+		static::$bb_rels_to_rel_types[$join_1]                               = static::$bb_rels_to_rel_types[$join_1] ?? [];
+		static::$bb_rels_to_rel_types[$join_1][$relationship_index_adjusted] = $rel;
+
+		return $rel;
+	}
 	public static function _register(array $array) {
-		$_                    = $array['_'] ?? [];             //A model Model
-		$marked_relationships = [];                            //Array of the relationships that we know about
-		$app_name             = App::getBootingAppName() ?: App::_()->name;      //Name of the current application
+		$_                         = $array['_'] ?? [];             //A model Model
+		$marked_relationships      = [];                            //Array of the relationships that we know about
+		$app_name                  = App::getBootingAppName() ?: App::_()->name;      //Name of the current application
 		$namespace                 = $app_name . '\\Model\\';       //Namespace of the classes
 		$search                    = ['models', 'maps', 'types'];   //The types of objects there are
 		$models                    = $array['models'] ?? [];        //The Models that we are dealing with
 		$__relationships           = $_['relationships'] ?? [];     //The model relationships
 		$marked_relationships['_'] = $__relationships;              //Add the model relationships
 
-		$reciprocal_relationships = [];
+		static::$loading_reciprocals = [];
 
 		$static_model_type_to_classname = [];
 		$static_table_to_model_type     = [];
@@ -71,41 +174,6 @@ class ModelMeta {
 		$static_class_properties        = [];
 		$static_mapped_props            = [];
 		$static_fake_table_to_alias     = [];
-		$replace_with_self              = function ($string, $self) use (&$replace_with_self) {
-			if (is_array($string)) {
-				foreach ($string as $k => $_string) {
-					$string[$k] = $replace_with_self($_string, $self);
-				}
-			}
-			if (!is_string($string) || !is_string($self)) return $string;
-			return str_replace(['[Entity]', '[entity]', '[entities]'], [$self, strtolower($self), strtolower(Inflector::pluralize($self))], $string);
-		};
-		$convert_to_something           = function ($name, $what = 'id') use (&$convert_to_something) {
-			if (is_array($name)) {
-				foreach ($name as $k => $nn) {
-					$name[$k] = $convert_to_something($nn);
-				}
-			} else {
-				$name = strtolower($name);
-				switch ($what) {
-					case 'id':
-					default:
-						$name .= '_id';
-						break;
-					case 'name':
-						$name = ucfirst(Inflector::singularize($name) ?: '');
-						break;
-					case 'name_plural':
-						$name = ucfirst($name ?: '');
-						break;
-					case 'index_singular':
-					case 'index':
-						$name = Inflector::singularize($name);
-						break;
-				}
-			}
-			return $name;
-		};
 		foreach ((array)$models as $current_model_type => $m_info) {
 			$prefix                  = $m_info['prefix'] ?? false;              //prefix to the ent_ids
 			$class_name              = $current_model_type;                     //The class name (no namespace)
@@ -153,52 +221,11 @@ class ModelMeta {
 					}
 					unset($all_relationships['_inherit']);
 				}
-				$to_check = [
-					'index_singular',
-					'id',
-					'name',
-					'name_plural',
-					'primary_key',
-					'secondary_key',
-					'is_only_reciprocal',
-					'linked_entities',
-					'alias_for'
-				];
+				//Iterate through the actual relationships and register them
 				foreach ((array)$all_relationships as $relationship_index => $r_info) {
-					$rel                  = $relationships[$relationship_index] ?? [];
-					$rel['existent']      = $r_info['existent'] ?? $rel['existent'] ?? !isset($r_info['alias_for']) ?? !isset($r_info['alias_for']);
-					$r_info['model_type'] = $replace_with_self($r_info['model_type'] ??$rel['model_type']?? $current_model_type, $current_model_type);
-					foreach ($to_check as $value) {
-						$boon        = $r_info[$value] ?? $rel[$value] ?? false;
-						$rel[$value] = $replace_with_self($boon, $r_info['model_type']);
-					}
-					$rel['model_type']    = $r_info['model_type'] ?? false;
-					$r_model_type         = $rel['model_type'];
-					$rel['primary_key']   = $rel['primary_key'] ?: $convert_to_something($current_model_type);
-					$rel['secondary_key'] = $rel['secondary_key'] ?: $convert_to_something($r_info['model_type']);
-					if ($rel['existent']) unset($rel['alias_for']);
-					else $rel['alias_for'] = $rel['alias_for'] ?: ($table_name ?: strtolower(Inflector::pluralize($current_model_type))) . ".{$rel['secondary_key']}";
-					$rel['index_singular']  = $rel['index_singular'] ?: $convert_to_something($relationship_index, 'index_singular');
-					$rel['name']            = $rel['name'] ?: $convert_to_something($relationship_index, 'name');
-					$rel['name_plural']     = $rel['name_plural'] ?: $convert_to_something($relationship_index, 'name_plural');
-					$rel['linked_entities'] = $rel['linked_entities'] ?: [$current_model_type, $r_info['model_type']];
-					$rel['existent']        = $rel['existent'] ?? true;
-					if (!($rel['is_only_reciprocal'] ?? false)) {
-						$_relationship_arr = ['index' => $relationship_index, 'relationship' => $rel, 'model_type' => $current_model_type];
-						if (is_array($r_model_type)) {
-							foreach ($r_model_type as $m_type) {
-								$reciprocal_relationships[$m_type]   = $reciprocal_relationships[$m_type] ?? [];
-								$reciprocal_relationships[$m_type][] = $_relationship_arr;
-							}
-						} else if ($r_model_type) {
-							$reciprocal_relationships[$r_model_type]   = $reciprocal_relationships[$r_model_type] ?? [];
-							$reciprocal_relationships[$r_model_type][] = $_relationship_arr;
-						} else {
-							var_dump([$current_model_type, $rel, $relationship_index]);
-						}
-					}
-					$relationships[$relationship_index] = $rel;
+					$relationships[$relationship_index] = static::create_standard_relationship($relationship_index, $current_model_type, $r_info, $relationships[$relationship_index] ?? []);
 				}
+
 				$marked_relationships[$current_model_type] = $relationships;
 				$current_properties['relationships']       = $relationships;
 			} else {
@@ -220,7 +247,7 @@ class ModelMeta {
 						if ($_sp_0 && Inflector::pluralize($_sp_0) == $_sp_0) $map_keys[0] = $map_keys[0] ?? 'id';
 						if ($_sp_1) $map_keys[1] = $_sp_1;
 					} else {
-						$map_keys = $convert_to_something($le, 'id');
+						$map_keys = static::def_convert_to_something($le, 'id');
 					}
 					if ($map_keys[0] == $map_keys[1]) {
 						$map_keys[0] = "primary_{$map_keys[0]}";
@@ -236,17 +263,17 @@ class ModelMeta {
 			$static_model_type_to_classname[$current_model_type] = $n_class;
 		}
 		//Add the reciprocal relationships
-		foreach ($reciprocal_relationships as $model_type => $rel_array_array) {
+		foreach (static::$loading_reciprocals as $model_type => $rel_array_array) {
 			if (!($static_class_properties[$model_type] ?? false)) {
 				Log::init(['Could not add relationship', $model_type => $rel_array_array])->log_it();
 				continue;
 			}
-			$model_type__id   = $convert_to_something($model_type);
+			$model_type__id   = static::def_convert_to_something($model_type);
 			$ak_relationships = $static_class_properties[$model_type]['reciprocal_relationships'] ?? [];       //relationships that are already known
 			foreach ($rel_array_array as $rec_rel_array) {
 				$rec_index                     = $rec_rel_array['index'];
 				$rec_model_type                = $rec_rel_array['model_type'];
-				$rec_model_type__id            = $convert_to_something($rec_model_type);
+				$rec_model_type__id            = static::def_convert_to_something($rec_model_type);
 				$model_reciprocal_relationship = $ak_relationships[$rec_index] ?? $rec_rel_array['relationship'];
 				$sk                            = $model_reciprocal_relationship['secondary_key'] ?? $model_type__id;
 				$pk                            = $model_reciprocal_relationship['primary_key'] ?? $rec_model_type__id;
@@ -279,13 +306,14 @@ class ModelMeta {
 		static::$bb_fake_table_to_alias     = $static_fake_table_to_alias;
 
 		return ([
-			'reciprocal_relationships' => $reciprocal_relationships,
+			'reciprocal_relationships' => static::$loading_reciprocals,
 			'class_properties'         => $static_class_properties,
 			'model_type_to_classname'  => $static_model_type_to_classname,
 			'table_to_model_type'      => $static_table_to_model_type,
 			'prefix_to_model_type'     => $static_prefix_to_model_type,
 			'mapped_props'             => $static_mapped_props,
 			'fake_table_to_alias'      => $static_fake_table_to_alias,
+			'rels_to_rel_types'        => static::$bb_rels_to_rel_types
 		]);
 	}
 	public static function dump() {
@@ -296,88 +324,8 @@ class ModelMeta {
 			'bb_prefix_to_model_type'    => static::$bb_prefix_to_model_type,
 			'bb_mapped_props'            => static::$bb_mapped_props,
 			'bb_fake_table_to_alias'     => static::$bb_fake_table_to_alias,
-
-			'table_to_class'             => static::$table_to_class,
-			'prefix_to_table'            => static::$prefix_to_table,
-			'class_properties'           => static::$class_properties,
-			'mapped_props'               => static::$mapped_props,
-			'fake_tables'                => static::$fake_tables
+			'bb_rels_to_rel_types'       => static::$bb_rels_to_rel_types
 		];
-	}
-	public static function register($array) {
-		$tables    = $array['tables'] <=>[];
-		$tables    = isset($array['tables']) ? $array['tables'] : [];
-		$namespace = App::_()->name . '\\Model\\';
-		if (isset($tables['_meta'])) {
-			$meta      = $tables['_meta'];
-			$namespace = isset($meta['namespace']) ? $meta['namespace'] : $namespace;
-			unset($tables['_meta']);
-		}
-
-		/**
-		 * '{table_name}' => [
-		 *      'readonly'      => {bool, can this object be changed outside of the direct db communication}
-		 *      'values'        => {array, only applicable if is readonly, discrete values of the class. irrelevant when using constants}
-		 *      'map_type'      => {string, pipe separated enumeration of the Entity names that are being mapped together. Primary|Secondary. (e.g. Collection|Section)
-		 *      'mapped'        => {array, a list of tables that are linked in this map. (e.g. ['collections', 'sections']}
-		 *      'class'         => {classname without the appname or Model prefix (no \\{appname}\Model\) e.g. "Dictionary"}
-		 *      'prefix'        => {the four character prefix of the table's ent_ids)
-		 *      'properties'    => {The default properties of the class and their default values. Could be a flat array/have flat indices if no defaults are set}
-		 *      'api_settable'  => {An array of properties that can be set via the API}
-		 *      'relationships' => [
-		 *          '{tablename}'   => [
-		 *              '_meta' => [ {unnecessary, especially if using defaults}
-		 *                  '_table' => {name of map table}
-		 *                  '_key'  => {The index to search for organizing each relationship in the relationship holder}
-		 *              ]
-		 *          ],
-		 *          ...
-		 *      ]
-		 * ]
-		 */
-
-		foreach ($tables as $table_name => $info) {
-			$prefix = isset($info['prefix']) ? $info['prefix'] : false;
-			$prefix && (static::$prefix_to_table[$prefix] = $table_name);
-			$class_name = isset($info['class']) ? $info['class'] : false;
-			if (!$class_name) continue;
-			if (isset($info['existent']) && !$info['existent']) {
-				static::$fake_tables[$table_name] = isset($info['alias_for']) ? $info['alias_for'] : true;
-			}
-			$n_class                             = $namespace . $class_name;
-			static::$table_to_class[$table_name] = $n_class;
-
-			$standard_properties = isset($info['properties']) ? $info['properties'] : [];
-			$mapped              = isset($info['mapped']) ? $info['mapped'] : [false];
-
-			$properties = [];
-			foreach ($standard_properties as $key => $v) {
-				if (is_numeric($key)) {
-					$properties[$v] = null;
-				} else {
-					$properties[$key] = $v;
-				}
-			}
-			$standard_relationships = isset($info['relationships']) ? $info['relationships'] : [];
-			$relationships          = [];
-			foreach ($standard_relationships as $key => $v) {
-				if (is_numeric($key)) {
-					$relationships[$v] = [];
-				} else {
-					$relationships[$key] = $v;
-				}
-			}
-			if (strpos($n_class, 'Map')) {
-				static::$mapped_props[$n_class] = $mapped;
-			}
-			static::$class_properties[$n_class]  = [
-				'standard'      => $properties,
-				'api_settable'  => isset($info['api_settable']) ? $info['api_settable'] : [],
-				'relationships' => $relationships,
-				'ids'           => isset($info['ids']) ? $info['ids'] : false
-			];
-			static::$class_init_status[$n_class] = false;
-		}
 	}
 
 	/**
@@ -394,7 +342,7 @@ class ModelMeta {
 	}
 
 	public static function _get_def_props($to_convert, $type = ModelMeta::FIND_DEFAULT) {
-		$model_type = static::model_type_to($to_convert, static::TYPE_MODEL_TYPE);
+		$model_type = static::convert_to_something($to_convert, static::TYPE_MODEL_TYPE);
 		if (!$model_type) return [];
 		$class_properties = static::$bb_class_properties[$model_type];
 		switch ($type) {
@@ -408,6 +356,16 @@ class ModelMeta {
 			case (static::FIND_IDS):
 			case (static::FIND_RECIPROCAL_RELATIONSHIPS):
 				return $class_properties[$type] ?? [];
+				break;
+			case (static::FIND_BOTH_RELATIONSHIPS):
+				$fr    = $class_properties[static::FIND_RELATIONSHIPS];
+				$frr   = $class_properties[static::FIND_RECIPROCAL_RELATIONSHIPS];
+				$a_frr = [];
+				foreach ($frr as $k => $v) {
+					$a_frr['reciprocal_' . $k] = $v;
+				}
+
+				return array_merge($fr, $a_frr);
 				break;
 		}
 		return [];
@@ -436,7 +394,7 @@ class ModelMeta {
 	 * @return bool
 	 */
 	public static function is_ent_id($string) {
-		return (is_string($string) && strlen($string) == \Sm\Model\Model::TOTAL_ENT_ID_LENGTH && array_key_exists(substr($string, 0, 4), static::$prefix_to_table));
+		return (is_string($string) && strlen($string) == \Sm\Model\Model::TOTAL_ENT_ID_LENGTH && array_key_exists(substr($string, 0, 4), static::$bb_prefix_to_model_type));
 	}
 	/**
 	 * Check to see if something could be the id of a class
@@ -453,13 +411,20 @@ class ModelMeta {
 	 */
 	public static function convert_to_id($table_name) {
 		if (!$table_name) return false;
-		$table_name = static::model_type_to($table_name, static::TYPE_TABLE);
+		$table_name = static::convert_to_something($table_name, static::TYPE_TABLE);
 		if ($table_name) return Inflector::singularize($table_name) . '_id';
 		return false;
 	}
 
-	public static function model_type_to($to_convert, $convert_to = ModelMeta::TYPE_MODEL_TYPE) {
+	public static function convert_to_something($to_convert, $convert_to = ModelMeta::TYPE_MODEL_TYPE) {
 		$model_type = $table_name = $prefix = $classname = null;
+		if (is_array($to_convert)) {
+			//Could be array_map
+			foreach ($to_convert as $k => $nn) {
+				$to_convert[$k] = static::convert_to_something($nn, $convert_to);
+			}
+			return $to_convert;
+		}
 		if ($to_convert instanceof Model) {
 			$model_type = $to_convert->getModelType();
 			$classname  = get_class($to_convert);
@@ -482,7 +447,7 @@ class ModelMeta {
 			if (!$model_type??false) {
 				$prefix     = static::getTablePrefixFromEnt_id($to_convert);
 				$model_type = static::$bb_prefix_to_model_type[$prefix] ?? false;
-				$table_name = $model_type ? static::model_type_to($model_type, static::TYPE_TABLE) : false;
+				$table_name = $model_type ? static::convert_to_something($model_type, static::TYPE_TABLE) : false;
 			}
 		}
 		if ($model_type && !(static::$bb_class_properties[$model_type] ?? false)) $model_type = false;
@@ -509,23 +474,36 @@ class ModelMeta {
 				break;
 			case (static::TYPE_PROPERTIES):
 				if ($model_type) return static::$bb_class_properties[$model_type] ?? false;
-				return static::$bb_class_properties[static::model_type_to($to_convert, static::TYPE_MODEL_TYPE) ?: 0] ?? false;
+				return static::$bb_class_properties[static::convert_to_something($to_convert, static::TYPE_MODEL_TYPE) ?: 0] ?? false;
 				break;
 			case (static::TYPE_CLASS):
-				$classname = $classname ?: static::model_type_to($model_type ?: $table_name ?: $prefix ?: false, static::TYPE_CLASSNAME);
+				$classname = $classname ?: static::convert_to_something($model_type ?: $table_name ?: $prefix ?: false, static::TYPE_CLASSNAME);
 				if ($classname) return new $classname;
 				break;
 		}
 		return false;
 	}
 	public static function get_map_between($one, $two, $convert_to = ModelMeta::TYPE_TABLE) {
-		$one = static::model_type_to($one, static::TYPE_MODEL_TYPE);
-		$two = static::model_type_to($two, static::TYPE_MODEL_TYPE);
-		return static::model_type_to("{$one}{$two}Map", $convert_to) ?: static::model_type_to("{$two}{$one}Map", $convert_to) ?: false;
+		$one = static::convert_to_something($one, static::TYPE_MODEL_TYPE);
+		$two = static::convert_to_something($two, static::TYPE_MODEL_TYPE);
+		if (is_array($one)) $one = implode(',', $one);
+		if (is_array($two)) $two = implode(',', $two);
+		return static::convert_to_something("{$one}{$two}Map", $convert_to) ?: static::convert_to_something("{$two}{$one}Map", $convert_to) ?: false;
+	}
+	/**
+	 * @param array     $linked_entities
+	 * @param bool|true $strict
+	 * @return array
+	 */
+	public static function get_potential_relationships(array $linked_entities, $strict = true) {
+		$linked_entities = static::convert_to_something($linked_entities);
+		$try_1           = implode('|', $linked_entities);
+		$try_2           = $strict ? $try_1 : implode('|', [$linked_entities[1]??'', $linked_entities[0]??'']);
+		return static::$bb_rels_to_rel_types[$try_1] ?? static::$bb_rels_to_rel_types[$try_2]?? [];
 	}
 	public static function convert_to_class($to_convert, $attributes = []) {
 		/** @var $model \Sm\Model\Model */
-		$model = static::model_type_to($to_convert, static::TYPE_CLASS);
+		$model = static::convert_to_something($to_convert, static::TYPE_CLASS);
 		if ($model) {
 			if ($attributes && !(is_array($attributes) && empty($attributes))) $model->set($attributes, false);
 			return $model;

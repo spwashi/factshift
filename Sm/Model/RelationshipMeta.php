@@ -45,7 +45,7 @@ class RelationshipMeta implements \JsonSerializable {
 	function jsonSerialize() {
 		$p = get_object_vars($this);
 		foreach ($p as $k => $v) {
-			if ((is_string($v) && !strlen($v)) || !isset($v)) unset($p[$k]);
+			if ((is_string($v) && !strlen($v)) || !isset($v) || $k == '_table') unset($p[$k]);
 			if (is_array($v) && empty($v)) unset($p[$k]);
 		}
 		return $p;

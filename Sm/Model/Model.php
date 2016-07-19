@@ -67,8 +67,7 @@ class Model extends Abstraction\Model {
 		$order_by = isset ($extras['order_by']) ? $extras['order_by'] : null;
 		/** @var \Sm\Database\Sql $sql */
 		if (!IoC::resolveSql($sql)) return false;
-		$eg          = new static;
-		$empty_is_id = false;
+		$eg = new static;
 		if (is_array($id)) {
 			$is_start = true;
 			foreach ($id as $column_name => $value) {
@@ -87,9 +86,8 @@ class Model extends Abstraction\Model {
 				if (!$is_start) {
 					$sql->where('AND');
 				}
-				$is_start    = false;
-				$empty_is_id = false;
-				$not         = $not ? '!' : '';
+				$is_start = false;
+				$not      = $not ? '!' : '';
 				$sql->bind([$column_name => $value])->where($column_name . " {$not}= :{$column_name}");
 			}
 		} elseif (is_numeric($id)) {
@@ -103,7 +101,10 @@ class Model extends Abstraction\Model {
 			$asc_or_desc  = isset($order_by_arr[1]) ? $order_by_arr[1] : 'ASC';
 			$sql->setQry($sql->getQry() . ' ORDER BY ' . $order_by_arr[0] . " {$asc_or_desc}");
 		}
-		return $empty_is_id ? false : ($sql->select($attributes ?: '*')->from(static::$table_name)->run()->output($all ? 'all' : 'row'));
+		$query  = $sql->select($attributes ?: '*')->from(static::$table_name)->buildQry()->getQry();
+		$output = $sql->run()->output($all ? 'all' : 'row');
+		if (!$output) \Kint::dump([$output, $id, $sql, $query]);
+		return $output;
 	}
 	/**
 	 * Find one entry from a table based on parameters provided
@@ -129,10 +130,11 @@ class Model extends Abstraction\Model {
 				$newClass->findPermissions();
 				return $newClass;
 			} else {
-				throw new \Exception;
+				var_dump($output);
+				throw new \Exception();
 			}
 		} catch (\Exception $e) {
-			throw new ModelNotFoundException('Could not find self type - ' . static::getModelType() . ' -> ' . json_encode(func_get_args()), ModelNotFoundException::REASON_NOT_FOUND);
+			throw new ModelNotFoundException('Could not find self type - "' . static::getModelType() . '" -> ' . json_encode(func_get_args()), ModelNotFoundException::REASON_NOT_FOUND);
 		}
 	}
 	/**
@@ -214,22 +216,20 @@ class Model extends Abstraction\Model {
 			if (!($model ?? false)) throw new ModelNotFoundException(['Could not find' => [$type, $model_tablename, $model]]);
 
 			/** @var string The name of the table that links the entities together */
-			$map_table_name = $self_rel->_meta->_table ?? ModelMeta::get_map_between(static::$table_name, $model_tablename);
-
-			#If we couldn't guess the name of the Map table, throw an error
-			if (!$map_table_name || !ModelMeta::table_exists($map_table_name)) {
-				throw new ModelNotFoundException('Could not adequately map ' . $map_table_name);
-			}
+			$map_table_name = ($self_rel->_meta->_table ?? false) ?: ModelMeta::get_map_between(static::$table_name, $model_tablename);
 
 			#Make an array holding the names of the linked entity types
-			$self_rel->_meta->_linked_entities = $self_rel->_meta->_linked_entities ?? [static::getModelType(), $model->getModelType()];
+			$le = $self_rel->_meta->_linked_entities = $self_rel->_meta->_linked_entities ?? [static::getModelType(), $model->getModelType()];
+
+			$actual_map_name = $map_table_name;
+			$map_table_name  = ModelMeta::get_table_alias($actual_map_name) ?: $map_table_name;
+			#If we couldn't guess the name of the Map table, throw an error
+			if (!$map_table_name) throw new ModelNotFoundException('Could not adequately map ' . $actual_map_name . " with " . json_encode($le));
 
 			#Try to make a class that maps the two relationships together
 			/** @var Map $map_class A class that links two entities together */
-			$map_class = ModelMeta::convert_to_class($map_table_name);
+			$map_class = Map::create_map_class($map_table_name);
 			if (!$map_class) throw new ModelNotFoundException('No map class');
-			$actual_map_name = $map_table_name;
-			$map_table_name  = ModelMeta::get_table_alias($map_class) ?: $map_table_name;
 
 			$__secondary_identifier = $map_class->get_secondary_identifier($this);
 			$__primary_identifier   = $map_class->get_primary_identifier($this);

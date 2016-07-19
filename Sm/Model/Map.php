@@ -81,6 +81,16 @@ abstract class Map extends Model implements \JsonSerializable {
 		}
 	}
 
+	public static function create_map_class($identifier) {
+		if ($identifier instanceof Map) return $identifier;
+		if (is_string($identifier)) {
+			if (strpos(strtolower($identifier), 'map')) $table_name = $identifier;
+			$table_name = ($table_name ?? false) ?: ModelMeta::get_table_alias($identifier, true);
+			return ModelMeta::convert_to_class($table_name);
+		}
+		return false;
+	}
+
 	protected static function __initialize() {
 		$res = parent::__initialize();
 		if ($res) {

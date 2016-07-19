@@ -58,8 +58,25 @@ class ModelMeta {
 		}
 		return array_key_exists($tablename, static::$bb_table_to_model_type);
 	}
-	public static function get_table_alias($model) {
-		if ($model instanceof Model) $model = static::convert_to_something($model, ModelMeta::TYPE_TABLE);
+	public static function get_table_alias($model, $backwards = false) {
+		if ($backwards) {
+			$alias = array_search($model, static::$bb_fake_table_to_alias);
+			if ($alias) return $alias;
+			if (strpos($model, '.')) $model = explode('.', $model)[0];
+			$model = static::convert_to_something($model, static::TYPE_TABLE);
+			$alias = array_search($model, static::$bb_fake_table_to_alias);
+			if ($alias) return $alias;
+			$count = 0;
+			foreach (static::$bb_fake_table_to_alias as $fake_table => $l_real_table) {
+				if (strpos($l_real_table, "{$model}.") === 0) {
+					$count++;
+					$alias = $fake_table;
+				}
+			}
+			if ($count !== 1) return false;
+			return $alias;
+		}
+		$model = static::convert_to_something($model, ModelMeta::TYPE_TABLE);
 		$alias = static::$bb_fake_table_to_alias[$model] ?? false;
 		if (strpos($alias, '.')) $alias = explode('.', $alias)[0];
 		return $alias;
@@ -75,14 +92,14 @@ class ModelMeta {
 				$name[$k] = static::def_convert_to_something($nn, $what);
 			}
 		} else {
-			$name = strtolower($name);
+			$lower_name = strtolower($name);
 			switch ($what) {
 				case 'id':
 				default:
-					$name .= '_id';
+					$name = $lower_name . '_id';
 					break;
 				case 'name':
-					$name = ucfirst(Inflector::singularize($name) ?: '');
+					$name = ucfirst(Inflector::singularize($lower_name) ?: '');
 					break;
 				case 'name_plural':
 					$name = strpos($name, ' ') ? $name : Inflector::pluralize($name);
@@ -93,9 +110,16 @@ class ModelMeta {
 					$name = Inflector::singularize($name);
 					break;
 				case 'table':
+				case 'table_name':
+				case 'tablename':
 					$name = Inflector::pluralize($name);
 					$name = str_replace('maps', 'map', Inflector::underscore($name));
 					break;
+				case 'model_type':
+				case 'modeltype':
+					$name = Inflector::camelize($name);
+					$name = Inflector::singularize($name);
+					$name = ucfirst($name);
 			}
 		}
 		return $name;
@@ -317,15 +341,12 @@ class ModelMeta {
 		]);
 	}
 	public static function dump() {
-		return [
-			'bb_class_properties'        => static::$bb_class_properties,
-			'bb_model_type_to_classname' => static::$bb_model_type_to_classname,
-			'bb_table_to_model_type'     => static::$bb_table_to_model_type,
-			'bb_prefix_to_model_type'    => static::$bb_prefix_to_model_type,
-			'bb_mapped_props'            => static::$bb_mapped_props,
-			'bb_fake_table_to_alias'     => static::$bb_fake_table_to_alias,
-			'bb_rels_to_rel_types'       => static::$bb_rels_to_rel_types
+		$properties = [
+			'class_properties'     => static::$bb_class_properties,
+			'prefix_to_model_type' => static::$bb_prefix_to_model_type,
+			'mapped_props'         => static::$bb_mapped_props,
 		];
+		return $properties;
 	}
 
 	/**
@@ -431,18 +452,22 @@ class ModelMeta {
 			if ($to_convert instanceof \Sm\Model\Model) $table_name = $to_convert->getTableName();
 			$prefix = static::getTablePrefixFromEnt_id($to_convert->ent_id);
 		}
+
 		if (is_string($to_convert)) {
 			if (strpos($to_convert, '\\')) {
 				$name_arr   = explode('\\', $to_convert);
 				$to_convert = $name_arr[count($name_arr) - 1];
 			}
-			if (static::$bb_class_properties[$to_convert] ?? false) {
-				$model_type = $to_convert;
+			$to_model_type = static::def_convert_to_something($to_convert, 'model_type');
+			$to_tablename  = static::def_convert_to_something($to_convert, 'table_name');
+			if (strpos('ser', $to_convert)) \Kint::dump([$to_model_type, $to_tablename, $to_convert]);
+			if (static::$bb_class_properties[$to_model_type] ?? false) {
+				$model_type = $to_model_type;
 				$table_name = array_search($model_type, static::$bb_table_to_model_type) ?: false;
 			}
-			if (static::$bb_table_to_model_type[$to_convert] ?? false) {
-				$model_type = static::$bb_table_to_model_type[$to_convert];
-				$table_name = $to_convert;
+			if (static::$bb_table_to_model_type[$to_tablename] ?? false) {
+				$table_name = $to_tablename;
+				$model_type = static::$bb_table_to_model_type[$table_name];
 			}
 			if (!$model_type??false) {
 				$prefix     = static::getTablePrefixFromEnt_id($to_convert);
@@ -488,7 +513,10 @@ class ModelMeta {
 		$two = static::convert_to_something($two, static::TYPE_MODEL_TYPE);
 		if (is_array($one)) $one = implode(',', $one);
 		if (is_array($two)) $two = implode(',', $two);
-		return static::convert_to_something("{$one}{$two}Map", $convert_to) ?: static::convert_to_something("{$two}{$one}Map", $convert_to) ?: false;
+		$try_1 = "{$one}{$two}Map";
+		$try_2 = "{$two}{$one}Map";
+//		var_dump([$try_1, $try_2]);
+		return static::convert_to_something($try_1, $convert_to) ?: static::convert_to_something($try_2, $convert_to) ?: false;
 	}
 	/**
 	 * @param array     $linked_entities

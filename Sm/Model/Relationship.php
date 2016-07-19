@@ -27,11 +27,14 @@ class Relationship implements \JsonSerializable {
 	}
 
 	public function JsonSerialize() {
-		return [
+		$properties = [
 			'_meta'    => $this->_meta,
 			'_map'     => $this->_map,
 			'position' => $this->position,
 			'model'    => $this->model ?: null
 		];
+		if (!isset($properties['position'])) unset($properties['position']);
+		if (!isset($properties['model'])) unset($properties['model']);
+		return $properties;
 	}
 }

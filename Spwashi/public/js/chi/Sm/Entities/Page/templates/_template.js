@@ -4,7 +4,7 @@
 /**
  * Created by Sam Washington on 1/4/16.
  */
-require(['require', 'Sm-Entities-Page-main'], function (require) {
+require(['require'], function (require) {
     Sm.Entities.Page.templates._template = {
         relationship: {
             relationship_index: {

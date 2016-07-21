@@ -1,7 +1,7 @@
 /**
  * Created by Sam Washington on 1/4/16.
  */
-require(['require', 'Sm-Entities-Section-main'], function (require) {
+require(['require'], function (require) {
     Sm.Entities.Section.templates._template = {
         body_outer:  {
             full:    '<section title="<%- subtitle %>" class="spwashi-section spwashi-entity  <% if( ! has_title) {%>no-title<% } %> <% if(_type){ %>type-<%- _type %><% } %> " data-ent_id="<%- ent_id %>" data-id="<%- id %>" data-title=\'<%- title %>\'>\n    __BUTTON_CONTROL__\n    <div class="focus upper">\n        <div class="pan left ">\n            <i class="fa left fa-caret-left"></i>\n        </div>\n        <div class="pan right">\n            <i class="fa right fa-caret-right"></i>\n        </div>\n    </div>\n    <header>\n        <div class="dev id"><%- id %></div>\n        <% if(has_title != 0) { %><h3 class="title"><%- title %></h3> <% } %>\n    </header>\n    __CONTENT__\n    <div data-relationship_index="composition" data-ent_id="<%- ent_id %>" class="relationship-container composition-container"></div>\n    <div data-relationship_index="children" data-ent_id="<%- ent_id %>" class="relationship-container children-container"></div>\n</section>',

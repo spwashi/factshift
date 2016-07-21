@@ -197,5 +197,5 @@ require(['require', 'Class', 'Sm', 'Sm/Extras/Modal'], function (require, Class)
                 });
             }
         });
-    }, 'Entities_Abstraction_Modal_Edit');
+    }, 'Entities_Abstraction_Modal_ModalEdit');
 });

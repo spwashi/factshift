@@ -1,7 +1,7 @@
 /**
  * Created by Sam Washington on 1/4/16.
  */
-require(['require', 'Sm-Entities-Section-main'], function (require) {
+require(['require'], function (require) {
     Sm.Entities.Section.templates.standard = {
         body:  {
             full:    '<div class="content" ><%- content %></div>',

@@ -1,7 +1,7 @@
 /**
  * Created by Sam Washington on 12/19/15.
  */
-require(['require', 'Sm-Entities-Concept-main', 'Sm-Core-MvWrapper'], function (require) {
+require(['require', 'Sm-Core-MvWrapper'], function (require) {
     Sm.loaded.when_loaded('Core_MvWrapper', function () {
         var ConceptWrapper          = Sm.Core.MvWrapper.extend({
             type:               'Concept',

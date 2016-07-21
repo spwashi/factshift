@@ -28,6 +28,7 @@ class ModelMeta {
 	const FIND_BOTH_RELATIONSHIPS       = '_find_both_relationships_';
 	const FIND_MAPPED                   = 'linked_entities';
 	const FIND_IDS                      = 'mapped';
+	public static $prefix_length = 4;
 
 	protected static $class_init_status = [];
 
@@ -217,8 +218,8 @@ class ModelMeta {
 				if (is_numeric($key)) $properties['all'][$v] = null;
 				else $properties['all'][$key] = $v;
 			}
-			$properties['api_settable'] = $api_settable_properties == '*' ? $properties['all'] : $api_settable_properties; //Check to see if the wildcard was used; if so, adopt all properties
-			$properties['api_gettable'] = $api_gettable_properties == '*' ? $properties['all'] : $api_gettable_properties;
+			$properties['api_settable'] = $api_settable_properties == '*' ? array_keys($properties['all']) : $api_settable_properties; //Check to see if the wildcard was used; if so, adopt all properties
+			$properties['api_gettable'] = $api_gettable_properties == '*' ? array_keys($properties['all']) : $api_gettable_properties;
 
 			$all_relationships  = $m_info['relationships'] ?? [];             //All of the relationships held by this object
 			$relationships      = [];
@@ -340,11 +341,25 @@ class ModelMeta {
 			'rels_to_rel_types'        => static::$bb_rels_to_rel_types
 		]);
 	}
+	private static function _remove_maps($array) {
+		$ret = [];
+		foreach ($array as $key => $value) {
+			if (strpos(strtolower($key), 'map')) {
+				$key = str_replace([" Map", " "], ["", "|"], Inflector::humanize(Inflector::underscore($key)));
+			}
+			if (is_string($value) && strpos(strtolower($value), 'map')) {
+				if (strlen($key) == ModelMeta::$prefix_length) continue;
+				$value = str_replace([" Map", " "], ["", "|"], Inflector::humanize(Inflector::underscore($value)));
+			}
+			$ret[$key] = $value;
+		}
+		return $ret;
+	}
 	public static function dump() {
 		$properties = [
-			'class_properties'     => static::$bb_class_properties,
-			'prefix_to_model_type' => static::$bb_prefix_to_model_type,
-			'mapped_props'         => static::$bb_mapped_props,
+			'entities'          => static::_remove_maps(static::$bb_class_properties),
+			'prefixes'          => static::_remove_maps(static::$bb_prefix_to_model_type),
+			'mapped_properties' => static::_remove_maps(static::$bb_mapped_props),
 		];
 		return $properties;
 	}

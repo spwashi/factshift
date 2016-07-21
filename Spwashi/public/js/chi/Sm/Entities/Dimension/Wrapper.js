@@ -1,7 +1,7 @@
 /**
  * Created by Sam Washington on 12/19/15.
  */
-require(['require', 'Sm-Entities-Dimension-main', 'Sm-Core-MvWrapper'], function (require) {
+require(['require', 'Sm-Core-MvWrapper'], function (require) {
     Sm.loaded.when_loaded('Core_MvWrapper', function () {
         var DimensionWrapper          = Sm.Core.MvWrapper.extend({
             type              : 'Dimension',

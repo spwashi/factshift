@@ -1,6 +1,7 @@
 <?php
 use Sm\Controller\Abstraction\Controller;
 use Sm\Core\App;
+use Sm\Model\ModelMeta;
 use Sm\Response\Http;
 use Sm\Router\Toute;
 use Sm\Security\XSS;
@@ -130,6 +131,7 @@ $urls['view'] = Toute::generate_url('spwashi_page_view', [$page->context, $page-
 		</div>
 	</div>
 </article>
+<script id="spwashi_config" type="application/json"><?= json_encode(ModelMeta::dump()) ?></script>
 <?php if ($is_debug): ?>
 	<?php switch ($debug_level):
 		case Controller::DEBUG_LEVEL_1:
@@ -149,12 +151,12 @@ $urls['view'] = Toute::generate_url('spwashi_page_view', [$page->context, $page-
 				require(['<?= App::_()->base_url ?>resource/js/chi/require_config.js'], function () {
 					require(['Promise', 'jquery', 'Sm'], function (P, $) {
 						if (!Promise) {P.polyfill();}
-						require(['require', 'Sm-Entities-Section-main'], function (require) {});
-						require(['require', 'Sm-Entities-Collection-main'], function (require) {});
-						require(['require', 'Sm-Entities-Dictionary-main'], function (require) {});
-						require(['require', 'Sm-Entities-Dimension-main'], function (require) {});
-						require(['require', 'Sm-Entities-Page-main'], function (require) {});
-						require(['require', 'Sm-Entities-Concept-main'], function (require) {});
+//						require(['require', 'Sm-Entities-Section-main'], function (require) {});
+//						require(['require', 'Sm-Entities-Collection-main'], function (require) {});
+//						require(['require', 'Sm-Entities-Dictionary-main'], function (require) {});
+//						require(['require', 'Sm-Entities-Dimension-main'], function (require) {});
+//						require(['require', 'Sm-Entities-Page-main'], function (require) {});
+//						require(['require', 'Sm-Entities-Concept-main'], function (require) {});
 						require(['require', 'select2'], function (require) {});
 						require(['require', 'inflection'], function (require) {});
 						require(['require', 'http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS_HTML-full'], function (require) {

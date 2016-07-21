@@ -15,9 +15,6 @@ require(['require', 'Sm',
         'Entities_Collection_Meta',
         'Entities_Collection_templates__template',
         'Entities_Collection_templates_standard'
-        //'Entities_Collection_templates_',
-        //'Entities_Collection_templates_',
-        //'Entities_Collection_templates_',
     ], function () {
         /**
          * @alias Sm.Entities.Collection.Garage
@@ -25,6 +22,6 @@ require(['require', 'Sm',
          */
         var GarageClass            = Sm.Entities.Abstraction.Garage.extend({});
         Sm.Entities.Collection.Garage = new GarageClass('Collection', 'collection_type');
-        Sm.loaded.add('Entities_Collection_Garage');
+        return 'Entities_Collection_Garage';
     }, 'Entities_Collection_Garage');
 });

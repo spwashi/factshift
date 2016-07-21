@@ -33,9 +33,7 @@ require([
         'Core_RelationshipIndex',
         'Core_SmModel',
         'Core_SmView'
-    ], Sm, 'Core').then(function (res) {
-        Sm.CONFIG.DEBUG && console.log(res);
-    }).catch(function (error) {
+    ], function () {}, 'Core').then().catch(function (error) {
         Sm.CONFIG.DEBUG && console.log("ERROR:", error);
     });
 });

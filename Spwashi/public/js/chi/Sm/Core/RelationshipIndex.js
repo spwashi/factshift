@@ -95,15 +95,15 @@ define(['Class', 'Sm'], function (Class) {
         fetch:                           function () {
             var info_index = this.get_relationship_type_obj_index();
             if (info_index.error) return Promise.reject(info_index);
-            var MvType        = info_index.MvType;
+            var model_type        = info_index.model_type;
             var is_reciprocal = this.is_reciprocal;
             var lower_mv;
-            Sm.Entities[MvType]
-            && Sm.Entities[MvType].Meta
-            && (lower_mv = Sm.Entities[MvType].Meta.lower_plural[MvType]);
+            Sm.Entities[model_type]
+            && Sm.Entities[model_type].Meta
+            && (lower_mv = Sm.Entities[model_type].Meta.lower_plural[model_type]);
             var url           = Sm.urls.api.generate({
                 MvCombo:           this.MvCombo,
-                fetch:             lower_mv || MvType,
+                fetch:             lower_mv || model_type,
                 find_usages:       is_reciprocal,
                 relationship_type: info_index.index
             });

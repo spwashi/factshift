@@ -9,7 +9,7 @@ require(['require', 'Sm-Core-Meta'], function (require) {
              * @type {relationship_type_info_obj}
              */
             sections: {
-                MvType:             'Section',
+                model_type:             'Section',
                 index_singular:     'section',
                 id:                 null,
                 primary_key:        'concept_id',
@@ -22,7 +22,7 @@ require(['require', 'Sm-Core-Meta'], function (require) {
              * @type {relationship_type_info_obj}
              */
             concepts: {
-                MvType:             'Section|Page|Concept',
+                model_type:             'Section|Page|Concept',
                 index_singular:     'section|page|concept',
                 id:                 null,
                 primary_key:        'section_id|page_id|primary_concept_id',
@@ -35,7 +35,7 @@ require(['require', 'Sm-Core-Meta'], function (require) {
              * @type {relationship_type_info_obj}
              */
             pages: {
-                MvType:             'Page',
+                model_type:             'Page',
                 index_singular:     'page',
                 id:                 null,
                 primary_key:        'concept_id',

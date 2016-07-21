@@ -9,7 +9,7 @@ require(['require', 'Sm-Core-Meta'], function (require) {
              * @type {relationship_type_info_obj}
              */
             sections:    {
-                MvType:             'Section',
+                model_type:             'Section',
                 index_singular:     'section',
                 id:                 null,
                 primary_key:        'collection_id',
@@ -21,7 +21,7 @@ require(['require', 'Sm-Core-Meta'], function (require) {
              * @type {relationship_type_info_obj}
              */
             collections: {
-                MvType:             'Section',
+                model_type:             'Section',
                 index_singular:     'section',
                 id:                 null,
                 primary_key:        'section_id',

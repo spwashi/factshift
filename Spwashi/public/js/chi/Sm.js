@@ -36,10 +36,6 @@ require([
 	Sm.rbt = Sm.rbt || {};
 
 
-	var entities          = Sm.spwashi_config.entities;
-	var prefixes          = Sm.spwashi_config.prefixes;
-	var mapped_properties = Sm.spwashi_config.mapped_properties;
-
 	Sm.CONFIG = {
 		DRAG_MODE: can_drag_and_drop,
 		EDIT:      is_edit_bool,
@@ -208,14 +204,11 @@ require([
 	Cocktail.patch(backbone);
 	/**
 	 * A container for the Model/View/ representations
-	 * @type {Sm.Entities|{}}
+	 * @type {object<string,Sm.Entities.Abstraction.SmEntity>}
 	 */
 	Sm.Entities                    = Sm.Entities || {};
 	Sm.Entities.Abstraction        = Sm.Entities.Abstraction || {};
 	Sm.Entities.Abstraction.mixins = Sm.Entities.Abstraction.mixins || {};
-	Sm.loaded.when_loaded(["Entities_Abstraction_SmEntity"], function () {
-
-	});
 
 //-------------------------------------------------------------------------
 	var NonexistentModelError       = function (message) {

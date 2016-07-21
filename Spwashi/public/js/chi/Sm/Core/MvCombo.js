@@ -229,13 +229,15 @@ require(['require', 'Sm', 'Sm-Core-util', 'Emitter'], function (require) {
 
 			var relationship_obj_obj = Meta_.relationship_type_obj;
 			if (!relationship_obj_obj) return false;
-			var self_type = this.type;
-			var self      = this;
-			is_reciprocal = !!is_reciprocal;
+			var self_type               = this.type;
+			var self                    = this;
+			is_reciprocal               = !!is_reciprocal;
+			var relationship_types_list = !is_reciprocal ? Meta_.relationship_type_list : Meta_.reciprocal_relationship_type_list;
 			/**
 			 * Iterate through the known relationships and add a new {@link Sm.Core.RelationshipIndex} for each one
 			 */
-			for (var r_t in relationship_obj_obj) {
+			for (var i = 0; i < relationship_types_list.length; i++) {
+				var r_t = relationship_types_list[i];
 				if (!relationship_obj_obj.hasOwnProperty(r_t)) continue;
 				var rel_obj = relationship_obj_obj[r_t];
 				if (rel_obj.is_only_reciprocal && !is_reciprocal) continue;
@@ -300,8 +302,8 @@ require(['require', 'Sm', 'Sm-Core-util', 'Emitter'], function (require) {
 				/**
 				 * Get the relationships_to_add from the relationships items index
 				 */
-				if (model_props.relationships && model_props.relationships.items) {
-					this._relationships_to_add = model_props.relationships.items;
+				if (model_props.relationships && model_props.relationships) {
+					this._relationships_to_add = model_props.relationships;
 					delete model_props.relationships;
 				}
 
@@ -1090,7 +1092,7 @@ require(['require', 'Sm', 'Sm-Core-util', 'Emitter'], function (require) {
 					opposite           = true;
 				}
 				settings.relationship_index = Meta_.get_relationship_type({type: 'index'}, relationship_index);
-				settings.OtherMvComboType   = Meta_.get_relationship_type({type: 'MvType'}, relationship_index);
+				settings.OtherMvComboType   = Meta_.get_relationship_type({type: 'model_type'}, relationship_index);
 				if (r.relationship_subindex) delete r.relationship_subindex;
 				if (r.relationship_index) delete r.relationship_index;
 				settings.position = parseInt(r.position || 0);

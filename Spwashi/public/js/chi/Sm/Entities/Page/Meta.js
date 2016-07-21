@@ -5,7 +5,7 @@ require(['require', 'Sm-Core-Meta'], function (require) {
     var PageMeta                = Sm.Core.Meta.Proto.extend({
         relationship_type_obj:             {
             concepts:   {
-                MvType:             'Concept',
+                model_type:             'Concept',
                 index_singular:     'concept',
                 id:                 null,
                 primary_key:        'page_id',
@@ -17,7 +17,7 @@ require(['require', 'Sm-Core-Meta'], function (require) {
              * @type {relationship_type_info_obj}
              */
             dimensions: {
-                MvType:             'Dimension',
+                model_type:             'Dimension',
                 index_singular:     'dimension',
                 id:                 null,
                 primary_key:        'page_id',
@@ -29,7 +29,7 @@ require(['require', 'Sm-Core-Meta'], function (require) {
              * @type {relationship_type_info_obj}
              */
             sections:   {
-                MvType:             'Section',
+                model_type:             'Section',
                 index_singular:     'section',
                 id:                 null,
                 primary_key:        'page_id',
@@ -42,7 +42,7 @@ require(['require', 'Sm-Core-Meta'], function (require) {
              * @type {relationship_type_info_obj}
              */
             pages: {
-                MvType:             'Section|Concept',
+                model_type:             'Section|Concept',
                 index_singular:     'section|concept',
                 id:                 null,
                 primary_key:        'section_id|concept_id',

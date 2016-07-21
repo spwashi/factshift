@@ -15,17 +15,18 @@ define(['Emitter'], function (Emitter) {
 	 * @prop {function} get_type                            {@link Sm.Core.Meta#get_type}
 	 * @prop {function} get_possible_relationship_indices   {@link Sm.Core.Meta#get_possible_relationship_indices}
 	 * @prop {function} get_relationship_type               {@link Sm.Core.Meta#get_relationship_type}
-	 * @prop {function} get_defaults_of               {@link Sm.Core.Meta#get_defaults_of}
+	 * @prop {function} get_defaults_of                     {@link Sm.Core.Meta#get_defaults_of}
+	 * @prop {function} configure                           {@link Sm.Core.Meta#configure}
 	 *
 	 */
 	var Meta           = Emitter.extend({
-		CONFIG: {
+		CONFIG:          {
 			DEBUG:       false,
 			EDIT:        false,
 			DRAG_N_DROP: false
 		},
-		MvMaps: {},
-		init:   function (settings) {
+		MvMaps:          {},
+		init:            function (settings) {
 			this.events         = [];
 			this._callbacks     = {};
 			this.MvMaps         = {
@@ -53,7 +54,31 @@ define(['Emitter'], function (Emitter) {
 					|| (entities[entity_name].plural || entity_name + 's').toLowerCase();
 			}
 		},
-
+		/**
+		 * @alias Sm.Core.Meta.configure
+		 * @param config
+		 */
+		configure:       function (config) {
+			//if (!config.relationships) Sm.CONFIG.DEBUG && console.log("Config for " + config.type + " does not have any relationships");
+			var rto = this.relationship_type_obj = Sm.Core.util.merge_objects_recursive(config.relationships || {}, config.reciprocal_relationships || {});
+			this.reciprocal_relationship_type_list = Object.keys(config.reciprocal_relationships || {});
+			this.relationship_type_list            = Object.keys(config.relationships || {});
+			//if (!config.properties) Sm.CONFIG.DEBUG && console.log("Config for " + config.type + " does not have any properties");
+			var properties = this.properties = config.properties || {all: {ent_id: null, id: null}};
+			properties.all            = properties.all || {};
+			properties.api_settable   = properties.api_settable || {};
+			properties.api_settable   = properties.api_settable || {};
+			this.prefix               = config.prefix || null;
+			var relationship_subtypes = config.relationship_subtypes || false;
+			if (relationship_subtypes)
+				for (var rel_type in relationship_subtypes) {
+					if (!relationship_subtypes.hasOwnProperty(rel_type)) continue;
+					var relationship = relationship_subtypes[rel_type];
+					if (relationship && relationship.id) {
+						this.relationship_subtypes[rel_type] = relationship;
+					}
+				}
+		},
 		/**
 		 * @alias Sm.Core.Meta.get_defaults_of
 		 * @param type
@@ -82,7 +107,6 @@ define(['Emitter'], function (Emitter) {
 			audio:           5,
 			text:            6
 		},
-		relationship_type_obj:             {},
 		relationship_subtype_obj:          {
 			eli5:            {
 				name: 'ELI5',
@@ -213,8 +237,8 @@ define(['Emitter'], function (Emitter) {
 					index = rel_type.id || false;
 					if (rel_type.id) index = rel_type.id;
 					else index = parseInt(rel_type);
-				} else if (type == 'MvType') {
-					index = rel_type.MvType || self_type || false;
+				} else if (type == 'model_type') {
+					index = rel_type.model_type || self_type || false;
 				} else if (type == 'name') {
 					index = rel_type.name || rel_type.index_singular || false;
 					index = Sm.Core.util.uc_first(index);
@@ -230,7 +254,9 @@ define(['Emitter'], function (Emitter) {
 				rel_type.index_singular = rel_type.index_singular || '';
 				rel_type.id             = rel_type.id || '';
 				// Same for the singular index. If there is a case where there are multiple indices delimited by pipes, search those for the right index
-				if (identifier == rel_type.index_singular || rel_type.index_singular.toLowerCase().search(new RegExp("\\|?" + identifier.toLowerCase() + "\\|?")) > -1) return index;
+				var rel_ind_singular = rel_type.index_singular.constructor === Array ? rel_type.index_singular.join('|') : rel_type.index_singular;
+				rel_ind_singular     = (rel_ind_singular || '').toLowerCase();
+				if (identifier == rel_ind_singular || rel_ind_singular.toLowerCase().search(new RegExp("\\|?" + identifier.toLowerCase() + "\\|?")) > -1) return index;
 				// If the identifier matches the id, return that
 				if (!!rel_type.id && identifier == rel_type.id) return index;
 			}
@@ -245,7 +271,7 @@ define(['Emitter'], function (Emitter) {
 				//If that's in the map, return the index of the entity we're on if it's not reciprocal. Otherwise, return the relationship index of this entity
 				if (probable_other_id in map) {
 					if (type == 'id') return false;
-					else if (type == 'MvType' || type == 'name') return entity_type;
+					else if (type == 'model_type' || type == 'name') return entity_type;
 					else return (is_reciprocal ? this.lower_plural[entity_type] : this.lower_plural[this.type]) || false;
 				}
 			}

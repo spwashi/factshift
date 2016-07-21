@@ -3,27 +3,16 @@
  */
 require(["Sm-Core-Core"], function () {
 	Sm.loaded.when_loaded("Core", function () {
-		var SmEntityProperties        = [
-			'Meta', 'MvCombo', 'Wrapper', 'View',
-			'Garage', 'Model', 'Abstraction'
-		];
-		var SmEntity                  = function (EntityName, properties) {
+		var entity_obj                   = Sm.spwashi_config.entities;
+		var SmEntityProperties           = ['Meta', 'MvCombo', 'Wrapper', 'View', 'Garage', 'Model', 'Abstraction'];
+		var SmEntity                     = function (EntityName) {
 			this.type = EntityName;
-			for (var prop in properties) {
-				if (!properties.hasOwnProperty(prop)) continue;
-				this[prop] = properties[prop];
-			}
 			for (var i = 0; i < SmEntityProperties.length; i++) {
 				var p_name   = SmEntityProperties[i];
 				this[p_name] = null;
 			}
 		};
-		SmEntity._default_model_props = {};
-
-		SmEntity.prototype.getModelConstructor = function () {
-
-		};
-		SmEntity.prototype.complete            = function () {
+		SmEntity.prototype.complete      = function () {
 			var EntityType            = this.type;
 			this.Model                = this.Model || (function (self) {
 					var Model = Sm.Core.SmModel.extend({defaults: Sm.Core.Meta.get_defaults_of(self.type)});
@@ -56,6 +45,9 @@ require(["Sm-Core-Core"], function () {
 					View.tmp = true;
 					return View;
 				})(this);
+			/**
+			 * @type Sm.Core.Meta
+			 */
 			this.Meta                 = this.Meta || (function (self) {
 					var MetaProto = Sm.Core.Meta.Proto.extend();
 					var Meta      = new MetaProto({type: self.type});
@@ -68,13 +60,13 @@ require(["Sm-Core-Core"], function () {
 					MvCombo.tmp = true;
 					return MvCombo;
 				})(this);
+			var config                = entity_obj[this.type.replace('__', '|')];
+			config.model_type         = EntityType;
+			this.Meta.configure(config);
 		};
-		Sm.Entities.Abstraction.SmEntity       = SmEntity;
+		Sm.Entities.Abstraction.SmEntity = SmEntity;
 		Sm.loaded.add("Entities_Abstraction_SmEntity");
-		Sm.Entities                            = Sm.Entities || {};
-		var entities                           = Sm.spwashi_config.entities;
-
-		var has = {
+		var has                          = {
 			Section:    ['Meta', 'Model', 'View', 'Garage', 'MvCombo', 'Wrapper', 'Abstraction-Relationship-pivots_RelationshipIndex', 'Abstraction-Modal-ModalEdit', 'templates-definition'],
 			Collection: ['Meta', 'Model', 'View', 'Garage', 'MvCombo', 'Wrapper'],
 			Concept:    ['Meta', 'Model', 'View', 'Garage', 'MvCombo', 'Wrapper'],
@@ -82,13 +74,10 @@ require(["Sm-Core-Core"], function () {
 			Dictionary: ['Meta', 'Model', 'View', 'Garage', 'MvCombo', 'Wrapper'],
 			Dimension:  ['Meta', 'Model', 'View', 'Garage', 'MvCombo', 'Wrapper']
 		};
-
-
-		for (var EntityType in entities) {
-			if (!entities.hasOwnProperty(EntityType)) continue;
-			var _entity_info        = entities[EntityType];
+		for (var EntityType in entity_obj) {
+			if (!entity_obj.hasOwnProperty(EntityType)) continue;
 			EntityType              = EntityType.replace('|', '__');
-			Sm.Entities[EntityType] = new SmEntity(EntityType, entities[EntityType] || {});
+			Sm.Entities[EntityType] = new SmEntity(EntityType);
 			var _entity_has         = has[EntityType] || [];
 			var when_loaded         = ['Core', 'Entities-Abstraction-Garage'];
 			var req                 = ['Sm-Core-Core', 'Sm-Entities-Abstraction-Garage'];
@@ -99,13 +88,11 @@ require(["Sm-Core-Core"], function () {
 				req.push('Sm-Entities-' + EntityType + '-' + wait_for);
 				when_loaded.push(wl);
 			}
-			if (_entity_has.length) require(req);
-			//require(req);
+			if (req.length) require(req);
 			Sm.Entities[EntityType]                          = Sm.Entities[EntityType] || {};
 			Sm.Entities[EntityType].templates                = Sm.Entities[EntityType].templates || {};
 			Sm.Entities[EntityType].Abstraction              = Sm.Entities[EntityType].Abstraction || {};
 			Sm.Entities[EntityType].Abstraction.Relationship = Sm.Entities[EntityType].Abstraction.Relationship || {};
-
 			Sm.loaded.when_loaded(when_loaded, (function (EntityType) {
 				return function () {
 					if (!Sm.Entities[EntityType]) return;
@@ -119,9 +106,9 @@ require(["Sm-Core-Core"], function () {
 					}
 					Sm.CONFIG.DEBUG && console.log(EntityType, Sm.Entities[EntityType]);
 					//Sm.CONFIG.DEBUG && console.log(' -- ', EntityType, ' has been loaded');
+					Sm.Extras.visual_debug(EntityType + ' has been loaded!');
 				}
-			})(EntityType), 'entities_' + EntityType).then(function (e, d, r) {
-			}).catch((function (e) {
+			})(EntityType), 'entities_' + EntityType).then(function (e, d, r) {}).catch((function (e) {
 				Sm.CONFIG.DEBUG && console.log(e, ' HHHHHHHHHH ');
 			}).bind(EntityType));
 		}

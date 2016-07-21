@@ -4,7 +4,7 @@
 require(['require', 'Sm-Core-Meta'], function (require) {
     /**
      * @typedef {{}} relationship_type_info_obj
-     * @property MvType
+     * @property model_type
      * @property {int|boolean}      id              The ID that correlates to the ID of the relationship type
      * @property {string}           primary_key     The Primary Key (from the perspective of this type - this type's relationship)
      * @property {string}           secondary_key   The Secondary Key (from this perspective - the other type's relationship)
@@ -25,7 +25,7 @@ require(['require', 'Sm-Core-Meta'], function (require) {
              * @type {relationship_type_info_obj}
              */
             children:    {
-                MvType:             'Section',
+                model_type:             'Section',
                 index_singular:     'child',
                 id:                 1,
                 primary_key:        'primary_section_id',
@@ -37,7 +37,7 @@ require(['require', 'Sm-Core-Meta'], function (require) {
              * @type {relationship_type_info_obj}
              */
             composition: {
-                MvType:             'Section',
+                model_type:             'Section',
                 index_singular:     'composition',
                 id:                 2,
                 primary_key:        'primary_section_id',
@@ -50,7 +50,7 @@ require(['require', 'Sm-Core-Meta'], function (require) {
              * @type {relationship_type_info_obj}
              */
             micros: {
-                MvType:             'Section',
+                model_type:             'Section',
                 index_singular:     'micro',
                 id:                 4,
                 primary_key:        'primary_section_id',
@@ -63,7 +63,7 @@ require(['require', 'Sm-Core-Meta'], function (require) {
              * @type {relationship_type_info_obj}
              */
             pivots:       {
-                MvType:             'Section',
+                model_type:             'Section',
                 index_singular:     'pivot',
                 id:                 5,
                 primary_key:        'primary_section_id',
@@ -75,7 +75,7 @@ require(['require', 'Sm-Core-Meta'], function (require) {
              * @type {relationship_type_info_obj}
              */
             pages:        {
-                MvType:             'Page',
+                model_type:             'Page',
                 index_singular:     'page',
                 primary_key:        'section_id',
                 secondary_key:      'page_id',
@@ -86,7 +86,7 @@ require(['require', 'Sm-Core-Meta'], function (require) {
              * @type {relationship_type_info_obj}
              */
             collections:  {
-                MvType:             'Collection',
+                model_type:             'Collection',
                 index_singular:     'collection',
                 primary_key:        'section_id',
                 secondary_key:      'collection_id',
@@ -97,7 +97,7 @@ require(['require', 'Sm-Core-Meta'], function (require) {
              * @type {relationship_type_info_obj}
              */
             dictionaries: {
-                MvType:             'Dictionary',
+                model_type:             'Dictionary',
                 index_singular:     'dictionary',
                 primary_key:        'section_id',
                 secondary_key:      'dictionary_id',
@@ -108,7 +108,7 @@ require(['require', 'Sm-Core-Meta'], function (require) {
              * @type {relationship_type_info_obj}
              */
             dimensions:   {
-                MvType:             'Dimension',
+                model_type:             'Dimension',
                 index_singular:     'dimension',
                 primary_key:        'section_id',
                 secondary_key:      'dimension_id',
@@ -119,7 +119,7 @@ require(['require', 'Sm-Core-Meta'], function (require) {
              * @type {relationship_type_info_obj}
              */
             definitions:  {
-                MvType:             'Dictionary',
+                model_type:             'Dictionary',
                 index_singular:     'definition',
                 secondary_key:      'dictionary_id',
                 primary_key:        'section_id',
@@ -130,7 +130,7 @@ require(['require', 'Sm-Core-Meta'], function (require) {
              * @type {relationship_type_info_obj}
              */
             sections:     {
-                MvType:             'Collection|Dimension|Concept',
+                model_type:             'Collection|Dimension|Concept',
                 index_singular:     'collection|dimension|concept',
                 primary_key:        'collection_id|dimension_id|concept_id',
                 secondary_key:      'section_id',
@@ -138,7 +138,7 @@ require(['require', 'Sm-Core-Meta'], function (require) {
                 linked_entities:    ['Section', 'Collection|Dimension|Concept']
             },
             concepts:     {
-                MvType:             'Concept',
+                model_type:             'Concept',
                 index:              'concept',
                 id:                 null,
                 primary_key:        'section_id',

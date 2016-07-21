@@ -317,7 +317,7 @@ class ModelMeta {
 				$model_reciprocal_relationship['primary_key']        = $pk;
 				$model_reciprocal_relationship['secondary_key']      = $sk;
 				$model_reciprocal_relationship['linked_entities']    = $le;
-				$model_reciprocal_relationship['is_only_reciprocal'] = true;
+				$model_reciprocal_relationship['is_only_reciprocal'] = isset($static_class_properties[$model_type]['relationships'][$rec_index]) ? false : true;
 				$ak_relationships[$rec_index]                        = $model_reciprocal_relationship;
 			}
 			$static_class_properties[$model_type]['reciprocal_relationships'] = $ak_relationships;

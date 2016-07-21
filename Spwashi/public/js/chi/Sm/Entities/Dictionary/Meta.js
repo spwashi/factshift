@@ -12,7 +12,7 @@ require(['require', 'Sm-Core-Meta'], function (require) {
              * @type {relationship_type_info_obj}
              */
             definitions: {
-                MvType            : 'Section',
+                model_type            : 'Section',
                 index_singular    : 'definition',
                 id                : null,
                 primary_key       : 'dictionary_id',
@@ -25,7 +25,7 @@ require(['require', 'Sm-Core-Meta'], function (require) {
              * @type {relationship_type_info_obj}
              */
             dictionaries: {
-                MvType            : 'Page|Section',
+                model_type            : 'Page|Section',
                 index_singular    : 'page|section',
                 id                : null,
                 primary_key       : 'page_id|section_id',

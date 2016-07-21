@@ -67,12 +67,12 @@ require(["Sm-Core-Core"], function () {
 		Sm.Entities.Abstraction.SmEntity = SmEntity;
 		Sm.loaded.add("Entities_Abstraction_SmEntity");
 		var has                          = {
-			Section:    ['Meta', 'Model', 'View', 'Garage', 'MvCombo', 'Wrapper', 'Abstraction-Relationship-pivots_RelationshipIndex', 'Abstraction-Modal-ModalEdit', 'templates-definition'],
-			Collection: ['Meta', 'View'],
-			Concept:    ['Meta', 'View'],
-			Page:       ['Meta', 'View', 'Garage'],
-			Dictionary: ['Meta', 'View', 'Garage', 'MvCombo', 'Wrapper'],
-			Dimension:  ['Meta', 'View', 'Wrapper']
+			Section:    ['templates-_template', 'templates-standard', 'Meta', 'Model', 'View', 'Garage', 'MvCombo', 'Wrapper', 'Abstraction-Relationship-pivots_RelationshipIndex', 'Abstraction-Modal-ModalEdit', 'templates-definition'],
+			Collection: ['templates-_template', 'templates-standard', 'Meta', 'View'],
+			Concept:    ['templates-_template', 'templates-standard', 'Meta', 'View'],
+			Page:       ['templates-_template', 'templates-standard', 'Meta', 'View', 'Garage'],
+			Dictionary: ['templates-_template', 'templates-standard', 'Meta', 'View', 'Garage', 'MvCombo', 'Wrapper'],
+			Dimension:  ['templates-_template', 'templates-standard', 'Meta', 'View', 'Wrapper']
 		};
 		for (var EntityType in entity_obj) {
 			if (!entity_obj.hasOwnProperty(EntityType)) continue;

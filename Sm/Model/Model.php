@@ -313,7 +313,7 @@ class Model extends Abstraction\Model {
 			$reciprocal_holder_assoc_index = isset($extras['reciprocal_holder_association']) ? $extras['reciprocal_holder_association'] : $self_identifier;
 			/** @var callable $rel_index_hook This is a function that will be run on each found Model that places them in the correct index based on the properties of the map or object */
 			#----------------------------
-
+			$model->is_blueprint = true;
 			#Iterate through the output, create the models, add them to the proper relationship index
 			foreach ($output as $key => $object_properties) {
 				$secondary_model = clone($model);
@@ -348,7 +348,7 @@ class Model extends Abstraction\Model {
 					$RelationshipIndex->push($self_relationship, $properties_of_map['id']);
 				}
 
-				$reciprocal_relationship = new Relationship($_map);
+				$reciprocal_relationship = new Relationship($_map, $this);
 				#Store each relationship in the proper holder at the holder_assoc_index (again, this is the index that distinguishes each relationship)
 				if (isset($properties_of_map[$reciprocal_holder_assoc_index])) {
 					$ReciprocalRelationshipIndex->push($reciprocal_relationship, $properties_of_map[$reciprocal_holder_assoc_index]);

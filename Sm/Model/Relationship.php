@@ -31,7 +31,8 @@ class Relationship implements \JsonSerializable {
 			'_meta'    => $this->_meta,
 			'_map'     => $this->_map,
 			'position' => $this->position,
-			'model'    => $this->model ?: null
+			//clone the model to remove its relationships to avoid any circular referencing
+			'model'    => $this->model ? clone $this->model : null
 		];
 		if (!isset($properties['position'])) unset($properties['position']);
 		if (!isset($properties['model'])) unset($properties['model']);

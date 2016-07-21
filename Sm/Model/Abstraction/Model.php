@@ -54,7 +54,7 @@ abstract class Model implements \JsonSerializable {
 		'view'    => false,
 		'destroy' => false,
 	];
-
+	protected $is_blueprint = false;
 	/** @var array An array of the variables that have been changed; useful for row saving and updating */
 	protected $_changed = [];
 	/**
@@ -147,6 +147,9 @@ abstract class Model implements \JsonSerializable {
 		static::__initialize();
 		return json_encode($this, JSON_HEX_APOS);
 	}
+	protected function init_relationshipIndexContainer() {
+		return new RelationshipIndexContainer(ModelMeta::_get_def_props(static::class, ModelMeta::FIND_BOTH_RELATIONSHIPS), $this);
+	}
 	/**
 	 * Magic method for getting properties
 	 *
@@ -163,7 +166,7 @@ abstract class Model implements \JsonSerializable {
 		if ($name == 'maps') {
 			$this->_relationships = ($this->_relationships instanceof RelationshipIndexContainer)
 				? $this->_relationships
-				: new RelationshipIndexContainer(ModelMeta::_get_def_props(static::class, ModelMeta::FIND_BOTH_RELATIONSHIPS), $this);
+				: $this->init_relationshipIndexContainer();
 			return $this->_relationships;
 		}
 
@@ -199,7 +202,14 @@ abstract class Model implements \JsonSerializable {
 	public function __debugInfo() {
 		return $this->jsonSerialize();
 	}
-
+	/**
+	 * A clone method that removes the relationships of the newly created class to prevent any circular references in json_encoding.
+	 */
+	public function __clone() {
+		if (!$this->is_blueprint)
+			$this->_relationships = $this->init_relationshipIndexContainer();
+		$this->is_blueprint = false;
+	}
 #--------------------------------------| GETTERS
 	/**
 	 * Get the Important bit about which Class we're in

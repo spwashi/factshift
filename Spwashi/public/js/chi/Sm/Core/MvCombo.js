@@ -984,7 +984,11 @@ require(['require', 'Sm', 'Sm-Core-util', 'Emitter'], function (require) {
 			var self_map_index      = relationshipDetails.self_map_index;
 			var secondary_map_index = relationshipDetails.secondary_map_index;
 
-			if (OtherMvCombo.Identity === this.Identity) return Promise.reject('Cannot add the same MV');
+			if (OtherMvCombo.Identity === this.Identity) {
+				var ent_id = this.Identity.ent_id;
+				Sm.CONFIG.DEBUG && console.log(ent_id, arguments);
+				return Promise.reject('Cannot add the same MV - ::' + ent_id);
+			}
 			map.position                   = settings.position || map.position;
 
 			//Initialize the relationship's details

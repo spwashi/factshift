@@ -3,42 +3,6 @@
  */
 require(['require', 'Sm-Core-Meta'], function (require) {
 	var DimensionMeta                = Sm.Core.Meta.Proto.extend({
-		relationship_type_obj:             {
-			/**
-			 * @type {relationship_type_info_obj}
-			 */
-			sections: {
-				model_type:         'Section',
-				index_singular:     'section',
-				primary_key:        'dimension_id',
-				secondary_key:      'section_id',
-				is_only_reciprocal: false,
-				linked_entities:    ['Dimension', 'Section']
-			},
-			/**
-			 * @type {relationship_type_info_obj}
-			 */
-			pages:    {
-				model_type:         'Page',
-				index_singular:     'page',
-				primary_key:        'dimension_id',
-				secondary_key:      'page_id',
-				is_only_reciprocal: false,
-				linked_entities:    ['Dimension', 'Page']
-			},
-
-			/**
-			 * @type {relationship_type_info_obj}
-			 */
-			dimensions: {
-				model_type:         'Section',
-				index_singular:     'section',
-				primary_key:        'section_id',
-				secondary_key:      'dimension_id',
-				is_only_reciprocal: true,
-				linked_entities:    ['Dimension', 'Section']
-			}
-		},
 		get_possible_relationship_indices: function (settings) {
 			if (!settings) return [];
 			settings          = settings || {};

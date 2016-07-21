@@ -68,11 +68,11 @@ require(["Sm-Core-Core"], function () {
 		Sm.loaded.add("Entities_Abstraction_SmEntity");
 		var has                          = {
 			Section:    ['Meta', 'Model', 'View', 'Garage', 'MvCombo', 'Wrapper', 'Abstraction-Relationship-pivots_RelationshipIndex', 'Abstraction-Modal-ModalEdit', 'templates-definition'],
-			Collection: ['Meta', 'Model', 'View', 'Garage', 'MvCombo', 'Wrapper'],
-			Concept:    ['Meta', 'Model', 'View', 'Garage', 'MvCombo', 'Wrapper'],
-			Page:       ['Meta', 'Model', 'View', 'Garage', 'MvCombo', 'Wrapper'],
-			Dictionary: ['Meta', 'Model', 'View', 'Garage', 'MvCombo', 'Wrapper'],
-			Dimension:  ['Meta', 'Model', 'View', 'Garage', 'MvCombo', 'Wrapper']
+			Collection: ['Meta', 'View'],
+			Concept:    ['Meta', 'View'],
+			Page:       ['Meta', 'View', 'Garage'],
+			Dictionary: ['Meta', 'View', 'Garage', 'MvCombo', 'Wrapper'],
+			Dimension:  ['Meta', 'View', 'Wrapper']
 		};
 		for (var EntityType in entity_obj) {
 			if (!entity_obj.hasOwnProperty(EntityType)) continue;
@@ -106,11 +106,11 @@ require(["Sm-Core-Core"], function () {
 					}
 					Sm.CONFIG.DEBUG && console.log(EntityType, Sm.Entities[EntityType]);
 					//Sm.CONFIG.DEBUG && console.log(' -- ', EntityType, ' has been loaded');
-					Sm.Extras.visual_debug(EntityType + ' has been loaded!');
+					(EntityType.indexOf("__") === -1) && Sm.Extras.visual_debug(EntityType + ' has been loaded!');
 				}
 			})(EntityType), 'entities_' + EntityType).then(function (e, d, r) {}).catch((function (e) {
-				Sm.CONFIG.DEBUG && console.log(e, ' HHHHHHHHHH ');
-			}).bind(EntityType));
+				Sm.CONFIG.DEBUG && console.log(e, ' could not be loaded ');
+			}).bind(null, EntityType));
 		}
 		Sm.CONFIG.DEBUG && console.log(Sm, Sm.spwashi_config);
 	});

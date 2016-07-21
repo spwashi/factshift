@@ -6,7 +6,7 @@
  */
 
 namespace Sm\Model;
-
+#todo add a "plural" for the model types
 use Sm\Core\App;
 use Sm\Core\Inflector;
 use Sm\Development\Log;

@@ -46,11 +46,25 @@ require(['require', 'Class', 'Sm', 'Sm-Core-Identifier'], function (require, Cla
 		 * Pull all of the elements from an Array and initialize the MvCombos one-by-one.
 		 * Also instantiate correctly formatted relationships
 		 * @param           settings
+		 * @param           settings.models     An array of objects
 		 * @param {Array}   settings.elements   An array of the elements to hydrate
 		 * @return {Sm.Core.MvWrapper}
 		 */
 		hydrate: function (settings) {
-			settings        = settings || {};
+			settings = settings || {};
+
+			var json_models = settings.models;
+			if (json_models) {
+				if (json_models.constructor === Array) {
+					for (var j = 0; j < json_models.length; j++) {
+						var _model = json_models[j];
+						this.init_MvCombo({model: _model});
+					}
+				} else {
+					this.init_MvCombo({model: json_models});
+				}
+			}
+
 			var element_arr = settings.elements || false;
 			if (!element_arr || !element_arr.length) return this;
 

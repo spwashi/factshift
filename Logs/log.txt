@@ -1,0 +1,33 @@
+--------------------------------------------------------------------------------------------------------------------------
+-------------------------{07-21-2016  08:18:44}---------------------------------------------------------------------------
+--------------------------------------------------------------------------------------------------------------------------
+ {07-21-2016  08:18:44} 	  line {53}	 of {Sm/Model/RelationshipIndex.php};
+	0 	=>		 arr(0)[
+	]
+		1 => str     : 	{"id":null,"first_name":null,"last_name":null,"email":null,"alias":null,"ent_id":null,"status_id":null,"profile_image_id":null,"update_dt":null,"creation_dt":null,"relationships":null}
+
+ {07-21-2016  08:18:44} 	  line {380}	 of {Sm/Model/Model.php};
+	0 => str     : 	Could not adequately map {"id":null,"first_name":null,"last_name":null,"email":null,"alias":null,"ent_id":null,"status_id":null,"profile_image_id":null,"update_dt":null,"creation_dt":null,"relationships":null} to concepts
+	1 	=>		 arr(1)[
+		0 => object  : 	{"id":null,"first_name":null,"last_name":null,"email":null,"alias":null,"ent_id":null,"status_id":null,"profile_image_id":null,"update_dt":null,"creation_dt":null,"relationships":null}
+	]
+
+ {07-21-2016  08:18:44} 	  line {380}	 of {Sm/Model/Model.php};
+	0 => str     : 	Could not adequately map {"id":null,"first_name":null,"last_name":null,"email":null,"alias":null,"ent_id":null,"status_id":null,"profile_image_id":null,"update_dt":null,"creation_dt":null,"relationships":null} to concepts
+	1 	=>		 arr(3)[
+		0 => str     : 	concepts
+		1 => int     : 	1
+		2 	=>		 arr(1)[
+			walk => object  : 	Closure
+		]
+	]
+
+ {07-21-2016  08:18:44} 	  line {191}	 of {Spwashi/Controller/Page/PageController.php};
+	0 => str     : 	Could not adequately map {"id":null,"first_name":null,"last_name":null,"email":null,"alias":null,"ent_id":null,"status_id":null,"profile_image_id":null,"update_dt":null,"creation_dt":null,"relationships":null} to concepts
+	1 => int     : 	229
+	2 => str     : 	/var/www/dev/s/Sm/Model/Model.php
+	3 	=>		 arr(2)[
+		0 => str     : 	spwashi
+		1 => str     : 	force-physics
+	]
+

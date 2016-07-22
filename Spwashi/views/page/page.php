@@ -31,6 +31,7 @@ $is_debug    = isset($is_debug) ? $is_debug : false;
 $debug_level = isset($debug_level) ? $debug_level : Controller::DEBUG;
 $nonce       = \Sm\Form\Form::generate_nonce('frm-page_edit');
 
+$sections     = isset($sections) ? $sections : "";
 $urls         = [];
 $urls['edit'] = Toute::generate_url('spwashi_page_view', [$page->context, $page->alias, 'edit'], $is_debug ? '?debug' : '');
 $urls['view'] = Toute::generate_url('spwashi_page_view', [$page->context, $page->alias], $is_debug ? '?debug' : '')
@@ -132,6 +133,7 @@ $urls['view'] = Toute::generate_url('spwashi_page_view', [$page->context, $page-
 	</div>
 </article>
 <script id="spwashi_config" type="application/json"><?= json_encode(ModelMeta::dump()) ?></script>
+<script id="section_models" type="application/json"><?= $sections ?? "" ?></script>
 <?php if ($is_debug): ?>
 	<?php switch ($debug_level):
 		case Controller::DEBUG_LEVEL_1:

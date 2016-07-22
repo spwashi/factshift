@@ -96,16 +96,18 @@ require(["Sm-Core-Core"], function () {
 			Sm.loaded.when_loaded(when_loaded, (function (EntityType) {
 				return function () {
 					if (!Sm.Entities[EntityType]) return;
-					var $body = $(document.body);
 					Sm.Entities[EntityType].complete();
-					if (Sm.Entities[EntityType].Wrapper) {
-						var to_find = '.spwashi-' + EntityType.toLowerCase();
-						Sm.Entities[EntityType].Wrapper.hydrate({elements: $body.find(to_find)});
-					} else {
-						Sm.CONFIG.DEBUG && console.log(EntityType, ' - missing wrapper');
-					}
+
+					var $body             = $(document.body);
+					var lower_entity_name = EntityType.toLowerCase();
+					var to_find           = '.spwashi-' + lower_entity_name;
+					var models_json       = document.getElementById(lower_entity_name + "_models");
+
+					Sm.Entities[EntityType].Wrapper.hydrate({
+						elements: $body.find(to_find),
+						models:   models_json ? JSON.parse(models_json.textContent) : null
+					});
 					Sm.CONFIG.DEBUG && console.log(EntityType, Sm.Entities[EntityType]);
-					//Sm.CONFIG.DEBUG && console.log(' -- ', EntityType, ' has been loaded');
 					(EntityType.indexOf("__") === -1) && Sm.Extras.visual_debug(EntityType + ' has been loaded!');
 				}
 			})(EntityType), 'entities_' + EntityType).then(function (e, d, r) {}).catch((function (e) {

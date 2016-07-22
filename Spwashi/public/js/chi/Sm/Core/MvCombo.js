@@ -172,6 +172,7 @@ require(['require', 'Sm', 'Sm-Core-util', 'Emitter'], function (require) {
 			 */
 			var prepare_known_relationships = (function (self) {
 				return function () {
+					//self._relationships_to_add && Sm.CONFIG.DEBUG && console.log(self._relationships_to_add);
 					self._prepare_known_relationships(self._relationships_to_add);
 					!Sm.CONFIG.DEBUG && (self._relationships_to_add = null);
 				}
@@ -198,7 +199,7 @@ require(['require', 'Sm', 'Sm-Core-util', 'Emitter'], function (require) {
 				},
 				/**
 				 * @alias Sm.Core.MvCombo.r_id
-				 * @type {Sm.Core.MvCombo.Identity.r_id|Sm.Core.Identifier.r_id*}  */
+				 * @type {Sm.Core.MvCombo.Identity.r_id|Sm.Core.Identifier.r_id|*}  */
 				r_id:   {
 					get: get_fn('r_id')
 				}
@@ -362,17 +363,24 @@ require(['require', 'Sm', 'Sm-Core-util', 'Emitter'], function (require) {
 		_prepare_known_relationships: function (relationships) {
 			relationships = relationships || {};
 			var self_type = this.type;
+			//Sm.CONFIG.DEBUG && console.log(relationships, ' -- relations for ' + self_type);
 			for (var relationship_index in relationships) {
 				if (!relationships.hasOwnProperty(relationship_index)) continue;
 				var actual_relationship = relationships[relationship_index];
 				/**
 				 * If the index is not existent or not an object, no usable data is there
 				 */
-				if (!actual_relationship || !(typeof actual_relationship === "object")) continue;
+				if (!actual_relationship || !(typeof actual_relationship === "object")) {
+					Sm.CONFIG.DEBUG && console.log('mvcombo,pkn,-1', actual_relationship);
+					continue;
+				}
 				/**
 				 * The '_meta' index is essential for identifying the mapped object's type (imperfect, I know, but hey)
 				 */
-				if (!actual_relationship._meta) continue;
+				if (!actual_relationship._meta) {
+					Sm.CONFIG.DEBUG && console.log('mvcombo,pkn,0-', actual_relationship);
+					continue;
+				}
 				if (!actual_relationship.items) continue;
 				var relationship_items = actual_relationship.items;
 				for (var other_model_id in relationship_items) {
@@ -380,7 +388,10 @@ require(['require', 'Sm', 'Sm-Core-util', 'Emitter'], function (require) {
 					var mapped_props = relationship_items[other_model_id];
 					if (!mapped_props || !(typeof mapped_props === "object")) continue;
 					var map = mapped_props._map || false;
-					if (!map) continue;
+					if (!map) {
+						Sm.CONFIG.DEBUG && console.log('mvcombo,pkn,nomap,', mapped_props);
+						continue;
+					}
 					/** @type {*|{_model_type:string}} */
 					var other_model = mapped_props.model;
 
@@ -413,7 +424,10 @@ require(['require', 'Sm', 'Sm-Core-util', 'Emitter'], function (require) {
 						}
 					}
 					// If we don't know the other model type, skip it
-					if (!other_model_type) continue;
+					if (!other_model_type) {
+						Sm.CONFIG.DEBUG && console.log('mvcombo,pkn,omt', other_model);
+						continue;
+					}
 					var self           = this;
 					/**
 					 * Initialize the MvCombo of the other model and add the relationship to this MvCombo
@@ -421,10 +435,16 @@ require(['require', 'Sm', 'Sm-Core-util', 'Emitter'], function (require) {
 					var when_loaded_fn = (function (other_model_type, other_model, id, self, map, relationship_index) {
 						return function () {
 							var smOtherType = Sm.Entities[other_model_type];
-							if (!smOtherType) return;
+							if (!smOtherType) {
+								Sm.CONFIG.DEBUG && console.log('mvcombo,pkn,wlfn,omt', Sm.Entities, other_model_type);
+								return;
+							}
 							/** @type Sm.Core.MvWrapper*/
 							var otherWrapper = smOtherType.Wrapper;
-							if (!otherWrapper) return;
+							if (!otherWrapper) {
+								Sm.CONFIG.DEBUG && console.log('mvcombo,pkn,wlfn,owt', Sm.Entities, other_model_type);
+								return;
+							}
 							/** @type {*|Sm.Core.MvCombo} */
 							var other_MV = otherWrapper.init_MvCombo({
 								model: other_model,
@@ -455,7 +475,7 @@ require(['require', 'Sm', 'Sm-Core-util', 'Emitter'], function (require) {
 						Sm.loaded.when_loaded('entities_' + other_model_type, when_loaded_fn, 'add_rel_to_other_');
 					}
 				}
-				delete relationships[relationship_index];
+				//delete relationships[relationship_index];
 			}
 			return relationships;
 		},

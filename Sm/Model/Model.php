@@ -161,8 +161,10 @@ class Model extends Abstraction\Model {
 				}
 				return $new_classes;
 			} else {
-				throw new \Exception;
+				throw new ModelNotFoundException('Could Not Find Any Models -> ' . json_encode(func_get_args()));
 			}
+		} catch (ModelNotFoundException $e) {
+			return new ModelIterator();
 		} catch (\Exception $e) {
 			Log::init($id)->log_it();
 			throw new ModelNotFoundException('Could Not Find Any Models -> ' . json_encode(func_get_args()), ModelNotFoundException::REASON_NOT_FOUND);
@@ -224,7 +226,7 @@ class Model extends Abstraction\Model {
 			$actual_map_name = $map_table_name;
 			$map_table_name  = ModelMeta::get_table_alias($actual_map_name) ?: $map_table_name;
 			#If we couldn't guess the name of the Map table, throw an error
-			if (!$map_table_name) throw new ModelNotFoundException('Could not adequately map ' . $actual_map_name . " with " . json_encode($le));
+			if (!$map_table_name) throw new ModelNotFoundException('Could not adequately map ' . $type . " to " . static::getTableName());
 
 			#Try to make a class that maps the two relationships together
 			/** @var Map $map_class A class that links two entities together */
@@ -378,7 +380,7 @@ class Model extends Abstraction\Model {
 				Log::init([$message, func_get_args()])->log_it();
 				throw $e;
 			} else if ($e instanceof ModelNotFoundException) {
-				throw $e;
+//				throw $e;
 			}
 			return $this;
 		}

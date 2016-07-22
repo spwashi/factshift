@@ -1,10 +1,14 @@
 <?php
-use Sm\Model\ModelMeta;
+use Sm\Response\Http;
+use Spwashi\Model\Section;
 
 /**
  * @var PDO $connection
  */
-Kint::dump(ModelMeta::dump());
+$Section = Section::find(2);
+$Section->findType("sections");
+//Http::make_resource_headers('json',"Section 2");
+return(($Section));
 
 
 //while($connection->query($query)){

@@ -116,8 +116,7 @@ class PageController extends SpwashiController {
 					          $e->getMessage()
 				          ])->log_it();
 			}
-			$current_page->findType('concepts');
-			$current_page->findType('dimensions');
+			$current_page->findType('concepts')->findType('dimensions');
 
 			try {
 				$dictionaries = Dictionary::findAll(['user_id' => $user_id]);
@@ -146,13 +145,13 @@ class PageController extends SpwashiController {
 			$generated_sections    = SectionFactory::generate_sections($current_section_array, $is_edit, function (Model &$section) {
 				return ($section->findType(new Concept));
 			});
-
 			$debug     = isset($_GET['debug']) ? $_GET['debug'] : false;
 			$secs      = $generated_sections['sections'];
 			$variables = [
 				'page'              => $current_page,
 				'current_dimension' => $current_dimension,
 				'type'              => $type,
+				'sections'          => $generated_sections['sections'],
 				'section_string'    => $generated_sections['text'],
 				'section_tree'      => $generated_sections['tree'],
 				'is_edit'           => ($type == 'edit'),

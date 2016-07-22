@@ -23,15 +23,17 @@ class ModelIterator implements \Iterator, \JsonSerializable {
 
 	/**
 	 * @param Model|Model[] $item
+	 * @param null          $index
 	 */
-	public function push($item) {
+	public function push($item, $index = null) {
 		if ($item instanceof Model) {
-			$id                = isset($item->ent_id) && strlen($item->ent_id) ? $item->ent_id : $item->getModelType() . '|' . $item->id;
+			$id                = $index ?? (isset($item->ent_id) && strlen($item->ent_id) ? $item->ent_id : $item->getModelType() . '|' . $item->id);
 			$this->model_ids[] = $id;
 			$this->models[$id] = $item;
 		} else if (is_array($item)) {
-			foreach ($item as $value) {
-				$this->push($value);
+			foreach ($item as $key => $value) {
+				//The key only matters if it isn't an id
+				$this->push($value, is_numeric($key) ? null : $key);
 			}
 		}
 	}

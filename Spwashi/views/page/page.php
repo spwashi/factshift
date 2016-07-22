@@ -134,6 +134,7 @@ $urls['view'] = Toute::generate_url('spwashi_page_view', [$page->context, $page-
 </article>
 <script id="spwashi_config" type="application/json"><?= json_encode(ModelMeta::dump()) ?></script>
 <script id="section_models" type="application/json"><?= $sections ?? "" ?></script>
+<?php Kint::dump($sections) ?>
 <?php if ($is_debug): ?>
 	<?php switch ($debug_level):
 		case Controller::DEBUG_LEVEL_1:

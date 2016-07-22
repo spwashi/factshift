@@ -196,12 +196,12 @@ class Section extends Model {
 
 		$self = $this->findType('sections', $attributes, [
 			'is_reciprocal' => $is_reciprocal,
-			'walk'         => $walk,
-			'order_by'     => 'section_section_map.position',
+			'walk'          => $walk,
+			'order_by'      => 'section_section_map.position',
 		])->findType('sections', $attributes, [
 			'is_reciprocal' => !$is_reciprocal,
-			'walk'         => $walk,
-			'order_by'     => 'section_section_map.position',
+			'walk'          => $walk,
+			'order_by'      => 'section_section_map.position',
 		]);
 		return $self;
 	}
@@ -216,13 +216,13 @@ class Section extends Model {
 	public function findSectionsRecursive($settings = [], &$passed = []) {
 		return $this->findSections([
 			                           'walk' =>
-				                           function (&$val) use ($settings, &$passed) {
+				                           function (&$val, $key = null, $relationship_index = null, $self = null) use ($settings, &$passed) {
 					                           if (is_callable($settings['walk'])) {
 						                           $fn = $settings['walk'];
-						                           $fn($val);
+						                           $fn($val, $key, $relationship_index, $self);
 					                           }
 					                           /** @var Section $val */
-					                           $_v = "{$this->id}|{$val->id}";
+					                           $_v = "{$this->id}|{$val->id}|$relationship_index";
 					                           if (!in_array($_v, $passed)) {
 						                           $passed[] = $_v;
 						                           $val->findSectionsRecursive($settings, $passed);
@@ -237,7 +237,7 @@ class Section extends Model {
 	 * @param Section $self              This
 	 * @param array   $properties_of_map The properties of the SectionSectionMap
 	 * @param array   $object_properties The properties of the found object
-	 * @param bool    $is_reciprocal      Whether ot not the section relationship is reciprocal (what relates to what?)
+	 * @param bool    $is_reciprocal     Whether ot not the section relationship is reciprocal (what relates to what?)
 	 *
 	 * @return mixed
 	 */

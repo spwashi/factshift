@@ -498,18 +498,18 @@ require(['require', 'Sm', 'Sm-Core-util', 'Emitter'], function (require) {
 			var _MvCombo = this;
 			var Model    = this.Model;
 
-			if (View instanceof ViewType_) {
+			if (!!View && typeof View === "object" && View.cid) {
+				if (!context_element && document.body.contains(View.el.parentNode))context_element = View.el.parentNode;
+				View.referenceElement = context_element || View.referenceElement || false;
+				if (this.ViewList.indexOf(View.cid) > -1) {
+					var in_def = this.defaultViewList.indexOf(View.cid);
+					if (in_def > -1) this.defaultViewList.splice(in_def, 1);
+					return View;
+				}
 				//set the View's model
 				View.model = Model;
 				//set the MvCombo of the View
 				if (!View.MvCombo) View.setMvCombo(_MvCombo);
-
-				//If we're adding the View, remove the first defaultViewList
-				if (!!this.defaultViewList && !!this.defaultViewList.length) this.removeView(this.defaultViewList[0]);
-
-				if (!context_element && document.body.contains(View.el.parentNode))
-					context_element = View.el.parentNode;
-				View.referenceElement = context_element || View.referenceElement || false;
 			} else {
 				/** @type {{el:HTMLElement|boolean, model:Sm.Core.SmModel}} Properties to initialize the View */
 				var view_props = {
@@ -555,7 +555,7 @@ require(['require', 'Sm', 'Sm-Core-util', 'Emitter'], function (require) {
 					View.referenceElement = context_element;
 				}
 			}
-			if (!(View.cid in this.ViewList)) {
+			if (!(this.ViewList.indexOf(View.cid) > -1)) {
 				this.Views[View.cid] = View;
 				this.ViewList.push(View.cid);
 			}
@@ -603,8 +603,13 @@ require(['require', 'Sm', 'Sm-Core-util', 'Emitter'], function (require) {
 			var returnView = false;
 			if (reference_element && !!this.ViewList.length) {
 				var potential_view = false;
+				var MvCombo_       = this;
+				//Sm.CONFIG.DEBUG && console.log('mvcombo,gv,0', this.defaultViewList, ' - ', this.Identity.id);
 				/** @this {Sm.Core.SmView} */
 				this.forEachView(function () {
+					if (strict && MvCombo_.defaultViewList.indexOf(this.cid) >= 0) {
+						return;
+					}
 					if (!View && this.referenceElement == reference_element) View = this;
 					if (!this.referenceElement) potential_view = this;
 				});
@@ -612,6 +617,8 @@ require(['require', 'Sm', 'Sm-Core-util', 'Emitter'], function (require) {
 					returnView = View;
 				} else if (!View && !strict) {
 					returnView = potential_view ? potential_view : this.addView(null, reference_element, {display_type: display_type});
+				} else {
+					return false;
 				}
 			}
 			returnView = !returnView ? this.addView(null, reference_element, {
@@ -1408,7 +1415,7 @@ require(['require', 'Sm', 'Sm-Core-util', 'Emitter'], function (require) {
 				}
 				Sm.Core.MvWrapper.register_MV_replacement(obj.replaced_MVs, obj.replacement_MVs, parameters.replacement_indices);
 			}
-
+			//Sm.CONFIG.DEBUG && console.log('mvcombo,replmv,0,get_return_value', obj);
 			return Promise.resolve(obj);
 		};
 
@@ -1452,7 +1459,7 @@ require(['require', 'Sm', 'Sm-Core-util', 'Emitter'], function (require) {
 		for (var j = 0; j < MvComboList.length; j++) {
 			/** @type {Sm.Entities.Section.MvCombo} */
 			var SecondMvCombo = MvComboList[j];
-			Sm.CONFIG.DEBUG && console.log(SecondMvCombo.r_id);
+			//Sm.CONFIG.DEBUG && console.log('mvcombo,replmv,1,2nd MVid',SecondMvCombo.r_id);
 
 			if (array_to_search.indexOf(SecondMvCombo.Identity.r_id) < 0) {
 				parameters.MvCombo       = SecondMvCombo;

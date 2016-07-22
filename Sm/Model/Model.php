@@ -128,6 +128,7 @@ class Model extends Abstraction\Model {
 				$newClass = new static;
 				$newClass->set($output, false);
 				$newClass->findPermissions();
+				$newClass->cache();
 				return $newClass;
 			} else {
 				var_dump($output);
@@ -183,6 +184,10 @@ class Model extends Abstraction\Model {
 	 *
 	 *                                               walk               =>
 	 *                                               A function that is to be run for every element in the map array
+	 *
+	 *                                               use_cache          =>
+	 *                                               Whether or not we should utilize the cache for this model. Right now, this doesn't make anything faster.
+	 *                                               Defaults to "on"
 	 * @return static
 	 * @throws ModelNotFoundException
 	 * @throws \Exception
@@ -194,7 +199,8 @@ class Model extends Abstraction\Model {
 		$self          = new static();
 		$is_reciprocal = isset($extras['is_reciprocal']) && $extras['is_reciprocal'] ? true : false;
 		/** @var RelationshipIndexContainer $maps */
-		$maps = $self->maps;
+		$maps      = $self->maps;
+		$use_cache = $extras['use_cache'] ?? true;
 		try {
 			//This just tells us a little bit about what we are about to find
 			$self_rel =& $maps->getRelationshipIndex($type);
@@ -309,6 +315,10 @@ class Model extends Abstraction\Model {
 			$model_array = [];
 
 			#----------------------------
+			//sometimes we might want to return an array indexed by the relationship, too
+			$append_to_holder_assoc = $append_to_reciprocal_holder_assoc = false;
+//			if (!isset($extras['holder_association'])) $append_to_holder_assoc = true;
+//			if (!isset($extras['reciprocal_holder_association'])) $append_to_reciprocal_holder_assoc = true;
 			/** @var string This is the way that we associate Models in the RelatorRemix. Could be by position or date added, defaults to the modelID */
 			$holder_assoc_index = isset($extras['holder_association']) ? $extras['holder_association'] : $model_identifier;
 			/** @var string This is the way that we associate Models in the RelatorRemix for the other Model. Could be by position or date added, defaults to the modelID */
@@ -331,6 +341,20 @@ class Model extends Abstraction\Model {
 						unset($object_properties[$object_name]);
 					}
 				}
+				$_tmp = false;
+				if ($use_cache) {
+					if (($object_properties['ent_id'] ?? false) && ($_tmp = static::get_from_cache($object_properties['ent_id'])) != false) {
+						$secondary_model = $_tmp;
+					} else if (($object_properties['id'] ?? false) && ($_tmp = static::get_from_cache($secondary_model->getModelType() . '|' . $object_properties['id'])) != false) {
+						$secondary_model = $_tmp;
+					} else {
+						$secondary_model->cache();
+					}
+				}
+				#Set the properties of the Secondary Model, but don't mark change
+				$secondary_model->set($object_properties, false);
+				#We always cache the model, just in case
+				if (!$_tmp) $secondary_model->cache();
 				#----------------------------
 				$RelationshipIndex           =& $this->maps->getRelationshipIndex($relationship_index, $properties_of_map, $is_reciprocal);
 				$ReciprocalRelationshipIndex =& $secondary_model->maps->getRelationshipIndex(static::$table_name, $properties_of_map, !$is_reciprocal);
@@ -343,8 +367,10 @@ class Model extends Abstraction\Model {
 
 				#Store each relationship in the proper holder at the holder_assoc_index (again, this is the index that distinguishes each relationship)
 				if (isset($properties_of_map[$holder_assoc_index])) {
-					$model_array[$properties_of_map[$holder_assoc_index]] = $secondary_model;
-					$RelationshipIndex->push($self_relationship, $properties_of_map[$holder_assoc_index]);
+					$_append                     = $append_to_holder_assoc ? '|' . $RelationshipIndex->get_relationship_index() : '';
+					$_holder_index               = $properties_of_map[$holder_assoc_index] . $_append;
+					$model_array[$_holder_index] = [$secondary_model, $RelationshipIndex->get_relationship_index()];
+					$RelationshipIndex->push($self_relationship, $_holder_index);
 				} else {
 					$model_array[] = $secondary_model;
 					$RelationshipIndex->push($self_relationship, $properties_of_map['id']);
@@ -353,7 +379,9 @@ class Model extends Abstraction\Model {
 				$reciprocal_relationship = new Relationship($_map, $this);
 				#Store each relationship in the proper holder at the holder_assoc_index (again, this is the index that distinguishes each relationship)
 				if (isset($properties_of_map[$reciprocal_holder_assoc_index])) {
-					$ReciprocalRelationshipIndex->push($reciprocal_relationship, $properties_of_map[$reciprocal_holder_assoc_index]);
+					$_reciprocal_append       = $append_to_reciprocal_holder_assoc ? $ReciprocalRelationshipIndex->get_relationship_index() : '';
+					$_reciprocal_holder_index = $properties_of_map[$reciprocal_holder_assoc_index] . $_reciprocal_append;
+					$ReciprocalRelationshipIndex->push($reciprocal_relationship, $_reciprocal_holder_index);
 				} else {
 					$ReciprocalRelationshipIndex->push($reciprocal_relationship, $properties_of_map['id']);
 				}
@@ -364,14 +392,15 @@ class Model extends Abstraction\Model {
 				#Label which entities are being linked in this class
 				$RelationshipIndex->_meta->_linked_entities           = $RelationshipIndex->_meta->_linked_entities ?? [static::getModelType(), $model->getModelType()];
 				$ReciprocalRelationshipIndex->_meta->_linked_entities = $ReciprocalRelationshipIndex->_meta->_linked_entities ?? [$model->getModelType(), static::getModelType()];
-				#Set the properties of the Secondary Model, but don't mark change
-				$secondary_model->set($object_properties, false);
+
 				unset ($RelationshipIndex);
 				unset ($ReciprocalRelationshipIndex);
 			}
 
 			if (isset($extras['walk']) && is_callable($extras['walk']) && !empty($model_array)) {
-				array_walk($model_array, $extras['walk']);
+				foreach ($model_array as $key => $value) {
+					$extras['walk']($value[0], $key, $value[1], $this);
+				}
 			}
 			return $this;
 		} catch (\Exception $e) {

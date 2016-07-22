@@ -28,7 +28,9 @@ class RelationshipIndexContainer implements \JsonSerializable {
 		$properties           = [];
 		$relationship_indices = $this->relationship_indices;
 		foreach ($relationship_indices as $name => $RelationshipIndex) {
-			if (!($this->gotten[$name] ?? false)) continue;
+			/** @var RelationshipIndex $RelationshipIndex */
+//			if (!($this->gotten[$name] ?? false)) continue;
+			if(!count($RelationshipIndex->get_items())) continue;
 			$properties[$name] = $RelationshipIndex;
 		}
 		return $properties;

@@ -56,7 +56,8 @@ abstract class Model implements \JsonSerializable {
 	];
 	protected $is_blueprint = false;
 	/** @var array An array of the variables that have been changed; useful for row saving and updating */
-	protected $_changed = [];
+	protected        $_changed    = [];
+	protected static $model_cache = [];
 	/**
 	 * Return a boolean if we are or are not allowed to do something
 	 * @param $action
@@ -235,5 +236,19 @@ abstract class Model implements \JsonSerializable {
 	 */
 	protected function getDefaultProperties() {
 		return static::$default_properties;
+	}
+	/**
+	 * @param $model_identifier
+	 * @return bool|Model
+	 */
+	public static function get_from_cache($model_identifier) {
+		return static::$model_cache[$model_identifier] ?? false;
+	}
+	public function cache() {
+		if ($this->id)
+			static::$model_cache[$this->getModelType() . '|' . $this->id] =& $this;
+		if ($this->ent_id)
+			static::$model_cache[$this->ent_id] =& $this;
+		return $this;
 	}
 }

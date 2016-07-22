@@ -103,76 +103,7 @@ require(['require', 'Class', 'Sm', 'Sm-Core-Identifier'], function (require, Cla
 					view:  el
 				});
 
-				//Find the nearest relationship container
-				var $closest_rel_container = $el.closest('.relationship-container');
-				//Find the nearest element that belongs to an initialized View already
-				var $closest_view_$el = $el.parent().closest('[data-view_r_id]');
-				//If there is a relationship container and an initialized View...
-				if ($closest_rel_container[0] && $closest_view_$el[0]) {
-					//Get the Other MVCombo based on the entity id in the element .imperfect. todo think of a better solution
-					/**
-					 * The Identity of the MvCombo that is going to be related
-					 * @type {Sm.Core.Identifier|boolean}
-					 */
-					var OtherMvComboID = Sm.Core.Identifier.retrieve({
-						ent_id: $closest_rel_container.data('ent_id')
-					});
-					var OtherMvCombo;
-					//If we found another MvCombo...
-					if (OtherMvComboID) {
-						OtherMvCombo = OtherMvComboID.getResource();
-
-						var reference_element = el.parentNode;
-						var otherView         = Sm.Core.Identifier.retrieve({r_id: $closest_view_$el.data('view_r_id')});
-						if (otherView) otherView = otherView.getResource();
-						//The Other MvCombo should already have its type loaded, but just in case something is wonky, wait for it to be loaded
-						Sm.loaded.when_loaded(['entities_' + _Mv.type, 'entities_' + OtherMvCombo.type], (function (OtherMvCombo, _Mv, $closest_rel_container, reference_element, otherView) {
-							return function () {
-								//Find out how the two entities should be related
-								var Relationship_ = OtherMvCombo.getRelationship(_Mv.Identity);
-								/**
-								 * The Meta object that corresponds to the OtherMv (the Mv that we has already been initialized)
-								 * @type {Sm.Core.Meta|*}
-								 * @private
-								 */
-								var OtherMeta_    = Sm.Entities[OtherMvCombo.type].Meta;
-								/** The Index of the relationship */
-								var rel_index     = $closest_rel_container.data('relationship_index');
-
-								//If everything is in order...
-								if (Relationship_
-									&& OtherMeta_.relationship_type_obj
-									&& OtherMeta_.relationship_type_obj[rel_index]
-									&& OtherMeta_.relationship_type_obj[rel_index].primary_key
-									&& OtherMeta_.relationship_type_obj[rel_index].secondary_key) {
-									/** An object to identify each view in their respective indices */
-									var rel_obj = {};
-									//Get the Primary and Secondary keys of the relationship according to the OtherMv
-									var primary   = OtherMeta_.relationship_type_obj[rel_index].primary_key;
-									var secondary = OtherMeta_.relationship_type_obj[rel_index].secondary_key;
-
-									//The other view is the primary view
-									rel_obj[primary] = otherView;
-									//This view is the secondary view
-									rel_obj[secondary] = _Mv.getView({
-										reference_element: reference_element,
-										strict:            true
-									});
-									//Register the view relationship
-									Relationship_.register_view_relationship(rel_obj);
-									//Add this view as being related to the other one
-									otherView.add_relationship({
-										self_map_index:          primary,
-										map_index:               secondary,
-										Relationship:            Relationship_,
-										relationship_type_index: rel_index
-									});
-								}
-							}
-						})(OtherMvCombo, _Mv, $closest_rel_container, reference_element, otherView), 'add_parent_relationship')
-
-					}
-				}
+				//todo there should be a way to register view relationships? At the moment, this is unimplemented
 				//If the element has the active class, add it as active. Otherwise, just add it as loaded.
 				var add_as = $el.hasClass('active') ? 'active' : 'loaded';
 				this.add_MV_as(add_as, _Mv.Identity);

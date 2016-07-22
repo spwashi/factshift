@@ -100,16 +100,15 @@ class SectionFactory {
 		$b       = [];
 		$sec_arr = [];
 		foreach ($section_array as $key => $alleged_section) {
-			if (!is_numeric($key)) continue;
 			if (is_array($alleged_section) && isset($alleged_section['model']))
 				$section =& $alleged_section['model'];
 			else
 				$section = $alleged_section;
 
-			$sec_arr[] = $section;
+			$sec_arr[$section->id] = $section;
 			if (is_callable($walk)) $walk($section);
 
-			$section->findSectionsRecursive(['walk' => function ($s) use (&$sec_arr, $walk) {
+			$section->findSectionsRecursive(['walk' => function ($s, $k = null, $rel = null, $previous_section = null) use (&$sec_arr, $walk, $section) {
 				if (is_callable($walk)) $walk($s);
 				$sec_arr[$s->id] = $s;
 			}]);

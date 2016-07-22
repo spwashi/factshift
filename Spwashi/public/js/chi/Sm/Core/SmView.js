@@ -352,9 +352,9 @@ require(['require', 'backbone', 'jquery',
 			        }
 		        },
 		        mark_added:      function () {
-			        this.setStatus({
-				        rendered: true
-			        });
+			        this.setStatus({rendered: true});
+			        //remove the MvCombo as default View
+			        this.MvCombo.addView(this);
 			        this.post_add_hook();
 		        },
 		        /**
@@ -421,6 +421,7 @@ require(['require', 'backbone', 'jquery',
 				        });
 				        self.init_elements();
 				        self.delegateEvents(self.events());
+				        MvCombo_.addView(this);
 				        return el_1[0];
 			        };
 			        var Garage_          = Sm.Entities[self_type].Garage;
@@ -736,6 +737,9 @@ require(['require', 'backbone', 'jquery',
 				        var other_r_id = OtherMvCombo.r_id;
 				        var Refs       = Sm.Core.MvWrapper.get_effective_MV(other_r_id, false, true);
 				        Sm.CONFIG.DEBUG && console.log(Refs, other_r_id);
+				        //For some reason, this fixes an error. Will look into it later
+				        //(when the parent of this is part of the effective MV, we don't know what we're doing)
+				        return result;
 				        if (Refs) {
 					        return Sm.Core.SmView.replace_with_elements({
 						        referenceElement:          self_index_element,
@@ -1151,7 +1155,8 @@ require(['require', 'backbone', 'jquery',
 			        if (!RemovedMV) continue;
 			        /** @type {Sm.Core.SmView} */
 			        var ReplacedView = RemovedMV.getView({strict: true, reference_element: referenceElement});
-			        if (!RemovedFirstView) {
+			        if (!ReplacedView) continue;
+			        if (!RemovedFirstView && ReplacedView) {
 				        RemovedFirstView = ReplacedView;
 				        continue;
 			        }
@@ -1180,11 +1185,10 @@ require(['require', 'backbone', 'jquery',
 					        if (RepIdentity) ReplacementMvCombo = RepIdentity.getResource();
 				        }
 			        }
-			        if (!ReplacementMvCombo || !ReplacementMvCombo.getView) {
-				        return last_promise;
-			        }
+			        if (!ReplacementMvCombo || !ReplacementMvCombo.getView) return last_promise;
 			        /** @type {Sm.Core.SmView} The View in question */
-			        var CurrentView   = ReplacementMvCombo.getView({reference_element: referenceElement});
+			        var CurrentView = ReplacementMvCombo.getView({reference_element: referenceElement});
+			        if (!CurrentView) return last_promise;
 			        /**
 			         *
 			         * @param PreviousView {Sm.Core.SmView} The View that we dealt with before this one
@@ -1197,9 +1201,7 @@ require(['require', 'backbone', 'jquery',
 					        synchronous:     false
 				        }).then(function (el) {
 					        CurrentView.refresh_all();
-					        if (!PreviousView) {
-						        Sm.CONFIG.DEBUG && console.log("Previous View does not exist ", PreviousView, CurrentView);
-					        }
+					        if (!PreviousView) Sm.CONFIG.DEBUG && console.log("Previous View does not exist ", PreviousView, CurrentView);
 					        var last_el                  = PreviousView.el;
 					        //this is where we are appending the View
 					        Sm.Core.util.insertAfter(CurrentView.el, last_el);
@@ -1215,8 +1217,8 @@ require(['require', 'backbone', 'jquery',
 					        if (forEachView) forEachView.call(CurrentView);
 					        return CurrentView;
 				        }).catch(function (res) {
-					        Sm.CONFIG.DEBUG && console.log(res);
-					        throw res;
+					        Sm.CONFIG.DEBUG && console.log('smview,arf,ftw,3', res, PreviousView);
+					        return PreviousView;
 				        });
 
 			        };

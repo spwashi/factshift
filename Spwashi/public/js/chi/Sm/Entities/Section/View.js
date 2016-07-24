@@ -147,7 +147,6 @@ require(['require'], function (require) {
 			 * This is a basic click handler that operates based only on the target of the click.
 			 * This one in particular handles
 			 *  * scaling
-			 *  * prompting edits
 			 *  * debugging
 			 *  * deleting
 			 *  * adding relationships
@@ -156,7 +155,6 @@ require(['require'], function (require) {
 			 * @param e
 			 */
 			handle_click:               function (target, e) {
-				/** NOTE: addresses pop-up button click */
 				var $target = $(target);
 				if (!this.MvCombo) return false;
 				var self             = this;
@@ -446,7 +444,6 @@ require(['require'], function (require) {
 					e.stopPropagation();
 				},
 				click:      function (e) {
-					//this.prompt_edit();
 					var isRightMB = (e.which && e.which == 3) || (e.button && e.button == 2);
 					if (isRightMB) Sm.CONFIG.DEBUG && console.log(this);
 

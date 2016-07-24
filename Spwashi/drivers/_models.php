@@ -187,7 +187,8 @@ $config = [
 			'prefix'        => 'page',
 			'table'         => 'pages',
 			'relationships' => [
-				'_inherit' => ['_' => ['sections', 'dimensions', 'concepts']]
+				'_inherit' => ['_' => ['sections', 'dimensions', 'concepts', 'users']],
+				'users'    => ['existent' => false],
 			],
 			'properties'    => [
 				'all'          => [
@@ -419,7 +420,23 @@ $config = [
 					'user_id'
 				],
 				'api_gettable' => '*'
-			]],
+			]
+		],
+		'PageUserMap'          => [
+			'table'      => 'page_user_map',
+			'alias_for'  => 'pages.user_id',
+			'properties' => [
+				'all'          => [
+					'id',
+					'user_id'
+				],
+				'api_settable' => [
+					'id',
+					'user_id'
+				],
+				'api_gettable' => '*'
+			]
+		],
 		'SectionSectionMap'    => [
 			'table'      => 'section_section_map',
 			'prefix'     => 'ssm_',

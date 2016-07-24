@@ -47,8 +47,6 @@ require(['require',
 						width:           '300px'
 					});
 					$content.val(active).trigger('change');
-					$content.on('click', function () {$content.select2('data', [{id: 4, text: 'boonman'}], true);$content.select2("updateResults");});
-					Sm.CONFIG.DEBUG && console.log($content.val());
 					return parameters.$relationship_index_string;
 				}
 				return Sm.Entities.Abstraction.Garage.prototype._populate_relationship_index.call(this, parameters);

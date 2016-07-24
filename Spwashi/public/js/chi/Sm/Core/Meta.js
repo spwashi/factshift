@@ -206,7 +206,6 @@ define(['Emitter'], function (Emitter) {
 		 */
 		get_relationship_type:             function (settings, identifier) {
 			var self_type             = this.type || false;
-			/** NOTE: this is where iterates over object to find return type**.
 			 settings                  = settings || {};
 			 /** @type {boolean} Whether the relationship is reciprocal. If so, could possibly change the guess of what the relationship is based on the map */
 			var is_reciprocal         = !!settings.is_reciprocal;

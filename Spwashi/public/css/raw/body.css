@@ -167,7 +167,10 @@ body > .row,
 #add-concept {
   width: 500px;
 }
-.relationship-index-container .select2-selection .select2-selection__choice {
+.relationship-container .select2-selection {
+  width: 300px;
+}
+.relationship-container .select2-selection .select2-selection__choice {
   padding: 5px;
 }
 .sm-tooltip {
@@ -275,10 +278,41 @@ body > .row,
 .spwashi-entity .button-control .add {
   display: none;
 }
+.spwashi-entity.tag {
+  max-width: 200px;
+  max-height: 30px;
+  overflow: hidden;
+  padding: 3px;
+  background-color: rgba(220, 220, 220, 0.35);
+  border: 4px solid rgba(126, 125, 125, 0.15);
+  margin: 5px 5px 5px 0;
+}
+.spwashi-entity.tag > .content {
+  max-height: 20px;
+  padding: 0;
+  overflow: hidden;
+  white-space: nowrap;
+}
+.spwashi-entity.tag:last-child {
+  margin-right: 0;
+}
+.spwashi-entity.tag.focused {
+  background-color: rgba(126, 125, 125, 0.15);
+  border: 2px solid rgba(100, 100, 100, 0.15);
+  color: #0a0b0c;
+  font-style: italic;
+  border-bottom-left-radius: 0;
+  border-bottom-right-radius: 0;
+}
+.spwashi-entity.tag.word {
+  font-size: .75em;
+  border: thin solid #dbdfdf;
+  background-color: #e9ebeb;
+}
 .spwashi-entity.can-edit .button-control .edit {
   display: block;
 }
-.spwashi-entity.can-add .button-control .add {
+.spwashi-entity.can-relate .button-control .add {
   display: block;
 }
 .spwashi-entity.can-delete .button-control .delete {
@@ -290,7 +324,7 @@ body > .row,
 .module {
   min-width: 100%;
   position: relative;
-  border-bottom: thick solid rgba(79, 117, 120, 0.5);
+  border-bottom: thick solid rgba(79, 117, 120, 0.8);
   box-shadow: 0 1px 3px 0 transparent, 0 0 0 1px transparent;
 }
 .module > header .title,
@@ -342,7 +376,7 @@ body > .row,
 }
 .module > header,
 .modal-content > header {
-  background-color: rgba(79, 117, 120, 0.5);
+  background-color: rgba(79, 117, 120, 0.8);
   color: #ffffff;
   padding: 0 10px;
   border-top-right-radius: 2px;
@@ -661,10 +695,114 @@ body > .row,
   -ms-user-select: none;
   /* IE10+ */
 }
+.spwashi-section .button-dialog,
+.spwashi-collection.preview .button-dialog,
+.spwashi-dictionary.preview .button-dialog,
+.concept.preview .button-dialog {
+  z-index: 100;
+  padding: 10px;
+  border-radius: 10px;
+  border: thick solid #3b3738;
+  background-color: #e9ebeb;
+}
+.debug .spwashi-section .button-dialog.section-pivot,
+.debug .spwashi-collection.preview .button-dialog.section-pivot,
+.debug .spwashi-dictionary.preview .button-dialog.section-pivot,
+.debug .concept.preview .button-dialog.section-pivot {
+  display: block;
+}
+.spwashi-section .button-dialog.section-pivot,
+.spwashi-collection.preview .button-dialog.section-pivot,
+.spwashi-dictionary.preview .button-dialog.section-pivot,
+.concept.preview .button-dialog.section-pivot {
+  position: absolute;
+  top: 0;
+  left: 30px;
+  min-width: 80px;
+  min-height: 80px;
+}
+.spwashi-section .button-dialog.section-pivot:before,
+.spwashi-collection.preview .button-dialog.section-pivot:before,
+.spwashi-dictionary.preview .button-dialog.section-pivot:before,
+.concept.preview .button-dialog.section-pivot:before {
+  content: "\A";
+  border-style: solid;
+  border-width: 10px 15px 10px 0;
+  border-color: transparent #3b3738 transparent transparent;
+  position: absolute;
+  left: -15px;
+  top: 0;
+}
+.spwashi-section .button-dialog.section-pivot.left,
+.spwashi-collection.preview .button-dialog.section-pivot.left,
+.spwashi-dictionary.preview .button-dialog.section-pivot.left,
+.concept.preview .button-dialog.section-pivot.left {
+  right: 26px;
+  left: auto;
+}
+.spwashi-section .button-dialog.section-pivot.left:before,
+.spwashi-collection.preview .button-dialog.section-pivot.left:before,
+.spwashi-dictionary.preview .button-dialog.section-pivot.left:before,
+.concept.preview .button-dialog.section-pivot.left:before {
+  left: auto;
+  content: "\A";
+  border-style: solid;
+  border-width: 10px 0 10px 15px;
+  border-color: transparent transparent transparent #3b3738;
+  position: absolute;
+  right: -15px;
+  top: 0;
+}
+.spwashi-section .button-dialog.section-pivot .relationship-subtype-category,
+.spwashi-collection.preview .button-dialog.section-pivot .relationship-subtype-category,
+.spwashi-dictionary.preview .button-dialog.section-pivot .relationship-subtype-category,
+.concept.preview .button-dialog.section-pivot .relationship-subtype-category {
+  width: 100%;
+  float: left;
+  clear: both;
+  margin-bottom: 5px;
+}
+.spwashi-section .button-dialog.section-pivot .relationship-subtype-category:empty,
+.spwashi-collection.preview .button-dialog.section-pivot .relationship-subtype-category:empty,
+.spwashi-dictionary.preview .button-dialog.section-pivot .relationship-subtype-category:empty,
+.concept.preview .button-dialog.section-pivot .relationship-subtype-category:empty {
+  display: none;
+}
+.spwashi-section .button-dialog.section-pivot .relationship-subtype,
+.spwashi-collection.preview .button-dialog.section-pivot .relationship-subtype,
+.spwashi-dictionary.preview .button-dialog.section-pivot .relationship-subtype,
+.concept.preview .button-dialog.section-pivot .relationship-subtype {
+  display: inline-block;
+  float: right;
+  margin-right: 10px;
+  width: 65px;
+  height: 65px;
+  background: rgba(114, 158, 162, 0.8);
+  border-radius: 5px;
+  line-height: 65px;
+  text-align: center;
+  font-size: .75em;
+}
+.spwashi-section .button-dialog.section-pivot .relationship-subtype.active,
+.spwashi-collection.preview .button-dialog.section-pivot .relationship-subtype.active,
+.spwashi-dictionary.preview .button-dialog.section-pivot .relationship-subtype.active,
+.concept.preview .button-dialog.section-pivot .relationship-subtype.active {
+  background-color: rgba(79, 117, 120, 0.8);
+  border: thin solid rgba(69, 102, 105, 0.8);
+}
+.spwashi-section .button-dialog.section-pivot .relationship-subtype > span,
+.spwashi-collection.preview .button-dialog.section-pivot .relationship-subtype > span,
+.spwashi-dictionary.preview .button-dialog.section-pivot .relationship-subtype > span,
+.concept.preview .button-dialog.section-pivot .relationship-subtype > span {
+  display: inline-block;
+  vertical-align: middle;
+  line-height: normal;
+}
 .spwashi-section .button-control,
 .spwashi-collection.preview .button-control,
 .spwashi-dictionary.preview .button-control,
 .concept.preview .button-control {
+  z-index: 100;
   display: none;
   position: absolute;
   right: -37px;
@@ -740,92 +878,6 @@ body > .row,
 .spwashi-dictionary.preview.spwashi-concept.preview > .button-control,
 .concept.preview.spwashi-concept.preview > .button-control {
   display: block;
-}
-.view_relationship-container .relationship-container > .content {
-  margin-left: 20px;
-}
-.view_relationship-container .relationship-container > header {
-  margin-top: 7px;
-  margin-bottom: 5px;
-  border-bottom: thin solid #ccc;
-}
-.view_relationship-container .relationship {
-  padding: 5px auto;
-  margin-bottom: 7px;
-  zoom: 1;
-}
-.view_relationship-container .relationship > .content {
-  zoom: 1;
-}
-.view_relationship-container .relationship > .content:after {
-  clear: both;
-}
-.view_relationship-container .relationship > .content:before,
-.view_relationship-container .relationship > .content:after {
-  content: '\0020';
-  display: block;
-  overflow: hidden;
-  visibility: hidden;
-  width: 0;
-  height: 0;
-}
-.view_relationship-container .relationship:after {
-  clear: both;
-}
-.view_relationship-container .relationship:before,
-.view_relationship-container .relationship:after {
-  content: '\0020';
-  display: block;
-  overflow: hidden;
-  visibility: hidden;
-  width: 0;
-  height: 0;
-}
-.view_relationship-container .relationship .preview,
-.view_relationship-container .relationship .inline,
-.view_relationship-container .relationship .add-to-list {
-  display: inline-block;
-  float: left;
-}
-.view_relationship-container .relationship.definition-relationship {
-  zoom: 1;
-}
-.view_relationship-container .relationship.definition-relationship:after {
-  clear: both;
-}
-.view_relationship-container .relationship.definition-relationship:before,
-.view_relationship-container .relationship.definition-relationship:after {
-  content: '\0020';
-  display: block;
-  overflow: hidden;
-  visibility: hidden;
-  width: 0;
-  height: 0;
-}
-.view_relationship-container .relationship.definition-relationship > * {
-  float: left;
-}
-.view_relationship-container .relationship.definition-relationship > header {
-  width: 20%;
-  height: 100%;
-}
-.view_relationship-container .relationship.definition-relationship > header .title {
-  padding-right: 10px;
-  font-size: 20px;
-}
-.view_relationship-container .relationship.definition-relationship > .content {
-  border-left: thin solid #ccc;
-  width: 75%;
-  padding-left: 10px;
-}
-.view_relationship-container .relationship .preview,
-.view_relationship-container .relationship .inline {
-  width: 95%;
-}
-.view_relationship-container .relationship .add-to-list {
-  margin-top: 5px;
-  width: 3%;
-  height: 100%;
 }
 .description-container {
   border-top: thick solid #ccc;
@@ -928,7 +980,7 @@ body > .row,
   max-width: 300px;
   line-height: 1.3em;
   font-size: 15px;
-  border: thick solid rgba(79, 117, 120, 0.5);
+  border: thick solid rgba(79, 117, 120, 0.8);
 }
 .tooltip.definition-relationship .relationship-index-container {
   border-bottom: thick solid #aaa;
@@ -947,7 +999,7 @@ body > .row,
 .tooltip.definition-relationship > header {
   text-align: center;
   color: #f8f8f9;
-  background-color: rgba(79, 117, 120, 0.5);
+  background-color: rgba(79, 117, 120, 0.8);
 }
 .tooltip.definition-relationship > header > .title {
   padding: 7px auto;

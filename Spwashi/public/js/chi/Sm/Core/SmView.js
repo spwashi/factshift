@@ -75,9 +75,7 @@ require(['require', 'backbone', 'jquery',
 		         * @alias Sm.Core.SmView.additional_events
 		         */
 		        additional_events: {
-			        click: function () {
-				        Sm.CONFIG.DEBUG && console.log(this);
-			        }
+			        click: function () {Sm.CONFIG.DEBUG && console.log(this);}
 		        },
 
 		        setPermission:   function (permission, value) {
@@ -439,7 +437,7 @@ require(['require', 'backbone', 'jquery',
 		         * @alias Sm.Core.SmView#get_rendered
 		         * @param what
 		         * @return {*}
-		         * @param no_cache
+		         * @param no_cache True if we want to re-render the element
 		         */
 		        get_rendered:    function (what, no_cache) {
 			        if (!what) return false;
@@ -481,28 +479,22 @@ require(['require', 'backbone', 'jquery',
 			        var View_, MvCombo_;
 			        if (!!settings.View) {
 				        View_    = settings.View;
+				        delete settings.View;
 				        MvCombo_ = settings.MvCombo || View_.MvCombo;
 			        } else if (!!settings.MvCombo) {
 				        MvCombo_ = settings.MvCombo;
 				        View_    = MvCombo_.getView({reference_element: this.referenceElement});
 			        }
-			        var self = this;
-
+			        var self    = this;
+			        var Wrapper = Sm.Entities[this.type].Wrapper;
 			        /**
 			         * Create the Relationship on the server
 			         */
-			        return this.MvCombo.add_relationship(MvCombo_, {
-				        type:      settings.type,
-				        OtherView: View_,
-				        prompt:    !!settings.prompt
-			        }).catch(function (e) {
-				        /**
-				         * todo temporary
-				         * Catch the error, log it, throw it
-				         */
+			        return Wrapper.prompt('add_relationship', this.MvCombo, {OtherMvCombo: MvCombo_}).catch(function (e) {
 				        Sm.CONFIG.DEBUG && console.log('SmView,bar,1', e);
 				        throw e;
 			        }).then(function (result) {
+				        Sm.CONFIG.DEBUG && console.log(result);
 				        /**
 				         * Given the result of the add_relationship, add the relationship to the View and register the View relationship in it.
 				         */
@@ -529,10 +521,12 @@ require(['require', 'backbone', 'jquery',
 					        }
 					        return result;
 				        }
+				        return false;
 			        }).catch(function (e) {
 				        Sm.CONFIG.DEBUG && console.log(e);
 				        throw e;
 			        }).then(function (result) {
+				        Sm.CONFIG.DEBUG && console.log(result);
 				        /**
 				         * Save the relationshipIndex,
 				         * todo this is not a good thing.
@@ -545,7 +539,6 @@ require(['require', 'backbone', 'jquery',
 					        var RelationshipIndex = result.RelationshipIndex;
 					        var context_id        = 0;
 					        RelationshipIndex.save({
-						        /**NOTE: saving mechanism**/
 						        context_id: context_id
 					        }).catch(function (e) {
 						        Sm.CONFIG.DEBUG && console.log(e);
@@ -556,6 +549,7 @@ require(['require', 'backbone', 'jquery',
 				        console.log(e);
 				        throw e;
 			        });
+			        P
 		        },
 		        /**
 		         * Physically add the relationship to the View, regardless of whether or not it exists on the server
@@ -582,7 +576,6 @@ require(['require', 'backbone', 'jquery',
 		         *                                                                                  relationship exists
 		         * @param {string=}                              settings.container_template         The template to use in
 		         *                                                                                  wrapping the relationship
-		         * todo comment this, Sam
 		         * @return {Promise|boolean|*}
 		         */
 		        add_relationship:       function (settings) {
@@ -736,11 +729,12 @@ require(['require', 'backbone', 'jquery',
 			        }).then(function (result) {
 				        var other_r_id = OtherMvCombo.r_id;
 				        var Refs       = Sm.Core.MvWrapper.get_effective_MV(other_r_id, false, true);
-				        Sm.CONFIG.DEBUG && console.log(Refs, other_r_id);
 				        //For some reason, this fixes an error. Will look into it later
-				        //(when the parent of this is part of the effective MV, we don't know what we're doing)
-				        return result;
+				        //There's an issue with recursion I believe. Might be solved by adding to a list of relationships so we don't go over the same thing twice
+				        if (!0) return result;
+				        //^Just put !0 there to always return false and stop the IDE from complaining
 				        if (Refs) {
+					        Sm.CONFIG.DEBUG && console.log(Refs, other_r_id);
 					        return Sm.Core.SmView.replace_with_elements({
 						        referenceElement:          self_index_element,
 						        replacement_MVs:           Refs.MVs,
@@ -767,7 +761,7 @@ require(['require', 'backbone', 'jquery',
 		         * Initialize the standard procedure for dealing with the button controls on the side of the Entities
 		         */
 		        init_button_control_events: function () {
-			        var self                   = this;
+			        var self = this;
 			        var button_control_element = this.get_rendered('button_control', true);
 			        //Sm.CONFIG.DEBUG && console.log(button_control_element);
 			        if (button_control_element && typeof button_control_element === "object") {
@@ -780,6 +774,8 @@ require(['require', 'backbone', 'jquery',
 					        var relElem          = Relationship_Obj.el;
 					        var other_MV_type    = Relationship_Obj.other_MV_type;
 
+					        var Wrapper_ = Sm.Entities[self.type].Wrapper;
+
 					        if (self.queryPermission('edit') && $target.hasClass('edit') && $target.hasClass('button')) {
 						        var edit_config = {};
 						        if (Relationship_) {
@@ -789,7 +785,7 @@ require(['require', 'backbone', 'jquery',
 								        other_MV_type: other_MV_type
 							        }
 						        }
-						        self.prompt_edit(edit_config);
+						        Wrapper_.prompt('edit', self.MvCombo, edit_config);
 					        } else if ($target.hasClass('debug') && $target.hasClass('button') && Sm.CONFIG.DEBUG) {
 						        Sm.CONFIG.DEBUG && console.log(self.cid, ' -- ', self.MvCombo, self.MvCombo.Identity.r_id, self.MvCombo.Model.attributes);
 					        } else if (self.queryPermission('relate') && $target.hasClass('add') && $target.hasClass('button')) {
@@ -811,7 +807,7 @@ require(['require', 'backbone', 'jquery',
 								        }
 							        });
 						        } else {
-							        self.MvCombo.destroy({prompt: true}, self);
+							        Wrapper_.prompt('destroy', self.MvCombo);
 						        }
 
 					        }
@@ -1021,42 +1017,6 @@ require(['require', 'backbone', 'jquery',
 		        },
 
 		        /**
-		         * Open up a Modal dialog for editing the Entity
-		         * @param settings
-		         */
-		        prompt_edit: function (settings) {
-			        settings              = settings || {};
-			        settings.display_type = settings.display_type || 'full';
-			        var MvCombo_          = this.MvCombo;
-			        if (!MvCombo_) return;
-			        var selected = Sm.Core.Meta.get_MVs('selected');
-			        var MvCombos = [];
-			        for (var mv_combo_r_id in selected) {
-				        if (!selected.hasOwnProperty(mv_combo_r_id)) continue;
-				        /**
-				         * @type Sm.Core.Identifier
-				         */
-				        var Identity = selected[mv_combo_r_id];
-				        MvCombos.push(Identity.getResource())
-			        }
-			        var type =
-				            Sm.Entities[this.type].Abstraction &&
-				            Sm.Entities[this.type].Abstraction.Modal &&
-				            Sm.Entities[this.type].Abstraction.Modal.Edit
-					            ? Sm.Entities[this.type].Abstraction.Modal.Edit
-					            : Sm.Entities.Abstraction.Modal.Edit;
-
-			        var Modal = new type({
-				        MvCombo:             [MvCombo_],
-				        self_type:           MvCombo_.type,
-				        display_type:        settings.display_type,
-				        relationship_object: settings.relationship_object
-			        });
-			        this.blur();
-			        Modal.open();
-		        },
-
-		        /**
 		         * Based on the model, update this view
 		         * @param {[]=} changed_attributes
 		         * @return {Sm.Core.SmView}
@@ -1249,6 +1209,8 @@ require(['require', 'backbone', 'jquery',
 		        };
 
 		        var on_delete_press = function () {
+			        Sm.CONFIG.DEBUG && console.log('Not yet implemented');
+			        return false;
 			        var selected  = Sm.Core.Meta.MvMaps.selected_MVs;
 			        var to_remove = [];
 			        for (var r_id in selected) {

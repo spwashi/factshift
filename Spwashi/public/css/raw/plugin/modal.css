@@ -148,6 +148,7 @@ img {
   text-align: center;
   overflow-y: auto;
   white-space: nowrap;
+  font-family: 'Inconsolata', Arial, "Lucida Grande", sans-serif;
   -webkit-overflow-scrolling: touch;
   z-index: 99;
   opacity: 1;
@@ -156,12 +157,19 @@ img {
 .modal .modal-content {
   position: relative;
 }
+.modal .modal-content.saving > .content {
+  background: rgba(237, 242, 243, 0.8);
+}
 .modal .modal-content > .content {
+  background: #f6f7f7;
   padding-right: 30px;
+}
+.modal .modal-content > .content.no-button-control {
+  padding-right: 10px;
 }
 .modal .modal-content > header {
   padding: 20px 15px;
-  background-color: rgba(79, 117, 120, 0.5);
+  background-color: rgba(79, 117, 120, 0.8);
   color: #f8f8f9;
   border-top-right-radius: 2px;
   border-top-left-radius: 2px;
@@ -212,17 +220,127 @@ img {
 .modal .button-control {
   right: 5px;
 }
-.modal .form {
-  padding: 10px;
-}
-.modal .content {
-  background: #f6f7f7;
-}
 .modal > * {
   display: inline-block;
   white-space: normal;
   vertical-align: middle;
   text-align: left;
+}
+.modal-content > .content > .content {
+  padding: 10px 0;
+}
+.choose-container {
+  border-top: thin solid #cccccc;
+  padding-top: 15px;
+}
+.choose-container > .options {
+  width: 100%;
+  zoom: 1;
+}
+.choose-container > .options:after {
+  clear: both;
+}
+.choose-container > .options:before,
+.choose-container > .options:after {
+  content: '\0020';
+  display: block;
+  overflow: hidden;
+  visibility: hidden;
+  width: 0;
+  height: 0;
+}
+.choose-container > .options > button {
+  width: 42%;
+  float: right;
+}
+.choose-container > .options > button:first-child {
+  float: left;
+}
+.view_relationship-container .relationship-container > .content {
+  margin-left: 20px;
+}
+.view_relationship-container .relationship-container > header {
+  margin-top: 7px;
+  margin-bottom: 5px;
+  border-bottom: thin solid #ccc;
+}
+.view_relationship-container .relationship {
+  padding: 5px auto;
+  margin-bottom: 7px;
+  zoom: 1;
+}
+.view_relationship-container .relationship > .content {
+  zoom: 1;
+}
+.view_relationship-container .relationship > .content:after {
+  clear: both;
+}
+.view_relationship-container .relationship > .content:before,
+.view_relationship-container .relationship > .content:after {
+  content: '\0020';
+  display: block;
+  overflow: hidden;
+  visibility: hidden;
+  width: 0;
+  height: 0;
+}
+.view_relationship-container .relationship:after {
+  clear: both;
+}
+.view_relationship-container .relationship:before,
+.view_relationship-container .relationship:after {
+  content: '\0020';
+  display: block;
+  overflow: hidden;
+  visibility: hidden;
+  width: 0;
+  height: 0;
+}
+.view_relationship-container .relationship .preview,
+.view_relationship-container .relationship .inline,
+.view_relationship-container .relationship .add-to-list {
+  display: inline-block;
+  float: left;
+}
+.view_relationship-container .relationship.definition-relationship {
+  zoom: 1;
+}
+.view_relationship-container .relationship.definition-relationship:after {
+  clear: both;
+}
+.view_relationship-container .relationship.definition-relationship:before,
+.view_relationship-container .relationship.definition-relationship:after {
+  content: '\0020';
+  display: block;
+  overflow: hidden;
+  visibility: hidden;
+  width: 0;
+  height: 0;
+}
+.view_relationship-container .relationship.definition-relationship > * {
+  float: left;
+}
+.view_relationship-container .relationship.definition-relationship > header {
+  width: 20%;
+  height: 100%;
+}
+.view_relationship-container .relationship.definition-relationship > header .title {
+  padding-right: 10px;
+  font-size: 20px;
+}
+.view_relationship-container .relationship.definition-relationship > .content {
+  border-left: thin solid #ccc;
+  width: 75%;
+  padding-left: 10px;
+}
+.view_relationship-container .relationship .preview,
+.view_relationship-container .relationship .inline {
+  width: 95%;
+}
+.view_relationship-container .relationship .add-to-list {
+  margin-top: 5px;
+  width: 3%;
+  height: 100%;
 }
 .modal:before {
   display: inline-block;
@@ -231,13 +349,6 @@ img {
   height: 100%;
   vertical-align: middle;
   content: "";
-}
-.modal-blur {
-  -webkit-filter: blur(3px);
-  -moz-filter: blur(3px);
-  -o-filter: blur(3px);
-  -ms-filter: blur(3px);
-  filter: blur(3px);
 }
 .modal-content {
   width: 600px;

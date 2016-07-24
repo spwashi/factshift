@@ -135,7 +135,8 @@ $urls['view'] = Toute::generate_url('spwashi_page_view', [$page->context, $page-
 <script id="spwashi_config" type="application/json"><?= json_encode(ModelMeta::dump()) ?></script>
 <script id="section_models" type="application/json"><?= $sections ?? "" ?></script>
 <?php Kint::dump($sections) ?>
-<?php if ($is_debug): ?>
+<?php #Probably not going to use this IRL, but for now, set debug_level === DL2 when we want the JS optimized but logging enabled ?>
+<?php if ($is_debug && $debug_level !== Controller::DEBUG_LEVEL_2): ?>
 	<?php switch ($debug_level):
 		case Controller::DEBUG_LEVEL_1:
 			?>

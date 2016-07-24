@@ -11,7 +11,6 @@
  * @requires Sm-Core-MvCombo
  */
 require(['require', 'Sm', 'Sm-Core-MvCombo'], function (require) {
-	/** NOTE: handles prompting for section-creation and childing and such**/
 	Sm.loaded.when_loaded('Core_MvCombo', function () {
 		/**
 		 * An MvCombo that represents a Section on the server

@@ -684,6 +684,7 @@ ul.lst > li.lst-tag.word {
   text-align: center;
   overflow-y: auto;
   white-space: nowrap;
+  font-family: 'Inconsolata', Arial, "Lucida Grande", sans-serif;
   -webkit-overflow-scrolling: touch;
   z-index: 99;
   opacity: 1;
@@ -696,10 +697,11 @@ ul.lst > li.lst-tag.word {
   background: rgba(237, 242, 243, 0.8);
 }
 .modal .modal-content > .content {
+  background: #f6f7f7;
   padding-right: 30px;
 }
 .modal .modal-content > .content.no-button-control {
-  padding-right: auto;
+  padding-right: 10px;
 }
 .modal .modal-content > header {
   padding: 20px 15px;
@@ -754,14 +756,127 @@ ul.lst > li.lst-tag.word {
 .modal .button-control {
   right: 5px;
 }
-.modal .content {
-  background: #f6f7f7;
-}
 .modal > * {
   display: inline-block;
   white-space: normal;
   vertical-align: middle;
   text-align: left;
+}
+.modal-content > .content > .content {
+  padding: 10px 0;
+}
+.choose-container {
+  border-top: thin solid #cccccc;
+  padding-top: 15px;
+}
+.choose-container > .options {
+  width: 100%;
+  zoom: 1;
+}
+.choose-container > .options:after {
+  clear: both;
+}
+.choose-container > .options:before,
+.choose-container > .options:after {
+  content: '\0020';
+  display: block;
+  overflow: hidden;
+  visibility: hidden;
+  width: 0;
+  height: 0;
+}
+.choose-container > .options > button {
+  width: 42%;
+  float: right;
+}
+.choose-container > .options > button:first-child {
+  float: left;
+}
+.view_relationship-container .relationship-container > .content {
+  margin-left: 20px;
+}
+.view_relationship-container .relationship-container > header {
+  margin-top: 7px;
+  margin-bottom: 5px;
+  border-bottom: thin solid #ccc;
+}
+.view_relationship-container .relationship {
+  padding: 5px auto;
+  margin-bottom: 7px;
+  zoom: 1;
+}
+.view_relationship-container .relationship > .content {
+  zoom: 1;
+}
+.view_relationship-container .relationship > .content:after {
+  clear: both;
+}
+.view_relationship-container .relationship > .content:before,
+.view_relationship-container .relationship > .content:after {
+  content: '\0020';
+  display: block;
+  overflow: hidden;
+  visibility: hidden;
+  width: 0;
+  height: 0;
+}
+.view_relationship-container .relationship:after {
+  clear: both;
+}
+.view_relationship-container .relationship:before,
+.view_relationship-container .relationship:after {
+  content: '\0020';
+  display: block;
+  overflow: hidden;
+  visibility: hidden;
+  width: 0;
+  height: 0;
+}
+.view_relationship-container .relationship .preview,
+.view_relationship-container .relationship .inline,
+.view_relationship-container .relationship .add-to-list {
+  display: inline-block;
+  float: left;
+}
+.view_relationship-container .relationship.definition-relationship {
+  zoom: 1;
+}
+.view_relationship-container .relationship.definition-relationship:after {
+  clear: both;
+}
+.view_relationship-container .relationship.definition-relationship:before,
+.view_relationship-container .relationship.definition-relationship:after {
+  content: '\0020';
+  display: block;
+  overflow: hidden;
+  visibility: hidden;
+  width: 0;
+  height: 0;
+}
+.view_relationship-container .relationship.definition-relationship > * {
+  float: left;
+}
+.view_relationship-container .relationship.definition-relationship > header {
+  width: 20%;
+  height: 100%;
+}
+.view_relationship-container .relationship.definition-relationship > header .title {
+  padding-right: 10px;
+  font-size: 20px;
+}
+.view_relationship-container .relationship.definition-relationship > .content {
+  border-left: thin solid #ccc;
+  width: 75%;
+  padding-left: 10px;
+}
+.view_relationship-container .relationship .preview,
+.view_relationship-container .relationship .inline {
+  width: 95%;
+}
+.view_relationship-container .relationship .add-to-list {
+  margin-top: 5px;
+  width: 3%;
+  height: 100%;
 }
 .modal:before {
   display: inline-block;
@@ -935,6 +1050,7 @@ header[role="banner"] {
   position: relative;
   background-color: #3b3738;
   background-size: 100% 620%, cover;
+  height: 100px;
   -webkit-box-shadow: 2px -5px 10px 1px #211e1f;
   -moz-box-shadow: 2px -5px 10px 1px #211e1f;
   box-shadow: 2px -5px 10px 1px #211e1f;
@@ -1263,6 +1379,37 @@ body > .row,
 }
 .spwashi-entity .button-control .add {
   display: none;
+}
+.spwashi-entity.tag {
+  max-width: 200px;
+  max-height: 30px;
+  overflow: hidden;
+  padding: 3px;
+  background-color: rgba(220, 220, 220, 0.35);
+  border: 4px solid rgba(126, 125, 125, 0.15);
+  margin: 5px 5px 5px 0;
+}
+.spwashi-entity.tag > .content {
+  max-height: 20px;
+  padding: 0;
+  overflow: hidden;
+  white-space: nowrap;
+}
+.spwashi-entity.tag:last-child {
+  margin-right: 0;
+}
+.spwashi-entity.tag.focused {
+  background-color: rgba(126, 125, 125, 0.15);
+  border: 2px solid rgba(100, 100, 100, 0.15);
+  color: #0a0b0c;
+  font-style: italic;
+  border-bottom-left-radius: 0;
+  border-bottom-right-radius: 0;
+}
+.spwashi-entity.tag.word {
+  font-size: .75em;
+  border: thin solid #dbdfdf;
+  background-color: #e9ebeb;
 }
 .spwashi-entity.can-edit .button-control .edit {
   display: block;
@@ -1833,115 +1980,6 @@ body > .row,
 .spwashi-dictionary.preview.spwashi-concept.preview > .button-control,
 .concept.preview.spwashi-concept.preview > .button-control {
   display: block;
-}
-.choose-container > .options {
-  width: 100%;
-  zoom: 1;
-}
-.choose-container > .options:after {
-  clear: both;
-}
-.choose-container > .options:before,
-.choose-container > .options:after {
-  content: '\0020';
-  display: block;
-  overflow: hidden;
-  visibility: hidden;
-  width: 0;
-  height: 0;
-}
-.choose-container > .options > button {
-  width: 42%;
-  float: right;
-}
-.choose-container > .options > button:first-child {
-  float: left;
-}
-.view_relationship-container .relationship-container > .content {
-  margin-left: 20px;
-}
-.view_relationship-container .relationship-container > header {
-  margin-top: 7px;
-  margin-bottom: 5px;
-  border-bottom: thin solid #ccc;
-}
-.view_relationship-container .relationship {
-  padding: 5px auto;
-  margin-bottom: 7px;
-  zoom: 1;
-}
-.view_relationship-container .relationship > .content {
-  zoom: 1;
-}
-.view_relationship-container .relationship > .content:after {
-  clear: both;
-}
-.view_relationship-container .relationship > .content:before,
-.view_relationship-container .relationship > .content:after {
-  content: '\0020';
-  display: block;
-  overflow: hidden;
-  visibility: hidden;
-  width: 0;
-  height: 0;
-}
-.view_relationship-container .relationship:after {
-  clear: both;
-}
-.view_relationship-container .relationship:before,
-.view_relationship-container .relationship:after {
-  content: '\0020';
-  display: block;
-  overflow: hidden;
-  visibility: hidden;
-  width: 0;
-  height: 0;
-}
-.view_relationship-container .relationship .preview,
-.view_relationship-container .relationship .inline,
-.view_relationship-container .relationship .add-to-list {
-  display: inline-block;
-  float: left;
-}
-.view_relationship-container .relationship.definition-relationship {
-  zoom: 1;
-}
-.view_relationship-container .relationship.definition-relationship:after {
-  clear: both;
-}
-.view_relationship-container .relationship.definition-relationship:before,
-.view_relationship-container .relationship.definition-relationship:after {
-  content: '\0020';
-  display: block;
-  overflow: hidden;
-  visibility: hidden;
-  width: 0;
-  height: 0;
-}
-.view_relationship-container .relationship.definition-relationship > * {
-  float: left;
-}
-.view_relationship-container .relationship.definition-relationship > header {
-  width: 20%;
-  height: 100%;
-}
-.view_relationship-container .relationship.definition-relationship > header .title {
-  padding-right: 10px;
-  font-size: 20px;
-}
-.view_relationship-container .relationship.definition-relationship > .content {
-  border-left: thin solid #ccc;
-  width: 75%;
-  padding-left: 10px;
-}
-.view_relationship-container .relationship .preview,
-.view_relationship-container .relationship .inline {
-  width: 95%;
-}
-.view_relationship-container .relationship .add-to-list {
-  margin-top: 5px;
-  width: 3%;
-  height: 100%;
 }
 .description-container {
   border-top: thick solid #ccc;

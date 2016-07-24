@@ -60,10 +60,6 @@ require(['require', 'Sm', 'Sm-Core-util', 'Emitter'], function (require) {
 	 * @property {function}                                 focus                   {@link Sm.Core.MvCombo#focus}
 	 * @property {function}                                 save                    {@link Sm.Core.MvCombo#save}
 	 * @property {function}                                 destroy                 {@link Sm.Core.MvCombo#destroy}
-	 * @property {function}                                 _prompt_destroy         {@link Sm.Core.MvCombo#_prompt_destroy}
-	 * @property {function}                                 _prompt_save            {@link Sm.Core.MvCombo#_prompt_save}
-	 * @property {function}                                 _continue_destroy       {@link Sm.Core.MvCombo#_continue_destroy}
-	 * @property {function}                                 _continue_save          {@link Sm.Core.MvCombo#_continue_save}
 	 * @property {function}                                 _initModel              {@link Sm.Core.MvCombo#_initModel}
 	 * @property {function}                                 removeView              {@link Sm.Core.MvCombo#removeView}
 	 * @property {function}                                 getView                 {@link Sm.Core.MvCombo#getView}
@@ -469,11 +465,8 @@ require(['require', 'Sm', 'Sm-Core-util', 'Emitter'], function (require) {
 					})(other_model_type, other_model, other_model_id, self, map, relationship_index);
 
 					//When the other model type is loaded, add the relationship
-					if (Sm.loaded.is_loaded('entities_' + other_model_type)) {
-						when_loaded_fn();
-					} else {
-						Sm.loaded.when_loaded('entities_' + other_model_type, when_loaded_fn, 'add_rel_to_other_');
-					}
+					//Date is appended so relationships don't get messed up with the same name
+					Sm.loaded.when_loaded('entities_' + other_model_type, when_loaded_fn, 'add_rel' + (Date.now()));
 				}
 				//delete relationships[relationship_index];
 			}
@@ -863,16 +856,14 @@ require(['require', 'Sm', 'Sm-Core-util', 'Emitter'], function (require) {
 		 * @see Sm.Core.Relationship
 		 * @see Sm.Core.MvCombo.relationships
 		 * @see Sm.Core.MvCombo.reciprocal_relationships
-		 * @see Sm.Core.MvCombo._prompt_relationship_add
+		 * @see Sm.Core.MvCombo.prompt_relationship_add
 		 *
 		 * @param {Sm.Core.MvCombo|Sm.Core.Identifier|*}     OtherMvCombo
 		 * @param {{}}                  settings
-		 * @param {string=}             settings.type                       The type of MvCombo the other entity is
 		 * @param {{}}                  settings.map                        The map (if existent) between the two entities
 		 * @param {boolean=}            settings.is_reciprocal              Is the relationship only being reciprocated?
 		 * @param {boolean=}            settings.update_indices             Should we update the indices of the RelationshipIndex?
 		 * @param {boolean=}            settings.silent                     Is the relationship on the server?
-		 * @param {boolean=}            settings.prompt                     Should we prompt for information about the Relationship?
 		 * @param {string}              settings.relationship_index         Where to add the relationship
 		 * @param {int}                 settings.position                   The position at which to add the relationship
 		 * @param {int=0}               settings.context_r_id               If there is a context, this is the r_id of it
@@ -886,9 +877,7 @@ require(['require', 'Sm', 'Sm-Core-util', 'Emitter'], function (require) {
 			var silent             = !!settings.silent;
 			var map                = settings.map || {};
 			var relationship_index = settings.relationship_index;
-			var prompt             = settings.prompt || !OtherMvCombo || !relationship_index;
 			var update_indices     = typeof settings.update_indices !== "undefined" ? !!settings.update_indices : true;
-			if (prompt) {return this._prompt_relationship_add(OtherMvCombo, settings);}
 
 			var is_reciprocal                 = !!settings.is_reciprocal;
 			var reciprocal_relationship_index = false;
@@ -990,7 +979,8 @@ require(['require', 'Sm', 'Sm-Core-util', 'Emitter'], function (require) {
 				if (SecondaryRelationshipIndex) SecondaryRelationshipIndex.add_item(ReciprocalRelationship, OtherMvCombo.Identity.r_id, settings.context_r_id || 0, update_indices, silent);
 
 				//Add the relationship to the relationship map
-				this.relationship_map[OtherMvCombo.Identity.r_id] = ReciprocalRelationship;
+				this.relationship_map[OtherMvCombo.Identity.r_id] = this.relationship_map[OtherMvCombo.Identity.r_id] || [];
+				this.relationship_map[OtherMvCombo.Identity.r_id].push(ReciprocalRelationship);
 				resolution_object.Relationship                    = ReciprocalRelationship;
 				return Promise.resolve(resolution_object);
 			}
@@ -1036,7 +1026,8 @@ require(['require', 'Sm', 'Sm-Core-util', 'Emitter'], function (require) {
 			//If the relationship is not reciprocal, add it to the other MvCombo as well
 			settings.is_reciprocal = !is_reciprocal;
 			//Add the relationship to the relationship map
-			this.relationship_map[OtherMvCombo.Identity.r_id] = Relationship_;
+			this.relationship_map[OtherMvCombo.Identity.r_id] = this.relationship_map[OtherMvCombo.Identity.r_id] || [];
+			this.relationship_map[OtherMvCombo.Identity.r_id].push(Relationship_);
 			return OtherMvCombo.add_relationship(this, settings, Relationship_).then(function (e) {
 				self.emit('add_relationship', resolution_object);
 				if (result_of_rel_add && !!e.result) return resolution_object;
@@ -1046,9 +1037,9 @@ require(['require', 'Sm', 'Sm-Core-util', 'Emitter'], function (require) {
 		},
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////
 		/**
-		 * Build the MvCombo in a "new relationship" scenario. Called from Sm.Core.MvCombo._prompt_relationship_add
+		 * Build the MvCombo in a "new relationship" scenario. Called from Sm.Core.MvCombo.prompt_relationship_add
 		 * Meant to be overridden
-		 * @see Sm.Core.MvCombo._prompt_relationship_add
+		 * @see Sm.Core.MvCombo.prompt_relationship_add
 		 * @param otherWrapper
 		 * @param settings
 		 * @return {Promise}
@@ -1064,17 +1055,15 @@ require(['require', 'Sm', 'Sm-Core-util', 'Emitter'], function (require) {
 		 * @param OtherMvCombo
 		 * @param settings
 		 * @return {*}
-		 * @private
 		 */
-		_prompt_relationship_add:     function (OtherMvCombo, settings) {
+		prompt_relationship_add:      function (OtherMvCombo, settings) {
 			settings          = settings || {};
 			settings.map      = settings.map || {};
 			settings.position = settings.map.position = (settings.position || settings.map.position);
-			var self        = this;
-			settings.prompt = false;
+			var self    = this;
 			self.blur();
 			var Modal;
-			var P           = new Promise(function (resolve, reject) {
+			var P       = new Promise(function (resolve, reject) {
 				var MvCombo_ = self;
 				//See if this class has an AddRelationship Modal Dialog. If not, use the default
 				var type =
@@ -1101,18 +1090,17 @@ require(['require', 'Sm', 'Sm-Core-util', 'Emitter'], function (require) {
 					Sm.CONFIG.DEBUG && console.log('core_MvCombo,pra,-1', e);
 				}
 			});
-			var self_Sm     = Sm.Entities[this.type];
+			var self_Sm = Sm.Entities[this.type];
 			if (!self_Sm) return Promise.reject('No SM');
-			var Meta_ = self_Sm.Meta;
-
+			var Meta_    = self_Sm.Meta;
 			var opposite = false;
-			Sm.CONFIG.DEBUG && console.log(arguments);
 
 			return P.catch(function (e) {
 				//DEBUG
 				Sm.CONFIG.DEBUG && console.log('core_MvCombo,pra,0', e);
 				throw e;
 			}).then(function (r) {
+				r.relationship_subindex           = r.relationship_subindex || null;
 				settings.map                      = settings.map || {};
 				settings.map.relationship_subtype = Meta_.get_relationship_type({type: 'id', sub: true}, r.relationship_subindex);
 
@@ -1130,164 +1118,74 @@ require(['require', 'Sm', 'Sm-Core-util', 'Emitter'], function (require) {
 				settings.map      = Sm.Core.util.merge_objects(settings.map, r);
 				return settings;
 			}).catch(function (e) {
-				//DEBUG
 				Sm.CONFIG.DEBUG && console.log('core_MvCombo,pra,1', e);
 				throw e;
 			}).then(function (add_relationship_settings) {
 				Sm.CONFIG.DEBUG && console.log(add_relationship_settings, opposite);
 				var OtherMvComboType = add_relationship_settings.OtherMvComboType || false;
 				var P2;
-				if (OtherMvCombo) P2 = Promise.resolve(OtherMvCombo);
+				if (OtherMvCombo) P2               = Promise.resolve(OtherMvCombo);
 				else {
 					var OtherSm = Sm.Entities[OtherMvComboType];
+					//Create the other MvCombo
 					if (OtherSm && OtherSm.Wrapper) P2 = self._build_other_MV(OtherSm.Wrapper, settings);
 					else P2 = Promise.reject("Could not resolve the MvCombo type " + OtherMvComboType);
 				}
 				Modal && Modal.close();
+				add_relationship_settings.opposite = !!opposite;
 				return P2.then(function (OtherMvCombo) {
-					Sm.CONFIG.DEBUG && console.log('core_MvCombo,pra,1.5', OtherMvCombo);
-					//If this relationship is reciprocal, add it to the Other MvCombo
-					if (add_relationship_settings && opposite) {
-						Sm.CONFIG.DEBUG && console.log(add_relationship_settings, OtherMvCombo);
-						return OtherMvCombo.add_relationship(self, add_relationship_settings);
-					} else {
-						return self.add_relationship(OtherMvCombo, add_relationship_settings);
-					}
+					return Promise.resolve({
+						OtherMvCombo:              OtherMvCombo,
+						add_relationship_settings: add_relationship_settings
+					})
 				});
 			}).catch(function (error) {
-				//DEBUG
 				Sm.CONFIG.DEBUG && console.log('core_MvCombo,pra,2', error);
 				throw error;
 			});
 		},
 		/**
-		 * @alias Sm.Core.MvCombo#_prompt_destroy
-		 * @param settings{{}=}
-		 * @param settings.View
-		 * @return {Promise}
-		 * @private
-		 */
-		_prompt_destroy:              function (settings) {
-			var self = this;
-			var Modal;
-			var P    = new Promise(function (resolve, reject) {
-				var MvCombo_ = self;
-				var type     =
-					    Sm.Entities[self.type].Abstraction &&
-					    Sm.Entities[self.type].Abstraction.Modal &&
-					    Sm.Entities[self.type].Abstraction.Modal.Destroy
-						    ? Sm.Entities[self.type].Abstraction.Modal.Destroy
-						    : Sm.Entities.Abstraction.Modal.Destroy;
-
-				Modal = new type({
-					MvCombo:        [MvCombo_],
-					self_type:      MvCombo_.type,
-					display_type:   settings.display_type,
-					promise_object: {
-						resolve: resolve,
-						reject:  reject
-					}
-				});
-				Modal.open();
-			});
-			return P.catch(function (e) {
-				Sm.CONFIG.DEBUG && console.log('core_MvCombo,destroy', e);
-				throw e;
-			}).then(function (b) {
-				Sm.CONFIG.DEBUG && console.log(b);
-				Modal.close();
-				return self._continue_destroy(settings);
-			}).catch(function (boon) {
-				Modal.close();
-				Sm.CONFIG.DEBUG && console.log(boon);
-				Sm.CONFIG.DEBUG && console.log("Rejected the promise");
-				throw boon;
-			});
-		},
-		/**
-		 * @alias Sm.Core.MvCombo#_prompt_alias
-		 * @param settings {{}=}
-		 * @param settings.View
-		 * @return {Promise}
-		 * @private
-		 */
-		_prompt_save:                 function (settings) {
-			if (confirm('Are you sure you want to save ' + this.type + ' ' + this.Identity.ent_id)) {
-				return this._continue_save(settings)
-			}
-			return Promise.reject('Canceled save');
-		},
-		/**
-		 * @alias Sm.Core.MvCombo#_continue_save
-		 * @param settings
-		 * @param settings.silent
-		 * @returns {*}
-		 * @private
-		 */
-		_continue_save:               function (settings) {
-			var Model = this.Model;
-			if (!Model) return Promise.reject(Sm.Errors.NonexistentModelError);
-			var s    = Model.save(null, {patch: true, wait: true, silent: !!settings.silent}).then(function (res) {
-				Sm.CONFIG.DEBUG && console.log(res);
-				return res;
-			});
-			var self = this;
-			return (s ? s : Promise.reject('Could not save the model'));
-		},
-		/**
-		 * @alias Sm.Core.MvCombo#_continue_destroy
-		 * @param settings{{}=}
-		 * @return {Promise}
-		 * @private
-		 */
-		_continue_destroy:            function (settings) {
-			var Model = this.Model;
-			if (!Model) return Promise.reject(Sm.Errors.NonexistentModelError);
-			var Wrapper = Sm.Entities[this.type].Wrapper;
-			var d       = Model.destroy();
-			var self    = this;
-			return (d ? d : Promise.reject()).then(function (response) {
-				if (response && response.success) return response;
-				throw response.error;
-			}).then(Wrapper.destroy_MV.bind(Wrapper, this)).then(function () {self.setStatus('destroyed', true);});
-		},
-		/**
 		 *
 		 * @param {{}=}settings
-		 * @param settings.prompt
-		 * @param settings.success
-		 * @param settings.fail
-		 * @param settings.
+		 * @param settings.silent
 		 * @return {Promise}
 		 */
 		save:                         function (settings) {
 			try {
 				settings     = settings || {};
-				var prompt   = !!settings.prompt;
 				var Wrapper_ = Sm.Entities[this.type].Wrapper;
 				if (!Wrapper_) return Promise.reject('No Wrapper to match ' + this.type);
-				if (prompt) return this._prompt_save(settings);
-				return this._continue_save(settings);
+				var Model = this.Model;
+				if (!Model) return Promise.reject(Sm.Errors.NonexistentModelError);
+				var s = Model.save(null, {patch: true, wait: true, silent: !!settings.silent}).then(function (res) {
+					Sm.CONFIG.DEBUG && console.log(res);
+					return res;
+				});
+				return (s ? s : Promise.reject('Could not save the model'));
 			} catch (e) {
 				Sm.CONFIG.DEBUG && console.log(e);
 				return Promise.reject(e);
 			}
 		},
 		/**
-		 *
-		 * @param settings
-		 * @param settings.prompt
-		 * @param settings.success
-		 * @param settings.fail
-		 * @param View
-		 * @return {*}
+		 * Destroy the MvCombo
+		 * @return {Promise}
 		 */
-		destroy:                      function (settings, View) {
-			var prompt   = !!settings.prompt;
+		destroy:                      function () {
 			var Wrapper_ = Sm.Entities[this.type].Wrapper;
 			var self     = this;
-			if (!Sm.Entities[this.type].Wrapper) return Promise.reject('No Wrapper to match ' + this.type);
-			return (prompt ? this._prompt_destroy({View: View}) : this._continue_destroy(settings)).then(function (results) {
+			if (!Wrapper_ && this.Model) return Promise.reject('No Wrapper to match ' + this.type);
+			var Model = this.Model;
+			var P     = new Promise(function (resolve, reject) {Model.destroy({success: resolve});});
+			return P.then(function (response) {
+				if (response && response.success) return response;
+				throw response.error;
+			}).then(function () {
+				return Wrapper_.destroy_MV(self);
+			}).then(function () {
+				self.setStatus('destroyed', true);
+				return true;
+			}).then(function (results) {
 				self.forEachView(function () {this.destroy();});
 				return results;
 			});

@@ -142,6 +142,7 @@ header[role="banner"] {
   position: relative;
   background-color: #3b3738;
   background-size: 100% 620%, cover;
+  height: 100px;
   -webkit-box-shadow: 2px -5px 10px 1px #211e1f;
   -moz-box-shadow: 2px -5px 10px 1px #211e1f;
   box-shadow: 2px -5px 10px 1px #211e1f;

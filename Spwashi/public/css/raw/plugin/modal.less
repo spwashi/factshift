@@ -10,17 +10,18 @@
    background:                 rgba(0, 0, 0, 0.7);
    transition:                 opacity 0.2s, z-index 0s 0.2s;
    text-align:                 center;
-   //overflow:                   hidden;
    overflow-y:                 auto;
    white-space:                nowrap;
+   font-family:                'Inconsolata', Arial, "Lucida Grande", sans-serif;
    .modal-content {
       position: relative;
       &.saving > .content {
          background: lighten(@module_header_color, 55%);
       }
       > .content {
+         background:    @module_color;
          &.no-button-control {
-            padding-right: auto;
+            padding-right: 10px;
          }
          padding-right: 30px;
       }
@@ -67,9 +68,7 @@
    .button-control {
       right: 5px;
    }
-   .content {
-      background: @module_color;
-   }
+
    > * {
       display:        inline-block;
       white-space:    normal;
@@ -80,6 +79,80 @@
    z-index:                    99;
    opacity:                    1;
    display:                    block;
+}
+
+.modal-content > .content > .content {
+   padding: 10px 0;
+}
+
+.choose-container {
+   border-top:  thin solid #cccccc;
+   padding-top: 15px;
+   > .options {
+      width: 100%;
+      .clearfix;
+      > button {
+         width: 42%;
+         float: right;
+         &:first-child {
+            float: left;
+         }
+      }
+   }
+}
+
+.view_relationship-container {
+   .relationship-container {
+      > .content {
+         margin-left: 20px;
+      }
+      > header {
+         margin-top:    7px;
+         margin-bottom: 5px;
+         border-bottom: thin solid #ccc;
+      }
+   }
+   .relationship {
+      padding:       5px auto;
+      margin-bottom: 7px;
+      > .content {
+         .clearfix;
+      }
+      .clearfix;
+      .preview, .inline, .add-to-list {
+         display: inline-block;
+         float:   left;
+      }
+      &.definition-relationship {
+         .clearfix;
+         > * {
+            float: left;
+         }
+         > header {
+            width:  20%;
+            height: 100%;
+            .title {
+               padding-right: 10px;
+               font-size:     20px;
+            }
+         }
+         > .content {
+            border-left:  thin solid #ccc;
+            width:        75%;
+            padding-left: 10px;
+         }
+
+      }
+      .preview, .inline {
+         width: 95%;
+      }
+      .add-to-list {
+         margin-top: 5px;
+         width:      3%;
+         height:     100%;
+         //margin-right : 10px;
+      }
+   }
 }
 
 .modal:before {

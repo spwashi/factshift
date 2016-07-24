@@ -116,7 +116,7 @@ class PageController extends SpwashiController {
 					          $e->getMessage()
 				          ])->log_it();
 			}
-			$current_page->findType('concepts')->findType('dimensions');
+			$current_page->findType('concepts')->findType('dimensions')->findType('users');
 
 			try {
 				$dictionaries = Dictionary::findAll(['user_id' => $user_id]);

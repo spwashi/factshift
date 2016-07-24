@@ -102,13 +102,13 @@ require(["Sm-Core-Core"], function () {
 					var lower_entity_name = EntityType.toLowerCase();
 					var to_find           = '.spwashi-' + lower_entity_name;
 					var models_json       = document.getElementById(lower_entity_name + "_models");
-					models_json && Sm.CONFIG.DEBUG && console.log(models_json ? JSON.parse(models_json.textContent) : null);
 					Sm.Entities[EntityType].Wrapper.hydrate({
 						elements: $body.find(to_find),
 						models:   models_json ? JSON.parse(models_json.textContent) : null
 					});
+					if (EntityType.indexOf("__") !== -1) return;
 					Sm.CONFIG.DEBUG && console.log(EntityType, Sm.Entities[EntityType]);
-					(EntityType.indexOf("__") === -1) && Sm.Extras.visual_debug(EntityType + ' has been loaded!');
+					Sm.Extras.visual_debug(EntityType + ' has been loaded!');
 				}
 			})(EntityType), 'entities_' + EntityType).then(function (e, d, r) {}).catch((function (e) {
 				Sm.CONFIG.DEBUG && console.log(e, ' could not be loaded ');

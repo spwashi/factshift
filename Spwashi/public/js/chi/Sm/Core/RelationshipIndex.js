@@ -178,7 +178,6 @@ define(['Class', 'Sm'], function (Class) {
          * @return {Promise}
          */
         save:                            function (settings) {
-            /**     NOTE: saves relationship parameters**/
             settings       = settings || {};
             var context_id = settings.context_id;
             var context;

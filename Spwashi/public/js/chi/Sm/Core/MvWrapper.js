@@ -127,7 +127,7 @@ require(['require', 'Class', 'Sm', 'Sm-Core-Identifier'], function (require, Cla
 		 * @param {}                    settings.Wrapper
 		 * @return {Sm.Core.MvCombo | boolean|*}
 		 */
-		init_MvCombo: function (settings) {
+		init_MvCombo:  function (settings) {
 			var _model_Identifier = settings.model || settings.Model || (settings.id ? {id: settings.id} : {});
 			if (!_model_Identifier) Sm.CONFIG.DEBUG && console.log('no mi - ', _.clone(settings));
 			settings         = settings || {};
@@ -190,7 +190,7 @@ require(['require', 'Class', 'Sm', 'Sm-Core-Identifier'], function (require, Cla
 		 * @param {Sm.Core.Identifier|Sm.Core.SmView|Sm.Core.MvCombo}   Id              The ID, MvCombo, or a View with the Identity to search for
 		 * @return {boolean}
 		 */
-		MV_is:        function (type_to_check, Id) {
+		MV_is:         function (type_to_check, Id) {
 			if (!Id) return false;
 			if (Id.Identity) {
 				Id = Id.Identity;
@@ -204,7 +204,7 @@ require(['require', 'Class', 'Sm', 'Sm-Core-Identifier'], function (require, Cla
 
 			return (this[type_to_check] && this[type_to_check][rid]);
 		},
-		add_MV_as:    function (type_to_add, Id) {
+		add_MV_as:     function (type_to_add, Id) {
 			//  If there is no Identity, continue
 			if (!Id) return this;
 			//  It's possible that either a View or an MvCombo were passed in. If that's the case, get the Identity accordingly
@@ -263,7 +263,7 @@ require(['require', 'Class', 'Sm', 'Sm-Core-Identifier'], function (require, Cla
 			}
 			return this;
 		},
-		remove_MV_as: function (type_to_remove, Id) {
+		remove_MV_as:  function (type_to_remove, Id) {
 			//  If there is no Identity, continue
 			if (!Id) return this;
 			//  It's possible that either a View or an MvCombo were passed in. If that's the case, get the Identity accordingly
@@ -307,19 +307,6 @@ require(['require', 'Class', 'Sm', 'Sm-Core-Identifier'], function (require, Cla
 			}
 			return true;
 		},
-
-		/**
-		 * Returns the first MvCombo that is in the loaded list. Usually randomish.
-		 * @return {boolean|*|Sm.Core.MvCombo}
-		 */
-		get_arbitrary:      function () {
-			var MVs = this.MvMaps.loaded_MVs;
-			for (var random_id in MVs) {
-				if (!MVs.hasOwnProperty(random_id)) continue;
-				return MVs[random_id].getResource();
-			}
-			return false;
-		},
 ///////////////////////////////////////////////////////////////////////////////
 		/**
 		 * Add focus to an MvCombo
@@ -328,7 +315,7 @@ require(['require', 'Class', 'Sm', 'Sm-Core-Identifier'], function (require, Cla
 		 * @param settings.View {Sm.Core.SmView}
 		 * @return {Promise}
 		 */
-		focus_MV:           function (settings) {
+		focus_MV:      function (settings) {
 			settings          = settings || {};
 			var _Mv           = settings.MvCombo;
 			var focused       = this.MvMaps.focused_MVs;
@@ -349,7 +336,7 @@ require(['require', 'Class', 'Sm', 'Sm-Core-Identifier'], function (require, Cla
 		 * @param settings.View {Sm.Core.SmView}
 		 * @return {Promise}
 		 */
-		activate_MV:        function (settings) {
+		activate_MV:   function (settings) {
 			settings = settings || {};
 			var _Mv  = settings.MvCombo;
 			_Mv && this.add_MV_as('active', {MvCombo: _Mv});
@@ -363,7 +350,7 @@ require(['require', 'Class', 'Sm', 'Sm-Core-Identifier'], function (require, Cla
 		 * @param settings.View {Sm.Core.SmView}
 		 * @return {Promise}
 		 */
-		select_MV:          function (settings) {
+		select_MV:     function (settings) {
 			settings = settings || {};
 			var _Mv  = settings.MvCombo;
 			_Mv && this.add_MV_as('selected', {MvCombo: _Mv});
@@ -377,7 +364,7 @@ require(['require', 'Class', 'Sm', 'Sm-Core-Identifier'], function (require, Cla
 		 * @param settings.View {Sm.Core.SmView}
 		 * @return {Promise}
 		 */
-		deselect_MV:        function (settings) {
+		deselect_MV:   function (settings) {
 			settings = settings || {};
 			var _Mv  = settings.MvCombo;
 			_Mv && this.remove_MV_as('selected', {MvCombo: _Mv});
@@ -391,7 +378,7 @@ require(['require', 'Class', 'Sm', 'Sm-Core-Identifier'], function (require, Cla
 		 * @param settings.View {Sm.Core.SmView}
 		 * @return {Promise}
 		 */
-		blur_MV:            function (settings) {
+		blur_MV:       function (settings) {
 			settings = settings || {};
 			var _Mv  = settings.MvCombo;
 			_Mv && this.remove_MV_as('focused', {MvCombo: _Mv});
@@ -414,7 +401,7 @@ require(['require', 'Class', 'Sm', 'Sm-Core-Identifier'], function (require, Cla
 		 * @param settings.View {Sm.Core.SmView}
 		 * @return {Promise}
 		 */
-		deactivate_MV:      function (settings) {
+		deactivate_MV: function (settings) {
 			settings = settings || {};
 			var _Mv  = settings.MvCombo;
 			_Mv && this.remove_MV_as('active', {MvCombo: _Mv});
@@ -422,26 +409,8 @@ require(['require', 'Class', 'Sm', 'Sm-Core-Identifier'], function (require, Cla
 			return P;
 		},
 ///////////////////////////////////////////////////////////////////////////////
-		build_MV:           function (settings) {
-			settings   = !!settings && typeof  settings === 'object' ? settings : {};
-			var prompt = !!settings.prompt;
-			return prompt ? this._prompt_build_MV(settings) : this._continue_build_MV(settings);
-		},
-		destroy_MV:         function (MvCombo) {
-			if (!MvCombo)   return Promise.reject();
-
-			var MvMaps = this.MvMaps;
-			this.add_MV_as('destroyed', MvCombo);
-			this.remove_MV_as('loaded', MvCombo);
-			Sm.CONFIG.DEBUG && console.log(MvMaps, MvMaps.destroyed_MVs);
-			return Promise.resolve(true);
-		},
-		_prompt_build_MV:   function (settings) {
-			settings   = settings || {};
-			var reject = Promise.reject();
-			return this._continue_build_MV(settings);
-		},
-		_continue_build_MV: function (settings) {
+		build_MV:      function (settings) {
+			settings     = !!settings && typeof  settings === 'object' ? settings : {};
 			settings     = settings || {};
 			var _Wrapper = this;
 			var sm_type  = Sm.Entities[this.type];
@@ -473,7 +442,124 @@ require(['require', 'Class', 'Sm', 'Sm-Core-Identifier'], function (require, Cla
 				settings.MvCombo = NewMv;
 				return NewMv;
 			});
+		},
+		destroy_MV:    function (MvCombo) {
+			if (!MvCombo)   return Promise.reject();
+
+			var MvMaps = this.MvMaps;
+			this.add_MV_as('destroyed', MvCombo);
+			this.remove_MV_as('loaded', MvCombo);
+			Sm.CONFIG.DEBUG && console.log(MvMaps, MvMaps.destroyed_MVs);
+			return Promise.resolve(true);
+		},
+///////////////////////////////////////////////////////////////////////////////
+		prompt:        function (action, parameters, config) {
+			config     = config || {};
+			parameters = parameters || {};
+			if (parameters.object_type == 'MvCombo') parameters = {MvCombo: parameters};
+			var EntityArr      = parameters.EntityArr || [];
+			var MvCombo        = parameters.MvCombo || false;
+			var s_OtherMvCombo = config.OtherMvCombo;
+			if (MvCombo) EntityArr.push(MvCombo);
+			if (!/destroy|edit|add_relationship/.test(action)) return Promise.reject("Not sure how to interact with this");
+			var P, Modal, self = this;
+			var ModalType;
+
+			/**
+			 * Return a Modal Dialog constructor based on the request
+			 * @param modal_name
+			 * @return {*}
+			 */
+			var _Modal = function (modal_name) {
+				return Sm.Entities[self.type].Abstraction &&
+				Sm.Entities[self.type].Abstraction.Modal &&
+				Sm.Entities[self.type].Abstraction.Modal[modal_name]
+					? Sm.Entities[self.type].Abstraction.Modal[modal_name]
+					: (Sm.Entities.Abstraction.Modal[modal_name] || function () {
+					Sm.CONFIG.DEBUG && console.log("Default constructor made for " + modal_name);
+				});
+			};
+
+			function destroy() {
+				P = new Promise(function (resolve, reject) {
+					ModalType = _Modal('Destroy');
+					Modal     = new ModalType({
+						MvCombo:        EntityArr,
+						self_type:      self.type || 'Entity',
+						display_type:   config.display_type,
+						promise_object: {resolve: resolve, reject: reject}
+					});
+					Modal.open();
+				});
+				return P.catch(function (e) {
+					Sm.CONFIG.DEBUG && console.log('core_MvCombo,destroy', e);
+				}).then(function () {
+					var all_destroy = [];
+					for (var i = 0; i < EntityArr.length; i++) {
+						var Entity = EntityArr[i];
+						if (typeof Entity.destroy !== "function") {
+							Sm.CONFIG.DEBUG && console.log(Entity, 'Does not have a method to destroy');
+						} else {
+							all_destroy.push(Entity.destroy());
+						}
+					}
+					return Promise.all(all_destroy);
+				}).then(function () {
+					Modal.close();
+				}).catch(function (boon) {
+					Sm.CONFIG.DEBUG && console.log("Rejected the promise", boon);
+					throw boon;
+				});
+			}
+
+			function edit() {
+				ModalType = _Modal('Edit');
+				Modal     = new ModalType({
+					MvCombo:             EntityArr,
+					self_type:           self.type || 'Entity',
+					display_type:        config.display_type,
+					relationship_object: config.relationship_object
+				});
+				Modal.open();
+				return Promise.resolve(true);
+			}
+
+			function add_relationship() {
+				if (EntityArr.length === 1 && EntityArr[0].object_type && EntityArr[0].object_type == 'MvCombo') {
+					var SelfMvCombo = EntityArr[0];
+					P               = SelfMvCombo.prompt_relationship_add(s_OtherMvCombo, config || {});
+					return P.then(function (_args) {
+						var OtherMvCombo = _args.OtherMvCombo;
+						var ar_settings  = _args.add_relationship_settings;
+						//Whether we're adding the relationship the other way
+						var is_opposite = !!ar_settings.opposite;
+						Sm.CONFIG.DEBUG && console.log('MvWrapper,pr,add_relationship,1.5', OtherMvCombo, ar_settings);
+						//If this relationship is reciprocal, add it to the Other MvCombo
+						if (ar_settings && is_opposite) {
+							return OtherMvCombo.add_relationship(SelfMvCombo, ar_settings);
+						} else {
+							return SelfMvCombo.add_relationship(OtherMvCombo, ar_settings);
+						}
+					});
+				} else {
+					Sm.CONFIG.DEBUG && console.log('MvWrapper,prompt,ar,fail', EntityArr, arguments)
+				}
+			}
+
+			switch (action) {
+				case "destroy":
+					return destroy();
+					break;
+				case "edit":
+					return edit();
+					break;
+				case "add_relationship":
+					return add_relationship();
+					break;
+			}
+			return Promise.reject("Not sure how to interact with this entity");
 		}
+///////////////////////////////////////////////////////////////////////////////
 	});
 	Sm.Core.MvWrapper.replacements            = {
 		replaced_MVs:    {},

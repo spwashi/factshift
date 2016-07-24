@@ -13,8 +13,8 @@ require(['require', 'Class', 'Sm', 'Sm/Extras/Modal', 'Sm-Entities-Abstraction-M
 			},
 			generate_element: function (config) {
 				var c = config || {};
-				if (this.MvComboArr.length === 1) {
-					var MvCombo_  = this.MvComboArr[0];
+				if (this.EntityArr.length === 1) {
+					var MvCombo_  = this.EntityArr[0];
 					var self_type = this.self_type;
 					var self      = this;
 					if ((self.relationship_object && self.relationship_object.other_MV_type == "Dictionary")) {

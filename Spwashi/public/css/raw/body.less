@@ -124,6 +124,39 @@ body > .row,
       .delete { display: none; }
       .add { display: none; }
    }
+   @spwashi_entity_tag : rgba(220, 220, 220, .35);
+   &.tag {
+      max-width:        200px;
+      max-height:       30px;
+      overflow:         hidden;
+      > .content {
+         max-height:  20px;
+         padding:     0;
+         overflow:    hidden;
+         white-space: nowrap;
+      }
+      &:last-child {
+         margin-right: 0;
+      }
+      padding:          3px;
+      //background-color: @lst_tag_color;
+      background-color: @spwashi_entity_tag;
+      border:           4px solid @lst_tag_border_color;
+      margin:           5px 5px 5px 0;
+      &.focused {
+         background-color:           darken(@lst_tag_color, 20%);
+         border:                     2px solid darken(@lst_tag_border_color, 10%);
+         color:                      @spotlight_text_color;
+         font-style:                 italic;
+         border-bottom-left-radius:  0;
+         border-bottom-right-radius: 0;
+      }
+      &.word {
+         font-size:        .75em;
+         border:           thin solid @lst_word_border_color;
+         background-color: @lst_word_color;
+      }
+   }
 
    &.can-edit .button-control {
       .edit { display: block; }
@@ -468,74 +501,6 @@ body > .row,
       }
       > .button-control {
          display: block;
-      }
-   }
-}
-
-.choose-container {
-   > .options {
-      width: 100%;
-      .clearfix;
-      > button {
-         width: 42%;
-         float: right;
-         &:first-child {
-            float: left;
-         }
-      }
-   }
-}
-
-.view_relationship-container {
-   .relationship-container {
-      > .content {
-         margin-left: 20px;
-      }
-      > header {
-         margin-top:    7px;
-         margin-bottom: 5px;
-         border-bottom: thin solid #ccc;
-      }
-   }
-   .relationship {
-      padding:       5px auto;
-      margin-bottom: 7px;
-      > .content {
-         .clearfix;
-      }
-      .clearfix;
-      .preview, .inline, .add-to-list {
-         display: inline-block;
-         float:   left;
-      }
-      &.definition-relationship {
-         .clearfix;
-         > * {
-            float: left;
-         }
-         > header {
-            width:  20%;
-            height: 100%;
-            .title {
-               padding-right: 10px;
-               font-size:     20px;
-            }
-         }
-         > .content {
-            border-left:  thin solid #ccc;
-            width:        75%;
-            padding-left: 10px;
-         }
-
-      }
-      .preview, .inline {
-         width: 95%;
-      }
-      .add-to-list {
-         margin-top: 5px;
-         width:      3%;
-         height:     100%;
-         //margin-right : 10px;
       }
    }
 }

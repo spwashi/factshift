@@ -159,7 +159,8 @@ $config = [
 			'prefix'        => 'ccp_',
 			'table'         => 'concepts',
 			'relationships' => [
-				'_inherit' => ['_' => ['sections', 'pages']]
+				'_inherit' => ['_' => ['sections', 'pages', 'users']],
+				'users'    => ['existent' => false],
 			],
 			'properties'    => [
 				'all'          => [
@@ -177,10 +178,16 @@ $config = [
 				],
 				'api_settable' => [
 					'title',
+					'alias',
 					'subtitle',
 					'description',
 				],
-				'api_gettable' => '*'
+				'api_gettable' => '*',
+				'required'     => [
+					'title',
+					'alias',
+					'description'
+				]
 			]
 		],
 		'Page'                 => [
@@ -425,6 +432,21 @@ $config = [
 		'PageUserMap'          => [
 			'table'      => 'page_user_map',
 			'alias_for'  => 'pages.user_id',
+			'properties' => [
+				'all'          => [
+					'id',
+					'user_id'
+				],
+				'api_settable' => [
+					'id',
+					'user_id'
+				],
+				'api_gettable' => '*'
+			]
+		],
+		'ConceptUserMap'       => [
+			'table'      => 'concept_user_map',
+			'alias_for'  => 'concepts.user_id',
 			'properties' => [
 				'all'          => [
 					'id',

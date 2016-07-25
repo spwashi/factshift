@@ -6,6 +6,7 @@
  */
 
 namespace Sm\Model;
+
 #todo add a "plural" for the model types
 use Sm\Core\App;
 use Sm\Core\Inflector;
@@ -23,6 +24,7 @@ class ModelMeta {
 	const FIND_API_SET                  = 'api_settable';
 	const FIND_API_GET                  = 'api_gettable';
 	const FIND_DEFAULT                  = 'all';
+	const FIND_REQUIRED                 = 'required';
 	const FIND_RELATIONSHIPS            = 'relationships';
 	const FIND_RECIPROCAL_RELATIONSHIPS = 'reciprocal_relationships';
 	const FIND_BOTH_RELATIONSHIPS       = '_find_both_relationships_';
@@ -213,6 +215,7 @@ class ModelMeta {
 			$table_is_existent       = $m_info['existent'] ?? !isset($m_info['alias_for']); //Whether this table actually exists
 			$api_gettable_properties = $properties['api_gettable'] ?? $properties['api'] ?? [];
 			$api_settable_properties = $properties['api_settable'] ?? $properties['api'] ?? [];
+			$required_properties     = $properties['required'] ?? [];
 			$properties['all']       = $properties['api_gettable'] = $properties['api_settable'] = [];
 			foreach ((array)$all_properties as $key => $v) {
 				if (is_numeric($key)) $properties['all'][$v] = null;
@@ -220,6 +223,7 @@ class ModelMeta {
 			}
 			$properties['api_settable'] = $api_settable_properties == '*' ? array_keys($properties['all']) : $api_settable_properties; //Check to see if the wildcard was used; if so, adopt all properties
 			$properties['api_gettable'] = $api_gettable_properties == '*' ? array_keys($properties['all']) : $api_gettable_properties;
+			$properties['required']     = $required_properties ?? [];
 
 			$all_relationships  = $m_info['relationships'] ?? [];             //All of the relationships held by this object
 			$relationships      = [];
@@ -384,6 +388,7 @@ class ModelMeta {
 		switch ($type) {
 			case (static::FIND_API_SET):
 			case (static::FIND_API_GET):
+			case (static::FIND_REQUIRED):
 			case (static::FIND_DEFAULT):
 				return $class_properties['properties'][$type] ?? [];
 				break;
@@ -523,6 +528,12 @@ class ModelMeta {
 		}
 		return false;
 	}
+	/**
+	 * @param        $one
+	 * @param        $two
+	 * @param string $convert_to
+	 * @return Map|bool
+	 */
 	public static function get_map_between($one, $two, $convert_to = ModelMeta::TYPE_TABLE) {
 		$one = static::convert_to_something($one, static::TYPE_MODEL_TYPE);
 		$two = static::convert_to_something($two, static::TYPE_MODEL_TYPE);

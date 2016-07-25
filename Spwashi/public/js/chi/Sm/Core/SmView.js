@@ -291,11 +291,12 @@ require(['require', 'backbone', 'jquery',
 		         * @returns {Sm.Core.SmView}
 		         */
 		        refresh_all:    function (settings, ignore) {
-			        settings    = settings || {};
-			        ignore      = ignore || [];
-			        var Element = this.get_rendered('Element');
+			        settings     = settings || {};
+			        ignore       = ignore || [];
+			        var Element  = this.get_rendered('Element');
 			        this.delegateEvents(this.events());
-			        var self    = this;
+			        /** @type {Sm.Core.SmView}*/
+			        var SelfView = this;
 
 			        var MvCombo = this.MvCombo;
 			        if (!MvCombo) return this;
@@ -305,7 +306,7 @@ require(['require', 'backbone', 'jquery',
 					        //iterate through this backwards to avoid any positioning mistakes
 					        for (var i = relationship_index._meta._list.length; i--;) {
 						        var rel_r_id = relationship_index._meta._list[i];
-						        self.add_relationship({
+						        SelfView.add_relationship({
 							        render:            true,
 							        Relationship:      relationship_index.items[rel_r_id],
 							        RelationshipIndex: relationship_index
@@ -485,8 +486,8 @@ require(['require', 'backbone', 'jquery',
 				        MvCombo_ = settings.MvCombo;
 				        View_    = MvCombo_.getView({reference_element: this.referenceElement});
 			        }
-			        var self    = this;
-			        var Wrapper = Sm.Entities[this.type].Wrapper;
+			        var SelfView = this;
+			        var Wrapper  = Sm.Entities[this.type].Wrapper;
 			        /**
 			         * Create the Relationship on the server
 			         */
@@ -508,10 +509,10 @@ require(['require', 'backbone', 'jquery',
 					        var other_map_index    = result.map_indices[1];
 					        if (Relationship_) {
 						        var reg_obj              = {};
-						        reg_obj[self_map_index]  = self;
+						        reg_obj[self_map_index]  = SelfView;
 						        reg_obj[other_map_index] = otherView || View_;
 						        Relationship_.register_view_relationship(reg_obj);
-						        self.add_relationship({
+						        SelfView.add_relationship({
 							        render:            true,
 							        Relationship:      Relationship_,
 							        RelationshipIndex: RelationshipIndex_
@@ -549,10 +550,10 @@ require(['require', 'backbone', 'jquery',
 				        console.log(e);
 				        throw e;
 			        });
-			        P
 		        },
 		        /**
 		         * Physically add the relationship to the View, regardless of whether or not it exists on the server
+		         * @alias Sm.Core.SmView.add_relationship
 		         * @param settings
 		         * @param {boolean=}                            settings.render
 		         * @param {boolean=}                            settings.is_reciprocal
@@ -576,6 +577,7 @@ require(['require', 'backbone', 'jquery',
 		         *                                                                                  relationship exists
 		         * @param {string=}                              settings.container_template         The template to use in
 		         *                                                                                  wrapping the relationship
+		         * @this Sm.Core.SmView
 		         * @return {Promise|boolean|*}
 		         */
 		        add_relationship:       function (settings) {
@@ -761,7 +763,7 @@ require(['require', 'backbone', 'jquery',
 		         * Initialize the standard procedure for dealing with the button controls on the side of the Entities
 		         */
 		        init_button_control_events: function () {
-			        var self = this;
+			        var SelfView               = this;
 			        var button_control_element = this.get_rendered('button_control', true);
 			        //Sm.CONFIG.DEBUG && console.log(button_control_element);
 			        if (button_control_element && typeof button_control_element === "object") {
@@ -769,14 +771,14 @@ require(['require', 'backbone', 'jquery',
 					        var target  = e.target;
 					        var $target = $(target);
 
-					        var Relationship_Obj = self.find_closest_relationship();
+					        var Relationship_Obj = SelfView.find_closest_relationship();
 					        var Relationship_    = Relationship_Obj.Relationship;
 					        var relElem          = Relationship_Obj.el;
 					        var other_MV_type    = Relationship_Obj.other_MV_type;
 
-					        var Wrapper_ = Sm.Entities[self.type].Wrapper;
+					        var Wrapper_ = Sm.Entities[SelfView.type].Wrapper;
 
-					        if (self.queryPermission('edit') && $target.hasClass('edit') && $target.hasClass('button')) {
+					        if (SelfView.queryPermission('edit') && $target.hasClass('edit') && $target.hasClass('button')) {
 						        var edit_config = {};
 						        if (Relationship_) {
 							        edit_config.display_type        = 'preview';
@@ -785,19 +787,19 @@ require(['require', 'backbone', 'jquery',
 								        other_MV_type: other_MV_type
 							        }
 						        }
-						        Wrapper_.prompt('edit', self.MvCombo, edit_config);
+						        Wrapper_.prompt('edit', SelfView.MvCombo, edit_config);
 					        } else if ($target.hasClass('debug') && $target.hasClass('button') && Sm.CONFIG.DEBUG) {
-						        Sm.CONFIG.DEBUG && console.log(self.cid, ' -- ', self.MvCombo, self.MvCombo.Identity.r_id, self.MvCombo.Model.attributes);
-					        } else if (self.queryPermission('relate') && $target.hasClass('add') && $target.hasClass('button')) {
-						        self.begin_add_relationship();
-					        } else if (self.queryPermission('destroy') && $target.hasClass('delete') && $target.hasClass('button')) {
+						        Sm.CONFIG.DEBUG && console.log(SelfView.cid, ' -- ', SelfView.MvCombo, SelfView.MvCombo.Identity.r_id, SelfView.MvCombo.Model.attributes);
+					        } else if (SelfView.queryPermission('relate') && $target.hasClass('add') && $target.hasClass('button')) {
+						        SelfView.begin_add_relationship();
+					        } else if (SelfView.queryPermission('destroy') && $target.hasClass('delete') && $target.hasClass('button')) {
 						        /** If self  is in a relationship container ... */
 						        if (Relationship_) {
 							        Relationship_.destroy({silent: false}).then(function () {
 								        /** Check to see what we're deleting the section from [Section, Dictionary, ...] */
 								        if (Relationship_.linked_entities) {
 									        /** Always remove the View itself */
-									        self.destroy();
+									        SelfView.destroy();
 									        /** Then remove the relationship element */
 									        relElem && relElem.parentNode.removeChild(relElem);
 									        /** If we are deleting it from  a Section */
@@ -807,7 +809,7 @@ require(['require', 'backbone', 'jquery',
 								        }
 							        });
 						        } else {
-							        Wrapper_.prompt('destroy', self.MvCombo);
+							        Wrapper_.prompt('destroy', SelfView.MvCombo);
 						        }
 
 					        }

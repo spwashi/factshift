@@ -99,7 +99,7 @@ require(['require', 'Class', 'Sm', 'Sm/Extras/Modal'], function (require, Class)
 						if (set_thing[n] == _Model.get(n)) delete set_thing[n];
 					}
 					_Model.set(set_thing);
-					return (this.changed_attributes = _Model.changedAttributes());
+					return this.changed_attributes = set_thing;
 				}
 				return set_thing;
 			},
@@ -118,24 +118,43 @@ require(['require', 'Class', 'Sm', 'Sm/Extras/Modal'], function (require, Class)
 			 */
 			on_save:               function () {
 				this.emit('before_save', this, this.content_element);
-				var self      = this;
+				var SelfModal = this;
 				var EntityArr = this.EntityArr;
 				if (EntityArr.length === 1) {
-					var MvCombo_ = EntityArr[0];
-					return MvCombo_.save({
-						silent: true,
-						patch:  true
+					var MvCombo_    = EntityArr[0];
+					var P, no_model = false;
+					if (!MvCombo_.Model || !MvCombo_.Model.id) {
+						Sm.CONFIG.DEBUG && console.log(MvCombo_.Model);
+						Sm.CONFIG.DEBUG && console.log('ModalEdit,on_save,no_save');
+						no_model = true;
+						P        = !!MvCombo_.Model ? MvCombo_.Model.save() : Promise.resolve({});
+					} else {
+						P = MvCombo_.save({
+							silent: true,
+							patch:  true
+						})
+					}
+					var save_result;
+					return P.then(function (result) {
+						save_result = result;
+						return SelfModal.resolve('after_save', result);
 					}).then(function (result) {
-						return self.resolve('after_save', result);
+						if (no_model) {
+							Sm.CONFIG.DEBUG && console.log(save_result);
+							return MvCombo_.Model ? SelfModal.promise_object.resolve(save_result) : SelfModal.promise_object.resolve({success: true});
+						}
+						return result;
 					});
 				}
 				return Promise.reject("Not sure what to do with multiple MvCombos yet");
 			},
 			on_after_save:         function (result) {
 				this.$content_element.removeClass('saving');
-				this.success(result, this.changed_attributes);
-				this.changed_attributes = {};
-				return result;
+				var ca = this.changed_attributes;
+				result && this.success(result, this.changed_attributes);
+				if (this.EntityArr.length !== 1 || (this.EntityArr[0].Model && this.EntityArr[0].Model.id))
+					this.changed_attributes = {};
+				return ca;
 			},
 			on_open:               function () {
 				var content_element = this.content_element;

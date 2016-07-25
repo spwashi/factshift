@@ -30,7 +30,7 @@ class RelationshipIndexContainer implements \JsonSerializable {
 		foreach ($relationship_indices as $name => $RelationshipIndex) {
 			/** @var RelationshipIndex $RelationshipIndex */
 //			if (!($this->gotten[$name] ?? false)) continue;
-			if(!count($RelationshipIndex->get_items())) continue;
+			if (!count($RelationshipIndex->get_items())) continue;
 			$properties[$name] = $RelationshipIndex;
 		}
 		return $properties;
@@ -48,6 +48,7 @@ class RelationshipIndexContainer implements \JsonSerializable {
 	 * @return RelationshipIndex
 	 */
 	public function &getRelationshipIndex($index, $map_properties = null, $is_reciprocal = false, $mapped_table = null) {
+		if ($index instanceof Model) $index = $index->getTableName();
 		$index                  = strtolower($index);
 		$mapped_table           = $mapped_table ?? $index;
 		$r_name                 = 'reciprocal_' . $index;
@@ -170,6 +171,9 @@ class RelationshipIndexContainer implements \JsonSerializable {
 		}
 		return $relationship_index;
 	}
+	/**
+	 * @return RelationshipIndex[]
+	 */
 	public function get_items() {
 		return $this->relationship_indices;
 	}

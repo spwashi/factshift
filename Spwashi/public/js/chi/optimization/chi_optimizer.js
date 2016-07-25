@@ -71,6 +71,7 @@
 		"Sm-Entities-Section-Abstraction-Modal-ModalEdit",
 //,
 		"Sm-Entities-Concept-Meta",
+		"Sm-Entities-Concept-Wrapper",
 		"Sm-Entities-Concept-View"
 	],
 	paths:   {

@@ -78,8 +78,14 @@ require(['require', 'Emitter', 'Sm'], function (require, Emitter) {
 
 
 					this.promise_object         = settings.promise_object || {};
-					this.promise_object.resolve = this.promise_object.resolve || function () {return true};
-					this.promise_object.reject  = this.promise_object.reject || function () {return false};
+					this.promise_object.resolve = this.promise_object.resolve || function () {
+							Sm.CONFIG.DEBUG && console.log('Modal,def_resolve');
+							return true
+						};
+					this.promise_object.reject  = this.promise_object.reject || function () {
+							Sm.CONFIG.DEBUG && console.log('Modal,def_reject');
+							return false
+						};
 
 					this.ViewArr                   = [];
 					/** @type {HTMLElement|null} */
@@ -135,15 +141,17 @@ require(['require', 'Emitter', 'Sm'], function (require, Emitter) {
 			get_info_from_form:   function (query_selector) {
 				var $modal_content = this.get_content_element(true);
 				if (this.EntityArr.length === 1) {
-					var _Model    = this.EntityArr[0].Model;
-					var edit      = $modal_content.find(query_selector);
-					var set_thing = {};
+					var _Model          = this.EntityArr[0].Model;
+					var edit            = $modal_content.find(query_selector);
+					var set_thing       = {};
+					var found_something = false;
 					for (var i = 0; i < edit.length; i++) {
-						var $elem = $(edit[i]);
-						var elem  = edit[i];
-						var val   = $elem.val();
+						found_something = true;
+						var $elem       = $(edit[i]);
+						var elem        = edit[i];
+						var val         = $elem.val();
 						val.trim && (val = val.trim());
-						var name  = $elem.attr('name');
+						var name        = $elem.attr('name');
 						if (name == 'has_title') val = !!elem.checked ? 1 : 0;
 
 						if (!!name) set_thing[name] = val;
@@ -151,7 +159,7 @@ require(['require', 'Emitter', 'Sm'], function (require, Emitter) {
 						o[name] = val + '';
 					}
 				}
-				return (this.changed_attributes = set_thing);
+				return (this.changed_attributes = found_something ? set_thing : this.changed_attributes);
 			},
 			create_modal_element: function () {
 				var self      = this;

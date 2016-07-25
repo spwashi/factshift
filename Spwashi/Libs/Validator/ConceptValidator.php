@@ -7,7 +7,6 @@
 
 namespace Spwashi\Libs\Validator;
 
-
 use Spwashi\Libs\Validator\Abstraction\Validator;
 use Spwashi\Model\Concept;
 
@@ -21,10 +20,10 @@ class ConceptValidator extends Validator {
 
 	#
 
-	public static function getAliasValidity($alias, $context) {
+	public static function getAliasValidity($alias) {
 		if (!isset($alias) || $alias == '') return static::E_NULL;
 		$len = strlen($alias);
-		preg_match('/[^a-z-\d]/', $alias, $matches);
+		preg_match('/[^a-zA-Z-\d]/', $alias, $matches);
 		if ($len < static::MIN_ALIAS_LENGTH) {
 			return static::E_TOO_SHORT;
 		} elseif ($len > static::MAX_ALIAS_LENGTH) {
@@ -32,7 +31,7 @@ class ConceptValidator extends Validator {
 		} elseif (!empty($matches)) {
 			return static::E_INVALID_CHARS;
 		} else {
-			$output = Concept::findSql([ 'alias' => $alias, 'context' => $context ]);
+			$output = Concept::findSql(['alias' => $alias]);
 			if (!!$output && !empty($output))
 				return ConceptValidator::E_UNAVAILABLE;
 		}

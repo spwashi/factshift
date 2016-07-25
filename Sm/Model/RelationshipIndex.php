@@ -50,6 +50,7 @@ class RelationshipIndex implements \JsonSerializable {
 			return;
 		}
 		$le = $properties['linked_entities'] ?? [];
+		if ($index instanceof Model) $index = $index->getTableName();
 		if (!$le) Log::init([$properties, $index])->log_it();
 		if (strpos($index, 'reciprocal_') > -1) $this->is_reciprocal = true;
 

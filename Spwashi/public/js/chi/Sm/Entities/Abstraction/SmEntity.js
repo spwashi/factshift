@@ -69,7 +69,7 @@ require(["Sm-Core-Core"], function () {
 		var has                          = {
 			Section:    ['templates-_template', 'templates-standard', 'Meta', 'Model', 'View', 'Garage', 'MvCombo', 'Wrapper', 'Abstraction-Relationship-pivots_RelationshipIndex', 'Abstraction-Modal-ModalEdit', 'templates-definition'],
 			Collection: ['templates-_template', 'templates-standard', 'Meta', 'View'],
-			Concept:    ['templates-_template', 'templates-standard', 'Meta', 'View'],
+			Concept:    ['templates-_template', 'templates-standard', 'Meta', 'View', 'Wrapper'],
 			Page:       ['templates-_template', 'templates-standard', 'Meta', 'View', 'Garage'],
 			Dictionary: ['templates-_template', 'templates-standard', 'Meta', 'View', 'Garage', 'MvCombo', 'Wrapper'],
 			Dimension:  ['templates-_template', 'templates-standard', 'Meta', 'View', 'Wrapper']

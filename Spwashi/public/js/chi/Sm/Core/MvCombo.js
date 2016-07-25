@@ -380,7 +380,7 @@ require(['require', 'Sm', 'Sm-Core-util', 'Emitter'], function (require) {
 				if (!actual_relationship.items) continue;
 				var relationship_items = actual_relationship.items;
 				for (var other_model_id in relationship_items) {
-					if (!relationship_items.hasOwnProperty(other_model_id) || !$.isNumeric(other_model_id)) continue;
+					if (!relationship_items.hasOwnProperty(other_model_id)) continue;
 					var mapped_props = relationship_items[other_model_id];
 					if (!mapped_props || !(typeof mapped_props === "object")) continue;
 					var map = mapped_props._map || false;
@@ -424,11 +424,21 @@ require(['require', 'Sm', 'Sm-Core-util', 'Emitter'], function (require) {
 						Sm.CONFIG.DEBUG && console.log('mvcombo,pkn,omt', other_model);
 						continue;
 					}
-					var self           = this;
+					var self = this;
 					/**
 					 * Initialize the MvCombo of the other model and add the relationship to this MvCombo
 					 */
-					var when_loaded_fn = (function (other_model_type, other_model, id, self, map, relationship_index) {
+					/**
+					 *
+					 * @param {string}          other_model_type
+					 * @param {{}}              other_model
+					 * @param {number|string}   id
+					 * @param {Sm.Core.MvCombo} SelfMvCombo
+					 * @param {{}}              map
+					 * @param {string}          relationship_index
+					 * @return {Function}
+					 */
+					var get_wl_fn      = function (other_model_type, other_model, id, SelfMvCombo, map, relationship_index) {
 						return function () {
 							var smOtherType = Sm.Entities[other_model_type];
 							if (!smOtherType) {
@@ -450,8 +460,8 @@ require(['require', 'Sm', 'Sm-Core-util', 'Emitter'], function (require) {
 							 * Add the relationship
 							 */
 							if (other_MV && other_MV.Identity) {
-								Sm.loaded.when_loaded(['entities_' + self.type, 'entities_' + other_MV.type], function () {
-									self.add_relationship(other_MV, {
+								Sm.loaded.when_loaded(['entities_' + SelfMvCombo.type, 'entities_' + other_MV.type], function () {
+									SelfMvCombo.add_relationship(other_MV, {
 										map:                map,
 										relationship_index: relationship_index,
 										position:           map.position || 1,
@@ -459,10 +469,11 @@ require(['require', 'Sm', 'Sm-Core-util', 'Emitter'], function (require) {
 									}).catch(function (e) {
 										Sm.CONFIG.DEBUG && console.log(e)
 									});
-								}, 'add_rel_to_' + self.type);
+								}, 'add_rel_to_' + SelfMvCombo.type);
 							}
 						}
-					})(other_model_type, other_model, other_model_id, self, map, relationship_index);
+					};
+					var when_loaded_fn = get_wl_fn(other_model_type, other_model, other_model_id, self, map, relationship_index);
 
 					//When the other model type is loaded, add the relationship
 					//Date is appended so relationships don't get messed up with the same name
@@ -853,12 +864,13 @@ require(['require', 'Sm', 'Sm-Core-util', 'Emitter'], function (require) {
 		},
 		/**
 		 * Create a relationship between two entities, then create a
+		 * @alias Sm.Core.MvCombo.add_relationship
 		 * @see Sm.Core.Relationship
 		 * @see Sm.Core.MvCombo.relationships
 		 * @see Sm.Core.MvCombo.reciprocal_relationships
 		 * @see Sm.Core.MvCombo.prompt_relationship_add
 		 *
-		 * @param {Sm.Core.MvCombo|Sm.Core.Identifier|*}     OtherMvCombo
+		 * @param {Sm.Core.MvCombo|Sm.Core.Identifier}     OtherMvCombo
 		 * @param {{}}                  settings
 		 * @param {{}}                  settings.map                        The map (if existent) between the two entities
 		 * @param {boolean=}            settings.is_reciprocal              Is the relationship only being reciprocated?
@@ -869,9 +881,12 @@ require(['require', 'Sm', 'Sm-Core-util', 'Emitter'], function (require) {
 		 * @param {int=0}               settings.context_r_id               If there is a context, this is the r_id of it
 		 * @param {Sm.Core.SmView}      settings.OtherView
 		 * @param {Sm.Core.Relationship=}ReciprocalRelationship            The other relationship. What are we reciprocating?
+		 * @this Sm.Core.MvCombo
 		 * @return {Promise}
 		 */
 		add_relationship:             function (OtherMvCombo, settings, ReciprocalRelationship) {
+			/** @type {Sm.Core.MvCombo}  */
+			OtherMvCombo           = OtherMvCombo || null;
 			this.relationship_map  = this.relationship_map || {};
 			settings               = settings || {};
 			var silent             = !!settings.silent;
@@ -1040,7 +1055,7 @@ require(['require', 'Sm', 'Sm-Core-util', 'Emitter'], function (require) {
 		 * Build the MvCombo in a "new relationship" scenario. Called from Sm.Core.MvCombo.prompt_relationship_add
 		 * Meant to be overridden
 		 * @see Sm.Core.MvCombo.prompt_relationship_add
-		 * @param otherWrapper
+		 * @param {Sm.Core.MvWrapper}otherWrapper
 		 * @param settings
 		 * @return {Promise}
 		 * @private

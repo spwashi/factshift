@@ -409,6 +409,14 @@ require(['require', 'Class', 'Sm', 'Sm-Core-Identifier'], function (require, Cla
 			return P;
 		},
 ///////////////////////////////////////////////////////////////////////////////
+		/**
+		 * @alias Sm.Core.MvWrapper.build_MV
+		 * @param settings
+		 * @param settings.MvCombo
+		 * @param settings.model_properties
+		 * @param settings.prompt
+		 * @return {*}
+		 */
 		build_MV:      function (settings) {
 			settings     = !!settings && typeof  settings === 'object' ? settings : {};
 			settings     = settings || {};
@@ -422,17 +430,24 @@ require(['require', 'Class', 'Sm', 'Sm-Core-Identifier'], function (require, Cla
 			Model_.type          = this.type;
 			var model_properties = Sm.Core.util.merge_objects(Model_.attributes, settings.model_properties || {});
 			Model_.set(model_properties);
-			return Promise.resolve(Model_.save()).then(function (response) {
+			var NewMv            = _Wrapper.init_MvCombo({
+				Wrapper: _Wrapper,
+				model:   Model_,
+				CONFIG:  _Wrapper.CONFIG
+			});
+			/** @type {Promise}  */
+			var P;
+			if (!!settings.prompt) P = this.prompt('edit', NewMv, {display_type: 'inline'});
+			else P = Promise.resolve(Model_.save());
+			return P.then(function (response) {
+				Sm.CONFIG.DEBUG && console.log(response);
+				response         = response || {};
 				response.success = response.success || false;
-				if (!response.success) throw  response.message || "Unknown error occurred";
-				response.data = response.data || {};
-
-				var NewMv        = _Wrapper.init_MvCombo({
-					Wrapper: _Wrapper,
-					model:   response.data.model,
-					CONFIG:  _Wrapper.CONFIG
-				});
+				if (!response.success) throw  response.message || "Unknown error occurred, mvw";
+				response.data    = response.data || {};
 				if (!NewMv) return Promise.reject("No new Mv");
+				NewMv.refresh_model(response.data.model);
+				NewMv.Identity.refresh(response.data.model);
 				NewMv.getView({}).render();
 				_Wrapper.add_MV_as('loaded', {
 					MvCombo: NewMv,
@@ -513,22 +528,31 @@ require(['require', 'Class', 'Sm', 'Sm-Core-Identifier'], function (require, Cla
 			}
 
 			function edit() {
-				ModalType = _Modal('Edit');
-				Modal     = new ModalType({
-					MvCombo:             EntityArr,
-					self_type:           self.type || 'Entity',
-					display_type:        config.display_type,
-					relationship_object: config.relationship_object
+				P = new Promise(function (resolve, reject) {
+					ModalType = _Modal('Edit');
+					Sm.CONFIG.DEBUG && console.log(config.display_type);
+					Modal     = new ModalType({
+						MvCombo:             EntityArr,
+						self_type:           self.type || 'Entity',
+						display_type:        config.display_type,
+						relationship_object: config.relationship_object,
+						promise_object:      {resolve: resolve, reject: reject}
+					});
+					Modal.open();
 				});
-				Modal.open();
-				return Promise.resolve(true);
+				return P.then(function (result) {
+					Modal.close();
+					return result;
+				});
 			}
 
 			function add_relationship() {
 				if (EntityArr.length === 1 && EntityArr[0].object_type && EntityArr[0].object_type == 'MvCombo') {
+					/** @type {Sm.Core.MvCombo}  */
 					var SelfMvCombo = EntityArr[0];
 					P               = SelfMvCombo.prompt_relationship_add(s_OtherMvCombo, config || {});
 					return P.then(function (_args) {
+						/** @type {Sm.Core.MvCombo}  */
 						var OtherMvCombo = _args.OtherMvCombo;
 						var ar_settings  = _args.add_relationship_settings;
 						//Whether we're adding the relationship the other way

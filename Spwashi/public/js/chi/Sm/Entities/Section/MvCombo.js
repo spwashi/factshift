@@ -81,6 +81,7 @@ require(['require', 'Sm', 'Sm-Core-MvCombo'], function (require) {
 				 */
 				var subtypes = PivotsRelIndex.relationship_subtype_map;
 				var max      = false;
+				Sm.CONFIG.DEBUG && console.log('sec/mv/grs', PivotsRelIndex);
 				//Iterate through the subtypes of the context
 				if (subtypes && subtypes[context_id]) {
 					/** @type {string} The subtype that we are on as of current */
@@ -168,7 +169,7 @@ require(['require', 'Sm', 'Sm-Core-MvCombo'], function (require) {
 				var RelationshipIndex = MvCombo.getRelationshipIndex(relationship_index, is_reciprocal);
 				//Sm.CONFIG.DEBUG && console.log(' + find rels+ ', RelationshipIndex.get_listed_items(context_id).items.map(function (im) {return im.r_id;}), is_reciprocal);
 				if (!RelationshipIndex) return {relationships: [], items: []};
-				var result = relationship_index == 'pivots' ? RelationshipIndex.get_listed_subtype_items(relationship_subindex, context_id) : RelationshipIndex.get_listed_items(context_id);
+				var result = relationship_index == 'pivots' ? RelationshipIndex.get_listed_subtype_items(relationship_subtype, context_id) : RelationshipIndex.get_listed_items(context_id);
 				for (var i = 0; i < result.items.length; i++) {
 					/** @type {Sm.Core.MvCombo}  */
 					var item = result.items[i];

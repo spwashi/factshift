@@ -103,7 +103,6 @@ class Model extends Abstraction\Model {
 		}
 		$query  = $sql->select($attributes ?: '*')->from(static::$table_name)->buildQry()->getQry();
 		$output = $sql->run()->output($all ? 'all' : 'row');
-		if (!$output) \Kint::dump([$output, $id, $sql, $query]);
 		return $output;
 	}
 	/**
@@ -131,7 +130,6 @@ class Model extends Abstraction\Model {
 				$newClass->cache();
 				return $newClass;
 			} else {
-				var_dump($output);
 				throw new \Exception();
 			}
 		} catch (\Exception $e) {

@@ -82,6 +82,7 @@ require.config({
 //
 		"Sm-Entities-Concept-Meta":                                              CHI_URL + "Sm/Entities/Concept/Meta",
 		"Sm-Entities-Concept-View":                                              CHI_URL + "Sm/Entities/Concept/View",
+		"Sm-Entities-Concept-Wrapper":                                           CHI_URL + "Sm/Entities/Concept/Wrapper",
 		"Sm-Entities-Concept-templates-_template":                               CHI_URL + "Sm/Entities/Concept/templates/_template",
 		"Sm-Entities-Concept-templates-standard":                                CHI_URL + "Sm/Entities/Concept/templates/standard"
 	}

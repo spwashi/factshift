@@ -214,16 +214,18 @@ require(['require'], function (require) {
 				return Sm.Core.SmView.prototype.init_button_control_events.apply(this, arguments);
 			},
 			_get_pd_creation_fn:        function (pivot_object, $button_control, context_id) {
-				var self       = this;
-				var selfSm     = Sm.Entities.Section;
-				var on         = false;
-				var what_we_on = this.what_we_on || "home";
-				context_id     = context_id || 0;
+				var self        = this;
+				var selfSm      = Sm.Entities.Section;
+				pivot_object.on = false;
+				var what_we_on  = this.what_we_on || "home";
+				context_id      = context_id || 0;
 
 				return function (event) {
 					event.stopPropagation();
-					if (self.PivotViewAid && self.PivotViewAid.status.is_open) on = true;
-					if (on) return true;
+					if (self.PivotViewAid && self.PivotViewAid.status.is_open) {
+						pivot_object.on = true;
+					}
+					if (pivot_object.on) return true;
 					var referenced_mv_obj = Sm.Core.MvWrapper.get_effective_MV(self.MvCombo.r_id, true, true) || {};
 					var ReferencedMvCombo = referenced_mv_obj.MVs || false;
 
@@ -308,8 +310,9 @@ require(['require'], function (require) {
 									}
 								},
 								open:  function () {
-									if (!self_relationship_subtype_object.max) return;
-
+									if (!self_relationship_subtype_object.max) {
+										return;
+									}
 									//Depending on how close we are to the window, add the "left" class to the view aid.
 									//This controls if we put it on the left or the right of the screen
 									var offset = $(window).width() - ($this.offset().left + $this.outerWidth());

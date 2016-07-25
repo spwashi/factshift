@@ -23,6 +23,12 @@ use Spwashi\Model\Section;
 use Spwashi\Model\Type\RelationshipType;
 use Spwashi\Model\User;
 
+/**
+ * Class API
+ * @package Spwashi\Controller\API
+ * @todo    VALIDATION!!!
+ * @todo    Check on the SQL error handling
+ */
 class API {
 	/**
 	 * When dealing with multiple different entities, provide a structured way of iterating through them if necessary
@@ -66,10 +72,10 @@ class API {
 	}
 
 	/**
-	 * @param                                  $req_method
+	 * @param                                       $req_method
 	 * @param Model|ModelIterator|RelationshipIndex $last_result
-	 * @param Endpoint[]                       $endpoint_array
-	 * @param array                            $req_data
+	 * @param Endpoint[]                            $endpoint_array
+	 * @param array                                 $req_data
 	 * @return Model|ModelIterator|RelationshipIndex
 	 */
 	public function handle_request($req_method, &$last_result, &$endpoint_array = [], &$req_data) {
@@ -396,10 +402,16 @@ class API {
 		$success       = [];
 		$message_array = [];
 		$G->set_data(['user' => Session::get_user()])->process($model_values, ['maps', '_meta']);
+		$can_continue = $G->can_continue();
 		$model_before = clone($model);
-		$G->set_model_properties();
-		$changed = $model->getChanged();
-		$result  = $model->save();
+		if ($can_continue) {
+			$G->set_model_properties();
+			$changed = $model->getChanged();
+			$result  = $model->save();
+		} else {
+			$result  = false;
+			$changed = [];
+		}
 		if ($result === false) {
 			$success                  = false;
 			$message_array['model']   = $model_before;
@@ -466,6 +478,7 @@ class API {
 
 				try {
 					Log::init($primary_model)->log_it();
+
 					$map = ModelMeta::get_map_between($primary_model, $other_model, ModelMeta::TYPE_CLASS);
 					Log::init($map)->log_it();
 					$other_id = $map->get_secondary_identifier($primary_model);
@@ -497,19 +510,13 @@ class API {
 				$result = false;
 				Log::init($e)->log_it();
 			}
-			if ($relationship_type_id) {
+			if ($relationship_type_index) {
 				/** @var RelationshipIndex $RelationshipIndex */
 				$RelationshipIndex = $primary_model->maps->{$relationship_type_index};
 				$result            = $RelationshipIndex;
 			} else {
-				/** @var $primary_model Section */
-				$maps = $primary_model->maps->get_items();
-				foreach ($maps as $relator) {
-					$items = $relator->get_items(true);
-					foreach ($items as $key => $vv) {
-						if ($vv) $result->push($vv);
-					}
-				}
+				$result = $primary_model->maps->getRelationshipIndex($endpoint->class_type);
+				Log::init($result)->log_it();
 			}
 		}
 		return $result;
@@ -939,23 +946,26 @@ class API {
 		}
 		$primary_model = static::get_self_class();
 #---VALIDATE AND APPLY THE PROPERTIES OF THE NEW SECTION------------------------------------------------
-		$G = static::handler_init($primary_model);
-		$G->set_data(['user' => Session::get_user()])->process($request_data, ['maps', '_meta']);
-		$G->set_model_properties();
+		$G            = static::handler_init($primary_model);
+		$can_continue = $G->set_data(['user' => Session::get_user(), 'beginner' => true])
+		                  ->process($request_data, ['maps', '_meta'])->can_continue();
+		if ($can_continue) {
+			$G->set_model_properties();
 #---SET THE NEW SECTION'S DATA---------------------------------------------------------------------------
-		$new_section_ent_id     = $primary_model->generate_ent_id();
-		$primary_model->ent_id  = $new_section_ent_id;
-		$primary_model->user_id = $user->id;
+			$new_section_ent_id     = $primary_model->generate_ent_id();
+			$primary_model->ent_id  = $new_section_ent_id;
+			$primary_model->user_id = $user->id;
 #---ACTUALLY CREATE THE NEW SECTION----------------------------------------------------------------------
-		$id_of_new_model = $primary_model->create();
+			$id_of_new_model = $primary_model->create();
 #---IF THE SECTION WAS ACTUALLY CREATED, SEE ABOUT ADDING IT TO A COLLECTION OR SECTION------------------
-		$message = [];
-		if ($id_of_new_model) {
-			return new APIResponse("Successfully created Model", true, [
-				'ent_id' => $primary_model->ent_id,
-				'id'     => $id_of_new_model,
-				'model'  => $primary_model,
-			], $G->get_default_error_array());
+			$message = [];
+			if ($id_of_new_model) {
+				return new APIResponse("Successfully created Model", true, [
+					'ent_id' => $primary_model->ent_id,
+					'id'     => $id_of_new_model,
+					'model'  => $primary_model,
+				], $G->get_default_error_array());
+			}
 		}
 		return new APIResponse("Could not create Model", false, [
 			'attempt' => $primary_model->getChanged(),

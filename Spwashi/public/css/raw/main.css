@@ -2104,7 +2104,7 @@ body > .row,
   background-color: rgba(79, 117, 120, 0.8);
 }
 .tooltip.definition-relationship > header > .title {
-  padding: 7px auto;
+  padding: 1px 5px 7px;
 }
 .tooltip.definition-relationship > .content {
   background-color: #f6f7f7;

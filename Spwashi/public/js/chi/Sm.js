@@ -237,8 +237,10 @@ require([
 					Sm.CONFIG.DEBUG && console.log(Sm.Core.MvWrapper[expl.join('.')]);
 				else
 					Sm.CONFIG.DEBUG && console.log(Sm.Core.MvWrapper);
-			} else
-				Sm.CONFIG.DEBUG && console.log(Sm.Core.Identifier.retrieve(val));
+			} else {
+				var n = Sm.Core.Identifier.retrieve(val);
+				if (n) Sm.CONFIG.DEBUG && console.log(n.getResource());
+			}
 		};
 		button.addEventListener('click', fn);
 		debug.addEventListener('keyup', function (e) {

@@ -66,16 +66,14 @@ require(['require', 'backbone', 'jquery',
 		         * Default events of the Views
 		         */
 		        initial_events:    {
-			        click: function () {
-				        Sm.CONFIG.DEBUG && console.log(this);
-			        }
+			        click: function () {}
 		        },
 		        /**
 		         * This is what's used to override the default, useful for inheriting classes
 		         * @alias Sm.Core.SmView.additional_events
 		         */
 		        additional_events: {
-			        click: function () {Sm.CONFIG.DEBUG && console.log(this);}
+			        click: function () {}
 		        },
 
 		        setPermission:   function (permission, value) {
@@ -495,7 +493,6 @@ require(['require', 'backbone', 'jquery',
 				        Sm.CONFIG.DEBUG && console.log('SmView,bar,1', e);
 				        throw e;
 			        }).then(function (result) {
-				        Sm.CONFIG.DEBUG && console.log(result);
 				        /**
 				         * Given the result of the add_relationship, add the relationship to the View and register the View relationship in it.
 				         */
@@ -527,7 +524,6 @@ require(['require', 'backbone', 'jquery',
 				        Sm.CONFIG.DEBUG && console.log(e);
 				        throw e;
 			        }).then(function (result) {
-				        Sm.CONFIG.DEBUG && console.log(result);
 				        /**
 				         * Save the relationshipIndex,
 				         * todo this is not a good thing.
@@ -1010,7 +1006,6 @@ require(['require', 'backbone', 'jquery',
 		         */
 		        destroy:    function () {
 			        this.undelegateEvents();
-			        Sm.CONFIG.DEBUG && console.log("removing - ", this.cid);
 			        this.$el.removeData().unbind();
 			        this.remove();
 			        this.MvCombo.removeView(this.cid);

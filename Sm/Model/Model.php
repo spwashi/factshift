@@ -216,7 +216,16 @@ class Model extends Abstraction\Model {
 				$model           = $type;
 			}
 			$model_tablename = $model_tablename ?? ModelMeta::convert_to_something($type, ModelMeta::TYPE_TABLE);
-			$model           = $model ?? ModelMeta::convert_to_class($model_tablename);
+			if (is_array($model_tablename)) {
+				if (in_array($type, $model_tablename)) $model_tablename = $type;
+				else {
+					$guess = ModelMeta::convert_to_something($type, ModelMeta::TYPE_MODEL_TYPE);
+					if (in_array($guess, $model_tablename)) {
+						$model_tablename = ModelMeta::convert_to_something($type, ModelMeta::TYPE_TABLE);
+					}
+				}
+			}
+			$model = $model ?? ModelMeta::convert_to_class($model_tablename);
 
 			#If we were unsuccessful, throw an error
 			if (!($model ?? false)) throw new ModelNotFoundException(['Could not find' => [$type, $model_tablename, $model]]);
@@ -230,7 +239,10 @@ class Model extends Abstraction\Model {
 			$actual_map_name = $map_table_name;
 			$map_table_name  = ModelMeta::get_table_alias($actual_map_name) ?: $map_table_name;
 			#If we couldn't guess the name of the Map table, throw an error
-			if (!$map_table_name) throw new ModelNotFoundException('Could not adequately map ' . $type . " to " . static::getTableName());
+			if (!$map_table_name) {
+				Log::init($self_rel)->log_it();
+				throw new ModelNotFoundException("Could not adequately map  {$type} or {$actual_map_name}|{$map_table_name}  to " . static::getTableName());
+			}
 
 			#Try to make a class that maps the two relationships together
 			/** @var Map $map_class A class that links two entities together */
@@ -449,7 +461,8 @@ class Model extends Abstraction\Model {
 		}
 		return $this;
 	}
-	public function create() {
+	public function create($and_add_hash = false) {
+		if ($and_add_hash && !$this->ent_id) $this->ent_id = $this->generate_ent_id();
 		$new_val_arr = [];
 		$this->set(['creation_dt' => date('Y-m-d H:i:s')]);
 		foreach ($this->_changed as $key) {

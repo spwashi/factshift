@@ -88,7 +88,7 @@ define(['Emitter'], function (Emitter) {
 			var spwashi_entities = Sm.spwashi_config.entities;
 			var _entity          = spwashi_entities[type];
 			if (!_entity) return {};
-			return (spwashi_entities.properties || {}).all || {};
+			return (_entity.properties || {}).all || {};
 		},
 
 

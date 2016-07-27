@@ -9,7 +9,6 @@ use Spwashi\Libs\Session\Session;
 use Spwashi\Libs\Validator\PageValidator;
 use Spwashi\Model\Collection;
 use Spwashi\Model\Page;
-use Spwashi\Model\Section;
 
 $user = Session::get_user();
 if (!isset($page) || !($page instanceof Page)) Http::redirect(Toute::generate_url('404'));
@@ -38,12 +37,12 @@ $urls['edit'] = Toute::generate_url('spwashi_page_view', [$page->context, $page-
 $urls['view'] = Toute::generate_url('spwashi_page_view', [$page->context, $page->alias], $is_debug ? '?debug' : '')
 
 ?>
+
 <input type="hidden" id="usr_id" value="<?= $user->id ?>"/>
 <input type="hidden" id="d_l" value="<?= $is_debug ? $debug_level : false; ?>"/>
 <input type="hidden" id="i_e" value="<?= $is_edit ?>"/>
 <!--                Not sure why, but embedding youtube seems to require two i-frames to work... todo figure out why and make it stop.-->
 <iframe style="display: none"></iframe>
-<?php Kint::dump(Section::find(2)->findType('concepts')->maps->getRelationshipIndex('concepts'))?>
 <article id="main" class="module spwashi-entity spwashi-page active <?= $can_edit ? 'can-edit' : '' ?> <?= $is_debug ? 'debug' : '' ?> <?= $type ?>" data-ent_id="<?= $p_ent_id ?>" data-model='<?= $page ?>'>
 	<input type="hidden" id="pge_id" value="<?= $page->id ?>"/>
 	<header>

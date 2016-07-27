@@ -1,5 +1,5 @@
 <?php
-use Sm\Response\Http;
+use Sm\Model\ModelMeta;
 use Spwashi\Model\Section;
 
 /**
@@ -8,7 +8,8 @@ use Spwashi\Model\Section;
 $Section = Section::find(2);
 $Section->findType("sections");
 //Http::make_resource_headers('json',"Section 2");
-return(($Section));
+Kint::dump(ModelMeta::dump());
+Kint::dump(ModelMeta::get_potential_relationships(['users', 'universes']));
 
 
 //while($connection->query($query)){

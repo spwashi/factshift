@@ -75,6 +75,7 @@ $config = [
 			'sections'    => ['model_type' => 'Section'],
 			'users'       => ['model_type' => 'User'],
 			'pages'       => ['model_type' => 'Page'],
+			'universes'   => ['model_type' => 'Universe'],
 			'collections' => ['model_type' => 'Collection'],
 			'dimensions'  => ['model_type' => 'Dimension'],
 			'concepts'    => ['model_type' => 'Concept'],
@@ -159,7 +160,7 @@ $config = [
 			'prefix'        => 'ccp_',
 			'table'         => 'concepts',
 			'relationships' => [
-				'_inherit' => ['_' => ['sections', 'pages', 'users']],
+				'_inherit' => ['_' => ['sections', 'pages', 'users', 'universes']],
 				'users'    => ['existent' => false],
 			],
 			'properties'    => [
@@ -174,7 +175,6 @@ $config = [
 					'user_id',
 					'update_dt',
 					'creation_dt'
-					//                'namespace_id'
 				],
 				'api_settable' => [
 					'title',
@@ -187,6 +187,39 @@ $config = [
 					'title',
 					'alias',
 					'description'
+				]
+			]
+		],
+		'Universe'             => [
+			'prefix'        => 'uni_',
+			'table'         => 'universes',
+			'relationships' => [
+				'_inherit' => ['_' => ['sections', 'pages', 'users', 'concepts']],
+				'users'    => ['existent' => false],
+			],
+			'properties'    => [
+				'all'          => [
+					'id',
+					'title',
+					'alias',
+					'subtitle',
+					'description',
+					'ent_id',
+					'directory',
+					'user_id',
+					'update_dt',
+					'creation_dt'
+				],
+				'api_settable' => [
+					'title',
+					'alias',
+					'subtitle',
+					'description',
+				],
+				'api_gettable' => '*',
+				'required'     => [
+					'title',
+					'alias'
 				]
 			]
 		],
@@ -247,7 +280,11 @@ $config = [
 			'prefix'        => 'usr_',
 			'table'         => 'users',
 			'relationships' => [
-				'_inherit' => ['_' => ['sections', 'pages']]
+				'_inherit'  => ['_' => ['sections', 'pages', 'concepts', 'universes']],
+				'sections'  => ['existent' => false],
+				'concepts'  => ['existent' => false],
+				'page'      => ['existent' => false],
+				'universes' => ['existent' => false],
 			],
 			'properties'    => [
 				'all'          => [
@@ -447,6 +484,21 @@ $config = [
 		'ConceptUserMap'       => [
 			'table'      => 'concept_user_map',
 			'alias_for'  => 'concepts.user_id',
+			'properties' => [
+				'all'          => [
+					'id',
+					'user_id'
+				],
+				'api_settable' => [
+					'id',
+					'user_id'
+				],
+				'api_gettable' => '*'
+			]
+		],
+		'UniverseUserMap'      => [
+			'table'      => 'universe_user_map',
+			'alias_for'  => 'universes.user_id',
 			'properties' => [
 				'all'          => [
 					'id',

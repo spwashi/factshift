@@ -7,8 +7,6 @@
 
 namespace Spwashi\Controller\API;
 
-use Sm\Model\Abstraction\Model;
-
 class UniverseAPI extends API {
-
+	protected static $order_of_search = ['collection', 'dimension', 'concept', 'user', 'section'];
 }

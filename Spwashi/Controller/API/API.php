@@ -421,7 +421,7 @@ class API {
 			$message_array['message'] = 'Successfully saved model';
 			$message_array['model']   = $model;
 		}
-		$d_a_arr                    = $G->get_default_error_array();
+		$d_a_arr                    = $G->get_all_errors();
 		$message_array['changed']   = $changed;
 		$message_array['ok']        = $G->get_success_array();
 		$message_array['defaulted'] = $d_a_arr['default_errors'];
@@ -948,7 +948,8 @@ class API {
 #---VALIDATE AND APPLY THE PROPERTIES OF THE NEW SECTION------------------------------------------------
 		$G            = static::handler_init($primary_model);
 		$can_continue = $G->set_data(['user' => Session::get_user(), 'beginner' => true])
-		                  ->process($request_data, ['maps', '_meta'])->can_continue();
+		                  ->process($request_data, ['maps', '_meta'])
+		                  ->can_continue();
 		if ($can_continue) {
 			$G->set_model_properties();
 #---SET THE NEW SECTION'S DATA---------------------------------------------------------------------------
@@ -964,12 +965,12 @@ class API {
 					'ent_id' => $primary_model->ent_id,
 					'id'     => $id_of_new_model,
 					'model'  => $primary_model,
-				], $G->get_default_error_array());
+				], $G->get_all_errors());
 			}
 		}
 		return new APIResponse("Could not create Model", false, [
 			'attempt' => $primary_model->getChanged(),
-		], $G->get_default_error_array());
+		], $G->get_all_errors());
 	}
 	/**
 	 * @param Model $model

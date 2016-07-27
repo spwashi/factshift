@@ -81,7 +81,6 @@ require(['require', 'Sm', 'Sm-Core-MvCombo'], function (require) {
 				 */
 				var subtypes = PivotsRelIndex.relationship_subtype_map;
 				var max      = false;
-				Sm.CONFIG.DEBUG && console.log('sec/mv/grs', PivotsRelIndex);
 				//Iterate through the subtypes of the context
 				if (subtypes && subtypes[context_id]) {
 					/** @type {string} The subtype that we are on as of current */

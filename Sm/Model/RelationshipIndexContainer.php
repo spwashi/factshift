@@ -11,6 +11,8 @@ use Sm\Core\Inflector;
 
 /**
  * @property \Sm\Model\RelationshipIndex sections
+ * @property \Sm\Model\RelationshipIndex universes
+ * @property \Sm\Model\RelationshipIndex concepts
  */
 class RelationshipIndexContainer implements \JsonSerializable {
 	protected $relationship_indices = [];

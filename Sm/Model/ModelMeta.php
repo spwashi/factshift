@@ -364,6 +364,7 @@ class ModelMeta {
 			'entities'          => static::_remove_maps(static::$bb_class_properties),
 			'prefixes'          => static::_remove_maps(static::$bb_prefix_to_model_type),
 			'mapped_properties' => static::_remove_maps(static::$bb_mapped_props),
+			'bb'                => static::$bb_rels_to_rel_types
 		];
 		return $properties;
 	}
@@ -539,10 +540,10 @@ class ModelMeta {
 		$two = static::convert_to_something($two, static::TYPE_MODEL_TYPE);
 		if (is_array($one)) $one = implode(',', $one);
 		if (is_array($two)) $two = implode(',', $two);
-		$try_1 = "{$one}{$two}Map";
-		$try_2 = "{$two}{$one}Map";
-//		var_dump([$try_1, $try_2]);
-		return static::convert_to_something($try_1, $convert_to) ?: static::convert_to_something($try_2, $convert_to) ?: false;
+		$try_1  = "{$one}{$two}Map";
+		$try_2  = "{$two}{$one}Map";
+		$result = static::convert_to_something($try_1, $convert_to) ?: static::convert_to_something($try_2, $convert_to) ?: false;
+		return $result;
 	}
 	/**
 	 * @param array     $linked_entities

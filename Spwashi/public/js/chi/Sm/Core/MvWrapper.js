@@ -426,11 +426,10 @@ require(['require', 'Class', 'Sm', 'Sm-Core-Identifier'], function (require, Cla
 			var ModelType = sm_type.Model;
 			if (!ModelType) return Promise.reject("No Model type");
 
-			var Model_           = new ModelType({});
-			Model_.type          = this.type;
-			var model_properties = Sm.Core.util.merge_objects(Model_.attributes, settings.model_properties || {});
-			Model_.set(model_properties);
-			var NewMv            = _Wrapper.init_MvCombo({
+			var Model_  = new ModelType({});
+			Model_.type = this.type;
+			Model_.set(settings.model_properties || {});
+			var NewMv   = _Wrapper.init_MvCombo({
 				Wrapper: _Wrapper,
 				model:   Model_,
 				CONFIG:  _Wrapper.CONFIG
@@ -557,7 +556,6 @@ require(['require', 'Class', 'Sm', 'Sm-Core-Identifier'], function (require, Cla
 						var ar_settings  = _args.add_relationship_settings;
 						//Whether we're adding the relationship the other way
 						var is_opposite = !!ar_settings.opposite;
-						Sm.CONFIG.DEBUG && console.log('MvWrapper,pr,add_relationship,1.5', OtherMvCombo, ar_settings);
 						//If this relationship is reciprocal, add it to the Other MvCombo
 						if (ar_settings && is_opposite) {
 							return OtherMvCombo.add_relationship(SelfMvCombo, ar_settings);

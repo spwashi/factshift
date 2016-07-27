@@ -131,7 +131,6 @@ require(['require'], function (require) {
 			update:                     function (changed_attributes) {
 				if (this.display_type.indexOf('modal') > -1) return this;
 				var triggers = ["section_type", "content_location"];
-				Sm.CONFIG.DEBUG && console.log(changed_attributes);
 				for (var i = 0; i < triggers.length; i++) {
 					var t = triggers[i];
 					if (changed_attributes.indexOf(t) > -1) {

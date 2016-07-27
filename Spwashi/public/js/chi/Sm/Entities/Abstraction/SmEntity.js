@@ -76,11 +76,15 @@ require(["Sm-Core-Core"], function () {
 		};
 		for (var EntityType in entity_obj) {
 			if (!entity_obj.hasOwnProperty(EntityType)) continue;
-			EntityType              = EntityType.replace('|', '__');
-			Sm.Entities[EntityType] = new SmEntity(EntityType);
-			var _entity_has         = has[EntityType] || [];
-			var when_loaded         = ['Core', 'Entities-Abstraction-Garage'];
-			var req                 = ['Sm-Core-Core', 'Sm-Entities-Abstraction-Garage'];
+			EntityType                       = EntityType.replace('|', '__');
+			Sm.Entities[EntityType]          = new SmEntity(EntityType);
+			Sm.Entities[EntityType].Identity = new Sm.Core.Identifier({
+				r_id:     EntityType,
+				Resource: Sm.Entities[EntityType]
+			});
+			var _entity_has                  = has[EntityType] || [];
+			var when_loaded                  = ['Core', 'Entities-Abstraction-Garage'];
+			var req                          = ['Sm-Core-Core', 'Sm-Entities-Abstraction-Garage'];
 
 			for (var i = 0; i < _entity_has.length; i++) {
 				var wait_for = _entity_has[i];
@@ -107,7 +111,6 @@ require(["Sm-Core-Core"], function () {
 						models:   models_json ? JSON.parse(models_json.textContent) : null
 					});
 					if (EntityType.indexOf("__") !== -1) return;
-					Sm.CONFIG.DEBUG && console.log(EntityType, Sm.Entities[EntityType]);
 					Sm.Extras.visual_debug(EntityType + ' has been loaded!');
 				}
 			})(EntityType), 'entities_' + EntityType).then(function (e, d, r) {}).catch((function (e) {

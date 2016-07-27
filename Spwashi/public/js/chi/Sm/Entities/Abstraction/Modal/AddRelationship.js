@@ -78,6 +78,7 @@ require(['require', 'Class', 'Sm', 'Sm/Extras/Modal'], function (require, Class)
 			on_choose:          function (data) {
 				var $element            = $(this.element);
 				this.get_info_from_form();
+				Sm.CONFIG.DEBUG && console.log(this.changed_attributes);
 				this.promise_object.resolve(this.changed_attributes);
 				this.changed_attributes = {};
 			},

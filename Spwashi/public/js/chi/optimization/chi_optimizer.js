@@ -151,6 +151,7 @@
 //
 		"Sm-Entities-Concept-Meta":                                              "Sm/Entities/Concept/Meta",
 		"Sm-Entities-Concept-View":                                              "Sm/Entities/Concept/View",
+		"Sm-Entities-Concept-Wrapper":                                           "Sm/Entities/Concept/Wrapper",
 		"Sm-Entities-Concept-templates-_template":                               "Sm/Entities/Concept/templates/_template",
 		"Sm-Entities-Concept-templates-standard":                                "Sm/Entities/Concept/templates/standard"
 

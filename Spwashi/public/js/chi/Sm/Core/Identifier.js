@@ -30,6 +30,7 @@ require(['require', 'Class', 'Sm-Core-util'], function (require) {
 		/**
 		 * Initialize the Identifier with properties (id, ent_id, MvCombo/Resource, and an optional r_id if you want to set that manually)
 		 * @param {SmModel|{r_id: string, ent_id:string, id: int, MvCombo:Sm.Core.MvCombo, type:string, Resource:{}}|Sm.Core.MvCombo|*=}        id_obj          The first object to check for properties
+		 * @constructor
 		 * @returns {Sm.Core.Identifier|boolean}
 		 */
 		init:          function (id_obj) {

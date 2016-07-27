@@ -118,6 +118,8 @@ class Log extends \Exception {
 				$new_type = $vType . str_repeat(' ', 1 + 7 - strlen($vType));
 				if (is_object($v)) {
 					$v = $v instanceof \JsonSerializable ? json_encode($v) : get_class($v);
+				} else if (is_bool($v)) {
+					$v = $v ? "true" : "false";
 				}
 				$var .= "{$tab}{$new_key}=> {$new_type}: \t{$v}\n";
 			}

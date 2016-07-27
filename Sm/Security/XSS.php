@@ -16,13 +16,13 @@ namespace Sm\Security;
 class XSS {
 	public static function escape($item) {
 		if (is_array($item)) {
-			$keys = [ ];
-			$values = [ ];
+			$keys   = [];
+			$values = [];
 			foreach ($item as $k => $v) {
-				$keys[] = static::escape($k);
+				$keys[]   = static::escape($k);
 				$values[] = static::escape($v);
 			}
-			return $item = [];//array_combine($keys, $values);
+			return $item = array_combine($keys, $values);
 		} else if (is_string($item)) {
 			return $item = htmlspecialchars($item, ENT_QUOTES, 'UTF-8', false);
 		} elseif (is_numeric($item)) {

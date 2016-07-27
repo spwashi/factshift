@@ -35,7 +35,7 @@ class SectionHandler extends UpdatedForm {
 		if ($validity === true) return static::SUCCESS;
 		if ($change_to_default && $validity === Validator::E_NULL) {
 			$form_value = '---';
-			[static::DEFAULTED, static::process_validation_result($validity, $messages)];
+			return [static::DEFAULTED, static::process_validation_result($validity, $messages, $is_subtitle ? 'subtitle' : 'title')];
 		}
 		return static::process_validation_result($validity, $messages, $is_subtitle ? 'subtitle' : 'title');
 	}
@@ -52,7 +52,7 @@ class SectionHandler extends UpdatedForm {
 		if ($validity === true) return static::SUCCESS;
 		if ($change_to_default) {
 			$form_value = 0;
-			[static::DEFAULTED, static::process_validation_result($validity, $messages, 'Has Title')];
+			return [static::DEFAULTED, static::process_validation_result($validity, $messages, 'Has Title')];
 		}
 		return static::process_validation_result($validity, $messages);
 	}
@@ -85,7 +85,7 @@ class SectionHandler extends UpdatedForm {
 		if ($validity === true) return static::SUCCESS;
 		if ($change_to_default && $validity === Validator::E_TOO_LONG) {
 			$form_value = substr($form_value, 0, $max_content_length);
-			[static::DEFAULTED, static::process_validation_result($validity, $messages, 'Content')];
+			return [static::DEFAULTED, static::process_validation_result($validity, $messages, 'Content')];
 		}
 		return static::process_validation_result($validity, $messages);
 	}
@@ -104,7 +104,7 @@ class SectionHandler extends UpdatedForm {
 		if ($validity === true) return static::SUCCESS;
 		if ($change_to_default) {
 			$form_value = SectionType::TYPE_STANDARD;
-			[static::DEFAULTED, static::process_validation_result($validity, $messages, 'Section Type')];
+			return [static::DEFAULTED, static::process_validation_result($validity, $messages, 'Section Type')];
 		}
 		return static::process_validation_result($validity, $messages);
 	}

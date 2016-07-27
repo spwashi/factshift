@@ -32,12 +32,10 @@ class ConceptHandler extends UpdatedForm {
 					$errors[$required_index] = "We require {$required_index}";
 			}
 		}
-		Log::init($this)->log_it();
 		$count = count($errors);
 		if ($count) {
 			$this->error_array = array_merge($this->error_array, $errors);
 			Log::init($errors)->log_it();
-			$this->fatal = true;
 		}
 		return !$count;
 	}

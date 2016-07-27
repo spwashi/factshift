@@ -27,8 +27,8 @@ class UpdatedForm implements \JsonSerializable {
 	const SUCCESS   = true;
 	const DEFAULTED = 0;
 
-	public static function init($class = null, $change_to_default = false, $allowed_values = null) {
-		return new static($class, $change_to_default, $allowed_values);
+	public static function init($model = null, $change_to_default = false, $allowed_values = null) {
+		return new static($model, $change_to_default, $allowed_values);
 	}
 
 	public function __construct($model = null, $change_to_default = false, $allowed_values = null) {
@@ -45,7 +45,8 @@ class UpdatedForm implements \JsonSerializable {
 
 	protected function manage_expected($form_values) {
 		foreach ($form_values as $key => $value) {
-			if (!in_array($key, $this->allowed_values)) {
+			#If we aren't supposed to modify the resource and we don't just ignore it
+			if (!in_array($key, $this->allowed_values) && !$this->change_to_default) {
 				$this->error_array[$key] = 'Cannot set property';
 				unset($form_values[$key]);
 			}
@@ -56,17 +57,20 @@ class UpdatedForm implements \JsonSerializable {
 	public function process($form_values, $skip = []) {
 		$this->manage_expected($form_values);
 
-		foreach ($this->form_values as $f_v_index => &$f_v_value) {
+		foreach ($this->form_values as $f_v_index => $f_v_value) {
 			#CM:req validate_
 			#Use the form's validation functions to validate the values at the form index
 
-			$f_v_index   = trim($f_v_index);
+			$f_v_index = trim($f_v_index);
+			if (in_array($f_v_index, $skip)) continue;
 			$method_name = 'validate_' . $f_v_index;
-			if (!in_array($f_v_index, $skip) && method_exists($this, $method_name)) {
+			if (method_exists($this, $method_name)) {
 				$call = call_user_func_array([$this, $method_name], [
+					//This is a reference to the form value at the given index
 					&$this->form_values[$f_v_index],
 					$this->data,
 					$this->change_to_default,
+					#Allows for a custom parameter
 					null,
 					$this->form_values,
 				]);
@@ -81,8 +85,10 @@ class UpdatedForm implements \JsonSerializable {
 					$this->error_array[$f_v_index] = $call;
 				}
 			}
-			$this->validate__all();
 		}
+		$this->validate__all();
+		#If there are errors, say that we can't continue
+		$this->fatal = (bool)count($this->error_array);
 		return $this;
 	}
 
@@ -118,7 +124,7 @@ class UpdatedForm implements \JsonSerializable {
 		return $this->error_array;
 	}
 
-	public function get_default_error_array() {
+	public function get_all_errors() {
 		return [
 			'default_errors' => $this->default_error_array,
 			'defaults'       => $this->default_array,

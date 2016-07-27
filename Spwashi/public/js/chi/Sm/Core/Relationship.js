@@ -115,10 +115,8 @@ define(['Class', 'Sm'], function (Class) {
 				contentType: 'application/json; charset=UTF-8',
 				method:      this.map && this.map.id ? "PATCH" : "POST"
 			})).then(function (result) {
-				Sm.CONFIG.DEBUG && console.log(result);
 				if (result && result.success && result.data && result.data.map) {
 					if (result.data.map.id) self.setMap(result.data.map);
-					Sm.CONFIG.DEBUG && console.log(self.map);
 				}
 			});
 		},

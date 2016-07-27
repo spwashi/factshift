@@ -145,7 +145,7 @@ require(['require', 'Emitter', 'Sm'], function (require, Emitter) {
 					var edit            = $modal_content.find(query_selector);
 					var set_thing       = {};
 					var found_something = false;
-					for (var i = 0; i < edit.length; i++) {
+					for (var i = 0; i < edit.length; i++)    {
 						found_something = true;
 						var $elem       = $(edit[i]);
 						var elem        = edit[i];

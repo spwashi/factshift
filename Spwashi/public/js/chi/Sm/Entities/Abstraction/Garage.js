@@ -13,13 +13,17 @@ require(['require', 'Class', 'Sm', 'Sm-Entities-Abstraction-templates-_template'
 		 * @property {Function} generate        {@link Sm.Entities.Abstraction.Garage.generate   }
 		 */
 		Sm.Entities.Abstraction.Garage = Class.extend({
+			relationship_display_type: {
+				universes: 'select',
+				concepts:  'tag'
+			},
 			/**
 			 * Initializes the singleton for an Entity's Garage class
 			 * @param type              {string} The type of Entity we are dealing with (e.g. Section)
 			 * @param type_identifier   {string} The index in the Model's properties that lets us know what kind of Entity subtype we're dealing with.
 			 *                                   For example, this could be "section_type" letting us know that the section type is what tells us that a section is standard or an image or something like that
 			 */
-			init:            function (type, type_identifier) {
+			init:                      function (type, type_identifier) {
 				/**
 				 * The Entity type that the Garage deals with (e.g. Section)
 				 * @type {string}
@@ -38,7 +42,7 @@ require(['require', 'Class', 'Sm', 'Sm-Entities-Abstraction-templates-_template'
 			 * @return {Element}
 			 * @private
 			 */
-			_default:        function (e) {
+			_default:                  function (e) {
 				Sm.CONFIG.DEBUG && console.log(e);
 				var div       = document.createElement('div');
 				div.className = 'empty';
@@ -51,7 +55,7 @@ require(['require', 'Class', 'Sm', 'Sm-Entities-Abstraction-templates-_template'
 			 * @return {*}
 			 * @private
 			 */
-			_normalize_data: function (Mv_, config) {
+			_normalize_data:           function (Mv_, config) {
 				var template_type;
 				var type;
 				var self_type;
@@ -83,7 +87,7 @@ require(['require', 'Class', 'Sm', 'Sm-Entities-Abstraction-templates-_template'
 				}
 				return data;
 			},
-			_combine_string: function (attributes, string) {
+			_combine_string:           function (attributes, string) {
 				var underscore_template = _.template(string);
 				return underscore_template(attributes);
 			},
@@ -96,7 +100,7 @@ require(['require', 'Class', 'Sm', 'Sm-Entities-Abstraction-templates-_template'
 			 * @param settings.synchronous
 			 * @private
 			 */
-			_generate_one:   function (template_arr, input, settings) {
+			_generate_one:             function (template_arr, input, settings) {
 				settings           = settings || {};
 				var is_synchronous = !!settings.synchronous;
 				var default_val    = settings.default_value !== false ? settings.default_value || "full" : false;
@@ -334,7 +338,7 @@ require(['require', 'Class', 'Sm', 'Sm-Entities-Abstraction-templates-_template'
 			 * @return {*}
 			 * @protected
 			 */
-			_populate_relationship_index: function (parameters) {
+			_populate_relationship_index:      function (parameters) {
 				var $relationship_index_string = parameters.$relationship_index_string;
 				var relationship_index         = parameters.relationship_index;
 				var relationship_object        = parameters.relationship_object;
@@ -343,6 +347,7 @@ require(['require', 'Class', 'Sm', 'Sm-Entities-Abstraction-templates-_template'
 				var templates                  = parameters.templates;
 				var appended_views             = parameters.appended_views;
 				var MvCombo                    = parameters.MvCombo;
+				if (this.relationship_display_type[relationship_index] == 'tag') return this._populate_relationship_index_tags(parameters);
 
 				var $ris_content = $relationship_index_string.children('.content').eq(0) || false;
 
@@ -369,7 +374,79 @@ require(['require', 'Class', 'Sm', 'Sm-Entities-Abstraction-templates-_template'
 				}
 				return $relationship_index_string;
 			},
-			_append_relationship:         function (OtherMvCombo, $ris_content, relationship_index, relationship_string, appended_views, display_type) {
+			_populate_relationship_index_tags: function (parameters) {
+				var relationship_index  = parameters.relationship_index;
+				var $content            = parameters.$relationship_index_string.children('.content');
+				var relationship_object = parameters.relationship_object;
+				var items               = relationship_object.items;
+				var relationships       = relationship_object.relationships;
+				var data                = [];
+				var active              = [];
+				for (var i = 0; i < items.length; i++) {
+					var OtherMvCombo = items[i];
+					var Relationship = relationships[i];
+					var r_id         = OtherMvCombo.r_id;
+					var d            = {};
+					d.text           = OtherMvCombo.Model.get('title');
+					d.id             = r_id;
+					d.Relationship   = Relationship;
+					data.push(d);
+					active.push(r_id);
+				}
+				var User = Sm.Entities.User.Wrapper.get_active();
+				var url  = Sm.urls.api.generate({MvCombo: User || parameters.MvCombo || false, fetch: relationship_index});
+				$content.select2({
+					tags:            true,
+					tokenSeparators: [','],
+					cache:           true,
+					ajax:            {
+						url:            url,
+						dataType:       'json',
+						delay:          250,
+						cache:          true,
+						multiple:       true,
+						data:           function (params) {
+							return {
+								return_by: 'array',
+								q:         params.term, // search term
+								page:      params.page
+							};
+						},
+						processResults: function (data, params) {
+							// parse the results into the format expected by Select2
+							// since we are using custom formatting functions we do not need to
+							// alter the remote JSON data, except to indicate that infinite
+							// scrolling can be used
+							//todo look into pagination
+							var items = data && data.data && data.data.items ? data.data.items : [];
+							return {
+								results:    (items && items[0] ? items : []).map(function (item) {
+									if (item && item.title) {
+										var type = item._model_type;
+										if (!type || !Sm.Entities[type]) return false;
+										return {
+											id:      item.ent_id,
+											text:    item.title,
+											MvCombo: Sm.Entities[type].Wrapper.init_MvCombo({model: item})
+										}
+									}
+									return false;
+								}),
+								pagination: {
+									more: (params.page * 30) < 100
+								}
+							};
+						}
+					},
+					escapeMarkup:    function (markup) {
+						return markup;
+					}, // let our custom formatter work
+					width:           '300px'
+				});
+				$content.val(active).trigger('change');
+				return parameters.$relationship_index_string;
+			},
+			_append_relationship:              function (OtherMvCombo, $ris_content, relationship_index, relationship_string, appended_views, display_type) {
 				display_type  = display_type || "full";
 				var OtherView =
 					    !appended_views[OtherMvCombo.r_id] ?

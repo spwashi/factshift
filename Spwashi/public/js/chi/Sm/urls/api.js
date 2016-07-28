@@ -80,11 +80,9 @@ define(['require', 'Sm', 'Sm/urls/main'], function (require) {
 				if (!SelfSm) return false;
 				var self_plural = SelfSm.Meta.lower_plural[self_type];
 				url += order(ctxt, self_plural);
-				if (!fetch) {
-					url += self_plural + '/' + ((!!id) ? id + '/' : '');
-				} else {
+				url += self_plural + '/' + ((!!id) ? id + '/' : '');
+				if (fetch)
 					url += fetch.toLowerCase() + '/';
-				}
 
 				if (url.length) {
 					var url_arr = [];

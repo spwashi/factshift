@@ -152,7 +152,9 @@
 		"Sm-Entities-Concept-Meta":                                              "Sm/Entities/Concept/Meta",
 		"Sm-Entities-Concept-View":                                              "Sm/Entities/Concept/View",
 		"Sm-Entities-Concept-templates-_template":                               "Sm/Entities/Concept/templates/_template",
-		"Sm-Entities-Concept-templates-standard":                                "Sm/Entities/Concept/templates/standard"
+		"Sm-Entities-Concept-templates-standard":                                "Sm/Entities/Concept/templates/standard",
+//
+		"Sm-Entities-User-Wrapper":                                              "Sm/Entities/User/Wrapper"
 
 	}
 });

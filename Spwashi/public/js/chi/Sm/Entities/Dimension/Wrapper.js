@@ -18,13 +18,6 @@ require(['require', 'Sm-Core-MvWrapper'], function (require) {
 					}
 				}
 				return res;
-			},
-			get_active:         function () {
-				var active_dimensions = this.MvMaps.active_MVs;
-				for (var dimension in active_dimensions) {
-					if (!active_dimensions.hasOwnProperty(dimension)) continue;
-					return active_dimensions[dimension].getResource();
-				}
 			}
 		});
 		Sm.Entities.Dimension.Wrapper = new DimensionWrapper;

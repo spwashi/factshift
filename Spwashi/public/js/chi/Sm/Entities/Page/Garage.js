@@ -22,33 +22,6 @@ require(['require',
 		 */
 		var GarageClass         = Sm.Entities.Abstraction.Garage.extend({
 			_populate_relationship_index: function (parameters) {
-				if (parameters.relationship_index == 'concepts') {
-					var $content            = parameters.$relationship_index_string.children('.content');
-					var relationship_object = parameters.relationship_object;
-					var items               = relationship_object.items;
-					var relationships       = relationship_object.relationships;
-					var data                = [];
-					var active              = [];
-					for (var i = 0; i < items.length; i++) {
-						var OtherMvCombo = items[i];
-						var Relationship = relationships[i];
-						var r_id         = OtherMvCombo.r_id;
-						var d            = {};
-						d.text           = OtherMvCombo.Model.get('title');
-						d.id             = r_id;
-						d.Relationship   = Relationship;
-						data.push(d);
-						active.push(r_id);
-					}
-					$content.select2({
-						tags:            true,
-						tokenSeparators: ['|'],
-						data:            data,
-						width:           '300px'
-					});
-					$content.val(active).trigger('change');
-					return parameters.$relationship_index_string;
-				}
 				return Sm.Entities.Abstraction.Garage.prototype._populate_relationship_index.call(this, parameters);
 			},
 			_append_relationship:         function (OtherMvCombo, $ris_content, relationship_index, relationship_string, appended_views, display_type) {

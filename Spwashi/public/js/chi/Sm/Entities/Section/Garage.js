@@ -23,15 +23,9 @@ require(['require', 'underscore', 'Sm',
 		 * @extends Sm.Entities.Abstraction.Garage
 		 */
 		var GarageClass            = Sm.Entities.Abstraction.Garage.extend({
-			relationships: function (Mv_, is_synchronous, settings) {
-				settings                         = settings || {};
-				settings.display_type            = 'preview';
-				settings.relationship_index_list = settings.relationship_index_list || ['children', 'micros', 'pivots', 'composition', 'concepts'];
-				return Sm.Entities.Abstraction.Garage.prototype.relationships.apply(this, [
-					Mv_,
-					is_synchronous,
-					settings
-				]);
+			relationship_display_type: {
+				universes: 'select',
+				concepts:  'tag'
 			}
 		});
 		Sm.Entities.Section.Garage = new GarageClass('Section', 'section_type');

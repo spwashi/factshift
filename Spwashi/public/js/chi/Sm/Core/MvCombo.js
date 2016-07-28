@@ -1246,6 +1246,28 @@ require(['require', 'Sm', 'Sm-Core-util', 'Emitter'], function (require) {
 			if (relationships[type]) return relationships[type];
 			return false;
 		},
+		/**
+		 * Return an array of potential models
+		 * @param type
+		 * @param search
+		 */
+		get_potential_related_items:  function (type, search) {
+			var User = Sm.Entities.User.Wrapper.get_active();
+			var url  = Sm.urls.api.generate({MvCombo: User || this, fetch: type});
+			return Promise.resolve($.ajax({
+				url:    url + (search ? "?q=" + search : ''),
+				method: 'GET'
+			})).then(function (results) {
+				if (results.success && results.data && results.data.items) {
+					var res = Object.values(results.data.items);
+					if (res && res.length) return res;
+				}
+				return false;
+			}).then(function (r) {
+				r && Sm.CONFIG.DEBUG && console.log(r);
+			});
+			//return Promise.reject();
+		},
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////
 		toJSON:                       function () {
 			var Model = this.Model;

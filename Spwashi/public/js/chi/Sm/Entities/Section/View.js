@@ -498,6 +498,11 @@ require(['require'], function (require) {
 				};
 				this.add_bound && document.addEventListener('click', this.add_bound('blur', this.MvCombo.blur.bind(this.MvCombo, {}, this)));
 				document.addEventListener('keydown', this.add_bound('scale_handler', scale_handler));
+				Sm.Entities.Section.Wrapper.once('focus', function (MvCombo_) {
+					if (MvCombo_ && (MvCombo_.r_id != self.MvCombo.r_id)) {
+						self.get_bound('blur')();
+					}
+				});
 				var $focus_element = this.$el.children('.focus');
 				if ($focus_element[0]) {
 					var context_id = 0;

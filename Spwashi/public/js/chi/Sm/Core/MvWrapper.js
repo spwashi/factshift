@@ -2,7 +2,7 @@
  * Created by Sam Washington on 12/18/15.
  */
 
-require(['require', 'Class', 'Sm', 'Sm-Core-Identifier'], function (require, Class) {
+require(['require', 'Emitter', 'Sm', 'Sm-Core-Identifier'], function (require, Emitter) {
 	require('Sm');
 	require('Sm-Core-Identifier');
 	/**
@@ -18,7 +18,7 @@ require(['require', 'Class', 'Sm', 'Sm-Core-Identifier'], function (require, Cla
 	 * @property {function} deselect_MV         {@link Sm.Core.MvWrapper#deselect_MV}
 	 * @property {function} destroy_MV          {@link Sm.Core.MvWrapper#destroy_MV}
 	 */
-	Sm.Core.MvWrapper                         = Class.extend({
+	Sm.Core.MvWrapper                         = Emitter.extend({
 		type:       null,
 		parentType: null,
 		init:       function (settings) {
@@ -326,8 +326,8 @@ require(['require', 'Class', 'Sm', 'Sm-Core-Identifier'], function (require, Cla
 			this.blur_MV();
 			SpecifiedView && SpecifiedView.focus();
 			this.add_MV_as('focused', {MvCombo: _Mv});
-			var P             = new Promise(function (resolve) {resolve()});
-			return P;
+			this.emit('focus', _Mv, settings.View);
+			return Promise.resolve();
 		},
 		/**
 		 * activate an MvCombo
@@ -407,6 +407,18 @@ require(['require', 'Class', 'Sm', 'Sm-Core-Identifier'], function (require, Cla
 			_Mv && this.remove_MV_as('active', {MvCombo: _Mv});
 			var P    = new Promise(function (resolve) {resolve()});
 			return P;
+		},
+		get_active:    function (all) {
+			all                   = !!all;
+			var active_dimensions = this.MvMaps.active_MVs;
+			var ret               = [];
+			for (var dimension in active_dimensions) {
+				if (!active_dimensions.hasOwnProperty(dimension)) continue;
+				var a = active_dimensions[dimension].getResource();
+				if (all) ret.push(a);
+				else return a;
+			}
+			return ret;
 		},
 ///////////////////////////////////////////////////////////////////////////////
 		/**

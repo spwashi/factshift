@@ -49,6 +49,7 @@ define(['Emitter'], function (Emitter) {
 				this.lower_singular[entity_name] =
 					this.lower_singular[entity_name]
 					|| entity_name.toLowerCase();
+				if(entity_name == 'Dictionary') this.lower_plural['Dictionary'] = 'dictionaries';
 				this.lower_plural[entity_name]   =
 					this.lower_plural[entity_name]
 					|| (entities[entity_name].plural || entity_name + 's').toLowerCase();

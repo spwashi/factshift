@@ -72,7 +72,8 @@ require(["Sm-Core-Core"], function () {
 			Concept:    ['templates-_template', 'templates-standard', 'Meta', 'View', 'Wrapper'],
 			Page:       ['templates-_template', 'templates-standard', 'Meta', 'View', 'Garage'],
 			Dictionary: ['templates-_template', 'templates-standard', 'Meta', 'View', 'Garage', 'MvCombo', 'Wrapper'],
-			Dimension:  ['templates-_template', 'templates-standard', 'Meta', 'View', 'Wrapper']
+			Dimension:  ['templates-_template', 'templates-standard', 'Meta', 'View', 'Wrapper'],
+			User:       ['Wrapper']
 		};
 		for (var EntityType in entity_obj) {
 			if (!entity_obj.hasOwnProperty(EntityType)) continue;

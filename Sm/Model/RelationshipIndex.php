@@ -32,7 +32,9 @@ use Sm\Development\Log;
 class RelationshipIndex implements \JsonSerializable {
 	/** @var $_meta RelationshipMeta */
 	public    $_meta;
-	protected $items = [];
+	public    $items_as_array = false;
+	public    $only_models    = false;
+	protected $items          = [];
 	protected $index;
 	/** @var $other_table_name string The name of the table that was being mapped */
 	protected $other_table_name;
@@ -72,7 +74,8 @@ class RelationshipIndex implements \JsonSerializable {
 	}
 	public function jsonSerialize() {
 		$properties = ['index' => $this->index, 'items' => [], 'is_reciprocal' => $this->is_reciprocal];
-		foreach ($this->items as $name => $val) {
+		$items      = $this->get_items($this->only_models);
+		foreach ($items as $name => $val) {
 			if (strpos($name, '_tmp')) {
 				unset($this->items[$name]);
 				continue;
@@ -84,6 +87,9 @@ class RelationshipIndex implements \JsonSerializable {
 			}
 		}
 		$properties['_meta'] = $this->_meta;
+		if ($this->items_as_array) {
+			$properties['items'] = array_values($properties['items']);
+		}
 		return $properties;
 	}
 	public function getMapTableName() {

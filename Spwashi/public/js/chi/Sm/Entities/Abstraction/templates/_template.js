@@ -26,7 +26,10 @@ require(['require', 'Sm-Core-Core'], function (require) {
 		},
 		relationship_outer: '<section class="relationship-index-container">__CONTENT__</section>',
 		relationship:       {
-			relationship_index: '<div class="relationship-container __TYPE__-container" data-Mv-r_id="__R_ID__">\n    <header class="title">__TITLE__</header>\n    <div class="content">__CONTENT__</div>\n</div>',
+			relationship_index: {
+				full:     '<div class="relationship-container __TYPE__-container" data-Mv-r_id="__R_ID__">\n    <header class="title">__TITLE__</header>\n    <div class="content">__CONTENT__</div>\n</div>',
+				concepts: '<div class="relationship-container concepts-container" data-Mv-r_id="__R_ID__">\n    <header class="title"><label for="concept-container">__TITLE__</label></header>\n    <select name="concept-container" id="concept-container" class="content" multiple="multiple"></select>\n</div>'
+			},
 			relationship:       '<div class="relationship" data-Relationship-r_id="__R_ID__">\n    <div class="content">__CONTENT__</div>\n</div>'
 		}
 	};

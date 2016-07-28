@@ -502,7 +502,6 @@ class API {
 					$primary_model->findSections($find_arr);
 				else {
 					$primary_model->findType($endpoint->class_type, $find_arr);
-					Log::init([$find_arr, $endpoint->class_type])->log_it();
 				}
 			} catch (ModelNotFoundException $e) {
 				return new APIResponse($e->getMessage(), false);
@@ -516,7 +515,6 @@ class API {
 				$result            = $RelationshipIndex;
 			} else {
 				$result = $primary_model->maps->getRelationshipIndex($endpoint->class_type);
-				Log::init($result)->log_it();
 			}
 		}
 		return $result;
@@ -887,6 +885,11 @@ class API {
 	 * @return mixed
 	 */
 	public function get($model, $req_data, $last_result = null, &$endpoint_array = []) {
+		if (isset($req_data['return_by']) && $req_data['return_by'] === 'array') {
+			if ($model instanceof RelationshipIndex) {
+				$model->only_models = $model->items_as_array = true;
+			}
+		}
 		$api_response          = new APIResponse;
 		$api_response->data    = $model;
 		$api_response->success = !!$model;

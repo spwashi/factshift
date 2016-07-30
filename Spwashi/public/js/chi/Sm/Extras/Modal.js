@@ -139,24 +139,22 @@ require(['require', 'Emitter', 'Sm'], function (require, Emitter) {
 				this.emit('close', this, this.content_element);
 			},
 			get_info_from_form:   function (query_selector) {
-				var $modal_content = this.get_content_element(true);
+				var $modal_content  = this.get_content_element(true);
+				var set_thing       = {};
+				var found_something = false;
 				if (this.EntityArr.length === 1) {
-					var _Model          = this.EntityArr[0].Model;
-					var edit            = $modal_content.find(query_selector);
-					var set_thing       = {};
-					var found_something = false;
-					for (var i = 0; i < edit.length; i++)    {
+					var _Model = this.EntityArr[0].Model;
+					var edit   = $modal_content.find(query_selector);
+					for (var i = 0; i < edit.length; i++) {
 						found_something = true;
 						var $elem       = $(edit[i]);
 						var elem        = edit[i];
 						var val         = $elem.val();
-						val.trim && (val = val.trim());
-						var name        = $elem.attr('name');
+						if (elem.multiple) val = val || [];
+						val && val.trim && (val = val.trim());
+						var name                = $elem.attr('name');
 						if (name == 'has_title') val = !!elem.checked ? 1 : 0;
-
 						if (!!name) set_thing[name] = val;
-						var o   = {};
-						o[name] = val + '';
 					}
 				}
 				return (this.changed_attributes = found_something ? set_thing : this.changed_attributes);

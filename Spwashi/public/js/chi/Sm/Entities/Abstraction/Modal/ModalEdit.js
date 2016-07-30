@@ -96,7 +96,9 @@ require(['require', 'Class', 'Sm', 'Sm/Extras/Modal'], function (require, Class)
 					var _Model = this.EntityArr[0].Model;
 					for (var n in set_thing) {
 						if (!set_thing.hasOwnProperty(n)) continue;
-						if (set_thing[n] == _Model.get(n)) delete set_thing[n];
+						if (set_thing[n] == _Model.get(n)) {
+							delete set_thing[n];
+						}
 					}
 					_Model.set(set_thing);
 					return this.changed_attributes = set_thing;

@@ -319,6 +319,10 @@ require(['require', 'Sm', 'Sm-Core-util', 'Emitter'], function (require) {
 				this.setPermission(m._permissions);
 				delete m._permissions;
 			}
+			if (m.relationships && (m.relationships.constructor !== Array)) {
+				this._prepare_known_relationships(m.relationships, true);
+				delete m.relationships;
+			}
 			Model.set(m, {silent: true});
 		},
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -356,7 +360,7 @@ require(['require', 'Sm', 'Sm-Core-util', 'Emitter'], function (require) {
 		 * @see Sm.Core.MvCombo._initModel
 		 * @private
 		 */
-		_prepare_known_relationships: function (relationships) {
+		_prepare_known_relationships: function (relationships, log) {
 			relationships = relationships || {};
 			var self_type = this.type;
 			//Sm.CONFIG.DEBUG && console.log(relationships, ' -- relations for ' + self_type);
@@ -377,12 +381,18 @@ require(['require', 'Sm', 'Sm-Core-util', 'Emitter'], function (require) {
 					Sm.CONFIG.DEBUG && console.log('mvcombo,pkn,0-', actual_relationship);
 					continue;
 				}
-				if (!actual_relationship.items) continue;
+				if (!actual_relationship.items) {
+					Sm.CONFIG.DEBUG && console.log('mvcombo,pkn,0--', actual_relationship);
+					continue;
+				}
 				var relationship_items = actual_relationship.items;
 				for (var other_model_id in relationship_items) {
 					if (!relationship_items.hasOwnProperty(other_model_id)) continue;
 					var mapped_props = relationship_items[other_model_id];
-					if (!mapped_props || !(typeof mapped_props === "object")) continue;
+					if (!mapped_props || !(typeof mapped_props === "object")) {
+						Sm.CONFIG.DEBUG && console.log('mvcombo,pkn,nomapped,', mapped_props);
+						continue;
+					}
 					var map = mapped_props._map || false;
 					if (!map) {
 						Sm.CONFIG.DEBUG && console.log('mvcombo,pkn,nomap,', mapped_props);
@@ -394,7 +404,7 @@ require(['require', 'Sm', 'Sm-Core-util', 'Emitter'], function (require) {
 					/**
 					 * @type {string} The Mapped Model type
 					 */
-					var other_model_type;
+					var other_model_type = false;
 
 					if (!!other_model && !!other_model._model_type) other_model_type = other_model._model_type;
 
@@ -406,7 +416,7 @@ require(['require', 'Sm', 'Sm-Core-util', 'Emitter'], function (require) {
 						var linked_entities = actual_relationship._meta._linked_entities;
 
 						//If there is only one entity type
-						if (linked_entities.length === 1) {
+						if (linked_entities.length === 1 || linked_entities[1] === linked_entities[0]) {
 							other_model_type = linked_entities[0];
 						} else {
 							//When there are other entities, check to see the first index that doesn't match the
@@ -424,7 +434,7 @@ require(['require', 'Sm', 'Sm-Core-util', 'Emitter'], function (require) {
 						Sm.CONFIG.DEBUG && console.log('mvcombo,pkn,omt', other_model);
 						continue;
 					}
-					var self = this;
+					var SelfMvCombo = this;
 					/**
 					 * Initialize the MvCombo of the other model and add the relationship to this MvCombo
 					 */
@@ -432,13 +442,14 @@ require(['require', 'Sm', 'Sm-Core-util', 'Emitter'], function (require) {
 					 *
 					 * @param {string}          other_model_type
 					 * @param {{}}              other_model
-					 * @param {number|string}   id
+					 * @param {number|string}   other_model_id
 					 * @param {Sm.Core.MvCombo} SelfMvCombo
 					 * @param {{}}              map
 					 * @param {string}          relationship_index
 					 * @return {Function}
 					 */
-					var get_wl_fn      = function (other_model_type, other_model, id, SelfMvCombo, map, relationship_index) {
+					var get_wl_fn      = function (other_model_type, other_model, other_model_id, SelfMvCombo, map, relationship_index) {
+						var a = arguments;
 						return function () {
 							var smOtherType = Sm.Entities[other_model_type];
 							if (!smOtherType) {
@@ -454,30 +465,31 @@ require(['require', 'Sm', 'Sm-Core-util', 'Emitter'], function (require) {
 							/** @type {*|Sm.Core.MvCombo} */
 							var other_MV = otherWrapper.init_MvCombo({
 								model: other_model,
-								id:    id
+								id:    other_model_id
 							});
+							var wl_name  = 'add_rel_to_' + SelfMvCombo.type + Date.now() + (other_MV.r_id);
+							//if (!other_MV.type) Sm.CONFIG.DEBUG && console.log(other_MV, otherWrapper, other_model_type);
+							//SelfMvCombo.type === 'Section' && SelfMvCombo.id == 2 && Sm.CONFIG.DEBUG && console.log(other_MV.type, other_model_type, map, a);
 							/**
 							 * Add the relationship
 							 */
 							if (other_MV && other_MV.Identity) {
-								Sm.loaded.when_loaded(['entities_' + SelfMvCombo.type, 'entities_' + other_MV.type], function () {
-									SelfMvCombo.add_relationship(other_MV, {
-										map:                map,
-										relationship_index: relationship_index,
-										position:           map.position || 1,
-										silent:             true
-									}).catch(function (e) {
-										Sm.CONFIG.DEBUG && console.log(e)
-									});
-								}, 'add_rel_to_' + SelfMvCombo.type);
+								SelfMvCombo.add_relationship(other_MV, {
+									map:                map,
+									relationship_index: relationship_index,
+									position:           map.position || 1,
+									silent:             true
+								}).catch(function (e) {
+									Sm.CONFIG.DEBUG && console.log(e)
+								});
 							}
 						}
 					};
-					var when_loaded_fn = get_wl_fn(other_model_type, other_model, other_model_id, self, map, relationship_index);
+					var when_loaded_fn = get_wl_fn(other_model_type + '', other_model, other_model_id + '', SelfMvCombo, map, relationship_index);
 
 					//When the other model type is loaded, add the relationship
 					//Date is appended so relationships don't get messed up with the same name
-					Sm.loaded.when_loaded('entities_' + other_model_type, when_loaded_fn, 'add_rel' + (Date.now()));
+					Sm.loaded.when_loaded(['entities_' + SelfMvCombo.type, 'entities_' + other_model_type], when_loaded_fn, 'add_rel' + (Date.now() + Math.random()));
 				}
 				//delete relationships[relationship_index];
 			}
@@ -764,7 +776,7 @@ require(['require', 'Sm', 'Sm-Core-util', 'Emitter'], function (require) {
 		 * @param MvIdentity {string|{}|Sm.Core.MvCombo|*|Sm.Core.Identity} The Identity, MvCombo, or r_id of the Identity of the MvCombo that we are looking for
 		 * @return {Sm.Core.Relationship|boolean}
 		 */
-		getRelationship:              function (MvIdentity) {
+		getRelationships:             function (MvIdentity) {
 			if (!MvIdentity) return false;
 
 			if (MvIdentity.Identity) MvIdentity = MvIdentity.Identity;
@@ -878,7 +890,7 @@ require(['require', 'Sm', 'Sm-Core-util', 'Emitter'], function (require) {
 		 * @param {boolean=}            settings.silent                     Is the relationship on the server?
 		 * @param {string}              settings.relationship_index         Where to add the relationship
 		 * @param {int}                 settings.position                   The position at which to add the relationship
-		 * @param {int=0}               settings.context_r_id               If there is a context, this is the r_id of it
+		 * @param {int=0}               settings.context_id               If there is a context, this is the r_id of it
 		 * @param {Sm.Core.SmView}      settings.OtherView
 		 * @param {Sm.Core.Relationship=}ReciprocalRelationship            The other relationship. What are we reciprocating?
 		 * @this Sm.Core.MvCombo
@@ -989,9 +1001,9 @@ require(['require', 'Sm', 'Sm-Core-util', 'Emitter'], function (require) {
 			//If we are reciprocating the relationship, add the relationship in the reciprocal
 			if (!!ReciprocalRelationship) {
 				//Add at the reciprocal index
-				resolution_object.result = !!RelationshipIndex_.add_item(ReciprocalRelationship, OtherMvCombo.Identity.r_id, settings.context_r_id || 0, update_indices, silent);
+				resolution_object.result = !!RelationshipIndex_.add_item(ReciprocalRelationship, OtherMvCombo.Identity.r_id, settings.context_id || 0, update_indices, silent);
 				//Add at the secondary relationship index if the relationship can also be non-reciprocal
-				if (SecondaryRelationshipIndex) SecondaryRelationshipIndex.add_item(ReciprocalRelationship, OtherMvCombo.Identity.r_id, settings.context_r_id || 0, update_indices, silent);
+				if (SecondaryRelationshipIndex) SecondaryRelationshipIndex.add_item(ReciprocalRelationship, OtherMvCombo.Identity.r_id, settings.context_id || 0, update_indices, silent);
 
 				//Add the relationship to the relationship map
 				this.relationship_map[OtherMvCombo.Identity.r_id] = this.relationship_map[OtherMvCombo.Identity.r_id] || [];
@@ -1033,10 +1045,10 @@ require(['require', 'Sm', 'Sm-Core-util', 'Emitter'], function (require) {
 				self_map_index,
 				secondary_map_index
 			];
-			var result_of_rel_add          = resolution_object.result = !!RelationshipIndex_.add_item(Relationship_, OtherMvCombo.Identity.r_id, settings.context_r_id || 0, update_indices, silent);
+			var result_of_rel_add          = resolution_object.result = !!RelationshipIndex_.add_item(Relationship_, OtherMvCombo.Identity.r_id, settings.context_id || 0, update_indices, silent);
 
 			//todo does this do anything? I think so
-			if (SecondaryRelationshipIndex) SecondaryRelationshipIndex.add_item(Relationship_, OtherMvCombo.Identity.r_id, settings.context_r_id || 0, update_indices, silent);
+			if (SecondaryRelationshipIndex) SecondaryRelationshipIndex.add_item(Relationship_, OtherMvCombo.Identity.r_id, settings.context_id || 0, update_indices, silent);
 
 			//If the relationship is not reciprocal, add it to the other MvCombo as well
 			settings.is_reciprocal = !is_reciprocal;
@@ -1237,7 +1249,7 @@ require(['require', 'Sm', 'Sm-Core-util', 'Emitter'], function (require) {
 		 */
 		getRelationshipIndex:         function (type, is_reciprocal) {
 			is_reciprocal = !!is_reciprocal;
-			if (type.indexOf('reciprocal') > -1) {
+			if (type.indexOf('reciprocal_') > -1) {
 				is_reciprocal = true;
 				type          = type.replace('reciprocal_', '');
 				Sm.CONFIG.DEBUG && console.log(type);

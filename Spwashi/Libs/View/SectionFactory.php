@@ -22,7 +22,7 @@ class SectionFactory {
 	 *
 	 * @return View
 	 */
-	public static function build(Section $section, $is_edit = null, &$arr = null) {
+	public static function build(Section &$section, $is_edit = null, &$arr = null) {
 		$path = App::_()->template_path;
 		$path .= 'section/standard.php';
 		$content = $section->content ? $section->content : ($section->has_title && $section->title ? ' ' : ' -- ');
@@ -56,7 +56,7 @@ class SectionFactory {
 		}
 		$maps = $section->maps;
 
-		foreach ($maps->children->get_items(true) as $id => $child_model) {
+		foreach ($maps->children->get_items(true) as $id => &$child_model) {
 			if (strpos($id, '_') === 0) continue;
 			/** @var $child_model Section */
 			if (!$child_model) continue;
@@ -64,7 +64,7 @@ class SectionFactory {
 			$children_array[] = $b;
 		}
 
-		foreach ($maps->composition->get_items() as $id => $_holder) {
+		foreach ($maps->composition->get_items() as $id => &$_holder) {
 			if (strpos($id, '_') === 0) continue;
 			/** @var $model Section */
 			$model = $_holder->model;
@@ -108,9 +108,9 @@ class SectionFactory {
 			$sec_arr[$section->id] = $section;
 			if (is_callable($walk)) $walk($section);
 
-			$section->findSectionsRecursive(['walk' => function ($s, $k = null, $rel = null, $previous_section = null) use (&$sec_arr, $walk, $section) {
+			$section->findSectionsRecursive(['walk' => function (&$s, $k = null, $rel = null, $previous_section = null) use (&$sec_arr, $walk, $section) {
 				if (is_callable($walk)) $walk($s);
-				$sec_arr[$s->id] = $s;
+				$sec_arr[$s->id] =& $s;
 			}]);
 			$res = SectionFactory::build($section, $is_edit, $b);
 			$string .= $res;

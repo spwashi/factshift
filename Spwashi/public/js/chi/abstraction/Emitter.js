@@ -151,5 +151,15 @@ define(['Class'], function (Class) {
 			return this._fns[name] ? this._fns[name] : function () {}.bind(this);
 		}
 	});
+	Emitter.mixin   = function (obj) {
+		var p = Emitter.prototype;
+		Sm.CONFIG.DEBUG && console.log(p);
+		for (var prop_name in p) {
+			if (!p.hasOwnProperty(prop_name)) continue;
+			var prop       = p[prop_name];
+			obj[prop_name] = typeof prop === "function" ? prop.bind(obj) : prop;
+		}
+		return Emitter;
+	};
 	return Emitter;
 });

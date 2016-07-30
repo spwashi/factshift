@@ -18,7 +18,7 @@ define(['Class', 'Sm'], function (Class) {
 	 * @property setMap                     Retrieve a view based on another and a map index        {@link Sm.Core.Relationship#setMap}
 	 */
 	Sm.Core.Relationship = Class.extend({
-		number_of_links:             2,
+		number_of_links:                  2,
 		/**
 		 *
 		 * @param settings
@@ -26,7 +26,7 @@ define(['Class', 'Sm'], function (Class) {
 		 * @param settings.rel_indexes
 		 * @param settings.context_id
 		 */
-		init:                        function (settings) {
+		init:                             function (settings) {
 			settings                   = settings || {};
 			/**
 			 * An array of the RelationshipIndices that this Relationship belongs to
@@ -80,7 +80,7 @@ define(['Class', 'Sm'], function (Class) {
 		 * @param key
 		 * @return {Sm.Core.Identifier|boolean}
 		 */
-		get_Identity_at_index:       function (key) {
+		get_Identity_at_index:            function (key) {
 			return this._map_links[key] || false
 		},
 		/**
@@ -88,13 +88,13 @@ define(['Class', 'Sm'], function (Class) {
 		 * @alias Sm.Core.Relationship#setMap
 		 * @param map
 		 */
-		setMap:                      function (map) {
+		setMap:                           function (map) {
 			map      = map || {};
 			this.map = Sm.Core.util.merge_objects(this.map, map);
 			if (this.map.id) this.Identity.refresh({id: this.map.id});
 			return this;
 		},
-		toJSON:                      function () {
+		toJSON:                           function () {
 			return {
 				map:   this.map,
 				_meta: this._meta
@@ -105,7 +105,7 @@ define(['Class', 'Sm'], function (Class) {
 		 * todo
 		 * @param settings
 		 */
-		save:                        function (settings) {
+		save:                             function (settings) {
 			var url  = Sm.urls.api.generate({Relationship: this});
 			Sm.CONFIG.DEBUG && console.log(url);
 			var self = this;
@@ -120,16 +120,30 @@ define(['Class', 'Sm'], function (Class) {
 				}
 			});
 		},
+		remove_from_relationship_indices: function () {
+			var RelationshipIndices = this.relationshipIndexRIDs;
+			for (var i = 0; i < RelationshipIndices.length; i++) {
+				var r_id              = RelationshipIndices[i];
+				/** @type {Sm.Core.RelationshipIndex|*}  */
+				var RelationshipIndex = Sm.Core.Identifier.identify(r_id);
+				if (RelationshipIndex) {
+					var res = RelationshipIndex.remove_item(this, this.context_id);
+					if (!!res) {
+						RelationshipIndices.splice(i, 1);
+						i--;
+					}
+				}
+			}
+		},
 		/**
 		 * Remove the relationship, destroy the Views associated with it
-		 * @param settings
+		 * @param {{}=}settings
 		 * @param {boolean=true} settings.silent Should we update the relationship indexes? (save them)
 		 * @param {boolean=true} settings.secondary_key (The key of the view that we are removing
 		 * @param {boolean=true} settings.primary_key (The key of the view that we should probably remain)
 		 */
-		destroy:                     function (settings) {
+		destroy:                          function (settings) {
 			Sm.CONFIG.DEBUG && console.log('Not able to destroy this relationship');
-			return Promise.reject('Unimplemented action, relationship destroy');
 			settings          = settings || {};
 			var silent        = ("silent" in settings) ? settings.silent : true;
 			var related_views = this._view_associations;
@@ -142,13 +156,6 @@ define(['Class', 'Sm'], function (Class) {
 					this._to_delete[view_cid] = related_views[view_cid][secondary_key];
 				}
 			}
-			/**
-			 * An array of the RelationshipIndex RIDs that we are going to find and remove this relationship from
-			 * @type {Array}
-			 */
-			var RelIndices      = this.relationshipIndexRIDs;
-			var all_resolve_arr = [];
-
 			var url  = Sm.urls.api.generate({Relationship: this});
 			var self = this;
 			return Promise.resolve($.ajax({
@@ -159,13 +166,7 @@ define(['Class', 'Sm'], function (Class) {
 			})).then(function (result) {
 				Sm.CONFIG.DEBUG && console.log(result);
 				if (result && result.success) {
-					for (var i = 0; i < RelIndices.length; i++) {
-						var RelationshipIndexID = Sm.Core.Identifier.retrieve(RelIndices[i]);
-						if (!RelationshipIndexID) continue;
-						var RelationshipIndex = RelationshipIndexID.getResource();
-						if (!RelationshipIndex) continue;
-						RelationshipIndex.remove_item(self, self.context_id, true);
-					}
+					self.remove_from_relationship_indices();
 				} else {
 					throw result.error;
 				}
@@ -178,7 +179,7 @@ define(['Class', 'Sm'], function (Class) {
 		 * @param map_index
 		 * @returns {Sm.Core.Relationship}
 		 */
-		link_Mv:                     function (Mv, map_index) {
+		link_Mv:                          function (Mv, map_index) {
 			if (!Mv || !map_index) return this;
 			if (this.linked_entities.length < 2) {
 				this.linked_entities.push(Mv.type);
@@ -195,7 +196,7 @@ define(['Class', 'Sm'], function (Class) {
 		 * @param {Sm.Core.Identifier=}     identification.Identity             The Identifier that is known, opposite of the MvCombo that is wanted
 		 * @return {Sm.Core.MvCombo|boolean|*}
 		 */
-		get_Mv:                      function (identification) {
+		get_Mv:                           function (identification) {
 			var map_index = identification.map_index;
 			if (!$.isArray(map_index))                 map_index = (map_index || '').split('|');
 
@@ -224,7 +225,7 @@ define(['Class', 'Sm'], function (Class) {
 		 * @param identification
 		 * @return {string|boolean}
 		 */
-		get_map_index_of_Mv:         function (identification) {
+		get_map_index_of_Mv:              function (identification) {
 			var Id = (identification.SelfMvCombo) ? identification.SelfMvCombo.Identity : identification.Identity;
 			if (Id && this.number_of_links == 2) {
 				var map_links = this._map_links;
@@ -244,7 +245,7 @@ define(['Class', 'Sm'], function (Class) {
 		 * @returns {{id: null}}
 		 * @private
 		 */
-		_get_default_map_properties: function () {
+		_get_default_map_properties:      function () {
 			return {
 				id: null
 			}
@@ -254,7 +255,7 @@ define(['Class', 'Sm'], function (Class) {
 		 * @alias Sm.Core.Relationship#register_view_relationship
 		 * @param {Object<string, Sm.Core.SmView>} relationship_obj     An object representing the views mapped to their correct indices in the map (e.g. {section_id : View})
 		 */
-		register_view_relationship:  function (relationship_obj) {
+		register_view_relationship:       function (relationship_obj) {
 			relationship_obj = relationship_obj || {};
 			var rel_indexes  = this.rel_indexes;
 			for (var i = 0; i < rel_indexes.length; i++) {
@@ -275,7 +276,7 @@ define(['Class', 'Sm'], function (Class) {
 		 * @param {boolean=}             strict
 		 * @return {boolean|Sm.Core.SmView}
 		 */
-		getView:                     function (self_View, other_index, strict) {
+		getView:                          function (self_View, other_index, strict) {
 			var self_cid = self_View.cid;
 			if (!other_index) {
 				var self_MvCombo = self_View.MvCombo;

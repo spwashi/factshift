@@ -143,11 +143,12 @@ class PageController extends SpwashiController {
 			$current_dimension     = $dims->get_item_at_index($dims->_meta->_list[0])->model;
 			$current_section_array = $current_dimension ? $current_dimension->findSections()->maps->sections->get_items(true) : [];
 			$generated_sections    = SectionFactory::generate_sections($current_section_array, $is_edit, function (Model &$section) {
-				return ($section->findType(new Concept));
+				Log::init($section->findType('concepts')->maps->concepts)->log_it();
+				return $section;
 			});
-			$debug     = isset($_GET['debug']) ? $_GET['debug'] : false;
-			$secs      = $generated_sections['sections'];
-			$variables = [
+			$debug                 = isset($_GET['debug']) ? $_GET['debug'] : false;
+			$secs                  = $generated_sections['sections'];
+			$variables             = [
 				'page'              => $current_page,
 				'current_dimension' => $current_dimension,
 				'type'              => $type,
@@ -160,7 +161,7 @@ class PageController extends SpwashiController {
 				'is_debug'          => $debug !== false,
 				'debug_level'       => (int)$debug,
 			];
-			$content   = View::create('page/page.php', $variables);
+			$content               = View::create('page/page.php', $variables);
 			if (!empty($error_messages)) $content->addMessages($error_messages);
 			#
 			/** @var View $view */

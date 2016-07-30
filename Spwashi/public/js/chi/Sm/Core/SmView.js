@@ -2,7 +2,7 @@
  * Created by Sam Washington on 12/17/15.
  */
 require(['require', 'backbone', 'jquery',
-		'underscore', 'Cocktail',
+		'underscore', 'Cocktail', 'Emitter',
 		'Sm-Entities-Abstraction-Modal-ModalEdit',
 		'Sm-Entities-Abstraction-Modal-AddRelationship',
 		'Sm-Entities-Abstraction-Modal-ModalDestroy'],
@@ -12,7 +12,7 @@ require(['require', 'backbone', 'jquery',
          * @lends $
          * @lends _
          */
-        function (require, Backbone, $, _, Cocktail) {
+        function (require, Backbone, $, _, Cocktail, Emitter) {
 	        require(['require', 'Sm/Extras/DraggableMixin'], function () {});
 	        require(['require', 'Sm/Extras/Modal'], function () {});
 	        var Sm                               = window.Sm;
@@ -861,6 +861,9 @@ require(['require', 'backbone', 'jquery',
 			        var self              = this;
 			        Backbone.View.prototype.setElement.apply(this, arguments);
 			        this.init_permissions();
+			        element && element.addEventListener('click', function () {
+				        Sm.Core.SmView.emit('click', self.MvCombo);
+			        });
 			        Sm.loaded.when_loaded('Extras_Draggable', function () {
 				        self.makeElementDraggable && self.makeElementDraggable(null, self.handle || self.handle === undefined ? self.handle : true);
 			        }, '_SmView_SetElement', 20000);
@@ -1021,7 +1024,7 @@ require(['require', 'backbone', 'jquery',
 		        update:                          function (changed_attributes) {
 			        if (this.display_type.indexOf('modal') > -1) return this;
 			        if (!this.MvCombo) return this;
-			        this.model          = this.model || this.MvCombo.Model;
+			        this.model = this.model || this.MvCombo.Model;
 			        if (!this.model) {
 				        Sm.CONFIG.DEBUG && console.log("There was no model!");
 				        return this;
@@ -1030,10 +1033,8 @@ require(['require', 'backbone', 'jquery',
 				        this.init_elements();
 				        changed_attributes = Object.keys(this.elements)
 			        }
-			        Sm.CONFIG.DEBUG && console.log('SmView,update,2', changed_attributes);
 			        var type            = this.type.toLowerCase();
 			        var type_identifier = type + '_type';
-			        Sm.CONFIG.DEBUG && console.log('SmView,update,2', type_identifier);
 			        if (changed_attributes.indexOf(type_identifier) > -1) {
 				        this.mark_unrendered();
 				        this.replaceOldElement();
@@ -1187,8 +1188,9 @@ require(['require', 'backbone', 'jquery',
 			        return true;
 		        });
 	        };
+	        Emitter.prototype.constructor.call(Sm.Core.SmView);
+	        Emitter.mixin(Sm.Core.SmView);
 	        Sm.loaded.add('Core_SmView');
-
 //-----------------------------------------------------------------------------------------------------------
 	        //Initialize the global events
 	        (function (document) {

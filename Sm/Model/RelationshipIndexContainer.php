@@ -13,6 +13,8 @@ use Sm\Core\Inflector;
  * @property \Sm\Model\RelationshipIndex sections
  * @property \Sm\Model\RelationshipIndex universes
  * @property \Sm\Model\RelationshipIndex concepts
+ * @property \Sm\Model\RelationshipIndex composition
+ * @property \Sm\Model\RelationshipIndex children
  */
 class RelationshipIndexContainer implements \JsonSerializable {
 	protected $relationship_indices = [];
@@ -125,7 +127,11 @@ class RelationshipIndexContainer implements \JsonSerializable {
 			$this->relationship_indices[$gotten_name] = $this->relationship_indices[$gotten_name] ?? $this->init_rel($mapped_table, $checked_relationship, $index);
 		}
 		$this->gotten[$gotten_name] = true;
+		$this->gotten[$index]       = true;
 		return $this->relationship_indices[$gotten_name];
+	}
+	public function mark_gotten($name) {
+		$this->gotten[$name] = true;
 	}
 	public function &__get($name) {
 		return $this->getRelationshipIndex($name);

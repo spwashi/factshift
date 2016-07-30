@@ -376,11 +376,13 @@ require(['require', 'Class', 'Sm', 'Sm-Entities-Abstraction-templates-_template'
 			},
 			_populate_relationship_index_tags: function (parameters) {
 				var relationship_index  = parameters.relationship_index;
-				var $content            = parameters.$relationship_index_string.children('.content');
+				var $content            = parameters.$relationship_index_string.children('.' + relationship_index + '-relationships').eq(0);
 				var relationship_object = parameters.relationship_object;
 				var items               = relationship_object.items;
 				var relationships       = relationship_object.relationships;
 				var data                = [];
+				var User                = Sm.Entities.User.Wrapper.get_active();
+				var url                 = Sm.urls.api.generate({MvCombo: User || parameters.MvCombo || false, fetch: relationship_index});
 				var active              = [];
 				for (var i = 0; i < items.length; i++) {
 					var OtherMvCombo = items[i];
@@ -393,12 +395,11 @@ require(['require', 'Class', 'Sm', 'Sm-Entities-Abstraction-templates-_template'
 					data.push(d);
 					active.push(r_id);
 				}
-				var User = Sm.Entities.User.Wrapper.get_active();
-				var url  = Sm.urls.api.generate({MvCombo: User || parameters.MvCombo || false, fetch: relationship_index});
 				$content.select2({
 					tags:            true,
 					tokenSeparators: [','],
 					cache:           true,
+					data:            data,
 					ajax:            {
 						url:            url,
 						dataType:       'json',
@@ -443,6 +444,7 @@ require(['require', 'Class', 'Sm', 'Sm-Entities-Abstraction-templates-_template'
 					}, // let our custom formatter work
 					width:           '300px'
 				});
+				Sm.CONFIG.DEBUG && console.log(active);
 				$content.val(active).trigger('change');
 				return parameters.$relationship_index_string;
 			},

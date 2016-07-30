@@ -116,7 +116,6 @@ class API {
 					$Endpoint,
 					$req_data,
 				]);
-				Log::init(['after init from', $result])->log_it();
 				$result = static::process_init_from_result($result);
 			} else if ($previous_result_value === null) {
 				if ($Endpoint->identifier) {
@@ -675,8 +674,8 @@ class API {
 				$request_data['rel_index'] = $relationship_index;
 				$request_data['rel_type']  = $rel_type;
 			} else {
-				$primary_model->findType($proposed_meta['_key']);
-				$actual_maps = $primary_model->maps->{$proposed_meta['_key']};
+				$primary_model->findType($proposed_meta['_index']);
+				$actual_maps = $primary_model->maps->{$proposed_meta['_index']};
 			}
 		} catch (\Exception $e) {
 			$api_response          = new APIResponse();
@@ -1003,7 +1002,7 @@ class API {
 			$secondary_model = static::init_model_from_endpoint($secondary_endpoint);
 			if ($secondary_model instanceof APIResponse) return $secondary_model;
 			try {
-				$map_class                 = ModelMeta::get_map_between($primary_model, $other_model, ModelMeta::TYPE_CLASS);
+				$map_class                 = ModelMeta::get_map_between($primary_model, $secondary_model, ModelMeta::TYPE_CLASS);
 				$map                       = $map_class->find(['between' => [$primary_model, $secondary_model]]);
 				$api_response->success     = !!$map->remove_relationship($primary_model, $secondary_model);
 				$api_response->data['map'] = $map;

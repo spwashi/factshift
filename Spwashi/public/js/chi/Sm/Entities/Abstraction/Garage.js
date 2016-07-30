@@ -444,6 +444,10 @@ require(['require', 'Class', 'Sm', 'Sm-Entities-Abstraction-templates-_template'
 					}, // let our custom formatter work
 					width:           '300px'
 				});
+				$content.on('click-tag', function (evt, props) {
+					props    = props || {};
+					var data = props.data || {};
+				});
 				Sm.CONFIG.DEBUG && console.log(active);
 				$content.val(active).trigger('change');
 				return parameters.$relationship_index_string;

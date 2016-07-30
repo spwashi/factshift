@@ -153,7 +153,6 @@ define(['Class'], function (Class) {
 	});
 	Emitter.mixin   = function (obj) {
 		var p = Emitter.prototype;
-		Sm.CONFIG.DEBUG && console.log(p);
 		for (var prop_name in p) {
 			if (!p.hasOwnProperty(prop_name)) continue;
 			var prop       = p[prop_name];

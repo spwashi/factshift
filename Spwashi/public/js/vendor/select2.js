@@ -1602,7 +1602,22 @@
 							    originalEvent: evt
 						    });
 					    });
-
+/////////////////////////////// SM_PATCH
+					    this.$selection.on(
+						    'click',
+						    '.select2-selection__choice',
+						    function (evt) {
+							    var $tag = $(this);
+							    var data = $tag.data('data');
+							    self.$element.trigger('click-tag', {
+								    originalEvent: evt,
+								    data:          data,
+								    self:          self
+							    });
+							    return false;
+						    }
+					    );
+/////////////////////////////// END_PATCH
 					    this.$selection.on(
 						    'click',
 						    '.select2-selection__choice__remove',

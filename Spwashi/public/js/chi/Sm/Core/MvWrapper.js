@@ -541,7 +541,6 @@ require(['require', 'Emitter', 'Sm', 'Sm-Core-Identifier'], function (require, E
 			function edit() {
 				P = new Promise(function (resolve, reject) {
 					ModalType = _Modal('Edit');
-					Sm.CONFIG.DEBUG && console.log(config.display_type);
 					Modal     = new ModalType({
 						MvCombo:             EntityArr,
 						self_type:           self.type || 'Entity',

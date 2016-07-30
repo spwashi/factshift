@@ -26,12 +26,22 @@ require(['jquery'], function ($) {
 
 			var on_init = !!event_settings.on_init && typeof  event_settings.on_init === "function" ? event_settings.on_init : false;
 
+			/**
+			 *
+			 * @param {Node|HTMLElement} element
+			 * @param array
+			 * @param plain_array
+			 * @param len_array
+			 * @param obj
+			 * @return {*}
+			 */
 			function flattenChildren(element, array, plain_array, len_array, obj) {
 				var c_n = element.childNodes;
 				if (!!c_n && c_n.length) {
 					for (var i = 0; i < c_n.length; i++) {
 						var node = c_n[i];
 						//console.log(node);
+						if (!node.nodeName || node.nodeName === "INPUT" || node.nodeName === "TEXTAREA") continue;
 						if ($(node).hasClass('sm-highlight')) {
 							if (node.childNodes.length === 1 && !!node.childNodes[0].textContent) {
 								if (node.childNodes[0].textContent.toLowerCase() == word.toLowerCase()) {
@@ -44,6 +54,7 @@ require(['jquery'], function ($) {
 				} else {
 					var text               = element.textContent || element.innerHTML;
 					if (!element.splitText || !text || !text.length) return array;
+					if (!element.nodeName || element.nodeName === "INPUT" || element.nodeName === "TEXTAREA") return array;
 					array.push(element);
 					plain_array.push(text);
 					len_array.push(text.length);
@@ -90,9 +101,8 @@ require(['jquery'], function ($) {
 			var join          = plain_arr.join('');
 			var g_i           = getIndicesOf(word, join);
 			var start_indices = g_i[0], end_indices = g_i[1];
-			if (!start_indices && !end_indices) {
-				return;
-			}
+			if (!start_indices && !end_indices) return;
+
 			var find_index_and_node = function (char_array, plaintext_array, return_object, type) {
 				var _node_iterator = 0, index_in_node = 0;
 				var plain_string   = plaintext_array[0];

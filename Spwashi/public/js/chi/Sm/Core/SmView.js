@@ -1188,7 +1188,6 @@ require(['require', 'backbone', 'jquery',
 			        return true;
 		        });
 	        };
-	        Emitter.prototype.constructor.call(Sm.Core.SmView);
 	        Emitter.mixin(Sm.Core.SmView);
 	        Sm.loaded.add('Core_SmView');
 //-----------------------------------------------------------------------------------------------------------

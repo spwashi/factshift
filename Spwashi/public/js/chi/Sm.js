@@ -5,7 +5,7 @@
  * @global
  */
 var Sm = {};
-require([
+define([
 	'require',
 	'jquery',
 	'Cocktail',
@@ -250,4 +250,5 @@ require([
 
 
 	dnd_el && dnd_el.addEventListener('change', function () {Sm.CONFIG.DRAG_MODE = this.checked;});
+	return Sm;
 });

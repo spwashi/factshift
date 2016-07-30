@@ -153,18 +153,13 @@ $urls['view'] = Toute::generate_url('spwashi_page_view', [$page->context, $page-
 			?>
 			<script type="text/javascript">
 				require(['<?= App::_()->base_url ?>resource/js/chi/require_config.js'], function () {
-					require(['Promise', 'jquery', 'Sm'], function (P, $) {
+					require(['Promise', 'jquery', 'Sm'], function (P, $, Sm) {
 						if (!Promise) {P.polyfill();}
-//						require(['require', 'Sm-Entities-Section-main'], function (require) {});
-//						require(['require', 'Sm-Entities-Collection-main'], function (require) {});
-//						require(['require', 'Sm-Entities-Dictionary-main'], function (require) {});
-//						require(['require', 'Sm-Entities-Dimension-main'], function (require) {});
-//						require(['require', 'Sm-Entities-Page-main'], function (require) {});
-//						require(['require', 'Sm-Entities-Concept-main'], function (require) {});
 						require(['require', 'select2'], function (require) {});
 						require(['require', 'inflection'], function (require) {});
 						require(['require', 'http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS_HTML-full'], function (require) {
 							MathJax.Hub.Config({tex2jax: {inlineMath: [["$", "$"]]}});
+							Sm.loaded.add('Vendor_MathJafx');
 							Sm.loaded.add('Vendor_MathJax');
 						});
 					});

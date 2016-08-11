@@ -1,7 +1,7 @@
 /**
  * Created by Sam Washington on 1/4/16.
  */
-require(['require', 'Class', 'Sm', 'Sm-Entities-Abstraction-templates-_template'], function (require, Class) {
+require(['require', 'Class', 'Sm', 'Sm-Entities-Abstraction-templates-_template'], function (require, Class, Sm) {
 	require('Sm');
 	require('Class');
 
@@ -12,7 +12,8 @@ require(['require', 'Class', 'Sm', 'Sm-Entities-Abstraction-templates-_template'
 		 * @property {Function} _default        {@link Sm.Entities.Abstraction.Garage._default   }
 		 * @property {Function} generate        {@link Sm.Entities.Abstraction.Garage.generate   }
 		 */
-		Sm.Entities.Abstraction.Garage = Class.extend({
+		Sm.Entities.Abstraction.Garage = Class.extend(
+		{
 			relationship_display_type: {
 				universes: 'select',
 				concepts:  'tag'
@@ -28,7 +29,7 @@ require(['require', 'Class', 'Sm', 'Sm-Entities-Abstraction-templates-_template'
 				 * The Entity type that the Garage deals with (e.g. Section)
 				 * @type {string}
 				 */
-				this.type               = type;
+				this.type = type;
 				/**
 				 * The index in the Model's properties that lets us know what kind of Entity subtype we're dealing with.
 				 * For example, this could be "section_type" letting us know that the section type is what tells us that a section is standard or an image or something like that
@@ -97,6 +98,7 @@ require(['require', 'Class', 'Sm', 'Sm-Entities-Abstraction-templates-_template'
 			 * @param input
 			 * @param settings
 			 * @param settings.default_value
+			 * @param settings.attributes
 			 * @param settings.synchronous
 			 * @private
 			 */
@@ -115,8 +117,8 @@ require(['require', 'Class', 'Sm', 'Sm-Entities-Abstraction-templates-_template'
 				 */
 				var to_try          = [];
 //Get the subtype (e.g. (edit) from the string inline.modal(edit)
-				var subtype_test = /\((.+)\)/.exec(input);
-				var subtype      = !!subtype_test && subtype_test[1] ? subtype_test[1] : false;
+				var subtype_test    = /\((.+)\)/.exec(input);
+				var subtype         = !!subtype_test && subtype_test[1] ? subtype_test[1] : false;
 				subtype && (input = input.replace(subtype_test[0], ""));
 
 				var ms_test = /\[(.+)\]/.exec(input);
@@ -160,7 +162,8 @@ require(['require', 'Class', 'Sm', 'Sm-Entities-Abstraction-templates-_template'
 						if (typeof obj === "string") {
 							res = obj;
 						} else if (typeof obj === "function") {
-							res = obj();
+							//todo, make it so this is only called when necessary?
+							res = obj(to_try, settings.attributes || {});
 						} else if (obj[subtype]) res = obj[subtype];
 						else res = false;
 					}
@@ -192,7 +195,10 @@ require(['require', 'Class', 'Sm', 'Sm-Entities-Abstraction-templates-_template'
 					preferred_template = fn(preferred_template, tt, p) || fallback || false;
 
 					//If the primary object is a string already, we are okay and should stop looking.
-					if (typeof preferred_template === "string") return resolve(preferred_template);
+					if (typeof preferred_template === "string") {
+						Sm.CONFIG.DEBUG && console.log('abs_gar,_generate,for -- ', this.type);
+						return resolve(preferred_template);
+					}
 				}
 				return resolve("__CONTENT__");
 			},
@@ -250,8 +256,8 @@ require(['require', 'Class', 'Sm', 'Sm-Entities-Abstraction-templates-_template'
 				var t       = Sm.Entities[this.type].templates;
 				var Meta    = Sm.Entities[this.type].Meta;
 
-				var templates  = [t[normalized_data.template_type] || t.standard, t._template];
-				var context_id = settings.context_id || 0;
+				var templates            = [t[normalized_data.template_type] || t.standard, t._template];
+				var context_id           = settings.context_id || 0;
 				//If we didn't specify the relationships that we want, assume that we want all of them
 				var relationship_indices = settings.relationship_indices || [];
 				var _rels                = Meta.get_named_relationship_indices();
@@ -266,7 +272,7 @@ require(['require', 'Class', 'Sm', 'Sm-Entities-Abstraction-templates-_template'
 				}
 				var __orc_t_nom                  = type.replace(/(relationship)/, '$1_outer');
 				var outer_relationship_container =
-					    this._generate_one(templates, __orc_t_nom, {synchronous: true});
+				    this._generate_one(templates, __orc_t_nom, {synchronous: true});
 				var orc_content                  = '';
 				var relevant_relationships       = {};
 				var display_type                 = settings.display_type || 'preview';
@@ -283,8 +289,8 @@ require(['require', 'Class', 'Sm', 'Sm-Entities-Abstraction-templates-_template'
 					var __ris_t_nom               = type.replace(/(relationship)/, '$1[relationship_index](' + relationship_index + ')');
 					var relationship_index_string = this._generate_one(templates, __ris_t_nom, {synchronous: true});
 					//Replace the generic "__TITLE__" string with the display name of the relationship
-					relationship_index_string = relationship_index_string.replace('__TITLE__', name);
-					var RelationshipIndex     = MvCombo.getRelationshipIndex(relationship_index);
+					relationship_index_string     = relationship_index_string.replace('__TITLE__', name);
+					var RelationshipIndex         = MvCombo.getRelationshipIndex(relationship_index);
 					if (!RelationshipIndex) Sm.CONFIG.DEBUG && console.log('abs_gar,_el,-1.5', relationship_index);
 					if (!RelationshipIndex) continue;
 					var relationship_object = RelationshipIndex.get_listed_items(context_id);
@@ -293,21 +299,21 @@ require(['require', 'Class', 'Sm', 'Sm-Entities-Abstraction-templates-_template'
 
 
 					relationship_index_string =
-						relationship_index_string
-							.replace('__TYPE__', relationship_index)
-							.replace('__R_ID__', MvCombo.r_id)
-							.replace('__CONTENT__', '');
+					relationship_index_string
+					.replace('__TYPE__', relationship_index)
+					.replace('__R_ID__', MvCombo.r_id)
+					.replace('__CONTENT__', '');
 
 					var $relationship_index_string = this._populate_relationship_index({
-						$relationship_index_string: $(relationship_index_string),
-						relationship_index:         relationship_index,
-						relationship_object:        relationship_object,
-						type:                       type,
-						display_type:               display_type,
-						appended_views:             appended_views,
-						templates:                  templates,
-						MvCombo:                    MvCombo
-					});
+						                                                                   $relationship_index_string: $(relationship_index_string),
+						                                                                   relationship_index:         relationship_index,
+						                                                                   relationship_object:        relationship_object,
+						                                                                   type:                       type,
+						                                                                   display_type:               display_type,
+						                                                                   appended_views:             appended_views,
+						                                                                   templates:                  templates,
+						                                                                   MvCombo:                    MvCombo
+					                                                                   });
 					if ($relationship_index_string) $rel_index_list.push($relationship_index_string);
 				}
 
@@ -365,10 +371,10 @@ require(['require', 'Class', 'Sm', 'Sm-Entities-Abstraction-templates-_template'
 					var relationship_template_name = type.replace(/(relationship)/, '$1[relationship](' + relationship_index + ')');
 					var relationship_string        = this._generate_one(templates, relationship_template_name, {synchronous: true});
 					relationship_string            =
-						relationship_string
-							.replace('__R_ID__', Relationship.Identity.r_id)
-							.replace('__MV_R_ID__', MvCombo ? MvCombo.r_id : 'null')
-							.replace('__CONTENT__', '');
+					relationship_string
+					.replace('__R_ID__', Relationship.Identity.r_id)
+					.replace('__MV_R_ID__', MvCombo ? MvCombo.r_id : 'null')
+					.replace('__CONTENT__', '');
 					this._append_relationship(OtherMvCombo, $ris_content, relationship_index, relationship_string, appended_views, display_type);
 
 				}
@@ -395,7 +401,8 @@ require(['require', 'Class', 'Sm', 'Sm-Entities-Abstraction-templates-_template'
 					data.push(d);
 					active.push(r_id);
 				}
-				$content.select2({
+				$content.select2(
+				{
 					tags:            true,
 					tokenSeparators: [','],
 					cache:           true,
@@ -455,20 +462,20 @@ require(['require', 'Class', 'Sm', 'Sm-Entities-Abstraction-templates-_template'
 			_append_relationship:              function (OtherMvCombo, $ris_content, relationship_index, relationship_string, appended_views, display_type) {
 				display_type  = display_type || "full";
 				var OtherView =
-					    !appended_views[OtherMvCombo.r_id] ?
-						    OtherMvCombo.getView()
-						    : appended_views[OtherMvCombo.r_id].clone();
-
+				    !appended_views[OtherMvCombo.r_id] ?
+				    OtherMvCombo.getView()
+				    : appended_views[OtherMvCombo.r_id].clone();
+				Sm.CONFIG.DEBUG && console.log(OtherView);
 				OtherView.render({synchronous: true, display_type: display_type});
-				var params    = {
+				var params   = {
 					View:               OtherView,
 					container_element:  relationship_string,
 					relationship_index: relationship_index
 				};
-				var $outer    = $(params.container_element);
-				var $content  = $outer.find('.content');
+				var $outer   = $(params.container_element);
+				var $content = $outer.find('.content');
 				if ($content[0]) {
-					var v_element                     = OtherView.get_rendered('Element');
+					var v_element = OtherView.get_rendered('Element');
 					$content[0].appendChild(v_element);
 					$ris_content[0].appendChild($outer[0]);
 					appended_views[OtherMvCombo.r_id] = appended_views[OtherMvCombo.r_id] || OtherView;

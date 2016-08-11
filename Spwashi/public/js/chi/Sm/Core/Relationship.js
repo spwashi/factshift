@@ -17,7 +17,8 @@ define(['Class', 'Sm'], function (Class) {
 	 * @property get_view                   Retrieve a view based on another and a map index        {@link Sm.Core.Relationship#getView}
 	 * @property setMap                     Retrieve a view based on another and a map index        {@link Sm.Core.Relationship#setMap}
 	 */
-	Sm.Core.Relationship = Class.extend({
+	Sm.Core.Relationship = Class.extend(
+	{
 		number_of_links:                  2,
 		/**
 		 *
@@ -27,22 +28,17 @@ define(['Class', 'Sm'], function (Class) {
 		 * @param settings.context_id
 		 */
 		init:                             function (settings) {
-			settings                   = settings || {};
+			settings = settings || {};
 			/**
 			 * An array of the RelationshipIndices that this Relationship belongs to
 			 * @type {Array}
 			 */
 			this.relationshipIndexRIDs = [];
 			/**
-			 * Probably the serialized version of what's on the server
-			 * @type {*|{id}|{id: null}}
-			 */
-			this.map                   = this._get_default_map_properties();
-			/**
 			 * An array of things that need to be deleted (by RID)
 			 * @type {{}}
 			 */
-			this._to_delete            = {};
+			this._to_delete = {};
 			/**
 			 * An object containing the index that is being referenced in the map (e.g. collection_id) and the MvCombo's Identifier
 			 * @link Sm.Core.Identifier
@@ -51,29 +47,33 @@ define(['Class', 'Sm'], function (Class) {
 			 * @type {Object<string, Sm.Core.Identifier>}
 			 * @private
 			 */
-			this._map_links            = {};
+			this._map_links = {};
 			/**
 			 * An object that connects specific Views to the relationship. Useful if there are multiple instances of a relationship being displayed in multiple different places
 			 * @type {{}}
 			 * @private
 			 */
-			this._view_associations    = {};
+			this._view_associations = {};
 			/**
 			 * The Entities that are allowed to be linked (right now, this is not enforced. Honesty policy!)
 			 * @type {*|Array}
 			 */
-			this.linked_entities       = settings.linked_entities || this.linked_entities || ['', ''];
+			this.linked_entities = settings.linked_entities || this.linked_entities || ['', ''];
+			/** @type {Sm.Entities.Abstraction.SmEntity}  */
+			var MapEntity = Sm.Entities[Sm.Core.Meta.get_map_between(this.linked_entities)];
+			this.Map      = MapEntity.Wrapper.init_MvCombo({model: settings.map || {}});
+
 			/**
 			 * The indexes of each different id in the relationship (e.g. dimension_id)
 			 * @type {*|string[]}
 			 */
-			this.rel_indexes           = settings.rel_indexes || this.rel_indexes || ['', ''];
-			var self                   = this;
-			this.Identity              = Sm.Core.Identifier.get_or_init({
-				type:     'Relationship',
-				Resource: self
-			});
-			this.context_id            = settings.context_id || this.map.context_id || 0;
+			this.rel_indexes = settings.rel_indexes || this.rel_indexes || ['', ''];
+			var self        = this;
+			this.Identity   = Sm.Core.Identifier.get_or_init({
+				                                                 type:     'Relationship',
+				                                                 Resource: self
+			                                                 });
+			this.context_id = settings.context_id || 0; //todo need to have a way to look for the context ID of the relationship
 		},
 		/**
 		 * Get the Identifier of an MvCombo that resides at a specific index in the map_links map
@@ -91,7 +91,8 @@ define(['Class', 'Sm'], function (Class) {
 		setMap:                           function (map) {
 			map      = map || {};
 			this.map = Sm.Core.util.merge_objects(this.map, map);
-			if (this.map.id) this.Identity.refresh({id: this.map.id});
+			this.Map.Identity.refresh(map);
+			this.Map.Model.set(map, {silent: true});
 			return this;
 		},
 		toJSON:                           function () {
@@ -106,15 +107,16 @@ define(['Class', 'Sm'], function (Class) {
 		 * @param settings
 		 */
 		save:                             function (settings) {
-			var url  = Sm.urls.api.generate({Relationship: this});
+			var url = Sm.urls.api.generate({Relationship: this});
 			Sm.CONFIG.DEBUG && console.log(url);
 			var self = this;
+			Sm.CONFIG.DEBUG && console.log(this.Map && this.Map.Model.get('id'), 'Rel,save');
 			return Promise.resolve($.ajax({
-				url:         url,
-				data:        JSON.stringify(this),
-				contentType: 'application/json; charset=UTF-8',
-				method:      this.map && this.map.id ? "PATCH" : "POST"
-			})).then(function (result) {
+				                              url:         url,
+				                              data:        JSON.stringify(this),
+				                              contentType: 'application/json; charset=UTF-8',
+				                              method:      this.Map && this.Map.Model.get('id') ? "PATCH" : "POST"
+			                              })).then(function (result) {
 				if (result && result.success && result.data && result.data.map) {
 					if (result.data.map.id) self.setMap(result.data.map);
 				}
@@ -159,11 +161,11 @@ define(['Class', 'Sm'], function (Class) {
 			var url  = Sm.urls.api.generate({Relationship: this});
 			var self = this;
 			return Promise.resolve($.ajax({
-				url:         url,
-				data:        JSON.stringify(this),
-				contentType: 'application/json; charset=UTF-8',
-				method:      "DELETE"
-			})).then(function (result) {
+				                              url:         url,
+				                              data:        JSON.stringify(this),
+				                              contentType: 'application/json; charset=UTF-8',
+				                              method:      "DELETE"
+			                              })).then(function (result) {
 				Sm.CONFIG.DEBUG && console.log(result);
 				if (result && result.success) {
 					self.remove_from_relationship_indices();
@@ -281,8 +283,8 @@ define(['Class', 'Sm'], function (Class) {
 			if (!other_index) {
 				var self_MvCombo = self_View.MvCombo;
 				other_index      = this.get_map_index_of_Mv(this.get_Mv({
-					SelfMvCombo: self_MvCombo
-				}));
+					                                                        SelfMvCombo: self_MvCombo
+				                                                        }));
 			}
 			if (!self_cid || !other_index || (!!strict && !this._view_associations[self_cid])) return false;
 			if (this._view_associations[self_cid] && this._view_associations[self_cid][other_index]) return this._view_associations[self_cid][other_index];
@@ -300,15 +302,15 @@ define(['Class', 'Sm'], function (Class) {
 			}
 			if (self_index) {
 				var OtherMvCombo     = this.get_Mv({
-					SelfMvCombo: self_View.MvCombo,
-					map_index:   other_index
-				});
+					                                   SelfMvCombo: self_View.MvCombo,
+					                                   map_index:   other_index
+				                                   });
 				var v_r_obj          = {};
 				v_r_obj[self_index]  = self_View;
 				v_r_obj[other_index] = OtherMvCombo.getView({
-					reference_element: self_View.referenceElement,
-					strict:            strict
-				});
+					                                            reference_element: self_View.referenceElement,
+					                                            strict:            strict
+				                                            });
 				this.register_view_relationship(v_r_obj);
 				return this.getView(self_View, other_index, true);
 			}

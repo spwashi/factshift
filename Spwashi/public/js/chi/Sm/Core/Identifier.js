@@ -2,7 +2,7 @@
  * Created by Sam Washington on 12/17/15.
  */
 
-require(['require', 'Class', 'Sm-Core-util'], function (require) {
+require(['require', 'Class', 'Sm-Core-Meta', 'Sm-Core-util'], function (require, Class) {
 	var u = Sm.Core.util;
 	/**
 	 * @typedef {string} r_id
@@ -14,7 +14,8 @@ require(['require', 'Class', 'Sm-Core-util'], function (require) {
 	 * @class Sm.Core.Identifier
 	 * @property {string|r_id|Sm.Core.Identifier.r_id}  r_id
 	 */
-	var Identifier = Sm.Core.Identifier = Class.extend({
+	var Identifier = Sm.Core.Identifier = Class.extend(
+	{
 		/**
 		 * Return an object for serialization
 		 * @return {*}
@@ -41,19 +42,19 @@ require(['require', 'Class', 'Sm-Core-util'], function (require) {
 			 * Unique, randomly database generated string held by all entities. Begins with a 4 letter prefix.
 			 * @type {String}
 			 */
-			this.ent_id   = this.ent_id || id_obj.ent_id || false;
+			this.ent_id = this.ent_id || id_obj.ent_id || false;
 			/**
 			 * The ID of the record in the table
 			 * @type {int}
 			 */
-			this.id       = this.id || id_obj.id || false;
-			this.id       = this.id ? parseInt(this.id) : false;
-			this.r_id     = id_obj.r_id || this.r_id || false;
+			this.id = this.id || id_obj.id || false;
+			this.id   = this.id ? parseInt(this.id) : false;
+			this.r_id = id_obj.r_id || this.r_id || false;
 			/**
 			 * The type of resource that is being discussed
 			 * @type {String|*|null}
 			 */
-			this.type     = this.type || id_obj.type || Identifier.guess_type(this.ent_id) || null;
+			this.type = this.type || id_obj.type || Identifier.guess_type(this.ent_id) || null;
 			/**
 			 * A string that includes the type and ID of a resource
 			 * @type {String|*}
@@ -64,7 +65,7 @@ require(['require', 'Class', 'Sm-Core-util'], function (require) {
 			 * @type {r_id}
 			 * @prop
 			 */
-			this.r_id     = this.r_id || this.ent_id || this.generate_r_id();
+			this.r_id = this.r_id || this.ent_id || this.generate_r_id();
 			this.Resource = this.Resource || id_obj.Resource || null;
 			if (!this.ent_id) delete this.ent_id;
 			if (!this.id) {
@@ -72,8 +73,8 @@ require(['require', 'Class', 'Sm-Core-util'], function (require) {
 				delete this.id;
 			}
 			Identifier.register(this.r_id, this)
-				.register(this.typed_id, this)
-				.register(this.ent_id, this);
+			          .register(this.typed_id, this)
+			          .register(this.ent_id, this);
 			//if (!/Relationship|View/.test(this.type))Sm.CONFIG.DEBUG && console.log(this.type, this);
 			return this;
 		},
@@ -87,6 +88,7 @@ require(['require', 'Class', 'Sm-Core-util'], function (require) {
 		/**
 		 * If we ever find out more information about the resource, this updates the properties of the class accordingly
 		 * @param id_obj
+		 * @alias Sm.Core.Identifier.refresh
 		 */
 		refresh:       function (id_obj) {
 			if (typeof id_obj !== "object") return this;
@@ -120,20 +122,20 @@ require(['require', 'Class', 'Sm-Core-util'], function (require) {
 	 * This is an object linking Identifiers to typed_ids, ent_ids, or r_ids
 	 * @type {{}}
 	 */
-	Identifier.registry             = {};
+	Identifier.registry = {};
 	/**
 	 * Save the Identity under a certain key. Meant to save the Ent_id, r_id, and typed_id of the resource in a map with the Identity itself
 	 * Return the Identifier to chain
 	 * @param {string}      key
 	 * @param {Identifier}    value
 	 */
-	Identifier.register             = function (key, value) {
+	Identifier.register = function (key, value) {
 		if (!key || !value || !key.length) return Identifier;
 		Identifier.registry      = (Identifier.registry || {});
 		Identifier.registry[key] = value;
 		return Identifier;
 	};
-	Identifier.get_or_init          = function (id_obj) {
+	Identifier.get_or_init = function (id_obj) {
 		return Identifier.retrieve(id_obj) || (new Identifier(id_obj))
 	};
 	/**
@@ -141,7 +143,8 @@ require(['require', 'Class', 'Sm-Core-util'], function (require) {
 	 * @param {string|*}    item    The Item to check
 	 * @returns {boolean}
 	 */
-	Identifier.is_ent_id            = function (item) {
+	Identifier.is_ent_id = function (item) {
+		Sm.CONFIG.DEBUG && console.log(item);
 		//The length is 25 chars
 		//The 6 characters after the 4th character are integers between 0 and 9 (the date)
 		var ent_id_length = 25;
@@ -162,9 +165,9 @@ require(['require', 'Class', 'Sm-Core-util'], function (require) {
 			return {typed_id: id};
 		}
 
-		if (Identifier.is_ent_id(id)) {
+		if (Sm.Core.Meta.is_ent_id(id)) {
 			return {ent_id: id, type: type};
-		} else if ($.isNumeric(id)) {
+		} else if (Sm.Core.Meta.is_id(id)) {
 			obj.id   = parseInt(id);
 			obj.type = type;
 			if (typeof type === "string") {
@@ -179,7 +182,7 @@ require(['require', 'Class', 'Sm-Core-util'], function (require) {
 	 * @param {Sm.Core.Identifier|{}|Sm.Core.SmModel|Sm.Core.MvCombo|{ent_id: string, type: string}|string|object|{typed_id:string, type:string, id:int}}      id_obj          The first object to check for properties
 	 * @returns {Sm.Core.Identifier|boolean}
 	 */
-	Identifier.retrieve             = function (id_obj) {
+	Identifier.retrieve = function (id_obj) {
 		var r_id;
 		var bb         = false;
 		var IdRegistry = Identifier.registry;
@@ -188,10 +191,10 @@ require(['require', 'Class', 'Sm-Core-util'], function (require) {
 			if (id_obj in IdRegistry) return IdRegistry[id_obj];
 			r_id   = id_obj;
 			id_obj = {};
-			if (Identifier.is_ent_id(r_id)) id_obj.ent_id = r_id;
+			if (Sm.Core.Meta.is_ent_id(r_id)) id_obj.ent_id = r_id;
 			else id_obj.r_id = r_id;
 		}
-		id_obj     = Identifier.normalize_identifier(id_obj, id_obj.type || false) || {};
+		id_obj = Identifier.normalize_identifier(id_obj, id_obj.type || false) || {};
 		bb && Sm.CONFIG.DEBUG && console.log(id_obj);
 		var ent_id = id_obj.ent_id || false;
 		r_id       = r_id || id_obj.r_id;
@@ -214,7 +217,7 @@ require(['require', 'Class', 'Sm-Core-util'], function (require) {
 	 * @param {Sm.Core.Identifier|{}|Sm.Core.SmModel|Sm.Core.MvCombo|{ent_id: string, type: string}|string|object|{typed_id:string, type:string, id:int}} id_obj
 	 * @return {boolean|Sm.Core.MvCombo|Sm.Core.SmView|Sm.Core.Relationship|*}
 	 */
-	Identifier.identify             = function (id_obj) {
+	Identifier.identify = function (id_obj) {
 		var identity = Identifier.retrieve(id_obj);
 		if (identity) {return identity.getResource()}
 		return false;
@@ -225,7 +228,7 @@ require(['require', 'Class', 'Sm-Core-util'], function (require) {
 	 * @param ent_id
 	 * @return {boolean|string}
 	 */
-	Identifier.guess_type           = function (ent_id) {
+	Identifier.guess_type = function (ent_id) {
 		if (!ent_id || !ent_id.length) return false;
 		var begin = ent_id.substr(0, 4);
 		switch (begin) {

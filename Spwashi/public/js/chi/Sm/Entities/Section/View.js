@@ -8,7 +8,8 @@ require(['require'], function (require) {
 		 * @class
 		 * @alias Sm.Entities.Section.View
 		 */
-		Sm.Entities.Section.View = Sm.Core.SmView.extend({
+		Sm.Entities.Section.View = Sm.Core.SmView.extend(
+		{
 			relationship_index_obj: {
 				collections: false,
 				children:    'child_holder',
@@ -60,8 +61,8 @@ require(['require'], function (require) {
 					var content_element;
 					if (matching[0]) return this.elements.child_holder = matching[0];
 					else if (content_element = this.get_rendered('content_element')) {
-						var child_holder           = document.createElement('div');
-						child_holder.className     = 'children-container';
+						var child_holder       = document.createElement('div');
+						child_holder.className = 'children-container';
 						Sm.Core.util.insertAfter(child_holder, content_element);
 						this.elements.child_holder = child_holder;
 						return this.elements.child_holder;
@@ -90,8 +91,8 @@ require(['require'], function (require) {
 					var content_element;
 					if (matching[0]) return this.elements.composition_holder = matching[0];
 					else if (content_element = this.get_rendered('content_element')) {
-						var composition_holder           = document.createElement('div');
-						composition_holder.className     = 'composition-container';
+						var composition_holder       = document.createElement('div');
+						composition_holder.className = 'composition-container';
 						Sm.Core.util.insertAfter(composition_holder, content_element);
 						this.elements.composition_holder = composition_holder;
 						return this.elements.composition_holder;
@@ -162,9 +163,9 @@ require(['require'], function (require) {
 				var relElem          = Relationship_Obj.el;
 				var other_MV_type    = Relationship_Obj.other_MV_type;
 				Relationship_        =
-					!Relationship_ || Relationship_ === null || Relationship_ === undefined
-						? false
-						: Relationship_;
+				!Relationship_ || Relationship_ === null || Relationship_ === undefined
+				? false
+				: Relationship_;
 
 
 				if (this.queryStatus('modal')) return true;
@@ -198,18 +199,18 @@ require(['require'], function (require) {
 				/** @type {jQuery} The $ that represents the button control element */
 				var $buttonControl = $(this.get_rendered('button_control', true));
 				/** @type {Sm.Extras.ViewAid} A ViewAid that helps us pivot Sections */
-				this.PivotViewAid  = null;
-				var pivot_object   = {
+				this.PivotViewAid = null;
+				var pivot_object = {
 					$pivot_display: false,
 					on:             false,
 					original:       {},
 					what_we_on:     'home'
 				};
-				var self           = this;
+				var self         = this;
 				$buttonControl.on({
-					mouseenter: self._get_pd_creation_fn(pivot_object, $buttonControl, "0"),
-					mouseleave: self._get_pd_close_fn(pivot_object)
-				});
+					                  mouseenter: self._get_pd_creation_fn(pivot_object, $buttonControl, "0"),
+					                  mouseleave: self._get_pd_close_fn(pivot_object)
+				                  });
 				return Sm.Core.SmView.prototype.init_button_control_events.apply(this, arguments);
 			},
 			_get_pd_creation_fn:        function (pivot_object, $button_control, context_id) {
@@ -257,32 +258,7 @@ require(['require'], function (require) {
 							pivot_object.original[subtype_category] = count;
 						}
 					}
-					/** @type {string} This is the template that will be used to create the View aid */
-					var generated_view_aid_template = selfSm.Garage.generate({
-						type:        'pivot_display.',
-						synchronous: true,
-						data:        self_relationship_subtype_object
-					});
-					//Create an actual element for the pivot display
-					/** @type {jQuery} An element for the pivot display */
-					pivot_object.$pivot_display = !pivot_object.$pivot_display ? $($(generated_view_aid_template)[0]) : pivot_object.$pivot_display;
-					/** @type {int} The number of elements across to display the View Aid. This is not perfect, but hey */
-					var number                  = self_relationship_subtype_object.max || 1;
-					/** @type {Array<HTMLElement>} An array of relationship_subtype elements that we've found */
-					var rel_sub                 = pivot_object.$pivot_display.find('.relationship-subtype');
-					var $rel_sub                = $(rel_sub[0]);
-					//If the first relationship subtype element exists, multiply its width with the number of elements across that there'll be
-					//Fixes an issue with improper width being shown
-					if ($rel_sub[0]) {
-						var one_width   = 75;
-						var rel_sub_cat = pivot_object.$pivot_display.find('.relationship-subtype-category');
-						//Using the relationship-subtype-category, make the width of the first one n times the width of one of its n children
-						if (rel_sub_cat[0]) {
-							var $rel_sub_cat = $(rel_sub_cat[0]);
-							var width        = one_width * number;
-							$rel_sub_cat.width(width);
-						}
-					}
+
 					//If the View_Aid doesn't already exist, create one. If it does, just use that.
 					//todo Cache the View aid and have it updatable
 					//Sm.CONFIG.DEBUG && console.log("diff = ", is_different);
@@ -290,6 +266,32 @@ require(['require'], function (require) {
 						delete self.PivotViewAid;
 					}
 					if (!self.PivotViewAid) {
+						/** @type {string} This is the template that will be used to create the View aid */
+						var generated_view_aid_template = selfSm.Garage.generate({
+							                                                         type:        'pivot_display.',
+							                                                         synchronous: true,
+							                                                         data:        self_relationship_subtype_object
+						                                                         });
+						//Create an actual element for the pivot display
+						/** @type {jQuery} An element for the pivot display */
+						pivot_object.$pivot_display = !pivot_object.$pivot_display ? $($(generated_view_aid_template)[0]) : pivot_object.$pivot_display;
+						/** @type {int} The number of elements across to display the View Aid. This is not perfect, but hey */
+						var number   = self_relationship_subtype_object.max || 1;
+						/** @type {Array<HTMLElement>} An array of relationship_subtype elements that we've found */
+						var rel_sub  = pivot_object.$pivot_display.find('.relationship-subtype');
+						var $rel_sub = $(rel_sub[0]);
+						//If the first relationship subtype element exists, multiply its width with the number of elements across that there'll be
+						//Fixes an issue with improper width being shown
+						if ($rel_sub[0]) {
+							var one_width   = 75;
+							var rel_sub_cat = pivot_object.$pivot_display.find('.relationship-subtype-category');
+							//Using the relationship-subtype-category, make the width of the first one n times the width of one of its n children
+							if (rel_sub_cat[0]) {
+								var $rel_sub_cat = $(rel_sub_cat[0]);
+								var width        = one_width * number;
+								$rel_sub_cat.width(width);
+							}
+						}
 						self.PivotViewAid = new Sm.Extras.ViewAid({
 							element: pivot_object.$pivot_display[0],
 							events:  {
@@ -297,9 +299,9 @@ require(['require'], function (require) {
 									var View = self;
 									if (reference_used && data !== 'home') {
 										View = ReferencedMvCombo.getView({
-											reference_element: self.referenceElement,
-											strict:            true
-										});
+											                                 reference_element: self.referenceElement,
+											                                 strict:            true
+										                                 });
 										Sm.CONFIG.DEBUG && console.log('-------------------');
 										if (View) View.pivot(data, false, context_id);
 										else Sm.CONFIG.DEBUG && console.log(ReferencedMvCombo);
@@ -359,17 +361,17 @@ require(['require'], function (require) {
 				var MvCombo = this.MvCombo;
 				return MvCombo.scale(scale_towards_micros, context_id || 0).then(function (result) {
 					Sm.Core.SmView.replace_with_elements({
-						items:            result.items || [],
-						referenceElement: self.referenceElement,
-						replacement_MVs:  result.replacement_MVs || [],
-						replaced_MVs:     result.replaced_MVs || []
-					}).catch(function (res) {
+						                                     items:            result.items || [],
+						                                     referenceElement: self.referenceElement,
+						                                     replacement_MVs:  result.replacement_MVs || [],
+						                                     replaced_MVs:     result.replaced_MVs || []
+					                                     }).catch(function (res) {
 						Sm.CONFIG.DEBUG && console.log(res);
 						//If we tried to scale one way, remove the direction as a possibility for scaling
 						var className = scale_towards_micros ? 'can-pan-left' : 'can-pan-right';
 						self.get_rendered('focus_element') && $(self.get_rendered('focus_element'))
-							.removeClass(className)
-							.removeClass('maybe-' + className);
+						.removeClass(className)
+						.removeClass('maybe-' + className);
 					});
 				});
 			},
@@ -386,17 +388,17 @@ require(['require'], function (require) {
 				var self   = this;
 				return this.MvCombo.pivot(where, context_id || 0).then(function (result) {
 					Sm.Core.SmView.replace_with_elements({
-						referenceElement:          self.referenceElement,
-						items:                     result.items || {},
-						replacement_MVs:           result.replacement_MVs || [],
-						replaced_MVs:              result.replaced_MVs || [],
-						replacement_relationships: result.replacement_relationships || [],
-						replaced_relationships:    result.replaced_relationships || [],
-						name:                      'pivots.' + where,
-						forEachView:               function () {
-							this.what_we_on = where;
-						}
-					}).catch(function (res) {
+						                                     referenceElement:          self.referenceElement,
+						                                     items:                     result.items || {},
+						                                     replacement_MVs:           result.replacement_MVs || [],
+						                                     replaced_MVs:              result.replaced_MVs || [],
+						                                     replacement_relationships: result.replacement_relationships || [],
+						                                     replaced_relationships:    result.replaced_relationships || [],
+						                                     name:                      'pivots.' + where,
+						                                     forEachView:               function () {
+							                                     this.what_we_on = where;
+						                                     }
+					                                     }).catch(function (res) {
 						Sm.CONFIG.DEBUG && console.log(res);
 					});
 				})
@@ -423,12 +425,12 @@ require(['require'], function (require) {
 					var changedTouches = e.changedTouches || e.originalEvent.changedTouches;
 					var touch_obj      = changedTouches[0];
 					//horizontal distance traveled
-					var dist = touch_obj.pageX - this._touch_data.start.x;
+					var dist           = touch_obj.pageX - this._touch_data.start.x;
 					//check that time elapsed is in threshold, swipe distance is within threshold
-					var time_elapsed = new Date().getTime() - this._touch_data.start.time; // get time elapsed
+					var time_elapsed   = new Date().getTime() - this._touch_data.start.time; // get time elapsed
 					if (time_elapsed <= this._touch_data.allowed_time
-						&& Math.abs(touch_obj.pageY - this._touch_data.start.y) <= 100
-						&& Math.abs(dist) >= this._touch_data.threshold) {
+					&& Math.abs(touch_obj.pageY - this._touch_data.start.y) <= 100
+					&& Math.abs(dist) >= this._touch_data.threshold) {
 						var left = true;
 						if (dist < 0) left = false;
 						this.scale(!!left);
@@ -467,8 +469,8 @@ require(['require'], function (require) {
 				var wrap_thing            = document.createElement('div');
 				wrap_thing.style.position = 'absolute';
 				wrap_thing.appendChild(clone);
-				wrap_thing.className      = 'sm-mirror';
-				wrap_thing.style.cursor   = 'grabbing';
+				wrap_thing.className    = 'sm-mirror';
+				wrap_thing.style.cursor = 'grabbing';
 				return wrap_thing;
 			},
 			blur:              function () {
@@ -479,12 +481,12 @@ require(['require'], function (require) {
 			},
 			focus:             function () {
 				//if (this.queryStatus('focused')) return this;
-				var self           = this;
+				var self          = this;
 				/**
 				 * This is the <=   => handler for scaling the section
 				 * @param e
 				 */
-				var scale_handler  = function (e) {
+				var scale_handler = function (e) {
 					if (!self.queryStatus('focused')) {
 						Sm.CONFIG.DEBUG && console.log('View is not focused, will not scale');
 						return false;

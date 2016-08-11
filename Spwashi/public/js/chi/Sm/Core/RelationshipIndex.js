@@ -4,7 +4,7 @@
 
 
 define(['Class', 'Sm'], function (Class) {
-	var Sm                    = window.Sm;
+	var Sm = window.Sm;
 	/**
 	 * @alias Sm.Core.RelationshipIndex
 	 * @exports RelationshipIndex
@@ -16,7 +16,8 @@ define(['Class', 'Sm'], function (Class) {
 	 * @property add_item           {@link Sm.Core.RelationshipIndex#add_item}
 	 * @requires Class
 	 */
-	Sm.Core.RelationshipIndex = Class.extend({
+	Sm.Core.RelationshipIndex = Class.extend(
+	{
 		/**
 		 * Initialize the Relationship Index
 		 * @param settings
@@ -46,25 +47,25 @@ define(['Class', 'Sm'], function (Class) {
 			 * @type {{string:{relationship:Sm.Core.Relationship, index:int}}}
 			 */
 			this.deleted_items = {};
-			this.items         = {};
-			this._meta._key    = settings._key || (this.is_reciprocal ? l_r[0] : l_r[1]) || false;
-			this.operations    = {};
-			this.contexts      = {};
+			this.items      = {};
+			this._meta._key = settings._key || (this.is_reciprocal ? l_r[0] : l_r[1]) || false;
+			this.operations = {};
+			this.contexts   = {};
 			this.add_new_context(0);
-			this.MvCombo       = settings.MvCombo;
-			this.status        = {
+			this.MvCombo  = settings.MvCombo;
+			this.status   = {
 				last_fetched: true
 			};
-			var self           = this;
-			this.Identity      = Sm.Core.Identifier.get_or_init({
-				id:       false,
-				ent_id:   false,
-				type:     'RelationshipIndex',
-				Resource: self
-			});
+			var self      = this;
+			this.Identity = Sm.Core.Identifier.get_or_init({
+				                                               id:       false,
+				                                               ent_id:   false,
+				                                               type:     'RelationshipIndex',
+				                                               Resource: self
+			                                               });
 			/** @type {object<Sm.Core.Relationship.Identity.r_id, Sm.Core.MvCombo.Identity.r_id> } */
-			this.r_id_map      = {};
-			this._to_delete    = {};
+			this.r_id_map = {};
+			this._to_delete = {};
 		},
 		/**
 		 * Get info about the relationship_type_obj object that this is referencing. This gets its info from one of the indices in the Meta relationship_type_obj
@@ -101,19 +102,19 @@ define(['Class', 'Sm'], function (Class) {
 			Sm.Entities[model_type]
 			&& Sm.Entities[model_type].Meta
 			&& (lower_mv = Sm.Entities[model_type].Meta.lower_plural[model_type]);
-			var url           = Sm.urls.api.generate({
-				MvCombo:           this.MvCombo,
-				fetch:             lower_mv || model_type,
-				find_usages:       is_reciprocal,
-				relationship_type: info_index.index
-			});
+			var url = Sm.urls.api.generate({
+				                               MvCombo:           this.MvCombo,
+				                               fetch:             lower_mv || model_type,
+				                               find_usages:       is_reciprocal,
+				                               relationship_type: info_index.index
+			                               });
 			if (!url || !url.length)return Promise.reject({error: "No URL"});
 			this.status.last_fetched = new Date;
 			return Promise.resolve($.ajax({
-				url:         url,
-				contentType: 'application/json; charset=UTF-8',
-				method:      "GET"
-			})).then(function (response) {
+				                              url:         url,
+				                              contentType: 'application/json; charset=UTF-8',
+				                              method:      "GET"
+			                              })).then(function (response) {
 				if (typeof  response == 'object' && response.error && response.error.length) {
 					throw response.error;
 				}
@@ -122,15 +123,15 @@ define(['Class', 'Sm'], function (Class) {
 				}
 				var others = [];
 				for (var i = 0; i < response.length; i++) {
-					var model        = response[i];
+					var model = response[i];
 					Sm.CONFIG.DEBUG && console.log(model);
 					var m_model_type = model._model_type;
 					if (!m_model_type) continue;
 					var other_Sm = Sm.Entities[m_model_type];
 					if (!other_Sm) continue;
 					var OtherMvCombo = other_Sm.Wrapper.init_MvCombo({
-						model: model
-					});
+						                                                 model: model
+					                                                 });
 					others.push(OtherMvCombo);
 				}
 				return others;
@@ -166,7 +167,7 @@ define(['Class', 'Sm'], function (Class) {
 					Sm.CONFIG.DEBUG && console.log(item);
 					continue;
 				}
-				jsonObj.maps[index_]       = item.map;
+				jsonObj.maps[index_]       = item.Map;
 				jsonObj.identities[index_] = map_link_key;
 			}
 
@@ -188,11 +189,11 @@ define(['Class', 'Sm'], function (Class) {
 			if (!url || !url.length)return Promise.reject({error: "No URL"});
 			var self = this;
 			return Promise.resolve($.ajax({
-				url:         url,
-				data:        JSON.stringify(context),
-				contentType: 'application/json; charset=UTF-8',
-				method:      "PATCH"
-			})).then(function (result) {
+				                              url:         url,
+				                              data:        JSON.stringify(context),
+				                              contentType: 'application/json; charset=UTF-8',
+				                              method:      "PATCH"
+			                              })).then(function (result) {
 				Sm.CONFIG.DEBUG && console.log(result);
 				var deleted_items = self.deleted_items;
 				var r_id;
@@ -206,7 +207,7 @@ define(['Class', 'Sm'], function (Class) {
 						var api_response      = data[r_id];
 						api_response.data.map = api_response.data.map || {};
 						if (api_response.success === true || api_response.success === 0) {
-							var item                 = context.items[r_id];
+							var item = context.items[r_id];
 							item.setMap(api_response.data.map);
 							context.operations[r_id] = [];
 						} else if (r_id in deleted_items) {
@@ -233,19 +234,19 @@ define(['Class', 'Sm'], function (Class) {
 			var key   = this._meta._key;
 			var self  = this;
 			return this.contexts[r_id] || (this.contexts[r_id] = {
-					_meta:         {
-						/**
-						 * A list of the relationships that exist in the main context
-						 */
-						_list:  [],
-						_index: index || null,
-						_key:   key || false
-					},
-					deleted_items: {},
-					items:         {},
-					operations:    {},
-					toJSON:        self.toJSON.bind(self, r_id)
-				});
+				_meta:         {
+					/**
+					 * A list of the relationships that exist in the main context
+					 */
+					_list:  [],
+					_index: index || null,
+					_key:   key || false
+				},
+				deleted_items: {},
+				items:         {},
+				operations:    {},
+				toJSON:        self.toJSON.bind(self, r_id)
+			});
 		},
 		/**
 		 * Return the index of a item relative to other based on an identifier
@@ -281,7 +282,7 @@ define(['Class', 'Sm'], function (Class) {
 		 * @param silent
 		 */
 		add_item:                        function (Relationship_, item_id, context_id, update_indices, silent) {
-			var map = Relationship_.map || {};
+			var map = (Relationship_.Map || {}).Model;
 			if (!map) return false;
 			if (Relationship_.relationshipIndexRIDs.indexOf(this.Identity.r_id) < 0) Relationship_.relationshipIndexRIDs.push(this.Identity.r_id);
 			var position                               = map.position || 1;
@@ -289,7 +290,7 @@ define(['Class', 'Sm'], function (Class) {
 			update_indices                             = !!update_indices;
 			context_id                                 = context_id || 0;
 			var context                                = this.contexts[context_id] || this.add_new_context(context_id);
-			var skip_context                           = false, skip_original = false;
+			var skip_context                           = false, skip_original    = false;
 			this.r_id_map[Relationship_.Identity.r_id] = item_id;
 			//The position has to be at least 0
 			(position < 0 && (position = 0));
@@ -327,7 +328,7 @@ define(['Class', 'Sm'], function (Class) {
 			if (!silent) {
 				context.operations[item_id] = context.operations[item_id] || [];
 				context.operations[item_id].push('add');
-				this.operations[item_id]    = this.operations[item_id] || [];
+				this.operations[item_id] = this.operations[item_id] || [];
 				this.operations[item_id].push('add');
 			}
 			//We are able to decide to update the array indices
@@ -382,16 +383,17 @@ define(['Class', 'Sm'], function (Class) {
 			//iterate through the items and add their positions to a list
 			for (var item_r_id in items) {
 				if (!items.hasOwnProperty(item_r_id)) continue;
-				var item = items[item_r_id];
+				/** @type {Sm.Core.Relationship}  */
+				var relationship = items[item_r_id];
 				//get the position from the map/position
-				var position = item.position || item.map.position || 1;
+				var position     = relationship.position || relationship.Map.Model.get('position') || 1;
 				if (!position) continue;
 				//Add that position to the list
 				updated_list.push({
-					item:     item,
-					r_id:     item_r_id,
-					position: position
-				});
+					                  item:     relationship,
+					                  r_id:     item_r_id,
+					                  position: position
+				                  });
 			}
 			//Sort the list
 			updated_list.sort(function (a, b) {
@@ -402,9 +404,9 @@ define(['Class', 'Sm'], function (Class) {
 			var u_length = updated_list.length;
 			u_length && (context._meta._list = []);
 			for (var i = 0; i < u_length; i++) {
-				var obj1                      = updated_list[i];
+				var obj1 = updated_list[i];
 				context._meta._list.push(obj1.r_id);
-				items[obj1.r_id].map.position = i + 1;
+				items[obj1.r_id].Map.Model.set({position: i + 1});
 			}
 		},
 		/**
@@ -441,7 +443,7 @@ define(['Class', 'Sm'], function (Class) {
 			var items   = context.items;
 			var list    = context._meta._list;
 			if (!item in list) return false;
-			var index           = this.locate(item, context_id);
+			var index = this.locate(item, context_id);
 			list.splice(index, 1);
 			var can_remove_meta = false;
 			for (other_context_id in all_contexts) {

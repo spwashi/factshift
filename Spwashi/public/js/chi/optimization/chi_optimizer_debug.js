@@ -28,12 +28,12 @@
 		"Sm-Entities-Abstraction-Modal-ModalEdit",
 		"Sm-Entities-Abstraction-Modal-AddRelationship",
 		"Sm-Entities-Abstraction-templates-_template",
-
 		"Sm-Entities-Section-Abstraction-Modal-ModalEdit",
+
 		"Sm-Entities-Section-Abstraction-ModalDestroy",
 		'Sm-Entities-Abstraction-mixins-SidebarModule',
-
 		"Sm-Entities-Page-Garage",
+
 		"Sm-Entities-Page-Meta",
 		"Sm-Entities-Page-View",
 		"Sm-Entities-Page-templates-_template",
@@ -70,6 +70,7 @@
 		"Sm-Entities-Section-templates-image",
 		"Sm-Entities-Section-Abstraction-Relationship-pivots_RelationshipIndex",
 		"Sm-Entities-Section-Abstraction-Modal-ModalEdit",
+		"Sm-Entities-Section-subtypes-definition-main",
 //,
 		"Sm-Entities-Concept-Meta",
 		"Sm-Entities-Concept-View",
@@ -147,6 +148,7 @@
 		"Sm-Entities-Section-templates-definition":                              "Sm/Entities/Section/templates/definition",
 		"Sm-Entities-Section-templates-image":                                   "Sm/Entities/Section/templates/image",
 		"Sm-Entities-Section-Abstraction-Relationship-pivots_RelationshipIndex": "Sm/Entities/Section/Abstraction/Relationship/pivots_RelationshipIndex",
+		"Sm-Entities-Section-subtypes-definition-main":                          "Sm/Entities/Section/subtypes/definition/main",
 		"Sm-Entities-Section-Abstraction-Modal-ModalEdit":                       "Sm/Entities/Section/Abstraction/Modal/ModalEdit",
 //
 		"Sm-Entities-Concept-Meta":                                              "Sm/Entities/Concept/Meta",

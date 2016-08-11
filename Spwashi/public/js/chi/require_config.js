@@ -2,7 +2,8 @@
 
 var BASE_URL = "/resource/js/";
 var CHI_URL  = BASE_URL + "chi/";
-require.config({
+require.config(
+{
 	paths: {
 		jquery:      BASE_URL + "vendor/jquery.min",
 		Promise:     BASE_URL + "std/Promise",
@@ -68,6 +69,7 @@ require.config({
 		"Sm-Entities-Dimension-templates-standard":                              CHI_URL + "Sm/Entities/Dimension/templates/standard",
 //
 		"Sm-Entities-Section-Garage":                                            CHI_URL + "Sm/Entities/Section/Garage",
+		"Sm-Entities-Section-subtypes-definition-main":                          CHI_URL + "Sm/Entities/Section/subtypes/definition/main",
 		"Sm-Entities-Section-Meta":                                              CHI_URL + "Sm/Entities/Section/Meta",
 		"Sm-Entities-Section-Model":                                             CHI_URL + "Sm/Entities/Section/Model",
 		"Sm-Entities-Section-MvCombo":                                           CHI_URL + "Sm/Entities/Section/MvCombo",

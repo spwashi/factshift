@@ -2,7 +2,7 @@
  * Created by Sam Washington on 12/18/15.
  */
 
-require(['require', 'Emitter', 'Sm', 'Sm-Core-Identifier'], function (require, Emitter) {
+require(['require', 'Emitter', 'Sm', 'Sm-Core-Identifier'], function (require, Emitter, Sm) {
 	require('Sm');
 	require('Sm-Core-Identifier');
 	/**
@@ -18,7 +18,8 @@ require(['require', 'Emitter', 'Sm', 'Sm-Core-Identifier'], function (require, E
 	 * @property {function} deselect_MV         {@link Sm.Core.MvWrapper#deselect_MV}
 	 * @property {function} destroy_MV          {@link Sm.Core.MvWrapper#destroy_MV}
 	 */
-	Sm.Core.MvWrapper                         = Emitter.extend({
+	Sm.Core.MvWrapper = Emitter.extend(
+	{
 		type:       null,
 		parentType: null,
 		init:       function (settings) {
@@ -71,23 +72,23 @@ require(['require', 'Emitter', 'Sm', 'Sm-Core-Identifier'], function (require, E
 			var el, i, data_set, $el;
 			/** Begin the iteration through the element array */
 			for (i = 0; i < element_arr.length; i++) {
-				el            = element_arr[i];
-				$el           = $(el);
+				el  = element_arr[i];
+				$el = $(el);
 				/** The dataset attached to the element */
-				data_set      = el.dataset || {
-						/**
-						 * ID for the entity in its table on the server (if applicable)
-						 */
-						id:     null,
-						/**
-						 * Unique ID for the entity on the server
-						 */
-						ent_id: null,
-						/**
-						 * A raw model that is pulled directly from the server. Pure JSON object or JSON string.
-						 */
-						model:  null
-					};
+				data_set = el.dataset || {
+					/**
+					 * ID for the entity in its table on the server (if applicable)
+					 */
+					id:     null,
+					/**
+					 * Unique ID for the entity on the server
+					 */
+					ent_id: null,
+					/**
+					 * A raw model that is pulled directly from the server. Pure JSON object or JSON string.
+					 */
+					model:  null
+				};
 				var raw_model = data_set.model;
 				if (!raw_model) continue;
 				/**
@@ -99,9 +100,9 @@ require(['require', 'Emitter', 'Sm', 'Sm-Core-Identifier'], function (require, E
 				delete data_set.model;
 				//Initialize the MvCombo from the element and model properties
 				var _Mv = this.init_MvCombo({
-					model: model_properties,
-					view:  el
-				});
+					                            model: model_properties,
+					                            view:  el
+				                            });
 
 				//todo there should be a way to register view relationships? At the moment, this is unimplemented
 				//If the element has the active class, add it as active. Otherwise, just add it as loaded.
@@ -134,36 +135,40 @@ require(['require', 'Emitter', 'Sm', 'Sm-Core-Identifier'], function (require, E
 			settings.CONFIG  = this.CONFIG;
 			settings.Wrapper = this;
 			settings.type    = this.type;
-			var Id           = settings.Identifier || Sm.Core.Identifier.retrieve({
-					id:      _model_Identifier.id || false,
-					ent_id:  _model_Identifier.ent_id || false,
-					MvCombo: _model_Identifier.MvCombo || false,
-					type:    this.type
-				});
+			var Id           = settings.Identifier || Sm.Core.Identifier.retrieve(
+			{
+				id:      _model_Identifier.id || false,
+				ent_id:  _model_Identifier.ent_id || false,
+				MvCombo: _model_Identifier.MvCombo || false,
+				type:    this.type
+			});
 			var m            = settings.model || settings.Model || settings;
 
 			if (Id) {
 				if (Id.r_id in this.MvMaps.loaded_MVs) {
 					var OldMv = Id.getResource();
 					Id.refresh({
-						id:     m.id || false,
-						ent_id: m.ent_id || false
-					});
+						           id:     m.id || false,
+						           ent_id: m.ent_id || false
+					           });
 					OldMv.refresh_model(m);
 					OldMv.setStatus("completed", true);
-					var view  = settings.View || settings.view;
+					var view = settings.View || settings.view;
 					OldMv.addView(view);
 					return OldMv;
 				}
 			}
-
-			var sm_type = Sm.Entities[this.type];
-			if (!sm_type) return false;
+			/**
+			 *
+			 * @type {Sm.Entities.Abstraction.SmEntity}
+			 */
+			var SelfEntity = Sm.Entities[this.type];
+			if (!SelfEntity) return false;
 			settings.type   = this.type;
 			/**
 			 * @type {Sm.Core.MvCombo|Function}
 			 */
-			var MvComboType = sm_type.MvCombo;
+			var MvComboType = SelfEntity.MvCombo;
 
 			if (!MvComboType) return false;
 
@@ -172,6 +177,12 @@ require(['require', 'Emitter', 'Sm', 'Sm-Core-Identifier'], function (require, E
 			 */
 			var NewMvCombo  = new MvComboType(settings);
 			NewMvCombo.type = this.type;
+			var Model       = NewMvCombo.Model;
+			//todo, change this to something a bit less specific
+			if (Model && Model.attributes && Model.attributes.section_type) {
+				var type = Sm.Entities.Section.Meta.get_type(Model.attributes.section_type, 'index');
+				this.mark_as_type(NewMvCombo, type);
+			}
 			if (!NewMvCombo.Identity) return false;
 			if (!NewMvCombo.queryStatus('init')) return false;
 			var events = ['blur', 'destroy', 'focus', 'select', 'deselect', 'edit', 'activate', 'deactivate'];
@@ -183,6 +194,38 @@ require(['require', 'Emitter', 'Sm', 'Sm-Core-Identifier'], function (require, E
 			if (NewMvCombo.type == this.type) this.add_MV_as('loaded', NewMvCombo);
 
 			return NewMvCombo;
+		},
+		/**
+		 *
+		 * @param {Sm.Core.MvCombo} MvCombo_
+		 * @param {string}          type
+		 */
+		mark_as_type:  function (MvCombo_, type) {
+			if (!!type && !!Sm.Entities[this.type].subtypes[type]) {
+				var subtype = Sm.Entities[this.type].subtypes[type];
+				for (var attr_name in subtype) {
+					if (!subtype.hasOwnProperty(attr_name)) continue;
+					//skip the View index because Views are kept in an array in the MvCombo
+					if (attr_name === "View") continue;
+					var attr_value   = subtype[attr_name];
+					var mv_attr_type = typeof MvCombo_[attr_name];
+					var av_type      = typeof attr_value;
+					if (MvCombo_[attr_name] && (mv_attr_type === "function" || mv_attr_type === "object") && (av_type === "object" || av_type === "function")) {
+						for (var a in attr_value) {
+							if (!attr_value.hasOwnProperty(a)) continue;
+							MvCombo_[attr_name][a] = attr_value[a];
+						}
+					} else {
+						MvCombo_[attr_name] = attr_value;
+					}
+				}
+				//todo is this tight coupling? Quite possibly
+				/** @this Sm.Core.SmView*/
+				var m_as_subtype = function () {
+					MvCombo_.mark_view_as_subtype(this, type);
+				};
+				MvCombo_.forEachView(m_as_subtype);
+			}
 		},
 		/**
 		 * Check to see if an MV is loaded, active, focused, selected, etc.
@@ -340,7 +383,7 @@ require(['require', 'Emitter', 'Sm', 'Sm-Core-Identifier'], function (require, E
 			settings = settings || {};
 			var _Mv  = settings.MvCombo;
 			_Mv && this.add_MV_as('active', {MvCombo: _Mv});
-			var P    = new Promise(function (resolve) {resolve()});
+			var P = new Promise(function (resolve) {resolve()});
 			return P;
 		},
 		/**
@@ -354,7 +397,7 @@ require(['require', 'Emitter', 'Sm', 'Sm-Core-Identifier'], function (require, E
 			settings = settings || {};
 			var _Mv  = settings.MvCombo;
 			_Mv && this.add_MV_as('selected', {MvCombo: _Mv});
-			var P    = new Promise(function (resolve) {resolve()});
+			var P = new Promise(function (resolve) {resolve()});
 			return P;
 		},
 		/**
@@ -368,7 +411,7 @@ require(['require', 'Emitter', 'Sm', 'Sm-Core-Identifier'], function (require, E
 			settings = settings || {};
 			var _Mv  = settings.MvCombo;
 			_Mv && this.remove_MV_as('selected', {MvCombo: _Mv});
-			var P    = new Promise(function (resolve) {resolve()});
+			var P = new Promise(function (resolve) {resolve()});
 			return P;
 		},
 		/**
@@ -405,7 +448,7 @@ require(['require', 'Emitter', 'Sm', 'Sm-Core-Identifier'], function (require, E
 			settings = settings || {};
 			var _Mv  = settings.MvCombo;
 			_Mv && this.remove_MV_as('active', {MvCombo: _Mv});
-			var P    = new Promise(function (resolve) {resolve()});
+			var P = new Promise(function (resolve) {resolve()});
 			return P;
 		},
 		get_active:    function (all) {
@@ -441,21 +484,20 @@ require(['require', 'Emitter', 'Sm', 'Sm-Core-Identifier'], function (require, E
 			var Model_  = new ModelType({});
 			Model_.type = this.type;
 			Model_.set(settings.model_properties || {});
-			var NewMv   = _Wrapper.init_MvCombo({
-				Wrapper: _Wrapper,
-				model:   Model_,
-				CONFIG:  _Wrapper.CONFIG
-			});
+			var NewMv = _Wrapper.init_MvCombo({
+				                                  Wrapper: _Wrapper,
+				                                  model:   Model_,
+				                                  CONFIG:  _Wrapper.CONFIG
+			                                  });
 			/** @type {Promise}  */
 			var P;
 			if (!!settings.prompt) P = this.prompt('edit', NewMv, {display_type: 'inline'});
 			else P = Promise.resolve(Model_.save());
 			return P.then(function (response) {
-				Sm.CONFIG.DEBUG && console.log(response);
 				response         = response || {};
 				response.success = response.success || false;
 				if (!response.success) throw  response.message || "Unknown error occurred, mvw";
-				response.data    = response.data || {};
+				response.data = response.data || {};
 				if (!NewMv) return Promise.reject("No new Mv");
 				NewMv.refresh_model(response.data.model);
 				NewMv.Identity.refresh(response.data.model);
@@ -500,8 +542,8 @@ require(['require', 'Emitter', 'Sm', 'Sm-Core-Identifier'], function (require, E
 				return Sm.Entities[self.type].Abstraction &&
 				Sm.Entities[self.type].Abstraction.Modal &&
 				Sm.Entities[self.type].Abstraction.Modal[modal_name]
-					? Sm.Entities[self.type].Abstraction.Modal[modal_name]
-					: (Sm.Entities.Abstraction.Modal[modal_name] || function () {
+				? Sm.Entities[self.type].Abstraction.Modal[modal_name]
+				: (Sm.Entities.Abstraction.Modal[modal_name] || function () {
 					Sm.CONFIG.DEBUG && console.log("Default constructor made for " + modal_name);
 				});
 			};
@@ -566,7 +608,7 @@ require(['require', 'Emitter', 'Sm', 'Sm-Core-Identifier'], function (require, E
 						var OtherMvCombo = _args.OtherMvCombo;
 						var ar_settings  = _args.add_relationship_settings;
 						//Whether we're adding the relationship the other way
-						var is_opposite = !!ar_settings.opposite;
+						var is_opposite  = !!ar_settings.opposite;
 						//If this relationship is reciprocal, add it to the Other MvCombo
 						if (ar_settings && is_opposite) {
 							return OtherMvCombo.add_relationship(SelfMvCombo, ar_settings);
@@ -594,7 +636,7 @@ require(['require', 'Emitter', 'Sm', 'Sm-Core-Identifier'], function (require, E
 		}
 ///////////////////////////////////////////////////////////////////////////////
 	});
-	Sm.Core.MvWrapper.replacements            = {
+	Sm.Core.MvWrapper.replacements = {
 		replaced_MVs:    {},
 		replacement_MVs: {}
 	};
@@ -603,7 +645,7 @@ require(['require', 'Emitter', 'Sm', 'Sm-Core-Identifier'], function (require, E
 	 * @param mv_combo
 	 * @return {Sm.Core.MvCombo|Array<Sm.Core.MvCombo|boolean>|boolean|*}
 	 */
-	Sm.Core.MvWrapper.convert_to_MvCombo      = function (mv_combo) {
+	Sm.Core.MvWrapper.convert_to_MvCombo = function (mv_combo) {
 		if (!mv_combo) return false;
 		if (mv_combo.constructor == Array) {
 			return mv_combo.map(function (item) {
@@ -639,7 +681,7 @@ require(['require', 'Emitter', 'Sm', 'Sm-Core-Identifier'], function (require, E
 	 * @param {{}=}                                     found                   An object whose items we've already found
 	 *  @return {{MVs:Array<Sm.Core.MvCombo.Identity.r_id>, replacement_indices: {}|string}|boolean}
 	 */
-	Sm.Core.MvWrapper.get_effective_MV        = function (MvCombo_in_question, get_original, false_if_same, found) {
+	Sm.Core.MvWrapper.get_effective_MV = function (MvCombo_in_question, get_original, false_if_same, found) {
 		found         = found || {};
 		var MvWrapper = Sm.Core.MvWrapper;
 		get_original  = !!get_original;

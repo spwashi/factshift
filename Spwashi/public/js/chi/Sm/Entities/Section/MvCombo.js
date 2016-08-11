@@ -3,14 +3,13 @@
  */
 
 /**
- * @module Sm/Entities/Section/MvCombo
- * @exports SectionMvCombo
+ * @exports SjectionMvCombo
  * @class SectionMvCombo
  * @requires MvWrapper
  * @requires RelationshipIndex
  * @requires Sm-Core-MvCombo
  */
-require(['require', 'Sm', 'Sm-Core-MvCombo'], function (require) {
+require(['require', 'Sm', 'Sm-Core-MvCombo'], function (require, Sm) {
 	Sm.loaded.when_loaded('Core_MvCombo', function () {
 		/**
 		 * An MvCombo that represents a Section on the server
@@ -20,7 +19,7 @@ require(['require', 'Sm', 'Sm-Core-MvCombo'], function (require) {
 		 * @see     Sm.Core.MvCombo
 		 * @class   Sm.Entities.Section.MvCombo
 		 */
-		Sm.Entities.Section.MvCombo                                       = Sm.Core.MvCombo.extend({
+		var SectionMvCombo_prototype = {
 			/**
 			 * @alias Sm.Entities.Section.MvCombo.scale
 			 * @param scale_towards_micros
@@ -31,11 +30,11 @@ require(['require', 'Sm', 'Sm-Core-MvCombo'], function (require) {
 				var found            = [];
 				var get_listed_items = Sm.Entities.Section.MvCombo.generate_standard_get_listed_items_fn('micros', context_id, false, found);
 				var result           = Sm.Core.MvCombo.replace_MV({
-					MvCombo:             this,
-					is_reciprocal:       !scale_towards_micros,
-					list_items_fn:       get_listed_items,
-					replacement_indices: 'micros'
-				}).then(function (result) {
+					                                                  MvCombo:             this,
+					                                                  is_reciprocal:       !scale_towards_micros,
+					                                                  list_items_fn:       get_listed_items,
+					                                                  replacement_indices: 'micros'
+				                                                  }).then(function (result) {
 					//console.log(found, result);
 					result && (result.found = found);
 					return result;
@@ -49,12 +48,12 @@ require(['require', 'Sm', 'Sm-Core-MvCombo'], function (require) {
 				var found            = [];
 				var get_listed_items = Sm.Entities.Section.MvCombo.generate_standard_get_listed_items_fn('pivots', context_id, where, found);
 				var result           = Sm.Core.MvCombo.replace_MV({
-					MvCombo:             this,
-					replace_effective:   true,
-					is_reciprocal:       is_home,
-					list_items_fn:       get_listed_items,
-					replacement_indices: 'pivots'
-				}).then(function (result) {
+					                                                  MvCombo:             this,
+					                                                  replace_effective:   true,
+					                                                  is_reciprocal:       is_home,
+					                                                  list_items_fn:       get_listed_items,
+					                                                  replacement_indices: 'pivots'
+				                                                  }).then(function (result) {
 					result && (result.found = found);
 					return result;
 				});
@@ -100,7 +99,7 @@ require(['require', 'Sm', 'Sm-Core-MvCombo'], function (require) {
 							return_object[subtype] = return_object[subtype] || [];
 							//Add to the "types of ___" array. This only happens this way for standardization purposes
 							return_object[subtype].push(subtype);
-							max                    = true;
+							max = true;
 						}
 					}
 				}
@@ -153,7 +152,8 @@ require(['require', 'Sm', 'Sm-Core-MvCombo'], function (require) {
 					other_index:         other_index
 				}
 			}
-		});
+		};
+		Sm.Entities.Section.MvCombo  = Sm.Core.MvCombo.extend(SectionMvCombo_prototype);
 		/**
 		 *
 		 * @param relationship_index

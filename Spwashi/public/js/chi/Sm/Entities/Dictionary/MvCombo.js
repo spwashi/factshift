@@ -10,7 +10,7 @@
  * @requires RelationshipIndex
  * @requires Sm-Core-MvCombo
  */
-require(['require', 'Sm', 'Sm-Core-MvCombo'], function (require) {
+require(['require', 'Sm', 'Sm-Core-MvCombo'], function (require, Sm) {
 	Sm.loaded.when_loaded('Core_MvCombo', function () {
 		/**
 		 * An MvCombo that represents a Dictionary on the server

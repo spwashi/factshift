@@ -3,6 +3,7 @@
  */
 /**
  * @global
+ * @alias Sm
  */
 var Sm = {};
 define([
@@ -10,7 +11,16 @@ define([
 	'jquery',
 	'Cocktail',
 	'backbone'
-], function (require, $, Cocktail, backbone) {
+],
+       /**
+        * @lends Sm
+        * @param require
+        * @param $
+        * @param Cocktail
+        * @param backbone
+        * @return {{}}
+        */
+       function (require, $, Cocktail, backbone) {
 	/**
 	 * @type {{}}
 	 * @global
@@ -194,7 +204,6 @@ define([
 	 * The Core structure of the Sm Namespace
 	 * @type {{}}
 	 */
-	window.Sm.Core                 = {};
 	require(['Sm-Core-Core']);
 	require(['tooltipster']);
 	require(['SmHighlight']);
@@ -202,13 +211,7 @@ define([
 	require(['Sm-Entities-Abstraction-SmEntity']);
 	require(['Sm-Entities-Abstraction-Garage']);
 	Cocktail.patch(backbone);
-	/**
-	 * A container for the Model/View/ representations
-	 * @type {object<string,Sm.Entities.Abstraction.SmEntity>}
-	 */
-	Sm.Entities                    = Sm.Entities || {};
-	Sm.Entities.Abstraction        = Sm.Entities.Abstraction || {};
-	Sm.Entities.Abstraction.mixins = Sm.Entities.Abstraction.mixins || {};
+
 
 //-------------------------------------------------------------------------
 	var NonexistentModelError       = function (message) {

@@ -39,6 +39,7 @@
 		"Sm-Entities-Section-templates-_template",
 		"Sm-Entities-Section-templates-standard",
 		"Sm-Entities-Section-templates-definition",
+		"Sm-Entities-Section-subtypes-definition-main",
 		"Sm-Entities-Section-templates-image",
 		"Sm-Entities-Concept-templates-_template",
 		"Sm-Entities-Concept-templates-standard",
@@ -147,6 +148,7 @@
 		"Sm-Entities-Section-templates-definition":                              "Sm/Entities/Section/templates/definition",
 		"Sm-Entities-Section-templates-image":                                   "Sm/Entities/Section/templates/image",
 		"Sm-Entities-Section-Abstraction-Relationship-pivots_RelationshipIndex": "Sm/Entities/Section/Abstraction/Relationship/pivots_RelationshipIndex",
+		"Sm-Entities-Section-subtypes-definition-main":                          "Sm/Entities/Section/subtypes/definition/main",
 		"Sm-Entities-Section-Abstraction-Modal-ModalEdit":                       "Sm/Entities/Section/Abstraction/Modal/ModalEdit",
 //
 		"Sm-Entities-Concept-Meta":                                              "Sm/Entities/Concept/Meta",

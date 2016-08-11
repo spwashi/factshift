@@ -145,7 +145,8 @@ define(['Class'], function (Class) {
 				Sm.CONFIG.DEBUG && console.log(name, fn);
 				return function () {};
 			}
-			return this._fns[name] = this._fns[name] || fn.bind(_self || this);
+			if (_self !== null) fn = fn.bind(_self || this);
+			return this._fns[name] = this._fns[name] || fn;
 		},
 		get_bound:          function (name) {
 			return this._fns[name] ? this._fns[name] : function () {}.bind(this);
@@ -156,6 +157,7 @@ define(['Class'], function (Class) {
 		for (var prop_name in p) {
 			if (!p.hasOwnProperty(prop_name)) continue;
 			var prop       = p[prop_name];
+			if(prop_name == "prototype" || prop_name == "constructor") continue;
 			obj[prop_name] = typeof prop === "function" ? prop.bind(obj) : prop;
 		}
 		return Emitter;

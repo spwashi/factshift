@@ -1,7 +1,7 @@
 /**
  * Created by Sam Washington on 12/20/15.
  */
-define(['Emitter'], function (Emitter) {
+define(['Emitter', 'Sm', 'jquery', 'underscore', 'inflection'], function (Emitter, Sm, $) {
 	/**
 	 * @class Meta
 	 * @alias Sm.Core.Meta
@@ -19,7 +19,8 @@ define(['Emitter'], function (Emitter) {
 	 * @prop {function} configure                           {@link Sm.Core.Meta#configure}
 	 *
 	 */
-	var Meta           = Emitter.extend({
+	var Meta = Emitter.extend(
+	{
 		CONFIG:          {
 			DEBUG:       false,
 			EDIT:        false,
@@ -47,12 +48,12 @@ define(['Emitter'], function (Emitter) {
 			for (var entity_name in entities) {
 				if (!entities.hasOwnProperty(entity_name)) continue;
 				this.lower_singular[entity_name] =
-					this.lower_singular[entity_name]
-					|| entity_name.toLowerCase();
-				if(entity_name == 'Dictionary') this.lower_plural['Dictionary'] = 'dictionaries';
-				this.lower_plural[entity_name]   =
-					this.lower_plural[entity_name]
-					|| (entities[entity_name].plural || entity_name + 's').toLowerCase();
+				this.lower_singular[entity_name]
+				|| entity_name.toLowerCase();
+				if (entity_name == 'Dictionary') this.lower_plural['Dictionary'] = 'dictionaries';
+				this.lower_plural[entity_name] =
+				this.lower_plural[entity_name]
+				|| (entities[entity_name].plural || entity_name + 's').toLowerCase();
 			}
 		},
 		/**
@@ -65,11 +66,11 @@ define(['Emitter'], function (Emitter) {
 			this.reciprocal_relationship_type_list = Object.keys(config.reciprocal_relationships || {});
 			this.relationship_type_list            = Object.keys(config.relationships || {});
 			//if (!config.properties) Sm.CONFIG.DEBUG && console.log("Config for " + config.type + " does not have any properties");
-			var properties = this.properties = config.properties || {all: {ent_id: null, id: null}};
+			var properties                         = this.properties = config.properties || {all: {ent_id: null, id: null}};
 			properties.all            = properties.all || {};
 			properties.api_settable   = properties.api_settable || {};
 			properties.api_settable   = properties.api_settable || {};
-			this.prefix               = config.prefix || null;
+			this.prefix               = config.prefixes || null;
 			var relationship_subtypes = config.relationship_subtypes || false;
 			if (relationship_subtypes)
 				for (var rel_type in relationship_subtypes) {
@@ -134,12 +135,7 @@ define(['Emitter'], function (Emitter) {
 				id:   6
 			}
 		},
-		/**
-		 * Return an Array containing the possible ways that something can be related to another entity based on some properties
-		 */
-		types:                             {
-			standard: 1
-		},
+		types:                             {standard: 1},
 		/**
 		 * Sometimes the relationship will have a different index in the receiving class than we can automatically identify.
 		 * This is the object that links type:alias
@@ -147,6 +143,7 @@ define(['Emitter'], function (Emitter) {
 		relationship_aliases:              {},
 		/**
 		 * Get the either the index or the ID of the entity based on a provided index or ID
+		 * @alias Sm.Core.Meta.get_type
 		 * @param identifier
 		 * @param what_to_get
 		 * @return {*}
@@ -200,20 +197,20 @@ define(['Emitter'], function (Emitter) {
 		 * @param {boolean}                                                                         settings.sub             Are we looking for a subtype?
 		 * @param {string}                                                                          settings.type            The type to search for. [index|id]
 		 * @param {int|string}                                                                      settings.identifier      The relationship type (relationship_type_id or relationship_type name)
-		 * @param {{collection_id:string, dimension_id: string, dictionary_id: string}=}            settings.map             A map object. Only used as support. Not good. Don't know why I did this.
+		 * @param {{}}            settings.map             A map object. Only used as support. Not good. Don't know why I did this.
 		 * @param {boolean=false}                                                                   settings.is_reciprocal   Whether or not the relationship is reciprocal
 		 * @param {string|int|*}                                                                    identifier
 		 * @return {string|boolean|int}
 		 */
 		get_relationship_type:             function (settings, identifier) {
-			var self_type             = this.type || false;
-			 settings                  = settings || {};
-			 /** @type {boolean} Whether the relationship is reciprocal. If so, could possibly change the guess of what the relationship is based on the map */
-			var is_reciprocal         = !!settings.is_reciprocal;
+			var self_type     = this.type || false;
+			settings          = settings || {};
+			/** @type {boolean} Whether the relationship is reciprocal. If so, could possibly change the guess of what the relationship is based on the map */
+			var is_reciprocal = !!settings.is_reciprocal;
 			/** @type {string} The type tp find - index|id */
-			var type                  = settings.type || 'index';
+			var type          = settings.type || 'index';
 			/** @type {string} The identifier that we will use to know what we are looking for. Could be an index or ID of the relationship type */
-			identifier                = identifier || settings.identifier || false;
+			identifier = identifier || settings.identifier || false;
 			/** @type {{}} The map object of the relationship. When guessing the IDs of the relationship later, this map is what we'll use for the indices */
 			var map                   = settings.map || {};
 			/**
@@ -225,7 +222,6 @@ define(['Emitter'], function (Emitter) {
 			var index;
 			identifier                = identifier || map.relationship_type || false;
 			/** @type {*} The object of the Entities that are in the Sm namespace */
-			var SmEntities            = Sm.Entities;
 			if (!identifier) return false;
 			/**
 			 * Iterate through the relationship type object to find things that are mapped together
@@ -254,26 +250,11 @@ define(['Emitter'], function (Emitter) {
 				rel_type.index_singular = rel_type.index_singular || '';
 				rel_type.id             = rel_type.id || '';
 				// Same for the singular index. If there is a case where there are multiple indices delimited by pipes, search those for the right index
-				var rel_ind_singular = rel_type.index_singular.constructor === Array ? rel_type.index_singular.join('|') : rel_type.index_singular;
-				rel_ind_singular     = (rel_ind_singular || '').toLowerCase();
+				var rel_ind_singular    = rel_type.index_singular.constructor === Array ? rel_type.index_singular.join('|') : rel_type.index_singular;
+				rel_ind_singular        = (rel_ind_singular || '').toLowerCase();
 				if (identifier == rel_ind_singular || rel_ind_singular.toLowerCase().search(new RegExp("\\|?" + identifier.toLowerCase() + "\\|?")) > -1) return index;
 				// If the identifier matches the id, return that
 				if (!!rel_type.id && identifier == rel_type.id) return index;
-			}
-			//todo see if this next part makes sense
-			/**
-			 * Search the SmEntities to find out what the other type in the map would be. If it's reciprocal, we return the other type based on the
-			 */
-			for (var entity_type in SmEntities) {
-				if (!SmEntities.hasOwnProperty(entity_type) || entity_type != this.type) continue;
-				//guess the other type
-				var probable_other_id = this.lower_singular[entity_type] + '_id';
-				//If that's in the map, return the index of the entity we're on if it's not reciprocal. Otherwise, return the relationship index of this entity
-				if (probable_other_id in map) {
-					if (type == 'id') return false;
-					else if (type == 'model_type' || type == 'name') return entity_type;
-					else return (is_reciprocal ? this.lower_plural[entity_type] : this.lower_plural[this.type]) || false;
-				}
 			}
 			if (!!settings.sub) {
 				Sm.CONFIG.DEBUG && console.log('core_meta,grt,0', rel_type);
@@ -363,12 +344,81 @@ define(['Emitter'], function (Emitter) {
 				(rid in this.MvMaps.focused_MVs) && delete this.MvMaps.focused_MVs[rid];
 			}
 			return true;
+		},
+		get_self_type_identifier:          function () {
+			if (!this.type) return false;
+			return this.type.toLowerCase() + '_type';
+		},
+//
+//
+//
+//
+		is_id:                             function (id) {
+			return $.isNumeric(id);
+		},
+
+		is_ent_id:             function (item) {
+			Sm.CONFIG.DEBUG && console.log(item);
+			//The length is 25 chars
+			//The 6 characters after the 4th character are integers between 0 and 9 (the date)
+			var ent_id_length = 25;
+			var is_ent_id     = (typeof item === 'string') && item.length === ent_id_length && /^[a-zA-Z_]{4}[0-9]{6}/.test(item);
+			Sm.CONFIG.DEBUG && console.log(is_ent_id, item);
+			return is_ent_id;
+		},
+		prefix_to_model_type:  function (prefix) {
+			return (prefix in Sm.spwashi_config.prefixes) ? Sm.spwashi_config.prefixes[prefix] : false;
+		},
+		/**
+		 *
+		 * @param item
+		 * @return {string|boolean}
+		 */
+		convert_to_model_type: function (item) {
+			var t_name;
+			var prefix, table_name, model_type, ent_id;
+			if (typeof item === "object") {
+				ent_id     = item.ent_id || false;
+				model_type = item.model_type || item.type || false;
+			} else if (typeof  item === "string") {
+				if (item in Sm.Entities) return item;
+				model_type = _(_.titleize(item.replace('_id', ''))).singularize();
+			}
+			if (!model_type) {
+				if (ent_id || (typeof item === "string")) {
+					if (!ent_id && this.is_ent_id(item)) { ent_id = item}
+					prefix = ent_id.substr(0, 4);
+				}
+				model_type = this.prefix_to_model_type(prefix);
+			}
+			return model_type && model_type in Sm.Entities ? model_type : false;
+		},
+		convert_to_id:         function (item) {
+			var table_name;
+			var model_type = this.convert_to_model_type(item);
+			if (!model_type) return false;
+			table_name = _.singularize(model_type.toLowerCase());
+			return table_name + '_id';
+		},
+		get_map_between:       function (one, two) {
+			if (!two && typeof one === "object" && one[1] && one[0]) {
+				two = one[1];
+				one = one[0];
+			}
+			var m_1 = this.convert_to_model_type(one);
+			var m_2 = this.convert_to_model_type(two);
+			if (!m_1 || !m_2) return false;
+			var try_1 = m_1 + '__' + m_2;
+			if (try_1 in Sm.Entities) return try_1;
+			var try_2 = m_2 + '__' + m_1;
+			if (try_2 in Sm.Entities) return try_2;
+			return false;
 		}
 	});
 	/**
 	 * @property lower_plural
 	 */
-	Sm.Core.Meta       = new Meta({
+	Sm.Core.Meta = new Meta({
 		type: false
 	});
 	Sm.Core.Meta.Proto = Meta;

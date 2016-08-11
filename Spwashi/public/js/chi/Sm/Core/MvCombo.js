@@ -5,7 +5,7 @@
 /**
  * @module Sm-Core-MvCombo
  */
-require(['require', 'Sm', 'Sm-Core-util', 'Emitter'], function (require) {
+require(['require', 'Sm', 'Sm-Core-util', 'Emitter'], function (require, Sm) {
 	var Emitter = require('Emitter');
 
 	/**
@@ -65,7 +65,8 @@ require(['require', 'Sm', 'Sm-Core-util', 'Emitter'], function (require) {
 	 * @property {function}                                 getView                 {@link Sm.Core.MvCombo#getView}
 	 * @property {function}                                 forEachView             {@link Sm.Core.MvCombo#forEachView}
 	 */
-	Sm.Core.MvCombo            = Emitter.extend({
+	Sm.Core.MvCombo = Emitter.extend(
+	{
 		/**
 		 * @constructor
 		 * @param           settings
@@ -91,12 +92,12 @@ require(['require', 'Sm', 'Sm-Core-util', 'Emitter'], function (require) {
 			 * An object containing the views the belong to the MvCombo
 			 * @type {{}}
 			 */
-			this.Views                 = {};
+			this.Views = {};
 			/**
 			 * An object containing information about which of this MvCombo's Views are ___d
 			 * @type {{selected_Views: {}, active_Views: {}, focused_Views: {}}}
 			 */
-			this.ViewMaps              = {
+			this.ViewMaps = {
 				selected_Views: {},
 				active_Views:   {},
 				focused_Views:  {}
@@ -105,24 +106,24 @@ require(['require', 'Sm', 'Sm-Core-util', 'Emitter'], function (require) {
 			 * An array of the cid's belonging to the views of the MvCombo
 			 * @type {Array}
 			 */
-			this.ViewList              = [];
+			this.ViewList = [];
 			/**
 			 * An Array of Views that were created just for the sake of having a View - if this can be replaced by a real element, that is preferable.
 			 * @type {Array}
 			 */
-			this.defaultViewList       = [];
+			this.defaultViewList = [];
 			/**
 			 * The Model that matches up to the Resource that we are dealing with
 			 * @type {Sm.Core.SmModel}
 			 */
-			this.Model                 = null;
-			this.relationship_map      = {};
+			this.Model = null;
+			this.relationship_map = {};
 
 			/**
 			 * Contains the relationships in which this is the primary relationship or relationships that don't have primary/secondary relationships
 			 * @type {{_meta: {default_list: Array, contexts: {}}}}
 			 */
-			this.relationships            = {};
+			this.relationships = {};
 			/**
 			 * An index containing the relationships in which this is the secondary relationship
 			 * Also contains details about what other Entities this is related to
@@ -134,7 +135,7 @@ require(['require', 'Sm', 'Sm-Core-util', 'Emitter'], function (require) {
 			 * The relationships in which this Model is the primary entity/relationships this MvCombo has
 			 * @type {*|Object.<string, Sm.Core.Relationship>|boolean|{}}
 			 */
-			this.relationships            = this._create_relationship_holder() || {};
+			this.relationships = this._create_relationship_holder() || {};
 			/**
 			 * The relationships in which this Model is the secondary entity/How this MvCombo relates to other things
 			 * @type {*|Object.<string, Sm.Core.Relationship>|boolean|{}}
@@ -145,21 +146,22 @@ require(['require', 'Sm', 'Sm-Core-util', 'Emitter'], function (require) {
 			this.CONFIG = Sm.CONFIG;
 
 			this.Wrapper = settings.Wrapper || null;
+			var Model    = settings.model || settings.Model || null;
+			/** @type {Sm.Core.SmModel}  */
+			Model = this.Model = this._initModel(Model);
+
 			//initialize a view from the provided element or just instantiate a default View
 			this.addView(settings.view || settings.View || null);
-			var Model    = settings.model || settings.Model || null;
-
-			Model = this.Model = this._initModel(Model);
 
 			var self    = this;
 			var type    = this.type || settings.type;
 			this._cache = {ids: {}};
 			var Id      = this.Identity = settings.Identifier || Sm.Core.Identifier.get_or_init({
-					id:       Model.id || settings.id || false,
-					ent_id:   Model.ent_id || settings.ent_id || false,
-					type:     type,
-					Resource: self
-				});
+				                                                                                    id:       Model.id || settings.id || false,
+				                                                                                    ent_id:   Model.ent_id || settings.ent_id || false,
+				                                                                                    type:     type,
+				                                                                                    Resource: self
+			                                                                                    });
 			this.Model.Identity = Id;
 
 			/**
@@ -243,7 +245,7 @@ require(['require', 'Sm', 'Sm-Core-util', 'Emitter'], function (require) {
 
 				var ModelRelationshipIndex = false;
 				Sm.Entities[this.type].Abstraction && Sm.Entities[this.type].Abstraction.Relationship && (ModelRelationshipIndex = Sm.Entities[this.type].Abstraction.Relationship[index + '_RelationshipIndex']);
-				ModelRelationshipIndex     = ModelRelationshipIndex || Sm.Core.RelationshipIndex;
+				ModelRelationshipIndex = ModelRelationshipIndex || Sm.Core.RelationshipIndex;
 
 				new_obj[r_t] = new ModelRelationshipIndex({
 					/**
@@ -360,7 +362,7 @@ require(['require', 'Sm', 'Sm-Core-util', 'Emitter'], function (require) {
 		 * @see Sm.Core.MvCombo._initModel
 		 * @private
 		 */
-		_prepare_known_relationships: function (relationships, log) {
+		_prepare_known_relationships: function (relationships) {
 			relationships = relationships || {};
 			var self_type = this.type;
 			//Sm.CONFIG.DEBUG && console.log(relationships, ' -- relations for ' + self_type);
@@ -464,9 +466,9 @@ require(['require', 'Sm', 'Sm-Core-util', 'Emitter'], function (require) {
 							}
 							/** @type {*|Sm.Core.MvCombo} */
 							var other_MV = otherWrapper.init_MvCombo({
-								model: other_model,
-								id:    other_model_id
-							});
+								                                         model: other_model,
+								                                         id:    other_model_id
+							                                         });
 							var wl_name  = 'add_rel_to_' + SelfMvCombo.type + Date.now() + (other_MV.r_id);
 							//if (!other_MV.type) Sm.CONFIG.DEBUG && console.log(other_MV, otherWrapper, other_model_type);
 							//SelfMvCombo.type === 'Section' && SelfMvCombo.id == 2 && Sm.CONFIG.DEBUG && console.log(other_MV.type, other_model_type, map, a);
@@ -495,6 +497,27 @@ require(['require', 'Sm', 'Sm-Core-util', 'Emitter'], function (require) {
 			}
 			return relationships;
 		},
+		/**
+		 * Mark a View as belonging to a subtype. Useful when the functionality of one subtype is different than the functionality of another
+		 * @alias Sm.Core.MvCombo.mark_view_as_subtype
+		 * @param View
+		 * @param subtype
+		 * @this Sm.Core.MvCombo
+		 */
+		mark_view_as_subtype:         function (View, subtype) {
+			if (!View || !subtype) return;
+			/** @type {Sm.Entities.Abstraction.SmEntity}  */
+			var SelfEntity = Sm.Entities[this.type];
+			var View_Model = SelfEntity.View;
+			if (SelfEntity.subtypes && SelfEntity.subtypes[subtype] && SelfEntity.subtypes[subtype].View) {
+				View_Model   = SelfEntity.subtypes[subtype].View;
+				View.subtype = subtype;
+			}
+			for (var attr_name in View_Model) {
+				if (!View_Model.hasOwnProperty(attr_name)) continue;
+				View[attr_name] = View_Model[attr_name];
+			}
+		},
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////
 		/**
 		 * Add a View to the MvCombo
@@ -505,14 +528,18 @@ require(['require', 'Sm', 'Sm-Core-util', 'Emitter'], function (require) {
 		 * @return {*}
 		 */
 		addView:                      function (View, context_element, settings) {
-			settings        = settings || {};
-			var self_entity = Sm.Entities[this.type];
+			settings       = settings || {};
+			/** @type {Sm.Entities.Abstraction.SmEntity}  */
+			var SelfEntity = Sm.Entities[this.type];
 
-			var ViewType_ = self_entity.View;
+			var ViewType_ = SelfEntity.View;
 			if (!ViewType_) return false;
-
-			var _MvCombo = this;
-			var Model    = this.Model;
+			var createView = function (parameters) {
+				var ViewType = SelfEntity.View;
+				return new ViewType(parameters);
+			};
+			var _MvCombo   = this;
+			var Model      = this.Model;
 
 			if (!!View && typeof View === "object" && View.cid) {
 				if (!context_element && document.body.contains(View.el.parentNode))context_element = View.el.parentNode;
@@ -536,7 +563,7 @@ require(['require', 'Sm', 'Sm-Core-util', 'Emitter'], function (require) {
 				// If it's an element, initialize the View based on that
 				if (Sm.Core.util.isElement(View)) {
 					view_props.el = View;
-					View          = new ViewType_(view_props);
+					View          = createView(view_props);
 					View.setMvCombo(_MvCombo);
 					if (!View.referenceElement) {
 						if (!context_element && document.body.contains(View.el.parentNode))
@@ -551,7 +578,7 @@ require(['require', 'Sm', 'Sm-Core-util', 'Emitter'], function (require) {
 					//If there are any default Views, return the first one
 					!this.defaultViewList && (this.defaultViewList = []);
 					if (this.defaultViewList.length) return this.defaultViewList[0];
-					View = new ViewType_(view_props);
+					View = createView(view_props);
 					if (!!context_element && this.ViewList.length) {
 						var check    = false;
 						var ViewList = this.ViewList;
@@ -575,6 +602,8 @@ require(['require', 'Sm', 'Sm-Core-util', 'Emitter'], function (require) {
 				this.Views[View.cid] = View;
 				this.ViewList.push(View.cid);
 			}
+			this.Model && this.Model.attributes &&
+			this.mark_view_as_subtype(View, Sm.Entities.Section.Meta.get_type(this.Model.attributes.section_type, 'index'));
 			return View;
 		},
 		/**
@@ -642,9 +671,9 @@ require(['require', 'Sm', 'Sm-Core-util', 'Emitter'], function (require) {
 			}) : returnView;
 			if (typeof  returnView == "string") {
 				return this.getView({
-					cid:    returnView,
-					strict: true
-				});
+					                    cid:    returnView,
+					                    strict: true
+				                    });
 			}
 			return returnView;
 		},
@@ -783,6 +812,31 @@ require(['require', 'Sm', 'Sm-Core-util', 'Emitter'], function (require) {
 			var r_id = typeof MvIdentity === "string" ? MvIdentity : MvIdentity.r_id;
 			return this.relationship_map[r_id] || false;
 		},
+		/**
+		 *
+		 * @param {Sm.Core.Relationship}    Relationship
+		 * @param mv_r_id
+		 * @param relationship_type
+		 * @return {boolean|null}
+		 */
+		pushRelationship:             function (Relationship, mv_r_id, relationship_type) {
+			if (!(mv_r_id in this.relationship_map) || !(relationship_type in this.relationship_map[mv_r_id])) {
+				this.relationship_map[mv_r_id]                    = this.relationship_map[mv_r_id] || {};
+				this.relationship_map[mv_r_id][relationship_type] = this.relationship_map[mv_r_id][relationship_type] || [];
+				this.relationship_map[mv_r_id][relationship_type].push(Relationship);
+				return true;
+			} else {
+				var rel_map = this.relationship_map[mv_r_id][relationship_type];
+				for (var i = 0; i < rel_map.length; i++) {
+					/** @type {Sm.Core.Relationship}  */
+					var _Relationship = rel_map[i];
+					if (_Relationship.relationshipIndexRIDs.sort().join().indexOf(Relationship.relationshipIndexRIDs.sort().join()) > -1) return null;
+					Sm.CONFIG.DEBUG && console.log(_Relationship.relationshipIndexRIDs.join(), ' - ', Relationship.relationshipIndexRIDs.join());
+				}
+				rel_map.push(Relationship);
+				return true;
+			}
+		},
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////
 		/**
 		 * Get the details about how two entities should be related to each other
@@ -829,6 +883,7 @@ require(['require', 'Sm', 'Sm-Core-util', 'Emitter'], function (require) {
 			//If both indices exist (this and the other one) instantiate a relationship
 			if (self_map_index && secondary_map_index) {
 				relationship = new Sm.Core.Relationship({
+					map:             map,
 					linked_entities: [self_type, type],
 					rel_indexes:     [self_map_index, secondary_map_index]
 				});
@@ -898,7 +953,7 @@ require(['require', 'Sm', 'Sm-Core-util', 'Emitter'], function (require) {
 		 */
 		add_relationship:             function (OtherMvCombo, settings, ReciprocalRelationship) {
 			/** @type {Sm.Core.MvCombo}  */
-			OtherMvCombo           = OtherMvCombo || null;
+			OtherMvCombo = OtherMvCombo || null;
 			this.relationship_map  = this.relationship_map || {};
 			settings               = settings || {};
 			var silent             = !!settings.silent;
@@ -910,7 +965,7 @@ require(['require', 'Sm', 'Sm-Core-util', 'Emitter'], function (require) {
 			var reciprocal_relationship_index = false;
 			var self_type                     = this.type;
 			// This needs type-hinting
-			var selfSm = Sm.Entities[self_type];
+			var selfSm                        = Sm.Entities[self_type];
 			if (!!OtherMvCombo && OtherMvCombo.r_id && OtherMvCombo.getResource) {
 				OtherMvCombo = OtherMvCombo.getResource();
 			}
@@ -940,7 +995,10 @@ require(['require', 'Sm', 'Sm-Core-util', 'Emitter'], function (require) {
 
 				//These relationships are the relationships opposite of the other one
 				//todo Is this right?
-				var anti_reciprocal_potential_relationships = selfSmMeta.get_possible_relationship_indices({is_reciprocal: !is_reciprocal, OtherMvCombo: OtherMvCombo});
+				var anti_reciprocal_potential_relationships = selfSmMeta.get_possible_relationship_indices({
+					                                                                                           is_reciprocal: !is_reciprocal,
+					                                                                                           OtherMvCombo:  OtherMvCombo
+				                                                                                           });
 				if (is_reciprocal && potential_relationships[0] === null && !!anti_reciprocal_potential_relationships.length) {
 					if (anti_reciprocal_potential_relationships.length == 1)
 						reciprocal_relationship_index = anti_reciprocal_potential_relationships[0];
@@ -1006,9 +1064,8 @@ require(['require', 'Sm', 'Sm-Core-util', 'Emitter'], function (require) {
 				if (SecondaryRelationshipIndex) SecondaryRelationshipIndex.add_item(ReciprocalRelationship, OtherMvCombo.Identity.r_id, settings.context_id || 0, update_indices, silent);
 
 				//Add the relationship to the relationship map
-				this.relationship_map[OtherMvCombo.Identity.r_id] = this.relationship_map[OtherMvCombo.Identity.r_id] || [];
-				this.relationship_map[OtherMvCombo.Identity.r_id].push(ReciprocalRelationship);
-				resolution_object.Relationship                    = ReciprocalRelationship;
+				this.pushRelationship(ReciprocalRelationship, OtherMvCombo.Identity.r_id, relationship_index);
+				resolution_object.Relationship = ReciprocalRelationship;
 				return Promise.resolve(resolution_object);
 			}
 
@@ -1018,11 +1075,11 @@ require(['require', 'Sm', 'Sm-Core-util', 'Emitter'], function (require) {
 			 * * The index at which the first relationship will be added
 			 */
 			var relationshipDetails = this._get_relationship_details({
-				map:                map,
-				MvCombo:            OtherMvCombo,
-				is_reciprocal:      is_reciprocal,
-				relationship_index: relationship_index
-			});
+				                                                         map:                map,
+				                                                         MvCombo:            OtherMvCombo,
+				                                                         is_reciprocal:      is_reciprocal,
+				                                                         relationship_index: relationship_index
+			                                                         });
 			/** @type {Sm.Core.Relationship} */
 			var Relationship_       = relationshipDetails.relationship || new Sm.Core.Relationship;
 			var self_map_index      = relationshipDetails.self_map_index;
@@ -1033,13 +1090,13 @@ require(['require', 'Sm', 'Sm-Core-util', 'Emitter'], function (require) {
 				Sm.CONFIG.DEBUG && console.log(ent_id, arguments);
 				return Promise.reject('Cannot add the same MV - ::' + ent_id);
 			}
-			map.position                   = settings.position || map.position;
+			map.position = settings.position || map.position;
 
 			//Initialize the relationship's details
 			Relationship_
-				.setMap(map)
-				.link_Mv(this, self_map_index)
-				.link_Mv(OtherMvCombo, secondary_map_index);
+			.setMap(map)
+			.link_Mv(this, self_map_index)
+			.link_Mv(OtherMvCombo, secondary_map_index);
 			resolution_object.Relationship = Relationship_;
 			resolution_object.map_indices  = [
 				self_map_index,
@@ -1053,8 +1110,7 @@ require(['require', 'Sm', 'Sm-Core-util', 'Emitter'], function (require) {
 			//If the relationship is not reciprocal, add it to the other MvCombo as well
 			settings.is_reciprocal = !is_reciprocal;
 			//Add the relationship to the relationship map
-			this.relationship_map[OtherMvCombo.Identity.r_id] = this.relationship_map[OtherMvCombo.Identity.r_id] || [];
-			this.relationship_map[OtherMvCombo.Identity.r_id].push(Relationship_);
+			this.pushRelationship(Relationship_, OtherMvCombo.Identity.r_id, relationship_index);
 			return OtherMvCombo.add_relationship(this, settings, Relationship_).then(function (e) {
 				self.emit('add_relationship', resolution_object);
 				if (result_of_rel_add && !!e.result) return resolution_object;
@@ -1087,20 +1143,20 @@ require(['require', 'Sm', 'Sm-Core-util', 'Emitter'], function (require) {
 			settings          = settings || {};
 			settings.map      = settings.map || {};
 			settings.position = settings.map.position = (settings.position || settings.map.position);
-			var self    = this;
+			var self = this;
 			self.blur();
 			var Modal;
 			var P       = new Promise(function (resolve, reject) {
 				var MvCombo_ = self;
 				//See if this class has an AddRelationship Modal Dialog. If not, use the default
-				var type =
-					    Sm.Entities[self.type].Abstraction &&
-					    Sm.Entities[self.type].Abstraction.Modal &&
-					    Sm.Entities[self.type].Abstraction.Modal.AddRelationship
-						    ? Sm.Entities[self.type].Abstraction.Modal.AddRelationship
-						    : Sm.Entities.Abstraction.Modal.AddRelationship;
+				var type     =
+				    Sm.Entities[self.type].Abstraction &&
+				    Sm.Entities[self.type].Abstraction.Modal &&
+				    Sm.Entities[self.type].Abstraction.Modal.AddRelationship
+				    ? Sm.Entities[self.type].Abstraction.Modal.AddRelationship
+				    : Sm.Entities.Abstraction.Modal.AddRelationship;
 				//Create the Modal Dialog
-				Modal = new type({
+				Modal        = new type({
 					MvCombo:        [MvCombo_],
 					self_type:      MvCombo_.type,
 					display_type:   'full',
@@ -1148,10 +1204,9 @@ require(['require', 'Sm', 'Sm-Core-util', 'Emitter'], function (require) {
 				Sm.CONFIG.DEBUG && console.log('core_MvCombo,pra,1', e);
 				throw e;
 			}).then(function (add_relationship_settings) {
-				Sm.CONFIG.DEBUG && console.log(add_relationship_settings, opposite);
 				var OtherMvComboType = add_relationship_settings.OtherMvComboType || false;
 				var P2;
-				if (OtherMvCombo) P2               = Promise.resolve(OtherMvCombo);
+				if (OtherMvCombo) P2 = Promise.resolve(OtherMvCombo);
 				else {
 					var OtherSm = Sm.Entities[OtherMvComboType];
 					//Create the other MvCombo
@@ -1162,9 +1217,9 @@ require(['require', 'Sm', 'Sm-Core-util', 'Emitter'], function (require) {
 				add_relationship_settings.opposite = !!opposite;
 				return P2.then(function (OtherMvCombo) {
 					return Promise.resolve({
-						OtherMvCombo:              OtherMvCombo,
-						add_relationship_settings: add_relationship_settings
-					})
+						                       OtherMvCombo:              OtherMvCombo,
+						                       add_relationship_settings: add_relationship_settings
+					                       })
 				});
 			}).catch(function (error) {
 				Sm.CONFIG.DEBUG && console.log('core_MvCombo,pra,2', error);
@@ -1222,17 +1277,17 @@ require(['require', 'Sm', 'Sm-Core-util', 'Emitter'], function (require) {
 			var type     = this.type;
 			var Wrapper  = Sm.Entities[this.type].Wrapper;
 			return Promise.resolve($.ajax({
-				method: "GET",
-				url:    Sm.urls.api.generate({
-					type:    type,
-					MvCombo: this,
-					id:      Identity.id
-				})
-			})).then(function (result) {
+				                              method: "GET",
+				                              url:    Sm.urls.api.generate({
+					                                                           type:    type,
+					                                                           MvCombo: this,
+					                                                           id:      Identity.id
+				                                                           })
+			                              })).then(function (result) {
 				if (result && result.success) {
 					var MvCombo = Wrapper.init_MvCombo({
-						model: result.data
-					});
+						                                   model: result.data
+					                                   });
 					return Promise.resolve(MvCombo);
 				}
 				return Promise.reject("Could not save model");
@@ -1267,9 +1322,9 @@ require(['require', 'Sm', 'Sm-Core-util', 'Emitter'], function (require) {
 			var User = Sm.Entities.User.Wrapper.get_active();
 			var url  = Sm.urls.api.generate({MvCombo: User || this, fetch: type});
 			return Promise.resolve($.ajax({
-				url:    url + (search ? "?q=" + search : ''),
-				method: 'GET'
-			})).then(function (results) {
+				                              url:    url + (search ? "?q=" + search : ''),
+				                              method: 'GET'
+			                              })).then(function (results) {
 				if (results.success && results.data && results.data.items) {
 					var res = Object.values(results.data.items);
 					if (res && res.length) return res;
@@ -1316,10 +1371,10 @@ require(['require', 'Sm', 'Sm-Core-util', 'Emitter'], function (require) {
 	Sm.Core.MvCombo.replace_MV = function (parameters) {
 		var relationship_array_to_add;
 		var array_to_add, array_to_search;
-		var MvCombo           = parameters.MvCombo;
-		var replace_effective = parameters.replace_effective;
+		var MvCombo                   = parameters.MvCombo;
+		var replace_effective         = parameters.replace_effective;
 		//If the action is reciprocal, this is what distinguishes it as such
-		var is_reciprocal = !!parameters.is_reciprocal;
+		var is_reciprocal             = !!parameters.is_reciprocal;
 		//This is the relationship that caused this MvCombo to be brought up in this context
 		var relationship              = parameters.relationship;
 		/**
@@ -1383,12 +1438,12 @@ require(['require', 'Sm', 'Sm-Core-util', 'Emitter'], function (require) {
 			//Prevent recursion
 			parameters.replace_effective = false;
 			//Get the effective MvCombos, iterate through them, and add them as being used
-			var mv_obj = Sm.Core.MvWrapper.get_effective_MV(MvCombo);
-			var Mvs    = mv_obj.MVs;
+			var mv_obj                   = Sm.Core.MvWrapper.get_effective_MV(MvCombo);
+			var Mvs                      = mv_obj.MVs;
 			//Sm.CONFIG.DEBUG && console.log('--- Effective ', Mvs, ' - this - ', [MvCombo.r_id]);
 			//Sm.CONFIG.DEBUG && console.log(" --- List ", MvComboList.map(function (t) {return t.r_id;}));
 			for (var i = 0; i < Mvs.length; i++) {
-				var OtherMvCombo_r_id               = Mvs[i];
+				var OtherMvCombo_r_id = Mvs[i];
 				if (parameters.items[OtherMvCombo_r_id]) continue;
 				array_to_add.push(OtherMvCombo_r_id);
 				parameters.items[OtherMvCombo_r_id] = Sm.Core.MvWrapper.convert_to_MvCombo(OtherMvCombo_r_id);

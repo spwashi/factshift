@@ -1,7 +1,7 @@
 /**
  * Created by Sam Washington on 6/15/16.
  */
-require(['require', 'Emitter', 'Sm'], function (require, Emitter) {
+require(['require', 'Emitter', 'Sm'], function (require, Emitter, Sm) {
 	require('Sm');
 	require(['require', 'Sm/Extras/ViewAid'], function () {});
 	Sm.loaded.when_loaded('Core_RelationshipIndex', function () {
@@ -13,7 +13,8 @@ require(['require', 'Emitter', 'Sm'], function (require, Emitter) {
 		 * @alias Sm.Entities.Section.Abstraction.Relationship.pivots_RelationshipIndex
 		 * @extends Sm.Core.RelationshipIndex
 		 */
-		Sm.Entities.Section.Abstraction.Relationship.pivots_RelationshipIndex = Sm.Core.RelationshipIndex.extend({
+		Sm.Entities.Section.Abstraction.Relationship.pivots_RelationshipIndex = Sm.Core.RelationshipIndex.extend(
+		{
 			relationship_subtype_map: {},
 			init:                     function (settings) {
 				this.relationship_subtype_map = {};
@@ -47,7 +48,7 @@ require(['require', 'Emitter', 'Sm'], function (require, Emitter) {
 			sort_incoming:            function (Relationship_, item_id, context_id) {
 				context_id = context_id || 0;
 				var subtype;
-				if (subtype = Relationship_.map.relationship_subtype) {
+				if (subtype = Relationship_.Map.Model.get('relationship_subtype')) {
 					subtype = Sm.Entities.Section.Meta.get_relationship_type({sub: true, type: 'index'}, subtype);
 					if (!subtype) return;
 					this.relationship_subtype_map[context_id]                   = this.relationship_subtype_map[context_id] || {};
@@ -65,7 +66,7 @@ require(['require', 'Emitter', 'Sm'], function (require, Emitter) {
 			 * @return {boolean|*}
 			 */
 			remove_item:              function (item_id, context_id, update_indices) {
-				context_id = context_id || 0;
+				context_id  = context_id || 0;
 				//If we could successfully remove the relationship, try to remove
 				var success = this.relationship_subtype_map[context_id] && Sm.Core.RelationshipIndex.prototype.remove_item.apply(this, arguments);
 				if (!success) return false;

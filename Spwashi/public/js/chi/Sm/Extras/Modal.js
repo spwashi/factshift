@@ -50,7 +50,8 @@ require(['require', 'Emitter', 'Sm'], function (require, Emitter) {
 				return false;
 			}
 		};
-		Sm.Extras.Modal             = Sm.Extras.ViewAid.extend({
+		Sm.Extras.Modal             = Sm.Extras.ViewAid.extend(
+		{
 			/**
 			 *
 			 * @param settings
@@ -188,6 +189,7 @@ require(['require', 'Emitter', 'Sm'], function (require, Emitter) {
 					if (this.EntityArr.length === 1) {
 						var MvCombo_  = this.EntityArr[0];
 						var self_type = this.self_type;
+						Sm.CONFIG.DEBUG && console.log(this.display_type);
 						return Sm.Entities[self_type].Garage.generate(this.display_type, MvCombo_, {config: config});
 					}
 				} catch (e) {

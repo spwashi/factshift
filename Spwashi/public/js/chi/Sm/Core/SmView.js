@@ -768,17 +768,15 @@ require(['require', 'backbone', 'jquery',
 				        var Relationship_    = Relationship_Obj.Relationship;
 				        var relElem          = Relationship_Obj.el;
 				        var other_MV_type    = Relationship_Obj.other_MV_type;
-				        Sm.CONFIG.DEBUG && console.log(Relationship_);
-				        var Wrapper_ = Sm.Entities[SelfView.type].Wrapper;
+				        var Wrapper_         = Sm.Entities[SelfView.type].Wrapper;
 
 				        if (SelfView.queryPermission('edit') && $target.hasClass('edit') && $target.hasClass('button')) {
 					        var edit_config = {};
 					        if (Relationship_) {
-						        edit_config.display_type        = 'preview';
-						        edit_config.relationship_object = {
-							        Relationship:  Relationship_,
-							        other_MV_type: other_MV_type
-						        }
+						        edit_config.display_type                    = 'preview';
+						        edit_config.SelfMvCombo                     = SelfView.MvCombo;
+						        edit_config.relationship_object             = Relationship_Obj;
+						        edit_config.relationship_object.SelfMvCombo = SelfView.MvCombo;
 					        }
 					        var Model = Relationship_ ? Relationship_.Map : SelfView.MvCombo;
 					        Wrapper_  = Relationship_ ? Sm.Entities[Relationship_.Map.type].Wrapper : Wrapper_;
@@ -907,23 +905,52 @@ require(['require', 'backbone', 'jquery',
 		        find_closest_relationship:     function () {
 			        var $closest_relationship_holder = this.$el.closest('[data-relationship-r_id]');
 			        var self                         = this;
+			        /**
+			         *
+			         * @type {Sm.Core.Relationship|boolean}
+			         * @private
+			         */
 			        var Relationship_                = false;
 			        if ($closest_relationship_holder.length) {
 				        var relationship_r_id = $closest_relationship_holder.data('relationship-r_id');
 				        Relationship_         = Sm.Core.Identifier.identify({r_id: relationship_r_id});
 			        }
-			        var other_relationship_type = false;
+			        var other_mv_type      = false,
+			            relationship_index = false;
 			        if (Relationship_) {
-				        if (Relationship_.linked_entities[0] != this.type) {
-					        other_relationship_type = Relationship_.linked_entities[0];
-				        } else if (Relationship_.linked_entities[1] && Relationship_.linked_entities[1] != this.type) {
-					        other_relationship_type = Relationship_.linked_entities[1];
+				        if (Relationship_.linked_entities[0] != this.type)
+					        other_mv_type = Relationship_.linked_entities[0];
+				        else if (Relationship_.linked_entities[1] && Relationship_.linked_entities[1] != this.type)
+					        other_mv_type = Relationship_.linked_entities[1];
+				        else
+					        other_mv_type = this.type;
+
+				        var OtherMvCombo  = Relationship_.get_Mv(this.MvCombo);
+				        var Relationships = this.MvCombo.getRelationships(OtherMvCombo);
+				        if (Relationships) {
+					        for (var rel_ind in Relationships) {
+						        if (!Relationships.hasOwnProperty(rel_ind)) continue;
+						        if (!relationship_index && Relationships[rel_ind].length === 1) relationship_index = rel_ind;
+						        else {
+							        var arr = Relationships[rel_ind];
+							        for (var i = 0; i < arr.length; i++) {
+								        var _relationship = arr[i];
+								        if (Relationship_.Identity.r_id === _relationship.Identity.r_id) {
+									        relationship_index = rel_ind;
+								        }
+							        }
+						        }
+					        }
 				        }
+				        var subtype = Relationship_.Map.Model.get('relationship_subtype');
+				        if (subtype) subtype = Sm.Core.Meta.get_relationship_type({sub: true, type: 'index'}, subtype);
 			        }
 			        return {
-				        Relationship:  Relationship_,
-				        el:            $closest_relationship_holder[0],
-				        other_MV_type: other_relationship_type
+				        Relationship:          Relationship_,
+				        el:                    $closest_relationship_holder[0],
+				        other_MV_type:         other_mv_type,
+				        relationship_index:    relationship_index,
+				        relationship_subindex: subtype || false
 			        }
 		        },
 		        /**

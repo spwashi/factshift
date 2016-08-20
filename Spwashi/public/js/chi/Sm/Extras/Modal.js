@@ -80,24 +80,24 @@ require(['require', 'Emitter', 'Sm'], function (require, Emitter) {
 
 					this.promise_object         = settings.promise_object || {};
 					this.promise_object.resolve = this.promise_object.resolve || function () {
-							Sm.CONFIG.DEBUG && console.log('Modal,def_resolve');
-							return true
-						};
+						Sm.CONFIG.DEBUG && console.log('Modal,def_resolve');
+						return true
+					};
 					this.promise_object.reject  = this.promise_object.reject || function () {
-							Sm.CONFIG.DEBUG && console.log('Modal,def_reject');
-							return false
-						};
+						Sm.CONFIG.DEBUG && console.log('Modal,def_reject');
+						return false
+					};
 
-					this.ViewArr                   = [];
+					this.ViewArr = [];
 					/** @type {HTMLElement|null} */
-					this.element                   = null;
+					this.element = null;
 					default_settings.click_events  = [];
 					this.settings                  = Sm.Core.util.merge_objects(default_settings, settings);
 					this.settings.action_classname = 'modal-button';
 
 					Sm.Extras.Modal.open_modals = Sm.Extras.Modal.open_modals || [];
 					Sm.Extras.ViewAid.prototype.init.apply(this, arguments);
-					for (var i              = 0; i < this.events_to_trigger.length; i++) {
+					for (var i = 0; i < this.events_to_trigger.length; i++) {
 						var ev_name = this.events_to_trigger[i];
 						var fn      = this['on_' + ev_name] || function () {};
 						this.on(ev_name, fn.bind(this));
@@ -153,7 +153,7 @@ require(['require', 'Emitter', 'Sm'], function (require, Emitter) {
 						var val         = $elem.val();
 						if (elem.multiple) val = val || [];
 						val && val.trim && (val = val.trim());
-						var name                = $elem.attr('name');
+						var name = $elem.attr('name');
 						if (name == 'has_title') val = !!elem.checked ? 1 : 0;
 						if (!!name) set_thing[name] = val;
 					}
@@ -164,7 +164,9 @@ require(['require', 'Emitter', 'Sm'], function (require, Emitter) {
 				var self      = this;
 				var self_type = this.self_type;
 				try {
-					return this.generate_element().catch(function (reason) {
+					return this.generate_element({
+						                             relationship_object: self.relationship_object
+					                             }).catch(function (reason) {
 						Sm.CONFIG.DEBUG && console.log('modal,CMA,0', reason);
 						throw reason;
 					}).then(function (result) {
@@ -189,7 +191,6 @@ require(['require', 'Emitter', 'Sm'], function (require, Emitter) {
 					if (this.EntityArr.length === 1) {
 						var MvCombo_  = this.EntityArr[0];
 						var self_type = this.self_type;
-						Sm.CONFIG.DEBUG && console.log(this.display_type);
 						return Sm.Entities[self_type].Garage.generate(this.display_type, MvCombo_, {config: config});
 					}
 				} catch (e) {
@@ -200,20 +201,20 @@ require(['require', 'Emitter', 'Sm'], function (require, Emitter) {
 			},
 			open:                 function () {
 				this.element = (typeof this.settings.template_string === "string")
-					? Sm.Core.util.createElement(_.template(this.settings.template_string)(), true)
-					: false;
+				? Sm.Core.util.createElement(_.template(this.settings.template_string)(), true)
+				: false;
 				if (!this.element) {
 					Sm.CONFIG.DEBUG && console.log('no open');
 					return false;
 				}
 				$('body').addClass('modal-blur');
-				var $modal   = $(this.element);
-				var m_c      = this.content_element = $modal.find(this.settings.content_element_selector)[0];
+				var $modal = $(this.element);
+				var m_c    = this.content_element = $modal.find(this.settings.content_element_selector)[0];
 				if (m_c) this.content_element.innerHTML = this.html;
 				Sm.Extras.Modal.open_modals.push(this);
 				if (!this.content_element) return false;
 				this.init_events();
-				this.status.is_open                     = true;
+				this.status.is_open = true;
 				this.emit('before_open', this);
 				try { document.documentElement.appendChild(this.element);} catch (e) {console.log(e) }
 				this.emit('open', this, this.content_element);

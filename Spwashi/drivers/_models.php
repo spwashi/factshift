@@ -82,7 +82,7 @@ $config = [
 		]
 	],
 	'models' => [
-		'Section'              => [
+		'Section'    => [
 			'prefix'        => 'sec_',
 			'table'         => 'sections',
 			'relationships' => [
@@ -105,7 +105,7 @@ $config = [
 				],
 			],
 			'properties'    => [
-				'all'          => [
+				'all'           => [
 					'id',
 					'title'        => ' - ',
 					'subtitle',
@@ -119,7 +119,14 @@ $config = [
 					'update_dt',
 					'creation_dt',
 				],
-				'api_settable' => [
+				'display_types' => [
+					'has_title'   => ['name' => 'Display Title'],
+					'content'     => ['type' => 'long'],
+					'update_dt'   => ['name' => 'Last Updated', 'type' => 'datetime'],
+					'creation_dt' => ['name' => 'Creation Date', 'type' => 'datetime'],
+					'words'       => ['type' => 'array']
+				],
+				'api_settable'  => [
 					'title',
 					'subtitle',
 					'content',
@@ -128,10 +135,10 @@ $config = [
 					'content_location',
 					'words',
 				],
-				'api_gettable' => '*'
+				'api_gettable'  => '*'
 			]
 		],
-		'Collection'           => [
+		'Collection' => [
 			'prefix'        => 'coll',
 			'table'         => 'collections',
 			'relationships' => [
@@ -156,7 +163,7 @@ $config = [
 				'api_gettable' => '*'
 			]
 		],
-		'Concept'              => [
+		'Concept'    => [
 			'prefix'        => 'ccp_',
 			'table'         => 'concepts',
 			'relationships' => [
@@ -190,7 +197,7 @@ $config = [
 				]
 			]
 		],
-		'Universe'             => [
+		'Universe'   => [
 			'prefix'        => 'uni_',
 			'table'         => 'universes',
 			'relationships' => [
@@ -223,7 +230,7 @@ $config = [
 				]
 			]
 		],
-		'Page'                 => [
+		'Page'       => [
 			'prefix'        => 'page',
 			'table'         => 'pages',
 			'relationships' => [
@@ -253,7 +260,7 @@ $config = [
 				'api_gettable' => '*'
 			]
 		],
-		'Dimension'            => [
+		'Dimension'  => [
 			'prefix'        => 'dim_',
 			'table'         => 'dimensions',
 			'relationships' => [
@@ -276,7 +283,7 @@ $config = [
 				'api_gettable' => '*'
 			]
 		],
-		'User'                 => [
+		'User'       => [
 			'prefix'        => 'usr_',
 			'table'         => 'users',
 			'relationships' => [
@@ -319,7 +326,7 @@ $config = [
 				]
 			]
 		],
-		'Dictionary'           => [
+		'Dictionary' => [
 			'table'         => 'dictionaries',
 			'prefix'        => 'dic_',
 			'relationships' => [
@@ -375,8 +382,6 @@ $config = [
 				'api_settable' => [
 					'section_id',
 					'dictionary_id',
-					'section_type',
-					'section_role',
 					'position',
 				],
 				'api_gettable' => '*'
@@ -515,7 +520,7 @@ $config = [
 			'table'      => 'section_section_map',
 			'prefix'     => 'ssm_',
 			'properties' => [
-				'all'          => [
+				'all'           => [
 					'id',
 					'primary_section_id',
 					'secondary_section_id',
@@ -529,14 +534,16 @@ $config = [
 					'creation_dt'
 					//'universe_id'
 				],
-				'api_settable' => [
+				'display_types' => [],
+				'api_settable'  => [
 					'secondary_section_id',
 					'relationship_type',
 					'relationship_subtype',
 					'primary_section_id',
 					'position',
+					'adopts_children'
 				],
-				'api_gettable' => '*'
+				'api_gettable'  => '*'
 			]],
 		'SectionConceptMap'    => [
 			'table'      => 'section_concept_map',

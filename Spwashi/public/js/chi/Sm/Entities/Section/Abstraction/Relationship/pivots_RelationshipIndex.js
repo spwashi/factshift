@@ -21,7 +21,7 @@ require(['require', 'Emitter', 'Sm'], function (require, Emitter, Sm) {
 				return Sm.Core.RelationshipIndex.prototype.init.apply(this, arguments);
 			},
 			/**
-			 * Get all of the relationships that gall under a certain subtype
+			 * Get all of the relationships that fall under a certain subtype
 			 * @param subtype
 			 * @param context_id
 			 * @return {*}

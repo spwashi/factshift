@@ -11,7 +11,7 @@ require(['require', 'Sm-Core-SmModel'], function (require) {
 	 * @class   Sm.Entities.Section.Model
 	 */
 	var SectionModel                         = Sm.Core.SmModel.extend({
-		                                                                  defaults:   Sm.Core.Meta.get_defaults_of('Section'),
+		                                                                  defaults:   Sm.Core.Meta.get_defaults('Section'),
 		                                                                  set:        function (attributes, options) {
 			                                                                  Sm.Core.SmModel.prototype.set.call(this, attributes, options);
 			                                                                  this.init_words();

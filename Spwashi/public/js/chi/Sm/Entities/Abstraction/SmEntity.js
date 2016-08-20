@@ -37,7 +37,7 @@ require(['Sm', "Sm-Core-Core"], function (Sm) {
 		SmEntity.prototype.complete    = function () {
 			var EntityType            = this.type;
 			this.Model                = this.Model || (function (self) {
-				var Model = Sm.Core.SmModel.extend({defaults: Sm.Core.Meta.get_defaults_of(self.type.replace('__', '|'))});
+				var Model = Sm.Core.SmModel.extend({defaults: Sm.Core.Meta.get_defaults(self.type.replace('__', '|'))});
 				Model.tmp = true;
 				return Model;
 			})(this);

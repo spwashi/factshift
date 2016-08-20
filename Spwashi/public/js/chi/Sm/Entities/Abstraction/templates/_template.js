@@ -32,10 +32,75 @@ require([
 			        button_control:     '<div class="icons button-control">\n    <i class="button edit fa fa-pencil"></i>\n    <i class="button delete close fa fa-remove"></i>\n    <i class="button add fa fa-plus"></i>\n    <i class="button handle fa fa-arrows"></i>\n    <i class="debug button fa fa-question"></i>\n</div>',
 			        modal:              {
 				        destroy:               '<div class="content">Are you sure you want to delete these entities?</div>',
-				        edit:                  function () {
-					        Sm.CONFIG.DEBUG && console.log(arguments);
-					        var template = "";
-					        return "THIS IS A THING";
+				        /**
+				         * @this Sm.Entities.Abstraction.Garage
+				         * @return {string}
+				         */
+				        edit:                  function (template_query, attributes, config) {
+					        var type   = this.type;
+					        var Entity = Sm.Core.Meta.get_entity(this.type);
+					        if (!Entity) return '';
+					        var Meta               = Entity.Meta;
+					        var defaults           = Meta.get_defaults();
+					        var template           = '';
+					        var beginning_template = '<div class="control-group">\n    <label for="__TITLE__">__UC_TITLE__:</label>\n';
+					        var end_template       = '<span class="error" id="__TITLE__-error"></span>\n</div>';
+					        var SelfMvCombo        = config && config.relationship_object && config.relationship_object.SelfMvCombo ? config.relationship_object.SelfMvCombo : false;
+					        var EffectiveMeta      = SelfMvCombo && SelfMvCombo.type ? Sm.Core.Meta.get_entity(SelfMvCombo.type).Meta : Meta;
+					        for (var attribute in defaults) {
+						        if (!defaults.hasOwnProperty(attribute) || !Meta.is_api_settable(attribute)) continue;
+						        var input_template = '';
+						        var title_type     = Meta.get_datatype_of(attribute);
+
+
+						        var display_information = Meta.get_display_information(attribute);
+						        title_type              = display_information.type;
+						        var uc_title            = display_information.name;
+
+						        switch (title_type) {
+							        case "boolean":
+								        input_template = '<input class="model edit __TITLE__" data-attribute="__TITLE__" type="checkbox" id="__TITLE__" name="__TITLE__" value="1" <% if(__TITLE__ == 1) {%>checked<% } %>>';
+								        break;
+							        default:
+							        case "short":
+								        input_template = '<input data-attribute="__TITLE__" class="model edit __TITLE__" type="text" name="__TITLE__" placeholder="__UC_TITLE__" title="__TITLE__" value="<%- __TITLE__ %>">';
+								        break;
+							        case "long":
+							        case "array":
+								        input_template = '<textarea data-attribute="__TITLE__" class="model edit __TITLE__" name="__TITLE__" placeholder="__UC_TITLE__" title="__TITLE__"><%- __TITLE__ %></textarea>';
+								        break;
+							        case "enum":
+								        var attr_obj               = EffectiveMeta.get_attribute_enum_object(attribute);
+								        config.relationship_object = config.relationship_object || {};
+								        var to_search              = 'relationship_index';
+								        if (/sub/.test(attribute)) to_search = 'relationship_subindex';
+								        input_template = '<select class="model edit __TITLE__ select" data-attribute="__TITLE__" id="__TITLE__" name="__TITLE__">';
+								        for (var enum_type in attr_obj) {
+									        if (!attr_obj.hasOwnProperty(enum_type)) continue;
+									        var enum_val = attr_obj[enum_type];
+									        var selected;
+
+									        if (typeof enum_val === "number") {
+										        selected = config.relationship_object[to_search] && config.relationship_object[to_search] == enum_val ? 'selected="selected"' : '';
+										        input_template += '<option value="' + enum_val + '"' + selected + ' >' + _.titleize(enum_type) + '</option>';
+									        }
+									        else if (typeof enum_val === "object") {
+										        selected = config.relationship_object[to_search] && config.relationship_object[to_search] == enum_type ? 'selected="selected"' : '';
+										        input_template += '<option value="' + enum_type + '"' + selected + '>' + enum_val.name || _.titleize(enum_type) + '</option>';
+									        }
+								        }
+								        input_template += "</select>";
+								        break;
+						        }
+
+						        var after_template = beginning_template;
+						        after_template += input_template;
+						        after_template += end_template;
+						        uc_title           = uc_title || _.titleize(attribute.replace('_', ' '));
+
+						        template += after_template.replace(new RegExp('__TITLE__', 'g'), attribute).replace(new RegExp('__UC_TITLE__', 'g'), uc_title);
+					        }
+					        return template;
 				        },
 				        add_relationship:      '<div class="control-group">\n    <label for="relationship_index">Relationship Type: </label>\n    <select class="relationship-attribute relationship_index select" data-attribute="relationship_index" id="relationship_index" name="relationship_index">\n        <option>Select one...</option>\n        <% for (var name in relationship_indices) { if (!relationship_indices.hasOwnProperty(name)) continue; %>\n        <option value="<%- relationship_indices[name] %>"><%- name %></option>\n        <% } %>\n    </select>\n</div>',
 				        add_relationship_type: '<div class="form" id="modal-continue-2">\n    <div class="control-group">\n        <label for="position">Position:</label>\n        <input id="position" data-attribute="position" class="relationship-attribute position" type="text" name="position"\n               placeholder="Which position should we add the relationship?" title="position" value="<%- typeof position !== \'undefined\' ? position : 0 %>">\n        <span class="error" id="position-error"></span>\n    </div>\n</div>'

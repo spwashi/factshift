@@ -1307,7 +1307,6 @@ require(['require', 'Sm', 'Sm-Core-util', 'Emitter'], function (require, Sm) {
 			if (type.indexOf('reciprocal_') > -1) {
 				is_reciprocal = true;
 				type          = type.replace('reciprocal_', '');
-				Sm.CONFIG.DEBUG && console.log(type);
 			}
 			var relationships = is_reciprocal ? this.reciprocal_relationships : this.relationships;
 			if (relationships[type]) return relationships[type];

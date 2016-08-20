@@ -15,19 +15,19 @@ define(['Emitter', 'Sm', 'jquery', 'underscore', 'inflection'], function (Emitte
 	 * @prop {function} get_type                            {@link Sm.Core.Meta#get_type}
 	 * @prop {function} get_possible_relationship_indices   {@link Sm.Core.Meta#get_possible_relationship_indices}
 	 * @prop {function} get_relationship_type               {@link Sm.Core.Meta#get_relationship_type}
-	 * @prop {function} get_defaults_of                     {@link Sm.Core.Meta#get_defaults_of}
+	 * @prop {function} get_defaults_of                     {@link Sm.Core.Meta#get_defaults}
 	 * @prop {function} configure                           {@link Sm.Core.Meta#configure}
 	 *
 	 */
 	var Meta = Emitter.extend(
 	{
-		CONFIG:          {
+		CONFIG:                            {
 			DEBUG:       false,
 			EDIT:        false,
 			DRAG_N_DROP: false
 		},
-		MvMaps:          {},
-		init:            function (settings) {
+		MvMaps:                            {},
+		init:                              function (settings) {
 			this.events         = [];
 			this._callbacks     = {};
 			this.MvMaps         = {
@@ -39,8 +39,13 @@ define(['Emitter', 'Sm', 'jquery', 'underscore', 'inflection'], function (Emitte
 			};
 			this.loaded_ent_ids = {};
 
-			settings            = settings || {};
-			this.type           = settings.type;
+			settings = settings || {};
+			/**
+			 * @property Sm.Core.Meta.type
+			 * @alias Sm.Core.Meta.type
+			 * @type {string}
+			 */
+			this.type = settings.type;
 			this.lower_plural   = this.lower_plural || {};
 			this.lower_singular = this.lower_singular || {};
 
@@ -60,7 +65,7 @@ define(['Emitter', 'Sm', 'jquery', 'underscore', 'inflection'], function (Emitte
 		 * @alias Sm.Core.Meta.configure
 		 * @param config
 		 */
-		configure:       function (config) {
+		configure:                         function (config) {
 			//if (!config.relationships) Sm.CONFIG.DEBUG && console.log("Config for " + config.type + " does not have any relationships");
 			var rto = this.relationship_type_obj = Sm.Core.util.merge_objects_recursive(config.relationships || {}, config.reciprocal_relationships || {});
 			this.reciprocal_relationship_type_list = Object.keys(config.reciprocal_relationships || {});
@@ -86,14 +91,50 @@ define(['Emitter', 'Sm', 'jquery', 'underscore', 'inflection'], function (Emitte
 		 * @param type
 		 * @return {*}
 		 */
-		get_defaults_of: function (type) {
+		get_defaults:                      function (type) {
+			type                 = type || this.type;
 			var spwashi_entities = Sm.spwashi_config.entities;
-			var _entity          = spwashi_entities[type];
+			var _entity          = spwashi_entities[type.replace('__', '|')];
 			if (!_entity) return {};
 			return (_entity.properties || {}).all || {};
 		},
-
-
+		is_api_settable:                   function (attribute) {
+			var spwashi_entities = Sm.spwashi_config.entities;
+			var _entity          = spwashi_entities[this.type.replace('__', '|')];
+			if (!_entity) return false;
+			var api = (_entity.properties || {}).api_settable || {};
+			return (attribute in api || (api.indexOf && api.indexOf(attribute) > -1));
+		},
+		get_display_information:           function (attribute) {
+			var spwashi_entities                             = Sm.spwashi_config.entities;
+			var _entity                                      = spwashi_entities[this.type.replace('__', '|')];
+			_entity.properties                               = _entity.properties || {};
+			_entity.properties.display_types                 = _entity.properties.display_types || {};
+			_entity.properties.display_types[attribute]      = _entity.properties.display_types[attribute] || {};
+			_entity.properties.display_types[attribute].type = _entity.properties.display_types[attribute].type || this.get_datatype_of(attribute);
+			_entity.properties.display_types[attribute].name = _entity.properties.display_types[attribute].name || _.titleize(attribute.replace('_', ' '));
+			return _entity.properties.display_types[attribute];
+		},
+		get_datatype_of:                   function (attribute) {
+			var spwashi_entities = Sm.spwashi_config.entities;
+			var _entity          = spwashi_entities[this.type.replace('__', '|')];
+			if (!_entity) return false;
+			if (/((h|w)a|i|adopt)s_/.test(attribute)) {
+				return "boolean";
+			} else if (/(_id)/.test(attribute)) {
+				return "entity";
+			} else if (/(_(sub)?type)/.test(attribute)) {
+				return "enum";
+			}
+			return "short";
+		},
+		get_attribute_enum_object:         function (attribute) {
+			var split = attribute.split('_');
+			if (this.type && this.type.toLowerCase() === split[0]) return this.types;
+			else if (this[attribute + '_obj']) return this[attribute + '_obj'];
+			else if (this[attribute + 's']) return this[attribute + 's'];
+			return {};
+		},
 		relationship_types:                {
 			children:    1,
 			composition: 2,
@@ -421,6 +462,10 @@ define(['Emitter', 'Sm', 'jquery', 'underscore', 'inflection'], function (Emitte
 	Sm.Core.Meta = new Meta({
 		type: false
 	});
-	Sm.Core.Meta.Proto = Meta;
+	Sm.Core.Meta.get_entity = function (type) {
+		var entities = Sm.Entities;
+		return entities && entities[type] ? entities[type] : false;
+	};
+	Sm.Core.Meta.Proto      = Meta;
 	Sm.loaded.add('Core_Meta');
 });

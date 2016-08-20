@@ -97,6 +97,7 @@ require(['require', 'Class', 'Sm', 'Sm-Entities-Abstraction-templates-_template'
 			 * @param template_arr
 			 * @param input
 			 * @param settings
+			 * @param settings.config
 			 * @param settings.default_value
 			 * @param settings.attributes
 			 * @param settings.synchronous
@@ -154,6 +155,7 @@ require(['require', 'Class', 'Sm', 'Sm-Entities-Abstraction-templates-_template'
 						replace_object[index] = this._generate_one([preferred_template, fallback], to_search, settings);
 					}
 				}
+				var self    = this;
 				var fn      = function (obj, subtype, previous) {
 					var res = false;
 					if (typeof obj === "boolean" || typeof obj === "number") return obj;
@@ -163,14 +165,14 @@ require(['require', 'Class', 'Sm', 'Sm-Entities-Abstraction-templates-_template'
 							res = obj;
 						} else if (typeof obj === "function") {
 							//todo, make it so this is only called when necessary?
-							res = obj(to_try, settings.attributes || {});
+							var o = obj.bind(self);
+							res   = o(to_try, settings.attributes || {}, settings.config);
 						} else if (obj[subtype]) res = obj[subtype];
 						else res = false;
 					}
 					if (!res && !!default_val && previous[0] && subtype != default_val) res = fn(obj, default_val, previous);
 					return res;
 				};
-				var self    = this;
 				var resolve = function (string) {
 					var processed_string = settings.attributes ? self._combine_string(settings.attributes, string) : string;
 					for (var index in replace_object) {
@@ -196,7 +198,6 @@ require(['require', 'Class', 'Sm', 'Sm-Entities-Abstraction-templates-_template'
 
 					//If the primary object is a string already, we are okay and should stop looking.
 					if (typeof preferred_template === "string") {
-						Sm.CONFIG.DEBUG && console.log('abs_gar,_generate,for -- ', this.type);
 						return resolve(preferred_template);
 					}
 				}
@@ -221,8 +222,8 @@ require(['require', 'Class', 'Sm', 'Sm-Entities-Abstraction-templates-_template'
 					settings = type;
 					type     = settings.type;
 					data     = settings.MvCombo || settings.data || {};
-					config   = settings.config || {};
 				}
+				config              = settings ? settings.config || {} : {};
 				var is_synchronous  = !!settings.synchronous || false;
 				var normalized_data = this._normalize_data(data, config || {});
 				if (type == 'relationships') type = 'full.relationship';
@@ -243,7 +244,7 @@ require(['require', 'Class', 'Sm', 'Sm-Entities-Abstraction-templates-_template'
 							synchronous: true,
 							replace:     {__BUTTON_CONTROL__: "button_control"}
 						});
-					var inner = self._generate_one(templates, type, {synchronous: true});
+					var inner = self._generate_one(templates, type, {synchronous: true, config: config});
 
 					return self._combine_string(normalized_data.attributes, outer.replace(/__CONTENT__/ig, inner));
 				};
@@ -255,6 +256,7 @@ require(['require', 'Class', 'Sm', 'Sm-Entities-Abstraction-templates-_template'
 				var MvCombo = normalized_data.MvCombo;
 				var t       = Sm.Entities[this.type].templates;
 				var Meta    = Sm.Entities[this.type].Meta;
+
 
 				var templates            = [t[normalized_data.template_type] || t.standard, t._template];
 				var context_id           = settings.context_id || 0;
@@ -455,7 +457,6 @@ require(['require', 'Class', 'Sm', 'Sm-Entities-Abstraction-templates-_template'
 					props    = props || {};
 					var data = props.data || {};
 				});
-				Sm.CONFIG.DEBUG && console.log(active);
 				$content.val(active).trigger('change');
 				return parameters.$relationship_index_string;
 			},
@@ -465,7 +466,6 @@ require(['require', 'Class', 'Sm', 'Sm-Entities-Abstraction-templates-_template'
 				    !appended_views[OtherMvCombo.r_id] ?
 				    OtherMvCombo.getView()
 				    : appended_views[OtherMvCombo.r_id].clone();
-				Sm.CONFIG.DEBUG && console.log(OtherView);
 				OtherView.render({synchronous: true, display_type: display_type});
 				var params   = {
 					View:               OtherView,

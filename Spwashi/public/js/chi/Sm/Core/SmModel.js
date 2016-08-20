@@ -7,7 +7,7 @@ define(['backbone', 'Sm/urls/main'], function (Backbone) {
 	 */
 	Sm.Core.SmModel = Backbone.Model.extend({
 		defaults:   function () {
-			var _obj          = Sm.Core.Meta.get_defaults_of(this.prototype.type);
+			var _obj          = Sm.Core.Meta.get_defaults(this.prototype.type);
 			_obj._permissions = {
 				edit:    false,
 				view:    false,

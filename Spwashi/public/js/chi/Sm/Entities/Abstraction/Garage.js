@@ -129,13 +129,20 @@ require(['require', 'Class', 'Sm', 'Sm-Entities-Abstraction-templates-_template'
 				var i_a_test = /\.(.*)(\b|$)/.exec(input);
 				var i_a      = !!i_a_test && i_a_test[1] ? i_a_test[1] : false;
 				if (i_a) input = input.replace(i_a_test[0], "");
-				//.[]()
+
+				var extra__test = /\{(.+)\}/.exec(input);
+				var extra_      = !!extra__test && extra__test[1] ? extra__test[1] : false;
+				if (extra_) input = input.replace(extra__test[0], "");
+
+
+				//.[](){}
 //If we didn't specify anything, assume that we are trying to pull the "full" version
 				input = (input.length ? input : "full").replace(".", "");
 
 				!!i_a && to_try.push(i_a);
 				!!m_s && to_try.push(m_s);
 				!!subtype && to_try.push(subtype);
+				!!extra_ && to_try.push(extra_);
 				input.length && to_try.push(input);
 
 				var complete_fallback  = Sm.Entities.Abstraction.templates._template;
@@ -288,11 +295,17 @@ require(['require', 'Class', 'Sm', 'Sm-Entities-Abstraction-templates-_template'
 				for (var i = 0; i < relationship_indices.length; i++) {
 					var relationship_index        = relationship_indices[i][0];
 					var name                      = relationship_indices[i][1];
+					var RelationshipIndex         = MvCombo.getRelationshipIndex(relationship_index);
 					var __ris_t_nom               = type.replace(/(relationship)/, '$1[relationship_index](' + relationship_index + ')');
-					var relationship_index_string = this._generate_one(templates, __ris_t_nom, {synchronous: true});
+					var def_map_attrs             = (Meta.get_defaults(Meta.get_map_between(RelationshipIndex.linked_entities)) || {});
+					var relationship_index_string = this._generate_one(templates, __ris_t_nom, {
+						synchronous: true, config: {
+							list:         'position' in def_map_attrs,
+							has_subtypes: 'relationship_subtype' in def_map_attrs
+						}
+					});
 					//Replace the generic "__TITLE__" string with the display name of the relationship
 					relationship_index_string     = relationship_index_string.replace('__TITLE__', name);
-					var RelationshipIndex         = MvCombo.getRelationshipIndex(relationship_index);
 					if (!RelationshipIndex) Sm.CONFIG.DEBUG && console.log('abs_gar,_el,-1.5', relationship_index);
 					if (!RelationshipIndex) continue;
 					var relationship_object = RelationshipIndex.get_listed_items(context_id);
@@ -309,12 +322,14 @@ require(['require', 'Class', 'Sm', 'Sm-Entities-Abstraction-templates-_template'
 					var $relationship_index_string = this._populate_relationship_index({
 						                                                                   $relationship_index_string: $(relationship_index_string),
 						                                                                   relationship_index:         relationship_index,
+						                                                                   RelationshipIndex:          RelationshipIndex,
 						                                                                   relationship_object:        relationship_object,
 						                                                                   type:                       type,
 						                                                                   display_type:               display_type,
 						                                                                   appended_views:             appended_views,
 						                                                                   templates:                  templates,
-						                                                                   MvCombo:                    MvCombo
+						                                                                   MvCombo:                    MvCombo,
+						                                                                   has_subtypes:               'relationship_subtype' in def_map_attrs
 					                                                                   });
 					if ($relationship_index_string) $rel_index_list.push($relationship_index_string);
 				}
@@ -337,48 +352,103 @@ require(['require', 'Class', 'Sm', 'Sm-Entities-Abstraction-templates-_template'
 			 * @param parameters
 			 * @param parameters.$relationship_index_string
 			 * @param parameters.relationship_index
+			 * @param parameters.RelationshipIndex
 			 * @param parameters.relationship_object
 			 * @param parameters.type
 			 * @param parameters.display_type
 			 * @param parameters.templates
 			 * @param parameters.MvCombo
+			 * @param parameters.list
 			 * @param parameters.appended_views
+			 * @param parameters.has_subtypes
 			 * @return {*}
 			 * @protected
 			 */
 			_populate_relationship_index:      function (parameters) {
 				var $relationship_index_string = parameters.$relationship_index_string;
 				var relationship_index         = parameters.relationship_index;
+				var RelationshipIndex          = parameters.RelationshipIndex;
 				var relationship_object        = parameters.relationship_object;
 				var type                       = parameters.type || '.relationships';
 				var display_type               = parameters.display_type || 'preview';
 				var templates                  = parameters.templates;
 				var appended_views             = parameters.appended_views;
 				var MvCombo                    = parameters.MvCombo;
+				var Meta                       = Sm.Core.Meta.get_entity(MvCombo.type).Meta;
+				var has_subtypes               = parameters.has_subtypes;
+				var def_map_attrs              = (Meta.get_defaults(Meta.get_map_between(RelationshipIndex.linked_entities)) || {});
 				if (this.relationship_display_type[relationship_index] == 'tag') return this._populate_relationship_index_tags(parameters);
+				var relationship_subindices = false;
+				if (has_subtypes && RelationshipIndex.get_listed_subtype_items) {
+					//context_id
+					relationship_subindices = RelationshipIndex.get_listed_subtype_items(0);
+					Sm.CONFIG.DEBUG && console.log('sub -- rel_ind', relationship_subindices, RelationshipIndex);
+				}
 
-				var $ris_content = $relationship_index_string.children('.content').eq(0) || false;
-
-				if (!$ris_content) Sm.CONFIG.DEBUG && console.log('abs_garage,_rel,-1', $relationship_index_string);
-				if (!$ris_content) return false;
+				Sm.CONFIG.DEBUG && console.log(has_subtypes);
 
 				var related_items = relationship_object.items || [];
 				if (!related_items.length) return false;
-				var relationships = relationship_object.relationships || [];
-				var _count        = relationship_object.count || 0;
-				for (var k = 0; k < _count; k++) {
-					var OtherMvCombo = related_items[k];
-					var Relationship = relationships[k];
 
-					var relationship_template_name = type.replace(/(relationship)/, '$1[relationship](' + relationship_index + ')');
-					var relationship_string        = this._generate_one(templates, relationship_template_name, {synchronous: true});
-					relationship_string            =
+				var relationship_template_name = type.replace(/(relationship)/, '$1[relationship](' + relationship_index + ')');
+				var relationship_holder        = $relationship_index_string.children('.content').eq(0) || false;
+				var self                       = this;
+				var append_fn                  = function (container, Relationship, OtherMvCombo) {
+					var relationship_string = self._generate_one(templates, relationship_template_name, {synchronous: true});
+					relationship_string     =
 					relationship_string
 					.replace('__R_ID__', Relationship.Identity.r_id)
 					.replace('__MV_R_ID__', MvCombo ? MvCombo.r_id : 'null')
 					.replace('__CONTENT__', '');
-					this._append_relationship(OtherMvCombo, $ris_content, relationship_index, relationship_string, appended_views, display_type);
+					self._append_relationship({
+						                          OtherMvCombo:        OtherMvCombo,
+						                          relationship_holder: container,
+						                          relationship_index:  relationship_index,
+						                          relationship_string: relationship_string,
+						                          appended_views:      appended_views,
+						                          display_type:        display_type,
+						                          properties:          {}
+					                          });
+				};
 
+				var relationships;
+				var OtherMvCombo, Relationship;
+				if (!relationship_subindices) {
+					relationships = relationship_object.relationships || [];
+					var _count    = relationship_object.count || 0;
+					for (var k = 0; k < _count; k++) {
+						if (!relationship_holder) Sm.CONFIG.DEBUG && console.log('abs_garage,_rel,-1', $relationship_index_string);
+						if (!relationship_holder) return false;
+						OtherMvCombo = related_items[k];
+						Relationship = relationships[k];
+						append_fn(relationship_holder, Relationship, OtherMvCombo);
+					}
+				} else {
+					for (var subindex in relationship_subindices) {
+						Sm.CONFIG.DEBUG && console.log(relationship_subindices);
+						if (!relationship_subindices.hasOwnProperty(subindex) || !relationship_subindices[subindex]) continue;
+						var subtype_name        = Meta.get_relationship_type({sub: true, type: 'name'}, subindex);
+						var __ris_subtype_t_nom = type.replace(/(relationship)/, '$1[relationship_subindex](' + subindex + ')');
+						Sm.CONFIG.DEBUG && console.log(subtype_name, subindex, __ris_subtype_t_nom);
+						var relationship_subindex_string = this._generate_one(templates, __ris_subtype_t_nom, {
+							synchronous: true, config: {
+								list:         'position' in def_map_attrs,
+								has_subtypes: 'relationship_subtype' in def_map_attrs
+							}
+						});
+						//Replace the generic "__TITLE__" string with the display name of the relationship
+						relationship_subindex_string     = relationship_subindex_string.replace('__TITLE__', subtype_name).replace('__CONTENT__', '').replace('__TYPE__', subindex);
+						Sm.CONFIG.DEBUG && console.log(relationship_subindex_string);
+						var $rel_subindex = $(relationship_subindex_string);
+						Sm.CONFIG.DEBUG && console.log($rel_subindex);
+						Sm.CONFIG.DEBUG && console.log(relationship_holder);
+						relationship_holder.append($rel_subindex);
+						var items     = relationship_subindices[subindex].items;
+						relationships = relationship_subindices[subindex].relationships;
+						for (var j = 0; j < items.length; j++) {
+							append_fn($rel_subindex, relationships[j], items[j]);
+						}
+					}
 				}
 				return $relationship_index_string;
 			},
@@ -456,13 +526,22 @@ require(['require', 'Class', 'Sm', 'Sm-Entities-Abstraction-templates-_template'
 				$content.on('click-tag', function (evt, props) {
 					props    = props || {};
 					var data = props.data || {};
+					Sm.CONFIG.DEBUG && console.log(evt, props);
 				});
 				$content.val(active).trigger('change');
 				return parameters.$relationship_index_string;
 			},
-			_append_relationship:              function (OtherMvCombo, $ris_content, relationship_index, relationship_string, appended_views, display_type) {
-				display_type  = display_type || "full";
-				var OtherView =
+			_append_relationship:              function (parameters) {
+				var OtherMvCombo        = parameters.OtherMvCombo;
+				//The content of the relationship index string
+				var relationship_holder = parameters.relationship_holder;
+				var relationship_index  = parameters.relationship_index;
+				var relationship_string = parameters.relationship_string;
+				var appended_views      = parameters.appended_views;
+				var display_type        = parameters.display_type;
+				var properties          = parameters.properties;
+				display_type            = display_type || "full";
+				var OtherView           =
 				    !appended_views[OtherMvCombo.r_id] ?
 				    OtherMvCombo.getView()
 				    : appended_views[OtherMvCombo.r_id].clone();
@@ -477,7 +556,11 @@ require(['require', 'Class', 'Sm', 'Sm-Entities-Abstraction-templates-_template'
 				if ($content[0]) {
 					var v_element = OtherView.get_rendered('Element');
 					$content[0].appendChild(v_element);
-					$ris_content[0].appendChild($outer[0]);
+					if (properties && !!properties.list) {
+						var RelationshipIndex = OtherMvCombo.getRelationshipIndex(relationship_index);
+						var position          = RelationshipIndex.get_listed_items()
+					}
+					relationship_holder[0].appendChild($outer[0]);
 					appended_views[OtherMvCombo.r_id] = appended_views[OtherMvCombo.r_id] || OtherView;
 					OtherView.mark_added();
 				} else {

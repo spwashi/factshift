@@ -157,6 +157,9 @@ img {
 .modal .modal-content {
   position: relative;
 }
+.modal .modal-content ol {
+  padding: 0;
+}
 .modal .modal-content.saving > .content {
   background: rgba(237, 242, 243, 0.8);
 }
@@ -256,10 +259,12 @@ img {
 .choose-container > .options > button:first-child {
   float: left;
 }
-.view_relationship-container .relationship-container > .content {
+.view_relationship-container .relationship-container > .content,
+.view_relationship-container .relationship-subtype-container > .content {
   margin-left: 20px;
 }
-.view_relationship-container .relationship-container > header {
+.view_relationship-container .relationship-container > header,
+.view_relationship-container .relationship-subtype-container > header {
   margin-top: 7px;
   margin-bottom: 5px;
   border-bottom: thin solid #ccc;

@@ -15,6 +15,9 @@
    font-family:                'Inconsolata', Arial, "Lucida Grande", sans-serif;
    .modal-content {
       position: relative;
+      ol {
+         padding: 0;
+      }
       &.saving > .content {
          background: lighten(@module_header_color, 55%);
       }
@@ -102,7 +105,7 @@
 }
 
 .view_relationship-container {
-   .relationship-container {
+   .relationship-container, .relationship-subtype-container {
       > .content {
          margin-left: 20px;
       }

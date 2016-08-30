@@ -119,7 +119,7 @@ define(['Emitter', 'Sm', 'jquery', 'underscore', 'inflection'], function (Emitte
 			var spwashi_entities = Sm.spwashi_config.entities;
 			var _entity          = spwashi_entities[this.type.replace('__', '|')];
 			if (!_entity) return false;
-			if (/((h|w)a|i|adopt)s_/.test(attribute)) {
+			if (/((h|w)a|i|adopt)s_|can/.test(attribute)) {
 				return "boolean";
 			} else if (/(_id)/.test(attribute)) {
 				return "entity";
@@ -258,12 +258,13 @@ define(['Emitter', 'Sm', 'jquery', 'underscore', 'inflection'], function (Emitte
 			 * This is the relationship type object that has information on the relationships
 			 * @type {Meta.relationship_type_obj|{}}
 			 */
-			var relationship_type_obj = !!settings.sub ? this.relationship_subtypes : this.relationship_type_obj;
+			var relationship_type_obj = !!settings.sub ? this.relationship_subtype_obj : this.relationship_type_obj;
 			/** @type {string|int|boolean} The index of the relationship*/
 			var index;
 			identifier                = identifier || map.relationship_type || false;
 			/** @type {*} The object of the Entities that are in the Sm namespace */
 			if (!identifier) return false;
+			identifier += '';
 			/**
 			 * Iterate through the relationship type object to find things that are mapped together
 			 */
@@ -293,6 +294,7 @@ define(['Emitter', 'Sm', 'jquery', 'underscore', 'inflection'], function (Emitte
 				// Same for the singular index. If there is a case where there are multiple indices delimited by pipes, search those for the right index
 				var rel_ind_singular    = rel_type.index_singular.constructor === Array ? rel_type.index_singular.join('|') : rel_type.index_singular;
 				rel_ind_singular        = (rel_ind_singular || '').toLowerCase();
+				if (!identifier.toLowerCase) Sm.CONFIG.DEBUG && console.log(arguments);
 				if (identifier == rel_ind_singular || rel_ind_singular.toLowerCase().search(new RegExp("\\|?" + identifier.toLowerCase() + "\\|?")) > -1) return index;
 				// If the identifier matches the id, return that
 				if (!!rel_type.id && identifier == rel_type.id) return index;

@@ -61,6 +61,9 @@ require([
 							        case "boolean":
 								        input_template = '<input class="model edit __TITLE__" data-attribute="__TITLE__" type="checkbox" id="__TITLE__" name="__TITLE__" value="1" <% if(__TITLE__ == 1) {%>checked<% } %>>';
 								        break;
+							        case "entity":
+								        continue;
+								        break;
 							        default:
 							        case "short":
 								        input_template = '<input data-attribute="__TITLE__" class="model edit __TITLE__" type="text" name="__TITLE__" placeholder="__UC_TITLE__" title="__TITLE__" value="<%- __TITLE__ %>">';
@@ -75,6 +78,7 @@ require([
 								        var to_search              = 'relationship_index';
 								        if (/sub/.test(attribute)) to_search = 'relationship_subindex';
 								        input_template = '<select class="model edit __TITLE__ select" data-attribute="__TITLE__" id="__TITLE__" name="__TITLE__">';
+
 								        for (var enum_type in attr_obj) {
 									        if (!attr_obj.hasOwnProperty(enum_type)) continue;
 									        var enum_val = attr_obj[enum_type];
@@ -107,11 +111,22 @@ require([
 			        },
 			        relationship_outer: '<section class="relationship-index-container">__CONTENT__</section>',
 			        relationship:       {
-				        relationship_index: {
-					        full:     '<div class="relationship-container __TYPE__-container" data-Mv-r_id="__R_ID__">\n    <header class="title">__TITLE__</header>\n    <div class="content">__CONTENT__</div>\n</div>',
+				        relationship_subindex: {
+					        full: function (template_query, attributes, config) {
+						        if (config && config.list)
+							        return '<ol class="relationship-subtype-container __TYPE__-container" data-Mv-r_id="__R_ID__">\n    <header class="title">__TITLE__</header>\n    <div class="content">__CONTENT__</div>\n</ol>';
+						        return '<ul class="relationship-subtype-container __TYPE__-container" data-Mv-r_id="__R_ID__">\n    <header class="title">__TITLE__</header>\n    <div class="content">__CONTENT__</div>\n</ul>';
+					        }
+				        },
+				        relationship_index:    {
+					        full:     function (template_query, attributes, config) {
+						        if (config && config.list)
+							        return '<ol class="relationship-container __TYPE__-container" data-Mv-r_id="__R_ID__">\n    <header class="title">__TITLE__</header>\n    <div class="content">__CONTENT__</div>\n</ol>';
+						        return '<ul class="relationship-container __TYPE__-container" data-Mv-r_id="__R_ID__">\n    <header class="title">__TITLE__</header>\n    <div class="content">__CONTENT__</div>\n</ul>';
+					        },
 					        concepts: '<div class="relationship-container concepts-container" data-Mv-r_id="__R_ID__">\n    <header class="title"><label for="concepts-container">__TITLE__</label></header>\n    <select name="concepts-relationships" id="concepts-container" class="model edit concepts-relationships relationships" multiple="multiple"></select>\n</div>'
 				        },
-				        relationship:       '<div class="relationship" data-Relationship-r_id="__R_ID__">\n    <div class="content">__CONTENT__</div>\n</div>'
+				        relationship:          '<li class="relationship" data-Relationship-r_id="__R_ID__">\n    <div class="content">__CONTENT__</div>\n</li>'
 			        }
 		        };
 		        Sm.loaded.add('Entities_Abstraction_templates');

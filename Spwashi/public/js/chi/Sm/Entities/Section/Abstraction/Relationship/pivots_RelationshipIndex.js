@@ -27,7 +27,18 @@ require(['require', 'Emitter', 'Sm'], function (require, Emitter, Sm) {
 			 * @return {*}
 			 */
 			get_listed_subtype_items: function (subtype, context_id) {
-				var subtypes = this.relationship_subtype_map[context_id];
+				var subtypes;
+				if (!context_id && !!this.relationship_subtype_map[subtype]) {
+					var res  = {};
+					subtypes = this.relationship_subtype_map[subtype];
+					for (var s_t in subtypes) {
+						if (!subtypes.hasOwnProperty(s_t)) continue;
+						res[s_t] = this.get_listed_subtype_items(s_t, subtype);
+					}
+					return res;
+				}
+				context_id = context_id || 0;
+				subtypes   = this.relationship_subtype_map[context_id];
 				if (!subtypes || !subtypes[subtype]) return false;
 				var items   = subtypes[subtype];
 				var ret_obj = {
@@ -50,6 +61,7 @@ require(['require', 'Emitter', 'Sm'], function (require, Emitter, Sm) {
 				var subtype;
 				if (subtype = Relationship_.Map.Model.get('relationship_subtype')) {
 					subtype = Sm.Entities.Section.Meta.get_relationship_type({sub: true, type: 'index'}, subtype);
+					Sm.CONFIG.DEBUG && console.log(subtype);
 					if (!subtype) return;
 					this.relationship_subtype_map[context_id]                   = this.relationship_subtype_map[context_id] || {};
 					this.relationship_subtype_map[context_id][subtype]          = this.relationship_subtype_map[context_id][subtype] || {};

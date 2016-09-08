@@ -204,15 +204,18 @@ define(['Emitter', 'Sm', 'jquery', 'underscore', 'inflection'], function (Emitte
 		 * @alias Sm.Core.Meta.get_named_relationship_indices
 		 * @param {{}=}         settings
 		 * @param {boolean}     settings.sub
+		 * @param {Array=}     settings.relationship_indices
 		 * @return {{}}
 		 */
 		get_named_relationship_indices:    function (settings) {
 			settings                       = settings || {};
+			var relationship_indices       = settings.relationship_indices || false;
 			var sub                        = !!settings.sub;
 			var relationship_type_obj      = sub ? this.relationship_subtype_obj : this.relationship_type_obj;
 			var named_relationship_indices = {};
 			for (var index in relationship_type_obj) {
 				if (!relationship_type_obj.hasOwnProperty(index)) continue;
+				if (relationship_indices && relationship_indices.indexOf(index) < 0) continue;
 				var rel_obj = relationship_type_obj[index];
 				var name    = rel_obj.name || rel_obj.index_singular || false;
 				name        = Sm.Core.util.uc_first(name);

@@ -61,7 +61,6 @@ require(['require', 'Emitter', 'Sm'], function (require, Emitter, Sm) {
 				var subtype;
 				if (subtype = Relationship_.Map.Model.get('relationship_subtype')) {
 					subtype = Sm.Entities.Section.Meta.get_relationship_type({sub: true, type: 'index'}, subtype);
-					Sm.CONFIG.DEBUG && console.log(subtype);
 					if (!subtype) return;
 					this.relationship_subtype_map[context_id]                   = this.relationship_subtype_map[context_id] || {};
 					this.relationship_subtype_map[context_id][subtype]          = this.relationship_subtype_map[context_id][subtype] || {};

@@ -1157,7 +1157,7 @@ require(['require', 'Sm', 'Sm-Core-util', 'Emitter'], function (require, Sm) {
 				    : Sm.Entities.Abstraction.Modal.AddRelationship;
 				//Create the Modal Dialog
 				Modal        = new type({
-					MvCombo:        [MvCombo_],
+					MvCombo:        [MvCombo_, OtherMvCombo || false],
 					self_type:      MvCombo_.type,
 					display_type:   'full',
 					promise_object: {

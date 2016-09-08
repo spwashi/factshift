@@ -3,26 +3,31 @@
  */
 require(['require', 'Class', 'Sm', 'Sm/Extras/Modal'], function (require, Class) {
 	Sm.loaded.when_loaded(['Extras_Modal'], function () {
-		Sm.Entities.Abstraction.Modal                 = Sm.Entities.Abstraction.Modal || {};
+		Sm.Entities.Abstraction.Modal = Sm.Entities.Abstraction.Modal || {};
 		/**
 		 * @alias Sm.Entities.Abstraction.Modal.AddRelationship
 		 * @prop {Array} Sm.Entities.Abstraction.Modal.AddRelationship.EntityArr {@see Sm.Entities.Abstraction.Modal.AddRelationship.EntityArr}
 		 */
-		Sm.Entities.Abstraction.Modal.AddRelationship = Sm.Extras.Modal.extend({
+		Sm.Entities.Abstraction.Modal.AddRelationship = Sm.Extras.Modal.extend(
+		{
 			init:               function (settings) {
 				settings      = settings || {};
 				settings.data =
-					this.display_type = (settings.display_type || 'full') + '.modal[add_relationship]';
+				this.display_type = (settings.display_type || 'full') + '.modal[add_relationship]';
 				settings.events_to_trigger = ['open', 'close', 'choose', 'select'];
 				return Sm.Extras.Modal.prototype.init.apply(this, arguments);
 			},
 			////////////////////////////////////////////////////////////////////////
 			generate_element:   function (config) {
-				if (this.EntityArr.length === 1) {
+				if (this.EntityArr.length > 0 && this.EntityArr.length <= 2) {
 					config                   = config || {};
 					var MvCombo_             = this.EntityArr[0];
 					var self_type            = this.self_type;
-					var relationship_indices = Sm.Entities[self_type].Meta.get_named_relationship_indices();
+					var Meta                 = Sm.Entities[self_type].Meta;
+					var relationship_indices = Meta.get_named_relationship_indices({
+						                                                               relationship_indices: this.EntityArr[1] ? Meta.get_possible_relationship_indices(this.EntityArr[1] || false) : false
+					                                                               });
+					Sm.CONFIG.DEBUG && console.log('ar_gen_el, -1',relationship_indices);
 					var data                 = Sm.Core.util.merge_objects(MvCombo_.Model.attributes, {relationship_indices: relationship_indices});
 					try {
 						return Sm.Entities[self_type].Garage.generate(this.display_type, data, {config: config}).catch(function (e) {
@@ -76,7 +81,7 @@ require(['require', 'Class', 'Sm', 'Sm/Extras/Modal'], function (require, Class)
 				return Sm.Extras.Modal.prototype.get_info_from_form.call(this, '.relationship-attribute')
 			},
 			on_choose:          function (data) {
-				var $element            = $(this.element);
+				var $element = $(this.element);
 				this.get_info_from_form();
 				Sm.CONFIG.DEBUG && console.log(this.changed_attributes);
 				this.promise_object.resolve(this.changed_attributes);

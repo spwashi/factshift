@@ -756,6 +756,25 @@ require(['require', 'backbone', 'jquery',
 		         * @return {*}
 		         */
 		        accept_drop:                function (droppedView) {
+			        var OtherMvCombo  = droppedView.MvCombo;
+			        var relationships = this.MvCombo.getRelationships(OtherMvCombo);
+			        Sm.CONFIG.DEBUG && console.log(relationships);
+			        var entity               = Sm.Core.Meta.get_entity(this.MvCombo.type);
+			        var Garage               = entity.Garage;
+			        var relationship_indices = Object.keys(relationships);
+			        var rels                 = [];
+			        for (var i = 0; i < relationship_indices.length; i++) {
+				        var rel_index = relationship_indices[i];
+				        var pretty    = entity.Meta.get_relationship_type({type: 'name'}, rel_index);
+				        rels.push([rel_index, pretty]);
+			        }
+			        var Meta     = entity.Meta;
+			        var template = Garage.generate('.relationship', this.MvCombo, {
+				        synchronous: true, relationship_indices: Meta.get_possible_relationship_indices({
+					                                                                                        OtherMvCombo: OtherMvCombo
+				                                                                                        })
+			        });
+			        Sm.CONFIG.DEBUG && console.log(template);
 			        return this.begin_add_relationship({View: droppedView})
 		        },
 		        _button_onclick:            function () {

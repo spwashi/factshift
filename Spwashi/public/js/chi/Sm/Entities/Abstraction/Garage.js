@@ -213,13 +213,13 @@ require(['require', 'Class', 'Sm', 'Sm-Entities-Abstraction-templates-_template'
 
 			/**
 			 * @alias Sm.Entities.Abstraction.Garage
-			 * @param type
-			 * @param data              The MvCombo that we are generatng an
-			 * @param settings
-			 * @param {{}}              settings.config
-			 * @param {string}          settings.type
-			 * @param {string}          settings.data
-			 * @param {boolean=false}   settings.synchronous
+			 * @param {string}           type
+			 * @param {{}}               data              The MvCombo or object that we are generating an element from
+			 * @param {{}=}              settings
+			 * @param {{}=}              settings.config
+			 * @param {string=}          settings.type
+			 * @param {string=}          settings.data
+			 * @param {boolean=false}    settings.synchronous
 			 * @return {*}
 			 */
 			generate:       function (type, data, settings) {
@@ -265,20 +265,20 @@ require(['require', 'Class', 'Sm', 'Sm-Entities-Abstraction-templates-_template'
 				var Meta    = Sm.Entities[this.type].Meta;
 
 
-				var templates            = [t[normalized_data.template_type] || t.standard, t._template];
-				var context_id           = settings.context_id || 0;
+				var templates  = [t[normalized_data.template_type] || t.standard, t._template];
+				var context_id = settings.context_id || 0;
+				type           = type.replace('ips', 'ip');
+
+				var relationship_indices = [];
 				//If we didn't specify the relationships that we want, assume that we want all of them
-				var relationship_indices = settings.relationship_indices || [];
-				var _rels                = Meta.get_named_relationship_indices();
-
-				type = type.replace('ips', 'ip');
-
-				if (!relationship_indices.length) {
-					for (var pretty_name in _rels) {
-						if (!_rels.hasOwnProperty(pretty_name)) continue;
-						relationship_indices.push([_rels[pretty_name], pretty_name]);
-					}
+				var _rels                = Meta.get_named_relationship_indices({
+					                                                               relationship_indices: settings.relationship_indices || false
+				                                                               });
+				for (var pretty_name in _rels) {
+					if (!_rels.hasOwnProperty(pretty_name)) continue;
+					relationship_indices.push([_rels[pretty_name], pretty_name]);
 				}
+				Sm.CONFIG.DEBUG && console.log(relationship_indices);
 				var __orc_t_nom                  = type.replace(/(relationship)/, '$1_outer');
 				var outer_relationship_container =
 				    this._generate_one(templates, __orc_t_nom, {synchronous: true});
@@ -382,10 +382,7 @@ require(['require', 'Class', 'Sm', 'Sm-Entities-Abstraction-templates-_template'
 				if (has_subtypes && RelationshipIndex.get_listed_subtype_items) {
 					//context_id
 					relationship_subindices = RelationshipIndex.get_listed_subtype_items(0);
-					Sm.CONFIG.DEBUG && console.log('sub -- rel_ind', relationship_subindices, RelationshipIndex);
 				}
-
-				Sm.CONFIG.DEBUG && console.log(has_subtypes);
 
 				var related_items = relationship_object.items || [];
 				if (!related_items.length) return false;

@@ -19,7 +19,7 @@ use Spwashi\Model\User;
 $form                      = $_POST;
 $nonce_name                = 'frm-li-n';
 $form_name                 = 'frm-user_login';
-$success_redirect_location = App::_()->base_url;
+$success_redirect_location = null;
 #-----------------------------------------------------------------------------------
 $expected_array_values = [
     'alias',

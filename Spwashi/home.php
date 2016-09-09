@@ -18,7 +18,7 @@
     <section class="content">
         <section class="">
             <header>
-                <h3>This is the title of the section</h3>
+                <h3>{{header}}</h3>
             </header>
         </section>
     </section>

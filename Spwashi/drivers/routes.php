@@ -28,6 +28,10 @@ return [
 	#
 	#---PAGE RELATED ROUTES---------------------------------------------------------------#
 	#
+	#---Random pages------------------------------------------------#
+	#
+	['pattern' => 'pa', 'callback' => 'HomeController@pas',],
+	['pattern' => 'allenotes', 'callback' => 'HomeController@allenotes', 'name' => 'allenotes'],
 	#---FOR THE SAKE OF DEPLOYMENT SCRIPTS------------------------------------------------#
 	#
 	['pattern' => 'deploy/{method}', 'callback' => 'deploy@*',],

@@ -7,9 +7,13 @@
 
 namespace Spwashi\Controller\Abstraction;
 
-use Sm\Core\App;
 use Sm\View\View;
 
+/**
+ * Class SpwashiController
+ * @package Spwashi\Controller\Abstraction
+ * @property View $view
+ */
 abstract class SpwashiController {
 	/** @var View */
 	public $view;

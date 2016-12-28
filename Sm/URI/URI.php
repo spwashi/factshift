@@ -7,6 +7,8 @@
 
 namespace Sm\URI;
 
+use Sm\Core\App;
+
 /**
  * Class URI
  ** A class that is meant to be used to retrieve information about what the user asked for in the URL.
@@ -18,7 +20,7 @@ namespace Sm\URI;
 class URI {
     static $uri_string;
     static $subdomain_string;
-
+    
     #todo CHANGE THIS!! THIS IS SOMETHING THAT MUST BE CHANGED!!
     static function get_uri_string() {
         if (!isset(static::$uri_string)) {
@@ -26,29 +28,25 @@ class URI {
              * #todo CHANGE THIS!!! THIS IS JUST SOMETHING TEMPORARY BECAUSE I DIDN'T WANT TO WORRY ABOUT MY HTACCESS SCRIPT
              * http://www.smashingmagazine.com/2011/11/02/introduction-to-url-rewriting/
              */
-
-            $tmp = ltrim($_SERVER['REQUEST_URI'], '/');
+            
+            $tmp   = ltrim($_SERVER['REQUEST_URI'], '/');
             $slice = 0;
-            if (strpos($tmp, 'index.php/') !== false) {
-                $slice = 1;
-            }
+            if (strpos($tmp, 'index.php/') !== false) $slice = 1;
+            
             $tmp = explode('/', $tmp);
-
-            $url = implode('/', array_slice($tmp, $slice));
+            
+            $url                = implode('/', array_slice($tmp, $slice));
             static::$uri_string = explode('?', $url)[0];
-
+            
             /**
-             * If 'spwashi.com' is found in the full URL, preface the route with 'spwashi/' for the proper app loading
+             * If 'factshift.com' is found in the full URL, preface the route with 'factshift/' for the proper app loading
              */
             $full_url = 'http' . (isset($_SERVER['HTTPS']) ? 's' : '') . '://' . "{$_SERVER['HTTP_HOST']}/";
-            if (strpos($full_url, 'spwashi.com') !== false) {
-                static::$uri_string = 'spwashi/' . static::$uri_string;
-            }
         }
-
+        static::$uri_string = App::_()->change_uri(static::$uri_string);
         return static::$uri_string;
     }
-
+    
     public static function get_subdomain() {
         if (!isset(static::$subdomain_string)) {
             preg_match('/([^.]+)\.example\.org/', $_SERVER['SERVER_NAME'], $matches);
@@ -61,11 +59,11 @@ class URI {
         }
         return static::$subdomain_string;
     }
-
+    
     static function get_full_url($normalize = true) {
         $uri = 'http' . (isset($_SERVER['HTTPS']) ? 's' : '') . '://' . "{$_SERVER['HTTP_HOST']}/" . URI::get_uri_string();
         if ($normalize)
-            $uri = str_replace('spwashi.com/spwashi', 'spwashi.com', $uri);
+            $uri = str_replace('factshift.com/factshift', 'factshift.com', $uri);
         return $uri;
     }
 }

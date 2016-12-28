@@ -8,8 +8,5 @@
 namespace Sm\Controller\Abstraction;
 
 abstract class Controller {
-    const DEBUG         = 0;
-    const DEBUG_LEVEL_1 = 1;
-    const DEBUG_LEVEL_2 = 2;
-    const DEBUG_LEVEL_3 = 3;
+    const DEBUG = 0;
 }

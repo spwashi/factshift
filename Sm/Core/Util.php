@@ -15,40 +15,54 @@ namespace Sm\Core;
 class Util {
     static $standard_permitted_characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789_-';
     /** @var array A cache of strings that have already been turned into studly case */
-    private static $studlyCache = [];
-
+    private static $studlyCache = [ ];
+    
     public static function isImage($url) {
-        $params = ['http' => [
-            'method' => 'HEAD'
-        ]];
+        $params = [ 'http' => [
+            'method' => 'HEAD',
+        ] ];
         $ctx    = stream_context_create($params);
         $fp     = @fopen($url, 'rb', false, $ctx);
         if (!$fp) return false;  // Problem with url
-
+        
         $meta = stream_get_meta_data($fp);
         if ($meta === false) {
             fclose($fp);
             return false;  // Problem reading data from url
         }
-
+        
         $wrapper_data = $meta["wrapper_data"];
         if (is_array($wrapper_data)) {
             foreach (array_keys($wrapper_data) as $hh) {
-                if (substr($wrapper_data[$hh], 0, 19) == "Content-Type: image") // strlen("Content-Type: image") == 19
+                if (substr($wrapper_data[ $hh ], 0, 19) == "Content-Type: image") // strlen("Content-Type: image") == 19
                 {
                     fclose($fp);
                     return true;
                 }
             }
         }
-
+        
         fclose($fp);
         return false;
     }
-
+    public static function startsWith($haystack, $needle) {
+        $length = strlen($needle);
+        return (substr($haystack, 0, $length) === $needle);
+    }
+    
+    public static function endsWith($haystack, $needle) {
+        $length = strlen($needle);
+        if ($length == 0) {
+            return true;
+        }
+        
+        return (substr($haystack, -$length) === $needle);
+    }
     /**
      * Get the host from the URL
+     *
      * @param $url
+     *
      * @return mixed
      */
     public static function getHost($url) {
@@ -58,7 +72,7 @@ class Util {
         $parseUrl = parse_url(trim($url), PHP_URL_HOST);
         return $parseUrl;
     }
-
+    
     /**
      * Turn a string into something that is studly cased
      *
@@ -69,19 +83,19 @@ class Util {
      * @return string
      */
     public static function studly($value) {
-        if (isset(static::$studlyCache[$value])) {
-            return static::$studlyCache[$value];
+        if (isset(static::$studlyCache[ $value ])) {
+            return static::$studlyCache[ $value ];
         }
-
-        $value = ucwords(str_replace(['-', '_'], ' ', $value));
-
-        return static::$studlyCache[$value] = str_replace(' ', '', $value);
+        
+        $value = ucwords(str_replace([ '-', '_' ], ' ', $value));
+        
+        return static::$studlyCache[ $value ] = str_replace(' ', '', $value);
     }
-
+    
     public static function bool($value) {
         return filter_var($value, FILTER_VALIDATE_BOOLEAN);
     }
-
+    
     /** Loop through an array and ksort its components recursively based on their keys
      *
      * @param $array
@@ -93,10 +107,10 @@ class Util {
             if (is_array($value))
                 static::recursiveKSort($value);
         }
-
+        
         return ksort($array);
     }
-
+    
     /**
      * Take a string or an array, get the first character of the first index (assuming it's OK to operate on) and return which alphabet character it is based on a 0-indexed array beginning with 'a'.
      * This uses the ascii value of the character.
@@ -119,7 +133,7 @@ class Util {
         }
         return -1;
     }
-
+    
     /**
      * Generate a pseudo random string that is of the length provided using only the characters that are provided
      *
@@ -133,12 +147,12 @@ class Util {
         $count = strlen($characters_to_use);
         while ($length--) {
             /** Take the character string, pick out a random index between the start and the end, and choose the matching character to go along with it */
-            $str .= $characters_to_use[mt_rand(0, $count - 1)];
+            $str .= $characters_to_use[ mt_rand(0, $count - 1) ];
         }
-
+        
         return $str;
     }
-
+    
     /**
      * Include files somewhere when you need to pass in variables and/or store the defined variables afterwards
      *
@@ -150,33 +164,45 @@ class Util {
      * @return array
      * @throws \Exception
      */
-    static function includeWithVariables($files, array $vars = [], $throw_error = false, $get_defined_vars = true) {
-        if (!empty($vars)) extract($vars, EXTR_SKIP);
+    static function includeWithVariables($files, array $vars = [ ], $throw_error = false, $get_defined_vars = true) {
         $return = 1;
-        if (is_array($files) && !empty($files)) {
-            foreach ($files as $file) {
-                if (file_exists($file))
+        try {
+            if (!empty($vars)) extract($vars, EXTR_SKIP);
+            if (is_array($files) && !empty($files)) {
+                foreach ($files as $file) {
+                    if (file_exists($file)) {
+                        #append the result of the include
+                        $return[] = (include($file));
+                    } else if ($throw_error) {
+                        throw new \Exception('Could Not Find File');
+                    }
+                }
+            } elseif (is_string($files)) {
+                $include_file = $files;
+                if (file_exists($include_file)) {
                     #append the result of the include
-                    $return[] = (include($file));
-                elseif ($throw_error)
-                    throw new \Exception('Could Not Find File');
+                    $return = (include($include_file));
+                    if (!$return && $throw_error) throw new \Exception("Could not include file {$include_file}");
+                } else if ($throw_error) {
+                    throw new \Exception("Could not find file {$include_file}");
+                }
             }
-        } elseif (is_string($files)) {
-            $include_file = $files;
-            if (file_exists($include_file)) {
-                #append the result of the include
-                $return = (include($include_file));
-            } elseif ($throw_error)
-                throw new \Exception('Could Not Find File');
+        } catch (\Exception $e) {
+            if ($throw_error) throw $e;
         }
         unset($files, $vars);
-
+        
         return $get_defined_vars ? get_defined_vars() : $return;
     }
-
+    
+    public static function can_be_string($var) {
+        return $var === null || is_scalar($var) || is_callable([ $var, '__toString' ]);
+    }
     /**
      * Create an unordered HTML list from an array
+     *
      * @param $array
+     *
      * @return string
      */
     static function array_to_ul($array) {
@@ -188,7 +214,7 @@ class Util {
                 } else {
                     $id       = isset($elem['id']) ? $elem['id'] : null;
                     $children = isset($elem['children']) ? $elem['children'] : null;
-
+                    
                     $out .= "<li><a href='#{$id}'>$key</a>" . static::array_to_ul($children) . "</li>";
                 }
             }

@@ -8,7 +8,7 @@
 namespace Sm\View;
 
 use Sm\Core\App;
-use Sm\Response\Http;
+use Sm\Core\Util;
 
 /**
  * Class View
@@ -17,8 +17,8 @@ use Sm\Response\Http;
  * @package Sm\View
  */
 class View extends Abstraction\View {
-    protected $errors   = [];
-    protected $optional = [];
+    protected $errors   = [ ];
+    protected $optional = [ ];
 #
     public function __construct($content = '') {
         if ($content instanceof View) {
@@ -27,12 +27,12 @@ class View extends Abstraction\View {
             $this->content = $content;
         }
         if (is_array($this->content) || $this->content instanceof \JsonSerializable) {
-            $this->type = 'json';
+            $this->content_type = 'json';
         } else {
-            $this->type = 'html';
+            $this->content_type = 'html';
         }
     }
-
+    
     public function getContent($is_final = false) {
         foreach ($this->errors as $error_name => $message) {
             if (is_string($message) && is_string($this->content))
@@ -41,9 +41,9 @@ class View extends Abstraction\View {
         foreach ($this->optional as $error_name => $message) {
             $this->content = str_replace("{{o_{$error_name}}}", (string)$message, $this->content);
         }
-
-        $replace = ['{{title}}', '{{subtitle}}', '{{site_title_short}}', '{{site_title}}'];
-        $values  = [$this->title, $this->subtitle, App::_()->site_title_short, App::_()->site_title];
+        
+        $replace = [ '{{title}}', '{{subtitle}}', '{{site_title_short}}', '{{site_title}}' ];
+        $values  = [ $this->title, $this->subtitle, App::_()->site_title_short, App::_()->site_title ];
         if ($is_final && is_string($this->content)) {
             $this->content = str_replace($replace, $values, $this->content);
             $this->content = preg_replace('-\{\{message_*[^\}]*\}\}-', '', $this->content);
@@ -57,12 +57,12 @@ class View extends Abstraction\View {
             return (string)$this->content;
         }
     }
-
+    
     public function insertContentCreate($content_path, $location = '{{content}}', $is_in_view_path = true) {
-        $this->insertContent(static::create($content_path, [], $is_in_view_path), $location);
+        $this->insertContent(static::create($content_path, [ ], $is_in_view_path), $location);
         return $this;
     }
-
+    
     /**
      * Wrap the content with something, usually a tag
      *
@@ -77,36 +77,29 @@ class View extends Abstraction\View {
         if ($where_to_start_the_wrap == null && $where_to_end_the_wrap == null) {
             $this->content = $start_wrap . $this->content . $end_wrap;
         }
-
+        
         return $this;
     }
-
+    
     public function addMessages($name) {
         if (!is_array($name)) return $this;
         foreach ($name as $key => $value) {
-            $this->errors[$key] = $value;
+            $this->errors[ $key ] = Util::can_be_string($value) ? (string)$value : '';
         }
         return $this;
     }
-
+    
     public function addFeature($name, $value = null) {
         if (!is_array($name)) {
             if (isset($value)) {
-                $name = [$name => $value];
+                $name = [ $name => $value ];
             } else {
                 return $this;
             }
         }
         foreach ($name as $key => $value) {
-            $this->optional[$key] = $value;
+            $this->optional[ $key ] = $value;
         }
         return $this;
-    }
-
-    /**
-     * Make the headers for the current View.
-     */
-    public function makeHeaders() {
-        Http::make_resource_headers($this->type);
     }
 }

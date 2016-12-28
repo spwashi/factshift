@@ -14,6 +14,7 @@ use Sm\Core\Util;
  * Class Process
  * Meant to return JSON encoded content to the browser based on $_GET, $_POST, or any other data received, useful for form handling.
  * As of now, this does not use the Helper class
+ *
  * @package Sm\View
  */
 class Process {
@@ -29,14 +30,14 @@ class Process {
      * @return static
      * @throws \Exception
      */
-    static public function create($path, $data = [], $is_in_process_path = true) {
+    static public function create($path, $data = [ ], $is_in_process_path = true) {
         $process = new static();
         if ($is_in_process_path) {
-            $path = App::_()->scripts_path . $path;
+            $path = App::_()->Paths->scripts . $path;
         }
-
+        
         ob_start();
-
+        
         # For processes, assume that we are going to be dealing with files that return 1 when the content of the Process result is meant to be returned as something to output
         $result = Util::includeWithVariables($path, $data, false, false);
         if ($result === 1) {
@@ -47,12 +48,12 @@ class Process {
             ob_clean();
         }
         $process->content = $content;
-
+        
         return $process;
     }
-
+    
     public function getOutput() {
         return $this->content;
     }
-
+    
 }

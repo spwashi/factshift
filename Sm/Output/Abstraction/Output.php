@@ -9,5 +9,5 @@ namespace Sm\Output\Abstraction;
 
 
 abstract class Output {
-
+    abstract public function process($output_data);
 }

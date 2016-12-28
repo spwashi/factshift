@@ -1,0 +1,118 @@
+@import "color";
+@import "std";
+
+@std_form_padding : 7px;
+
+/* http://purecss.io/forms/ */
+input[type="text"], input[type="password"], input[type="email"], input[type="url"], input[type="date"],
+input[type="month"], input[type="time"], input[type="datetime"], input[type="datetime-local"], input[type="week"],
+input[type="number"], input[type="search"], input[type="tel"], input[type="color"], select, textarea {
+    border           : 1px solid #9a9a9a;
+    background-color : lighten(@module_color, 1%);
+    border-radius    : 2px;
+    box-shadow       : 0 1px 3px #ddd inset;
+    box-sizing       : border-box;
+    display          : inline-block;
+    padding          : @std_form_padding;
+    vertical-align   : middle;
+}
+
+.no-selection {
+    -webkit-user-select   : none; // Webkit (safari, opera) /* webkit (safari, chrome) browsers */
+    -moz-user-select      : none; // Mozilla
+    -khtml-user-select    : none; // Webkit (Konqueror) browsers
+    -ms-user-select       : none; // IE10+
+    -webkit-touch-callout : none;
+    user-select           : none;
+}
+
+/* END */
+
+form, .form {
+    hr {
+        display    : block;
+        height     : 1px;
+        border     : 0;
+        clear      : both;
+        border-top : 1px solid #ccc;
+        margin     : 1em 0;
+        padding    : 0;
+    }
+    .robot {
+        display : none !important;
+    }
+    .input-error-cluster {
+        display : inline-block;
+        > * {
+            width : 100%;
+        }
+    }
+    .control_group {
+        margin-bottom : 15px;
+        clear         : both;
+        .clearfix;
+        &.submit {
+            height : auto;
+        }
+        &.half {
+            clear : none;
+            width : 48%;
+            label {
+                display : block;
+                width   : auto;
+            }
+        }
+        label {
+            padding        : @std_form_padding 0;
+            display        : inline-block;
+            text-align     : left;
+            clear          : both;
+            word-break     : keep-all;
+            -ms-word-wrap  : normal;
+            word-wrap      : normal;
+            float          : left;
+            vertical-align : top;
+            width          : 20%;
+        }
+        textarea {
+            resize : vertical;
+            height : 100px;
+        }
+        & {
+            > button {
+                margin-right : 10px;
+                min-width    : 15%;
+            }
+            > input, > textarea, > select, .input-error-cluster, .error {
+                width    : 80%;
+                float    : right;
+                position : relative;
+            }
+        }
+    }
+    border-bottom : thin solid @module_shadow;
+}
+
+form .invisible, .form .invisible {
+    visibility : hidden;
+}
+
+button {
+    background         : @button_color none repeat scroll 0 0;
+    &:hover, &:active, &:focus {
+        background-color : @button_hover_color;
+        color            : @button_hover_text_color;
+        border           : thin solid @button_hover_border_color;
+    }
+    text-shadow        : none;
+    -webkit-box-shadow : none;
+    -moz-box-shadow    : none;
+    box-shadow         : none;
+    border-radius      : 5px;
+    border             : thin solid @button_border_color;
+    padding            : 3px 10px;
+    cursor             : pointer;
+    color              : @button_text_color;
+}
+
+

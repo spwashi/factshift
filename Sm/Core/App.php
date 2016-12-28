@@ -8,127 +8,74 @@
 namespace Sm\Core;
 
 use Sm\Development\Log;
+use Sm\Entity\Model\EntityMeta;
+use Sm\Environment\Environment;
+use Sm\Helper\Helper;
 
 /**
  * Class App
  * Loads and initializes the application, contains some information about paths, routing, and default boot processes
  *
  * @package Sm\Core
- * @property-read string        $name                          The name of the application, based on the path minus the BASE_PATH to the application
- * @property-read string        $site_title                    The name of the website
- * @property-read string        $site_title_short              The shortened name of the website
- * @property-read string        $path                          The path to the application, dependent on the app name
- * @property-read bool          $boot                          Has the app been booted?
- * @property-read bool          $bootable                      Are we able to boot the app
- * @property-read string        $base_url                      The base URL to the site
- * @property-read callable|null $default_route_function        The default function to call in the instance of a broken route
- * @property-read string        $css_path                      Path to the App's CSS files
- * @property-read string        $font_path                     Path to the App's font files
- * @property-read string        $view_path                     Path to the App's MVC views
- * @property-read string        $js_path                       Path to the App's JavaScript
- * @property-read string        $template_path                 Path to the App's templates
- * @property-read string        $controller_path               Path to the App's Controllers
- * @property-read string        $model_path                    Path to the App's Models
- * @property-read string        $scripts_path                  Path to the App's supporting PHP or CGI scripts; not views, not controllers, not models, not classes
- * @property-read string        $image_path                    Path to the App's images that support the site styles
- * @property-read string        $libs_path                     Path to the App's supporting libraries
- * @property-read string        $email_path                    Path to the App's email templates
- * @property-read string        $user_path                     Path to the User directory
- * @property-read string        $boot_function                 Function to use to boot the application
+ * @property-read string        $name                                     The name of the application, based on the path minus the BASE_PATH to the application
+ * @property-read string        $site_title                               The name of the website
+ * @property-read string        $site_title_short                         The shortened name of the website
+ * @property-read string        $path                                     The path to the application, dependent on the app name
+ * @property-read string        $base_url                                 The base URL to the site
+ * @property-read IoC           $IoC                                      The app's Inversion of Control container
+ * @property-read PathContainer $Paths
+ * @property-read Environment   $Environment
+ * @property-read string        $change_uri                               Function to use to boot the application
  */
-class App {
-
-    const USE_APP_VIEW_PATH       = 2;
-    const USE_APP_CSS_PATH        = 3;
-    const USE_APP_JS_PATH         = 4;
-    const USE_APP_TEMPLATE_PATH   = 5;
-    const USE_APP_EMAIL_PATH      = 6;
-    const USE_APP_IMAGE_PATH      = 7;
-    const USE_APP_CONTROLLER_PATH = 8;
-    const USE_APP_MODEL_PATH      = 9;
-    const USE_APP_LIBS_PATH       = 10;
-    const USE_APP_SCRIPTS_PATH    = 11;
-    const USE_APP_FONT_PATH       = 12;
-
+class App implements \JsonSerializable {
     /** @var  App A singleton instance of the App class */
-    protected static $instance = null;
+    protected static $instance  = null;
+    protected static $instances = [ ];
     /** @var string The name of the App that is currently booting */
-    protected static $booting_app_name = '';
-    /** @var array Some app properties are variable, meaning they depend on another application value (or something like APP_PATH or VIEW_PATH). Store these in an array so the values can be subbed out in derivative classes */
-    private static $variable_app_property = [];
+    protected static $booting_app_name = null;
+    
+    protected $Environment;
+    protected $Paths;
+    protected $IoC;
+    protected $name     = 'Sm';
+    protected $base_url = 'http://localhost/';
+    
+    /** @var bool $has_been_booted Has the app been booted? */
+    protected $has_been_booted = false;
+    /** @var bool $is_bootable Are we able to boot the app */
+    protected $is_bootable = false;
 
-    protected $name             = 'Sm';
-    protected $site_title       = '';
-    protected $site_title_short = '';
-    protected $path             = BASE_PATH;
-    protected $base_url         = 'http://codoodler.com/';
-    protected $boot             = false;
-    protected $bootable         = false;
-    protected $boot_function;
-    protected $default_route_function;
-    //<editor-fold desc="Paths">
-    protected $view_path       = '';
-    protected $css_path        = '';
-    protected $js_path         = '';
-    protected $font_path       = '';
-    protected $template_path   = '';
-    protected $controller_path = '';
-    protected $model_path      = '';
-    protected $scripts_path    = '';
-    protected $image_path      = '';
-    protected $libs_path       = '';
-    protected $email_path      = '';
-    protected $user_path       = '';
-
-    //</editor-fold>
-
+#########################################################
+#        Constructors and initializers                  #
+#########################################################
+    /**
+     * App constructor.
+     *
+     * @param string $app_name
+     */
     public function __construct($app_name = 'Sm') {
-        if (App::$instance instanceof App) {
-            foreach (get_object_vars(App::$instance) as $key => $value) {
-                $this->$key = $value;
-            }
-        }
-        #If the app doesn't specify a default function, this is it
-        if (!isset($this->default_route_function)) {
-            $this->default_route_function = function () {
-                return 'Page not found!';
-            };
-        }
         #This is the path to the application physically
-        $this->path = BASE_PATH . $app_name . '/';
-        $this->boot = false;
-        #If there is no app.php file, then the app has not been successfully booted. Quit and log the error.
-        if (!is_file($this->path . 'drivers/app.php')) {
-            $this->bootable = false;
-            Log::init('Could not successfully boot the application "' . $this->path . '"')->log_it();
-            return;
-        } else {
-            #Loop through the values in the array. If they have the names APP_PATH or VIEW_PATH in them, replace them with the actual app path and viewpath
-            #CBB two loops?
-            $app = require($this->path . 'drivers/app.php');
-            foreach ($app as $app_key => $app_value) {
-                if (isset(static::$variable_app_property[$app_key])) {
-                    unset(static::$variable_app_property[$app_key]);
-                }
-                if (is_string($app_value) && (strpos($app_value, 'APP_PATH') !== false || strpos($app_value, 'VIEW_PATH') !== false)) {
-                    static::$variable_app_property[$app_key] = $app_value;
-                }
-                $this->$app_key = $app_value;
-            };
-            $this->view_path = str_replace('APP_PATH/', $this->path, $this->view_path);
-            foreach (static::$variable_app_property as $property => $value) {
-                if (!is_string($value))
-                    continue;
-                $value           = str_replace('APP_PATH/', $this->path, $value);
-                $value           = str_replace('VIEW_PATH/', $this->view_path, $value);
-                $this->$property = $value;
-            }
-        }
-        $this->name     = $app_name;
-        $this->bootable = true;
-        return;
+        $this->name            = $app_name;
+        $this->has_been_booted = false;
+        $this->is_bootable     = false;
+        $this->_init_paths();
+        $this->is_bootable = true;
+        $this->IoC         = new IoC();
+        if ($app_name !== 'Sm') $this->IoC->register(App::_()->IoC->getRegistry());
+        $this->Environment              = new Environment(Environment::EP_FRONT_END);
+        static::$instances[ $app_name ] = $this;
     }
-
+    /**
+     * Initialize the paths of the app
+     *
+     * @return \Sm\Core\PathContainer
+     */
+    public function _init_paths() {
+        $this->Paths = new PathContainer;
+        $path        = BASE_PATH . $this->name . '/';
+        $this->Paths->set('app', $path);
+        return $this->Paths;
+    }
     /**
      * Simplify the Application initialization process, make it look a little more attractive
      *
@@ -137,111 +84,100 @@ class App {
      * @return static
      */
     public static function init($app_name) {
-        return new static($app_name);
+        if (isset(static::$instances[ $app_name ])) return static::$instances[ $app_name ];
+        $classname = $app_name . '\\Core\\' . $app_name;
+        if (class_exists($classname)) return new $classname($app_name);
+        else return new static($app_name);
     }
-
+#########################################################
+#        Miscellaneous functions                        #
+#########################################################
     /**
      * Get the current App::$instance. Done in a function to prevent accidentally assigning a value to it.
      * Always returns an App, though the app may not be 'booted' and may just be the default app
      *
-     * @return \Sm\Core\App
-     */
-    public static function _() {
-        if (static::$instance === null) {
-            $inst             = new static('Sm');
-            static::$instance = $inst;
-        }
-        return static::$instance;
-    }
-
-    /**
-     * Set the current app as the App::$instance. Makes it so everything else knows what is going on. Some functions, connections, etc. might depend on the application loaded.
+     * @param null $app_name
      *
-     * @return $this|\Sm\Core\App
+     * @return self
      */
-    public function set_as_main() {
-        if ($this->boot) {
-            return App::$instance = &$this;
+    public static function _($app_name = null) {
+        if (isset($app_name)) {
+            if ($app_name == 'booting' && static::$booting_app_name) return static::_(static::$booting_app_name);
+            else if (isset(static::$instances[ $app_name ])) return static::$instances[ $app_name ];
         }
-        return $this;
+        if (App::$instance === null) App::$instance = new static('Sm');
+        return App::$instance;
     }
-
+#########################################################
+#       Booting functions                               #
+#########################################################
     /**
      * Complete the process of booting the app. If the app cannot be booted, pooh-pooh.
      *
      * @return $this
      */
     public function boot() {
-        $boot_process             = $this->boot_function;
+        if ($this->has_been_booted) return $this;
         static::$booting_app_name = $this->name;
-        $result                   = call_user_func($boot_process, $this->name);
-        if (!$result || !$this->bootable) {
-            Log::init('Could not successfully boot the application "' . $this->name)->log_it();
-            $this->boot = false;
+        $result                   = $this->_boot_function($this->name);
+        if (!$result || !$this->is_bootable) {
+            Log::init('Could not successfully boot the application "' . $this->name . '"')->log_it();
+            $this->has_been_booted = false;
             return $this;
         }
-        $this->boot               = true;
-        static::$booting_app_name = false;
+        $this->has_been_booted    = true;
+        static::$booting_app_name = null;
         return $this;
     }
-
+    /**
+     * Set the current app as the App::$instance. Makes it so everything else knows what is going on. Some functions, connections, etc. might depend on the application loaded.
+     *
+     * @return $this|\Sm\Core\App
+     */
+    public function set_as_main() {
+        if ($this->has_been_booted) return App::$instance = &$this;
+        return $this;
+    }
     /**
      * Has the application been booted?
      *
      * @return boolean
      */
     public function has_been_booted() {
-        return $this->boot;
+        return $this->has_been_booted;
     }
-
     /**
      * @return string
      */
     public static function getBootingAppName() {
         return self::$booting_app_name;
     }
-
+#########################################################
+#       Default functions                               #
+#########################################################
     /**
-     * A switch to allow programmers to have shortcuts to paths
-     *
-     * @param $default_location string The default directory; if choice is "true", use this
-     * @param $choice           string The choice of the directory location to use
+     * The default function to call in the instance of a broken route
      *
      * @return string
      */
-    public static function getPathDecision($default_location, $choice) {
-        $default_location = is_numeric($default_location && $default_location != $choice)
-            ? static::getPathDecision($default_location, $default_location)
-            : $default_location;
-        $use_path         = $choice === true ? $default_location : $choice;
-        switch ($use_path):
-            case App::USE_APP_CSS_PATH:
-                $p = App::_()->css_path;
-                break;
-            case App::USE_APP_FONT_PATH:
-                $p = App::_()->font_path;
-                break;
-            case App::USE_APP_JS_PATH:
-                $p = App::_()->js_path;
-                break;
-            case App::USE_APP_EMAIL_PATH:
-                $p = App::_()->email_path;
-                break;
-            case App::USE_APP_TEMPLATE_PATH:
-                $p = App::_()->template_path;
-                break;
-            case App::USE_APP_VIEW_PATH:
-                $p = App::_()->view_path;
-                break;
-            case App::USE_APP_IMAGE_PATH:
-                $p = App::_()->image_path;
-                break;
-            default:
-                $p = '';
-        endswitch;
-        return $p;
+    public function default_route_function() {
+        return 'Page not found!';
     }
-
+    public function _boot_function($app_name) {
+        $path = BASE_PATH . $app_name . '/Core/drivers/';
+        if (!file_exists($path)) return false;
+        if (file_exists("{$path}autoload.php")) Autoload::register(require "{$path}autoload.php");
+        if (file_exists("{$path}registry.php")) $this->IoC->register(require "{$path}registry.php");
+        
+        if (file_exists("{$path}helpers.php")) Helper::register(require "{$path}helpers.php");
+        if (file_exists("{$path}routes.php")) $this->IoC->router->register(require "{$path}routes.php");
+        if (file_exists("{$path}models.php")) EntityMeta::init(require "{$path}models.php");
+        return true;
+    }
+    public function change_uri($uri) { return $uri; }
+#########################################################
+#        Getters and setters                            #
+#########################################################
     /**
      * Access protected members in a readonly manner
      *
@@ -250,13 +186,14 @@ class App {
      * @return string
      */
     public function __get($value) {
-        if ($value != 'name' && (static::$instance == null || !isset(static::$instance->$value))) {
-            Log::init("Could not App::get the value {$value}", debug_backtrace()[0], 'log')->log_it();
-            return '';
+        if ($value != 'name') {
+            if (($this == null || !isset($this->$value))) {
+                Log::init("Could not App::get the value {$value}", debug_backtrace()[0], 'log')->log_it();
+                return '';
+            }
         }
-        return static::$instance->$value;
+        return $this->$value;
     }
-
     /**
      * Make the properties readonly
      *
@@ -264,4 +201,7 @@ class App {
      * @param $value
      */
     public function __set($property, $value) { }
+    public function jsonSerialize() {
+        return get_object_vars($this);
+    }
 }

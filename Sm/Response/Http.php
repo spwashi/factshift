@@ -13,9 +13,44 @@ namespace Sm\Response;
  *
  * @package Sm\Response
  */
-class Http {
+class Http extends Response {
+    protected $status         = 200;
+    protected $content_type   = 'html';
+    protected $method         = 'inline';
+    protected $name           = null;
+    protected $content_length = null;
+    
     public static $content_type_set = false;
-
+    public function setContentType($content_type) {
+        $this->content_type = $content_type;
+        return $this;
+    }
+    /**
+     * @param null $name
+     *
+     * @return Http
+     */
+    public function setName($name) {
+        $this->name = $name;
+        return $this;
+    }
+    /**
+     * @param string $method
+     *
+     * @return Http
+     */
+    public function setMethod(string $method): Http {
+        $this->method = $method;
+        return $this;
+    }
+    public function __toString() {
+//        echo 'here';
+        static::make_resource_headers($this->content_type, $this->name, $this->method, $this->content_length);
+        return $this->content_type === 'json' ? json_encode($this->message) : parent::__toString();
+    }
+#########################################################
+#            Header-based stuff                         #
+#########################################################
     /**
      * Redirect to a URL
      *
@@ -28,7 +63,24 @@ class Http {
         header('Location: ' . $url, $replace, $code);
         exit;
     }
-
+#########################################################
+#            HTTP Response stuff                        #
+#########################################################
+    /**
+     * Could be named differently. Sets the content type, length, and disposition headers (also filename)
+     *
+     * @param string      $resource_type The type of content it will be (the extension it will probably carry)
+     * @param null|string $name          The name of the content as it is to be downloaded. null if it doesn't matter
+     * @param string      $method        The content-disposition method (whether it is to be displayed in browser or downloaded) {inline|attachment}
+     * @param null        $length        The length of the content
+     */
+    public static function make_resource_headers($resource_type, $name = null, $method = 'inline', $length = null) {
+        header('Content-Type: ' . static::get_mime_from_extension($resource_type));
+        if ($length) header('Content-Length: ' . $length);
+        $filename_header = 'Content-Disposition: ' . $method . '; ';
+        if ($name != null) $filename_header .= 'filename=' . $name;
+        header($filename_header);
+    }
     /**
      * Set a status header based on a code
      *
@@ -38,7 +90,6 @@ class Http {
         http_response_code($code);
         header($_SERVER['SERVER_PROTOCOL'] . ' ' . $code . ' ' . static::get_message_from_code($code));
     }
-
     /**
      * Retrieve the HTTP response message based on the HTTP response code
      *
@@ -163,30 +214,9 @@ class Http {
                 $text = 'Unknown status';
                 break;
         }
-
+        
         return $text;
     }
-
-    /**
-     * Could be named differently. Sets the content type, length, and disposition headers (also filename)
-     *
-     * @param string      $type   The type of content it will be (the extension it will probably carry)
-     * @param null|string $name   The name of the content as it is to be downloaded. null if it doesn't matter
-     * @param string      $method The content-disposition method (whether it is to be displayed in browser or downloaded) {inline|attachment}
-     * @param null        $length The length of the content
-     */
-    public static function make_resource_headers($type, $name = null, $method = 'inline', $length = null) {
-        header('Content-Type: ' . static::get_mime_from_extension($type));
-        if ($length)
-            header('Content-Length: ' . $length);
-        $filename_header = 'Content-Disposition: ' . $method . '; ';
-        if ($name != null) {
-            $filename_header .= 'filename=' . $name;
-        }
-        header($filename_header);
-        static::$content_type_set = true;
-    }
-
     /**
      * CBB:Move?
      * Could possibly be moved elsewhere. This returns the MIME type of an extension
@@ -1192,9 +1222,8 @@ class Http {
             'zip'          => 'application/zip',
             'zir'          => 'application/vnd.zul',
             'zirz'         => 'application/vnd.zul',
-            'zmm'          => 'application/vnd.handheld-entertainment+xml'
+            'zmm'          => 'application/vnd.handheld-entertainment+xml',
         ];
-
-        return isset($mime_types_map[$type]) ? $mime_types_map[$type] : 'application/octet-stream';
+        return isset($mime_types_map[ $type ]) ? $mime_types_map[ $type ] : 'application/octet-stream';
     }
 }

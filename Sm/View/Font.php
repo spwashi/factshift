@@ -26,32 +26,15 @@ class Font extends View {
             $this->content = $content;
         }
     }
-
-    static public function create($path, $data = [], $is_in_view_path = true) {
+    
+    static public function create($path, $data = [ ], $is_in_view_path = true) {
         $view = new static(null);
-        $p    = App::getPathDecision(App::USE_APP_FONT_PATH, $is_in_view_path);
-        $path = $p . $path;
+        $path = ($is_in_view_path ? App::_()->Paths->font : '') . $path;
         if (file_exists($path)) {
             $file_open  = file_get_contents($path);
             $view       = static::init($file_open);
             $view->path = $path;
-        } else {
-//            $view->content = $p . $path . '|' . App::_()->font_path;
         }
         return $view;
-    }
-
-    /**
-     * Set the actual headers
-     *
-     * @return mixed
-     */
-    public function makeHeaders() {
-        $path = $this->path;
-        if (file_exists($path)) {
-//            $extension = pathinfo($path)['extension'];
-//            Http::make_resource_headers($extension);
-            Http::make_resource_headers('css');
-        }
     }
 }

@@ -1,0 +1,67 @@
+.clearfix {
+    zoom : 1;
+    &:after {
+        clear : both;
+    }
+    &:before,
+    &:after {
+        content    : '\0020';
+        display    : block;
+        overflow   : hidden;
+        visibility : hidden;
+        width      : 0;
+        height     : 0;
+    }
+}
+
+.vertical-align {
+    position          : relative;
+    top               : 50%;
+    transform         : translateY(-50%);
+    -webkit-transform : translateY(-50%);
+    -ms-transform     : translateY(-50%);
+}
+
+.noselect {
+    -webkit-user-select : none; /* Chrome/Safari */
+    -moz-user-select    : none; /* Firefox */
+    -ms-user-select     : none; /* IE10+ */
+}
+
+.clickable {
+    cursor : pointer;
+}
+
+.hide {
+    display : none;
+}
+
+.rotate(@angle) {
+    -webkit-transform : rotate(-@angle);
+    -moz-transform    : rotate(-@angle);
+    -ms-transform     : rotate(-@angle);
+    -o-transform      : rotate(-@angle);
+    filter            : progid:DXImageTransform.Microsoft.BasicImage(rotation=3);
+}
+
+.opacity(@amount) {
+    opacity    : @amount;
+    @thing : @amount * 10;
+    -ms-filter : "progid:DXImageTransform.Microsoft.Alpha(Opacity=@{amount})";
+    filter     : alpha(opacity=@thing);
+}
+
+.transition(@string) {
+    -webkit-transition : @string;
+    -moz-transition    : @string;
+    -ms-transition     : @string;
+    -o-transition      : @string;
+    transition         : @string;
+}
+
+.no-margin-collapse {
+    &:before, &:after {
+        content : ' ';
+        display : table;
+    }
+}

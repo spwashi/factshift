@@ -7,8 +7,6 @@
 
 namespace Sm\Database\Abstraction;
 
-use Sm\Core\IoC;
-
 ########################################################################################################################################################################################################
 abstract class Sql {
     protected $qry;
@@ -19,41 +17,42 @@ abstract class Sql {
     protected $guess_type = '';
     /** @var Connection $connection The connection to the database to use to run the qry */
     protected $connection;
-
+    
     /**
      * @var array $bind_value An array of variables to bind by value
      */
-    public $bind_value = [];
+    public $bind_value = [ ];
     /**
      * @var array $bind_reference An array of variables to bind by reference (if applicable)
      */
-    public $bind_reference = [];
-
+    public $bind_reference = [ ];
+    
     /** @var array Part of the querying components */
-    protected $_select       = [];
-    protected $_from         = [];
-    protected $_update       = [];
-    protected $_insert       = [];
+    protected $_select       = [ ];
+    protected $_from         = [ ];
+    protected $_update       = [ ];
+    protected $_insert       = [ ];
     protected $_where        = '';
     protected $_on_duplicate = '';
     protected $_table        = '';
+    protected $success       = false;
 
 ########################################################################################################################################################################################################
-
+    
     /**
      * @param Connection $connection
      *
      * @throws \Exception
      */
-
+    
     function __construct(Connection $connection = null) {
         if ($connection == null) {
-            $this->connection = IoC::_()->connection;
+            $this->connection = App::_()->IoC->connection;
         } else {
             $this->connection = $connection;
         }
     }
-
+    
     /**
      * @param Connection $connection
      *
@@ -64,16 +63,16 @@ abstract class Sql {
     }
 
 ########################################################################################################################################################################################################
-
+    
     /**
-     * Run the query
+     * Run the query. Change the "success" flag internally.
      *
      * @param bool $log
      *
      * @return mixed
      */
     abstract public function run($log = false);
-
+    
     /**
      * Build the query from the fragments created through the other functions.
      *
@@ -84,7 +83,7 @@ abstract class Sql {
      * @return mixed
      */
     abstract public function buildQry($type = null, $safe = false);
-
+    
     /**
      * After running a query, output some data
      *
@@ -93,7 +92,7 @@ abstract class Sql {
      * @return mixed
      */
     abstract public function output($returnType = 'row');
-
+    
     /**
      * Bind an array by value for prepared statements
      *
@@ -102,7 +101,7 @@ abstract class Sql {
      * @return mixed
      */
     abstract public function bind(array $binding);
-
+    
     /**
      * Bind an array by reference for prepared statements
      *
@@ -113,6 +112,9 @@ abstract class Sql {
     abstract public function bindByReference(array &$binding);
 
 ########################################################################################################################################################################################################
+    public function was_successful() {
+        return (bool)$this->success;
+    }
     /**
      * @param callable|string $query       Either a function that modifies a new instance of the SQL class or a string to set as the query
      * @param string|bool     $return_type The type of data to return after running the query
@@ -130,7 +132,7 @@ abstract class Sql {
         $this->run();
         return $this->output($return_type);
     }
-
+    
     /**
      * Add a 'from' clause to the query
      *
@@ -140,12 +142,12 @@ abstract class Sql {
      */
     public function from($from) {
         if (!is_array($from)) {
-            $from = [$from];
+            $from = [ $from ];
         }
         $this->_from = $from;
         return $this;
     }
-
+    
     /**
      * Add a 'select' clause to the query
      *
@@ -161,7 +163,7 @@ abstract class Sql {
         $this->_select = $select;
         return $this;
     }
-
+    
     /**
      * Specify the table to be used
      *
@@ -173,7 +175,7 @@ abstract class Sql {
         $this->_table = (string)$table;
         return $this;
     }
-
+    
     /**
      * Add an 'update' clause to the query
      *
@@ -184,12 +186,12 @@ abstract class Sql {
     public function update($update) {
         $this->guess_type = 'update';
         if (!is_array($update)) {
-            $update = [$update];
+            $update = [ $update ];
         }
         $this->_update = $update;
         return $this;
     }
-
+    
     /**
      * Specify the columns to be used for the insert clause
      *
@@ -204,7 +206,7 @@ abstract class Sql {
         $this->_insert['value_columns']  = $value_columns;
         return $this;
     }
-
+    
     /**
      * Make this into a 'delete'
      *
@@ -214,7 +216,7 @@ abstract class Sql {
         $this->guess_type = 'delete';
         return $this;
     }
-
+    
     /**
      * @param string $where  The where clause (exactly as the string)
      * @param bool   $append Whether or not the where clause that is tobe added will be appended to the current where clause
@@ -229,7 +231,7 @@ abstract class Sql {
         $this->_where = $where;
         return $this;
     }
-
+    
     /**
      * @param string $on_duplicate The where clause (exactly as the string)
      * @param bool   $append       Whether or not the where clause that is tobe added will be appended to the current where clause
@@ -244,7 +246,7 @@ abstract class Sql {
         $this->_on_duplicate = $on_duplicate;
         return $this;
     }
-
+    
     /**
      * Return the Query, set it to an empty string afterward
      *
@@ -255,7 +257,7 @@ abstract class Sql {
         $this->qry = '';
         return $q;
     }
-
+    
     /**
      * Return the query
      *
@@ -264,7 +266,7 @@ abstract class Sql {
     public function getQry() {
         return $this->qry;
     }
-
+    
     /**
      * Set the query explicitly
      *
@@ -276,16 +278,17 @@ abstract class Sql {
         $this->qry = $qry;
         return $this;
     }
-
+    
     /**
      * Return the object-wrapper instance of this object's connection to the database
+     *
      * @return \Sm\Database\Abstraction\Connection
      */
     public function getConnection() {
         return $this->connection;
     }
-
+    
     public function getBound() {
-        return [$this->bind_value, $this->bind_reference];
+        return [ $this->bind_value, $this->bind_reference ];
     }
 }

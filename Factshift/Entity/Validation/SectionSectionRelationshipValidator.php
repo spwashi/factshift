@@ -12,11 +12,6 @@ use Factshift\Entity\Validation\Abstraction\RelationshipValidator;
 
 class SectionSectionRelationshipValidator extends RelationshipValidator {
     static $entity_type = 'Section|Section';
-    const MIN_TITLE_LENGTH            = 0;
-    const MAX_WORDS_LENGTH            = 1500;
-    const MAX_TITLE_LENGTH            = 70;
-    const MAX_CONTENT_LENGTH          = 750;
-    const MAX_CONTENT_LOCATION_LENGTH = 135;
     
     public function validate_relationship_type(&$proposed_title) {
         return static::_validate_enum('relationship_types', $proposed_title);

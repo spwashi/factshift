@@ -6,7 +6,7 @@ require.config(
     {
         paths: {
             jquery:      FACTSHIFT_JS_URL + "vendor/jquery.min",
-            Promise:     FACTSHIFT_JS_URL + "std/Promise",
+            Promise:     FACTSHIFT_JS_URL + "vendor/Promise",
             backbone:    FACTSHIFT_JS_URL + "vendor/backbone",
             Cocktail:    FACTSHIFT_JS_URL + "vendor/Cocktail",
             underscore:  FACTSHIFT_JS_URL + "vendor/underscore",
@@ -15,7 +15,7 @@ require.config(
             tooltipster: FACTSHIFT_JS_URL + "vendor/jquery.tooltipster.min",
             select2:     FACTSHIFT_JS_URL + "vendor/select2",
 
-            SmHighlight: FACTSHIFT_JS_URL + "std/sm_highlight",
+            SmHighlight: FACTSHIFT_JS_URL + "legacy/sm_highlight",
 
             Class:   ALPHA_URL + "Sm/Abstraction/Class",
             Emitter: ALPHA_URL + "Sm/Abstraction/Emitter",

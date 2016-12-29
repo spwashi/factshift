@@ -1,0 +1,8 @@
+
+# IntelliJ project files
+.idea
+*.iml
+out
+gen
+Factshift/_pages/
+Factshift/_users/

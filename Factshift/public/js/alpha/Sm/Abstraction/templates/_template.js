@@ -110,25 +110,26 @@ define(['require', 'Sm'], function (require, Sm) {
                 if (Map) {
                     var MapSmEntity = Sm.Core.Meta.getSmEntity(Map);
                     if (MapSmEntity) MapMeta = MapSmEntity.Meta;
-                    if (MapMeta) map_properties = map_properties || MapMeta.getDefaultAttributes();
+                    Sm.CONFIG.DEBUG && console.log(Map);
+                    if (Map) map_properties = map_properties || Map.getModifiableAttributes();
                 }
 
-                var p_arr = [];
+                var attributes = [];
                 if (typeof map_properties === "object") {
                     if (Sm.Core.Util.isArray(map_properties)) {
-                        p_arr = map_properties;
-                    } else if (p_arr) {
+                        attributes = map_properties;
+                    } else if (attributes) {
                         for (var p_name in map_properties) {
                             if (!map_properties.hasOwnProperty(p_name)) continue;
-                            p_arr.push(p_name);
+                            attributes.push(p_name);
                         }
                     }
                 }
 
                 var d = '<div class="form" id="map-form">\n  ';
-                for (var p = 0; p < p_arr.length; p++) {
-                    var property = p_arr[p];
-                    d += _get_attribute_form_value(MapMeta, property);
+                for (var p = 0; p < attributes.length; p++) {
+                    var attr = attributes[p];
+                    d += this.generate('body._form_value.[' + attr + ']', {attribute: attr, Resource: Map, Meta: MapMeta}, {is_synchronous: true});
                 }
                 d += '<div class="button-container control_group add_relationship-container">\n    <button class="action modal-button" data-action="add_relationship" data-data="">Add relationship</button>\n</div>\n</div>';
                 return d;
@@ -173,25 +174,84 @@ define(['require', 'Sm'], function (require, Sm) {
             }
         },
         body:           {
-            full: '<div class="<%- typeof content === \'string\'?\'content\':(typeof alias === \'string\'?\'alias\':(!!title && typeof title === \'string\'?\'title\':\' \'))%>">\n    <%- typeof content === "string"?content:(typeof alias === "string"?alias:(typeof title === "string"?title:" "))%>\n</div>\n',
+            _form_value: function (data) {
+                data          = data || {};
+                var Resource  = data.Resource || null;
+                var Meta      = data.Meta || null;
+                var attribute = data.attribute || null;
+                if (!attribute) throw  new Sm.Exceptions.Error("No attribute specified", data);
+                if (!Meta) {
+                    if (!Resource) throw  new Sm.Exceptions.Error("Could not create form value for this resource", data);
+                    var SmEntity = Sm.Core.Meta.getSmEntity(Resource);
+                    if (!SmEntity) throw new Sm.Exceptions.Error("Could not create form value for this resource", data);
+                    Meta = SmEntity.Meta;
+                }
+
+                var attribute_template_inside    = '';
+                var display_information          = Meta.getDisplayInformation(attribute);
+                var attr_data_type               = display_information.type;
+                var attr_display_name            = display_information.name;
+                var attribute_template_beginning = '<div class="control_group">\n    <label for="__ATTR__">__ATTR_TITLE__:</label>\n';
+                var attribute_template_end       = '<span class="error" id="__ATTR__-error"></span>\n</div>';
+                switch (attr_data_type) {
+                    case "boolean":
+                        attribute_template_inside = '<input class="model edit __ATTR__" data-attribute="__ATTR__" type="checkbox" id="__ATTR__" name="__ATTR__" value="1" <% if(__ATTR__ == 1) {%>checked<% } %>>';
+                        break;
+                    case "entity":
+                        Sm.CONFIG.DEBUG && console.log('implement entity types  in templates');
+                        attribute_template_inside = false;
+                        break;
+                    default:
+                    case "short":
+                        attribute_template_inside = '<input data-attribute="__ATTR__" class="model edit __ATTR__" type="text" name="__ATTR__" placeholder="__ATTR_TITLE__" title="__ATTR__" value="<%- __ATTR__ %>">';
+                        break;
+                    case "long":
+                    case "array":
+                        attribute_template_inside = '<textarea data-attribute="__ATTR__" class="model edit __ATTR__" name="__ATTR__" placeholder="__ATTR_TITLE__" title="__ATTR__"><%- __ATTR__ %></textarea>';
+                        break;
+                    case "enum":
+                        var enum_object           = Meta.getAttributeEnumObject(attribute);
+                        attribute_template_inside = '<select class="model edit __ATTR__ select" data-action="change___ATTR__" data-attribute="__ATTR__" id="__ATTR__" name="__ATTR__">';
+                        for (var enum_type in enum_object) {
+                            if (!enum_object.hasOwnProperty(enum_type)) continue;
+                            var enum_val = enum_object[enum_type];
+                            var selected = "<% if(__ATTR__ == '" + enum_val.id + "' || __ATTR__ == '" + enum_type + "') {%>selected='selected'<% } %>";
+                            if (typeof enum_val === "number") {
+                                attribute_template_inside += '<option value="' + enum_val + '"' + selected + ' >' + _.titleize(enum_type) + '</option>';
+                            } else if (typeof enum_val === "object") {
+                                attribute_template_inside += '<option value="' + (enum_val.id || enum_type) + '" ' + selected + '>' + (enum_val.name || _.titleize(enum_type)) + '</option>';
+                            }
+                        }
+                        attribute_template_inside += "</select>";
+                        break;
+                }
+                if (!attribute_template_inside) return '';
+                var after_template = attribute_template_beginning
+                    + "<% if(typeof __ATTR__ == 'undefined') {var __ATTR__ = null }%>"
+                    + attribute_template_inside
+                    + attribute_template_end;
+                after_template     = after_template.replace(new RegExp('__ATTR__', 'g'), attribute).replace(new RegExp('__ATTR_TITLE__', 'g'), attr_display_name || attribute);
+                return after_template;
+            },
+            full:        '<div class="<%- typeof content === \'string\'?\'content\':(typeof alias === \'string\'?\'alias\':(!!title && typeof title === \'string\'?\'title\':\' \'))%>">\n    <%- typeof content === "string"?content:(typeof alias === "string"?alias:(typeof title === "string"?title:" "))%>\n</div>\n',
             /**
              * @this Sm.Abstraction.Garage
              * @param Resource
              */
-            form: function (Resource) {
+            form:        function (Resource) {
+                if (!Resource || typeof Resource !== "object" || !Resource.isIdentifiable) throw  new Sm.Exceptions.Error("Could not edit resource");
+                if (!Resource.isEditable) throw new Sm.Exceptions.Error();
                 var entity_type = Sm.Core.Meta.getEntityType(Resource) || this.entity_type;
                 var SmEntity    = Sm.Core.Meta.getSmEntity(entity_type);
                 if (!SmEntity) throw  new Sm.Exceptions.Error("Could not find entity type", [Resource, this]);
-                var Meta               = SmEntity.Meta;
-                var default_attributes = Meta.getApiSettableAttributes(Resource);
-
-                var object_type = Resource.getObjectType ? Resource.getObjectType() : 'object';
+                var Meta        = SmEntity.Meta;
+                var attributes  = Resource.getModifiableAttributes();
                 var r_id_string = Resource.getR_ID ? "data-r_id='" + Resource.getR_ID() + "'" : '';
 
                 var template = ["<div class='form' " + r_id_string + ">"];
-                for (var i = 0; i < default_attributes.length; i++) {
-                    var attribute = default_attributes[i];
-                    template.push(_get_attribute_form_value(Meta, attribute));
+                for (var i = 0; i < attributes.length; i++) {
+                    var attr = attributes[i];
+                    template.push(this.generate('body._form_value.[' + attr + ']', {attribute: attr, Resource: Resource, Meta: Meta}, {is_synchronous: true}));
                 }
                 template.push("</div>");
                 return template.join('\n');
@@ -202,50 +262,4 @@ define(['require', 'Sm'], function (require, Sm) {
     };
     Sm.Core.dependencies.add('Abstraction-templates-_template');
 
-    function _get_attribute_form_value(Meta, attribute) {
-        var attribute_template_inside    = '';
-        var display_information          = Meta.getDisplayInformation(attribute);
-        var attr_data_type               = display_information.type;
-        var attr_display_name            = display_information.name;
-        var attribute_template_beginning = '<div class="control_group">\n    <label for="__ATTR__">__ATTR_TITLE__:</label>\n';
-        var attribute_template_end       = '<span class="error" id="__ATTR__-error"></span>\n</div>';
-        switch (attr_data_type) {
-            case "boolean":
-                attribute_template_inside = '<input class="model edit __ATTR__" data-attribute="__ATTR__" type="checkbox" id="__ATTR__" name="__ATTR__" value="1" <% if(__ATTR__ == 1) {%>checked<% } %>>';
-                break;
-            case "entity":
-                Sm.CONFIG.DEBUG && console.log('implement entity types  in templates');
-                attribute_template_inside = false;
-                break;
-            default:
-            case "short":
-                attribute_template_inside = '<input data-attribute="__ATTR__" class="model edit __ATTR__" type="text" name="__ATTR__" placeholder="__ATTR_TITLE__" title="__ATTR__" value="<%- __ATTR__ %>">';
-                break;
-            case "long":
-            case "array":
-                attribute_template_inside = '<textarea data-attribute="__ATTR__" class="model edit __ATTR__" name="__ATTR__" placeholder="__ATTR_TITLE__" title="__ATTR__"><%- __ATTR__ %></textarea>';
-                break;
-            case "enum":
-                var enum_object           = Meta.getAttributeEnumObject(attribute);
-                attribute_template_inside = '<select class="model edit __ATTR__ select" data-action="change___ATTR__" data-attribute="__ATTR__" id="__ATTR__" name="__ATTR__">';
-                for (var enum_type in enum_object) {
-                    if (!enum_object.hasOwnProperty(enum_type)) continue;
-                    var enum_val = enum_object[enum_type];
-                    var selected = "<% if(__ATTR__ == '" + enum_val.id + "' || __ATTR__ == '" + enum_type + "') {%>selected='selected'<% } %>";
-                    if (typeof enum_val === "number") {
-                        attribute_template_inside += '<option value="' + enum_val + '"' + selected + ' >' + _.titleize(enum_type) + '</option>';
-                    } else if (typeof enum_val === "object") {
-                        attribute_template_inside += '<option value="' + (enum_val.id || enum_type) + '" ' + selected + '>' + (enum_val.name || _.titleize(enum_type)) + '</option>';
-                    }
-                }
-                attribute_template_inside += "</select>";
-                break;
-        }
-        if (!attribute_template_inside) return '';
-        var after_template = attribute_template_beginning
-            + "<% if(typeof __ATTR__ == 'undefined') {var __ATTR__ = null }%>"
-            + attribute_template_inside
-            + attribute_template_end;
-        return after_template.replace(new RegExp('__ATTR__', 'g'), attribute).replace(new RegExp('__ATTR_TITLE__', 'g'), attr_display_name || attribute);
-    }
 });

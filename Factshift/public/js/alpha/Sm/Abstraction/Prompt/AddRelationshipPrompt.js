@@ -6,16 +6,22 @@ define(['require', 'Sm', 'jquery', 'Sm-Abstraction-Prompt-Prompt', 'Sm-Abstracti
         Sm.Abstraction.Prompt.AddRelationshipPrompt = Sm.Abstraction.Modal.Modal.extend(
             {
                 action:                       'add_relationship',
+                /**
+                 *
+                 * @param settings
+                 * @param settings.OtherEntity
+                 * @param settings.Map
+                 * @return {*}
+                 */
                 initialize:                   function (settings) {
                     settings = settings || {};
                     var ret  = Sm.Abstraction.Modal.Modal.prototype.initialize.apply(this, arguments);
                     if (settings.OtherEntity) this.OtherEntity = settings.OtherEntity || null;
-
+                    this.Map                = settings.Map || null;
                     this.relationship_index = null;
                     return ret;
                 },
                 _generateInnerHTML:           function (is_synchronous) {
-                    var Self              = this;
                     var Entity            = this.getResource();
                     var Garage            = Sm.Core.Meta.getSmEntityAttribute(Entity, 'Garage') || new (Sm.Abstraction.Garage);
                     var outer             = Garage.generate('modal_outer.add_relationship', {Resource: Entity, Context: this.getContext()}, {is_synchronous: is_synchronous});
@@ -53,7 +59,9 @@ define(['require', 'Sm', 'jquery', 'Sm-Abstraction-Prompt-Prompt', 'Sm-Abstracti
 
                     var MapSmEntity = Sm.Core.Meta.getSmEntity(map_type);
                     if (!MapSmEntity) return Promise.reject("Could not map relationship index");
-                    var Map                       = MapSmEntity.Meta.initEntity({entity: form_attributes});
+                    var Map = this.Map || MapSmEntity.Meta.initEntity();
+                    Map.setAttributes(form_attributes);
+
                     var Self                      = this;
                     var complete_add_relationship = function () {
                         return Entity.addRelationship(OtherEntity, relationship_index, Map).then(function (Relationship) {
@@ -90,13 +98,18 @@ define(['require', 'Sm', 'jquery', 'Sm-Abstraction-Prompt-Prompt', 'Sm-Abstracti
                     /** @type {Sm.Core.Meta} Meta */
                     var Meta                 = Sm.Core.Meta.getSmEntityAttribute(Entity, 'Meta') || (Sm.Core.Meta);
                     var relationship_details = Meta.getRelationshipDetails(relationship_index) || null;
-                    var Map                  = Meta.getMapTypeFromRelationshipIndex(relationship_index) || null,
+                    var map_type             = Meta.getMapTypeFromRelationshipIndex(relationship_index) || null,
                         map_properties       = ['position'];
+
+                    var MapSmEntity = Sm.Core.Meta.getSmEntity(map_type);
+                    if (!MapSmEntity) return Promise.reject("Could not map relationship index");
+                    var Map = this.Map = (this.Map || MapSmEntity.Meta.initEntity());
+
                     if (relationship_details) map_properties = null;
                     Sm.CONFIG.DEBUG && console.log(relationship_details);
                     return Garage
                         .generate(
-                            'modal.add_relationship_type[' + relationship_index + ']',
+                            'modal.add_relationship_type.[' + relationship_index + ']',
                             {Entity: Entity, Map: Map, map_properties: map_properties})
                         .then(function (map_form) {
                             var $el             = $(map_form);

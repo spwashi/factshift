@@ -45,9 +45,9 @@ trait ModifyEntityActionTrait {
             if (!($id)) {
                 throw new InvalidVictimException(ResponseMessage::init(null, "Could not find resource"));
             }
+            if (!$this->Victim->hasAttribute('user_id')) return true;
             $user_id = $this->Victim->get('user_id');
-            if (!$user_id)
-                throw new InvalidVictimException(ResponseMessage::init(null, "Cannot edit a resource with no owner"));
+            if (!$user_id) throw new InvalidVictimException(ResponseMessage::init(null, "Cannot edit a resource with no owner"));
             
             if ($this->Actor->get('id') != $user_id)
                 throw new InvalidActorException(ResponseMessage::init(null, "Not authorized to act on this resource"), InvalidActorException::ERROR_FORBIDDEN);

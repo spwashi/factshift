@@ -17,6 +17,10 @@ define(['require', 'Sm', 'Sm-Abstraction-Prompt-EditPrompt', 'Sm-Abstraction-Pro
         isEditable:    true,
         isDestroyable: true,
 
+        getModifiableAttributes: function () {
+            return {};
+        },
+
         /**
          * Save the object on the server
          * @return {Promise}

@@ -120,6 +120,10 @@ define(['require', 'Sm', 'Emitter', 'Sm-Abstraction-MapEntity', 'Sm-Abstraction-
             getAttributes:                function () {
                 return this.Map ? this.Map.getAttributes() : null;
             },
+            getModifiableAttributes:      function () {
+                if (!this.Map) return {};
+                return this.Map.getModifiableAttributes();
+            },
             /**
              * Return an array of the Entities held in this Relationship
              * @return {Array<Sm.Abstraction.Entity>}

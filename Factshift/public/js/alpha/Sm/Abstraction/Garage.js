@@ -4,7 +4,7 @@
 define(['require', 'Sm', 'Emitter', 'underscore', 'Sm-Core-Core', 'Sm-Abstraction-templates-_template'], function (require, Sm, Emitter, _) {
     Sm.Abstraction.Garage = Emitter.extend(
         {
-            cached_templates: {},
+            cached_templates: null,
 
             init:                  function (entity_type) {
                 this.entity_type = entity_type || null;
@@ -27,15 +27,12 @@ define(['require', 'Sm', 'Emitter', 'underscore', 'Sm-Core-Core', 'Sm-Abstractio
              * @throws Sm.Exceptions.Error
              */
             createFragmentHTML:    function (template_identifier, templates, data, settings) {
-                settings             = settings || {};
-                var is_synchronous   = !!settings.is_synchronous;
-                var template, backup_template;
+                settings           = settings || {};
+                var is_synchronous = !!settings.is_synchronous;
+                var template;
                 var Error;
-                var _template_is_arr = Sm.Core.Util.isArray(templates);
 
-                template        = _template_is_arr ? templates[0] || false : templates;
-                backup_template = _template_is_arr ? templates[1] || {} : {};
-                if (!template) {
+                if (!templates || !templates[0]) {
                     Error = new Sm.Exceptions.Error("No template for " + template_identifier, arguments);
                     if (is_synchronous) throw Error;
                     return Promise.reject(Error);
@@ -47,6 +44,8 @@ define(['require', 'Sm', 'Emitter', 'underscore', 'Sm-Core-Core', 'Sm-Abstractio
                     /\((.+)\)/,         //  (index)
                     /\{(.+)\}/          //  {index}
                 ];
+                //This is here so we can use PHPStorm's code completion abilities, which doesn't work if "[" comes after an object key
+                template_identifier   = template_identifier.replace('.[', '[');
                 var original_input    = template_identifier;
                 /**
                  * An array of indices to search for.
@@ -91,7 +90,7 @@ define(['require', 'Sm', 'Emitter', 'underscore', 'Sm-Core-Core', 'Sm-Abstractio
                 var last_called = [];
                 var last_result = [];
 
-                var fn            = function (obj, subtype, previous) {
+                var fn            = function (obj, subtype) {
                     var res = false;
                     if (typeof obj === "boolean" || typeof obj === "number") return obj;
                     if (typeof obj === "string") res = obj;
@@ -112,12 +111,21 @@ define(['require', 'Sm', 'Emitter', 'underscore', 'Sm-Core-Core', 'Sm-Abstractio
                             }
 
                         } else if (obj[subtype]) res = obj[subtype];
+                        else if (subtype !== 'std') return fn(obj, 'std') || false;
                         else res = false;
                     }
                     return res;
                 };
                 var resolve       = function (string) {
-                    var processed_string = data ? Self.fillTemplate(data, string) : string;
+                    var attributes;
+                    if (data.Resource && typeof data.Resource === "object" && data.Resource.getAttributes) {
+                        attributes = data.Resource.getAttributes();
+                    } else if (data.attributes && typeof data.attributes === "object") {
+                        attributes = data.attributes;
+                    } else {
+                        attributes = data;
+                    }
+                    var processed_string = data ? Self.fillTemplate(attributes, string) : string;
                     for (var index in replace_object) {
                         if (!replace_object.hasOwnProperty(index)) continue;
                         processed_string = processed_string.replace(index, replace_object[index]);
@@ -137,7 +145,7 @@ define(['require', 'Sm', 'Emitter', 'underscore', 'Sm-Core-Core', 'Sm-Abstractio
                     var search_result           = null;
                     var _empty_template_indices = [];
                     for (var k = 0; k < templates.length; k++) {
-                        templates[k] = search_result = fn(templates[k], template_search_index, last_searched);
+                        templates[k] = search_result = fn(templates[k], template_search_index);
                         if (typeof search_result === "string") return resolve(search_result);
                         if (!search_result) _empty_template_indices.forEach(function (index) {templates[index] = search_result;});
                         _empty_template_indices.push(k);

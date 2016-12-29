@@ -211,6 +211,9 @@ define(['require', 'Sm',
                 // Don't return a reference to the object
                 return Sm.Core.Util.merge_objects({}, this.Model.attributes);
             },
+            getModifiableAttributes:       function () {
+                return this.SmEntity.Meta.getApiSettableAttributes(this);
+            },
             /**
              * Get the attributes that were set before the Entity was saved
              * @return {null}
@@ -221,7 +224,7 @@ define(['require', 'Sm',
             /**
              * Set attributes on an object
              * @param attributes
-             * @param {{}}      settings
+             * @param {{}=}      settings
              * @param {boolean} settings.silent
              */
             setAttributes:                 function (attributes, settings) {

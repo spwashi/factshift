@@ -8,7 +8,8 @@ define(['require', 'Sm'], function (require, Sm) {
          * @extends Sm.Core.Meta
          * @property {Sm.Abstraction.Entity} Resource
          */
-        var SectionMeta          = Sm.Core.Meta.Proto.extend({});
+        var SectionMeta          = Sm.Core.Meta.Proto.extend(
+            {});
         Sm.Entities.Section.Meta = new SectionMeta('Section');
     }, 'Entities-Section-Meta');
 });

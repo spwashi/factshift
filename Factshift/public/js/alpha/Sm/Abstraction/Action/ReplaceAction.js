@@ -61,10 +61,9 @@ define(['require', 'Sm', 'Sm-Abstraction-Action'], function (require, Sm) {
 
                     /** @type {Array<Sm.Core.Identifier.Identifiable>} replaceMENTS The Identifiables doing the replacing */
                     var replaceMENTS = actors;
-
                     // We want to replace the topmost Identifiables, so make sure we get a list of them
                     /** @type {Array<Sm.Core.Identifier.Identifiable>} replaceD     The Identifiables doing the replacing */
-                    var replaceD = victims.map(function (item) {
+                    var replaceD     = victims.map(function (item) {
                         return Sm.Abstraction.Action.ReplaceAction.get_effective_list(item);
                     });
 
@@ -81,6 +80,7 @@ define(['require', 'Sm', 'Sm-Abstraction-Action'], function (require, Sm) {
                 }
             });
         Sm.Abstraction.Action.ReplaceAction.actions = {};
+        Sm.Abstraction.Action.ReplaceAction.history = {};
         /**
          * Register that the replacements are being replaced by something
          * @param replaceMents
@@ -147,6 +147,6 @@ define(['require', 'Sm', 'Sm-Abstraction-Action'], function (require, Sm) {
             }
             return found_arr;
         };
-        
+
     }, 'Sm-Abstraction-Action-ReplaceAction');
 });

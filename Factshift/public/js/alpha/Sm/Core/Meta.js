@@ -97,7 +97,6 @@ require(['require', 'Emitter', 'Sm', 'underscore'], function (require, Emitter, 
                     if (properties.length) return properties;
                 }
                 return (_config.properties || {}).api_settable || [];
-                ;
             },
             attributeIsValid:         function (attribute, Entity) {
                 return /*probably*/ true;
@@ -292,6 +291,7 @@ require(['require', 'Emitter', 'Sm', 'underscore'], function (require, Emitter, 
      * @return {Sm.Core.SmEntity|boolean}
      */
     Sm.Core.Meta.getSmEntity = function (entityType) {
+        entityType = this.getEntityType(entityType);
         return Sm.Entities && Sm.Entities[entityType] ? Sm.Entities[entityType] : (false);
     };
     Sm.Core.Meta.isEntId = function (id) {

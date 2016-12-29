@@ -38,37 +38,37 @@ define(['require', 'Sm', 'Sm-Abstraction-Prompt-EditPrompt', 'Sm-Abstraction-Pro
         destroy:        function () {return Promise.resolve(null)},
         /**
          * Prompt the creation of an object
-         * @param {Sm.Core.Identifier.Identifiable} Context An object to serve as a reference frame for the action
+         * @param {Sm.Core.Identifier.Identifiable=} ReferencePoint An object to serve as a reference frame for the action
          * @return {Promise}
          */
-        prompt_create:  function (Context) {
+        prompt_create:  function (ReferencePoint) {
             var Self = this;
             return Sm.Core.dependencies.on_load(['Abstraction-Prompt-CreatePrompt'], function () {
-                var Prompt = new Sm.Abstraction.Prompt.CreatePrompt({Resource: Self, Context: Context || null});
+                var Prompt = new Sm.Abstraction.Prompt.CreatePrompt({Resource: Self, ReferencePoint: ReferencePoint || null});
                 return Prompt.open();
             }, 'prompt_create');
         },
         /**
          * Prompt the Editing of an object
-         * @param {Sm.Core.Identifier.Identifiable} Context An object to serve as a reference frame for the action
+         * @param {Sm.Core.Identifier.Identifiable=} ReferencePoint An object to serve as a reference frame for the action
          * @return {Promise}
          */
-        prompt_edit:    function (Context) {
+        prompt_edit:    function (ReferencePoint) {
             var Self = this;
             return Sm.Core.dependencies.on_load(['Abstraction-Prompt-EditPrompt'], function () {
-                var Prompt = new Sm.Abstraction.Prompt.EditPrompt({Resource: Self, Context: Context || null});
+                var Prompt = new Sm.Abstraction.Prompt.EditPrompt({Resource: Self, ReferencePoint: ReferencePoint || null});
                 return Prompt.open();
             }, 'prompt_edit');
         },
         /**
          * Prompt the destruction of a object
-         * @param {Sm.Core.Identifier.Identifiable} Context An object to serve as a reference frame for the action
+         * @param {Sm.Core.Identifier.Identifiable=} ReferencePoint An object to serve as a reference frame for the action
          * @return {Promise}
          */
-        prompt_destroy: function (Context) {
+        prompt_destroy: function (ReferencePoint) {
             var Self = this;
             return Sm.Core.dependencies.on_load(['Abstraction-Prompt-DestroyPrompt'], function () {
-                var Prompt = new Sm.Abstraction.Prompt.DestroyPrompt({Resource: Self, Context: Context || null});
+                var Prompt = new Sm.Abstraction.Prompt.DestroyPrompt({Resource: Self, ReferencePoint: ReferencePoint || null});
                 return Prompt.open();
             }, 'prompt_destroy');
         }

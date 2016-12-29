@@ -176,7 +176,7 @@ define(['require', 'Sm', 'Emitter', 'Sm-Abstraction-MapEntity', 'Sm-Abstraction-
             /**
              * Convert this Relationship to a URL
              */
-            url:                          function (context) {
+            url:                          function () {
                 var EntityArr  = this.getEntityArray();
                 var url        = '';
                 var rel_index  = false;

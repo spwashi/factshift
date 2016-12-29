@@ -60,7 +60,7 @@
  * @property
  */
 /**
- * @typedef {{}} Sm.context_object
+ * @typedef {{}} Sm.reference_object
  * @property {Sm.Abstraction.Relationship}  Relationship
  * @property {Sm.Abstraction.Entity}        OtherEntity
  * @property {Sm.relationship_index}        relationship_index

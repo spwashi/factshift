@@ -17,13 +17,3 @@ define(['require', 'Sm', 'Sm-Abstraction-Action'], function (require, Sm) {
                                                       });
 });
 
-
-/*
-* Actions are going to be done in the context of an ActionBase
-* ActionBases are just containers for actions that allow
-* us an easy way to keep track of actions so we can undo or do other things with them
-*
-* When we
-*
-*
-*/

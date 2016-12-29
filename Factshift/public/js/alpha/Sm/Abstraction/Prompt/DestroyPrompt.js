@@ -8,7 +8,7 @@ define(['require', 'Sm', 'Sm-Abstraction-Prompt-Prompt', 'Sm-Abstraction-Modal-M
          * @extends Sm.Abstraction.Modal.Modal
          * @mixes Sm.Abstraction.Prompt.Prompt
          *
-         * @property {Sm.Core.Identifier.Identifiable} Context
+         * @property {Sm.Core.Identifier.Identifiable} ReferencePoint
          */
         Sm.Abstraction.Prompt.DestroyPrompt = Sm.Abstraction.Prompt.ModifyPrompt.extend(
             {

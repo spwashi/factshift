@@ -10,14 +10,14 @@ define(['require', 'Sm'], function (require, Sm) {
              *
              * @param data
              * @param data.Resource
-             * @param data.Context
+             * @param data.ReferencePoint
              * @return {string}
              */
             edit:   function (data) {
-                var Resource      = data.Resource || false;
-                var Context       = data.Context || false;
-                var resource_type = typeof Resource === "object" && Resource.getObjectType ? Resource.getObjectType() : null;
-                var context_type  = typeof Context === "object" && Context.getObjectType ? Context.getObjectType() : null;
+                var Resource       = data.Resource || false;
+                var ReferencePoint = data.ReferencePoint || false;
+                var resource_type  = typeof Resource === "object" && Resource.getObjectType ? Resource.getObjectType() : null;
+                var reference_type = typeof ReferencePoint === "object" && ReferencePoint.getObjectType ? ReferencePoint.getObjectType() : null;
 
                 var is_entity = (resource_type === "Entity");
                 var template  = [
@@ -28,7 +28,7 @@ define(['require', 'Sm'], function (require, Sm) {
                     '<div class="button-container control_group">',
                     Template.modal.action_button({text: 'Save', action: 'save'})
                 ];
-                if (is_entity && context_type === 'Relationship') template.push(Template.modal.action_button({text: 'Edit Relationship', action: 'edit_relationship'}));
+                if (is_entity && reference_type === 'Relationship') template.push(Template.modal.action_button({text: 'Edit Relationship', action: 'edit_relationship'}));
                 template.push('</div>', '</div>');
                 return template.join('');
             },
@@ -103,15 +103,14 @@ define(['require', 'Sm'], function (require, Sm) {
                 var Entity             = data.Entity || false;
                 var OtherEntity        = data.OtherEntity || false;
                 var relationship_index = data.relationship_index || null;
-                var map_properties     = data.map_properties || false;
+                var map_properties     = false;
                 var MapMeta            = Sm.Core.Meta;
                 var Map                = data.Map || null;
 
                 if (Map) {
                     var MapSmEntity = Sm.Core.Meta.getSmEntity(Map);
                     if (MapSmEntity) MapMeta = MapSmEntity.Meta;
-                    Sm.CONFIG.DEBUG && console.log(Map);
-                    if (Map) map_properties = map_properties || Map.getModifiableAttributes();
+                    if (Map) map_properties = Map.getModifiableAttributes();
                 }
 
                 var attributes = [];

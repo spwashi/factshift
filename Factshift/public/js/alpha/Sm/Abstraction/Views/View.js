@@ -29,7 +29,7 @@ define(['require', 'Sm', 'backbone', 'Sm-Abstraction-Stateful', 'Sm-Abstraction-
              * @param {Sm.r_id}                                 config.resource_r_id
              * @param {string}                                  config.resource_type
              * @param {Sm.Core.Identifier.Identifiable=}        config.Resource
-             * @param {Sm.Core.Identifier.Identifiable=}        config.Context
+             * @param {Sm.Core.Identifier.Identifiable|HTMLElement=}        config.ReferencePoint
              * @param {function}                                config.resolve
              * @param {function}                                config.reject
              */
@@ -37,7 +37,7 @@ define(['require', 'Sm', 'backbone', 'Sm-Abstraction-Stateful', 'Sm-Abstraction-
                 config             = config || {};
                 this.resource_r_id = this.resource_r_id || config.resource_r_id || (config.Resource && config.Resource.getR_ID && config.Resource.getR_ID());
                 this.resource_type = this.resource_type || config.resource_type || this.resource_type;
-                this.setContext(config.Context || (this.el && this.el.parentNode ? this.el.parentNode : null));
+                this.setReferencePoint(config.ReferencePoint || (this.el && this.el.parentNode ? this.el.parentNode : null));
                 this.Identifier = new Sm.Core.Identifier(this, {
                     object_type: this.resource_type + '_View',
                     r_id:        this.cid
@@ -46,18 +46,18 @@ define(['require', 'Sm', 'backbone', 'Sm-Abstraction-Stateful', 'Sm-Abstraction-
                 this.initViewElement();
             },
             /**
-             * Set the Context in which a View exists
-             * @param {Sm.Core.Identifier.Identifiable}         Context
+             * Set the ReferencePoint in which a View exists
+             * @param {Sm.Core.Identifier.Identifiable|HTMLElement=}         ReferencePoint
              */
-            setContext:         function (Context) {
-                this.Context = Context;
+            setReferencePoint:  function (ReferencePoint) {
+                this.ReferencePoint = ReferencePoint;
             },
             /**
-             * Get the Context in which an element exists
+             * Get the ReferencePoint in which an element exists
              * @return {Sm.Core.Identifier.Identifiable|HTMLElement}
              */
-            getContext:         function () {
-                return this.Context;
+            getReferencePoint:  function () {
+                return this.ReferencePoint;
             },
             /**
              * Set the Element of the View
@@ -239,25 +239,25 @@ define(['require', 'Sm', 'backbone', 'Sm-Abstraction-Stateful', 'Sm-Abstraction-
                 if (cid == view_identifier) return Views[cid];
                 else if (view_identifier === Views[cid].el) return Views[cid];
                 else if (Views[cid] === view_identifier) return Views[cid];
-                else if (Views[cid].getContext() == view_identifier) return Views[cid];
+                else if (Views[cid].getReferencePoint() == view_identifier) return Views[cid];
             }
             return false;
         },
-        initNewView:   function (el, Context) {
-            var View  = this.convertToView(el || null, Context);
+        initNewView:   function (el, ReferencePoint) {
+            var View  = this.convertToView(el || null, ReferencePoint);
             var added = this.addView(View);
             return added !== false ? View : false;
         },
-        convertToView: function (el, Context) {
+        convertToView: function (el, ReferencePoint) {
             var View;
-            if ((View = this.getView(el)) || (View = this.getView(Context)))return View;
+            if ((View = this.getView(el)) || (View = this.getView(ReferencePoint)))return View;
             this.Views    = this.Views || {};
             /**
              * @var  {Sm.Core.Identifier.Identifiable|Sm.Abstraction.Views.Viewable}
              */
             var Self      = this;
             var ViewType  = this.getViewType();
-            var view_init = {el: el, Context: Context || null};
+            var view_init = {el: el, ReferencePoint: ReferencePoint || null};
             if (!!Self.isIdentifiable) {
                 view_init.resource_type = Self.getObjectType();
                 view_init.resource_r_id = Self.getR_ID();

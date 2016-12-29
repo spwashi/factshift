@@ -482,26 +482,26 @@ define(['require', 'Sm',
             },
             /**
              * Prompt the addition of a Relationship
-             * @param {Sm.Core.Identifier.Identifiable} Context An object to serve as a reference frame for the action
+             * @param {Sm.Core.Identifier.Identifiable} ReferencePoint An object to serve as a reference frame for the action
              * @return {Promise}
              */
-            prompt_add_relationship:       function (Context) {
+            prompt_add_relationship:       function (ReferencePoint) {
                 var Self = this;
                 return Sm.Core.dependencies.on_load(['Abstraction-Prompt-AddRelationshipPrompt'], function () {
-                    var Prompt = new Sm.Abstraction.Prompt.AddRelationshipPrompt({Resource: Self, Context: Context || null});
+                    var Prompt = new Sm.Abstraction.Prompt.AddRelationshipPrompt({Resource: Self, ReferencePoint: ReferencePoint || null});
                     return Prompt.open();
                 }, 'prompt_AddRelationship');
             },
             /**
              * Prompt the Editing of this Entity
              * key difference is the Prompt used to do so
-             * @param Context
+             * @param ReferencePoint
              * @return {Promise}
              */
-            prompt_edit:                   function (Context) {
+            prompt_edit:                   function (ReferencePoint) {
                 var Self = this;
                 return Sm.Core.dependencies.on_load(['Abstraction-Prompt-EditEntityPrompt'], function () {
-                    var Prompt = new Sm.Abstraction.Prompt.EditEntityPrompt({Resource: Self, Context: Context || null});
+                    var Prompt = new Sm.Abstraction.Prompt.EditEntityPrompt({Resource: Self, ReferencePoint: ReferencePoint || null});
                     return Prompt.open();
                 }, 'prompt_edit');
             }

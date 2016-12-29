@@ -20,11 +20,11 @@ define(['require', 'Sm', 'Sm-Abstraction-Prompt-Prompt', 'Sm-Abstraction-Modal-M
                 },
 
                 _generateInnerHTML:   function (is_synchronous) {
-                    var Resource = this.getResource();
-                    var Garage   = Sm.Core.Meta.getSmEntityAttribute(Resource, 'Garage') || new (Sm.Abstraction.Garage);
-                    var Context  = this.getContext();
+                    var Resource       = this.getResource();
+                    var Garage         = Sm.Core.Meta.getSmEntityAttribute(Resource, 'Garage') || new (Sm.Abstraction.Garage);
+                    var ReferencePoint = this.getReferencePoint();
 
-                    var outer = Garage.generate('modal_outer.' + this.action, {Resource: Resource, Context: Context}, {is_synchronous: is_synchronous});
+                    var outer = Garage.generate('modal_outer.' + this.action, {Resource: Resource, ReferencePoint: ReferencePoint}, {is_synchronous: is_synchronous});
                     var inner = Garage.generate('body.form', Resource, {is_synchronous: is_synchronous});
 
                     var outer_html, inner_html;
@@ -77,7 +77,7 @@ define(['require', 'Sm', 'Sm-Abstraction-Prompt-Prompt', 'Sm-Abstraction-Modal-M
                     var Resource = Self.getResource();
                     Resource &&
                     Resource.initNewView &&
-                    Resource.initNewView(button_control, this.getContext() || null);
+                    Resource.initNewView(button_control, this.getReferencePoint() || null);
                 },
                 /**
                  * @inheritDoc

@@ -7,15 +7,8 @@ define(function (require) {
      * An object containing the URL generators of the day
      */
     Sm.urls = Sm.urls || {};
-    Sm.urls.base_url    = typeof FACTSHIFT_BASE_URL !== "undefined" ? FACTSHIFT_BASE_URL : 'localhost/s_dev/';
-    Sm.urls.js = Sm.urls.base_url + 'resource/js/';
-    Sm.urls.entity_urls = {
-        page: function (context, alias) {
-            var location = arguments.join('/');
-            if (!location || !location.length) return false;
-            return Sm.urls.base_url + 'p/' + location.replace(/^\/|\/+$/gm, '');
-        }
-    };
+    Sm.urls.base_url = typeof FACTSHIFT_BASE_URL !== "undefined" ? FACTSHIFT_BASE_URL : 'localhost/s_dev/';
+    Sm.urls.js       = Sm.urls.base_url + 'resource/js/';
     Sm.Core.dependencies.add('urls');
     require(['Sm-urls-api']);
 });

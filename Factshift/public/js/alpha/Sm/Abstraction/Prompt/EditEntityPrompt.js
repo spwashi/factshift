@@ -12,15 +12,15 @@ define(['require', 'Sm', 'Sm-Abstraction-Prompt-Prompt', 'Sm-Abstraction-Modal-M
                         return res;
                     },
                     on_edit_relationship: function () {
-                        var Context = this.getContext();
+                        var ReferencePoint = this.getReferencePoint();
 
-                        if (!Context || !Context.isEditable) return Promise.reject(new Sm.Exceptions.Error("Cannot edit relationship "));
+                        if (!ReferencePoint || !ReferencePoint.isEditable) return Promise.reject(new Sm.Exceptions.Error("Cannot edit relationship "));
 
-                        if (Sm.Core.Util.isArray(Context)) {
-                            if (Context.length === 1) Context = Context[0];
-                            else return Promise.reject(new Sm.Exceptions.Error("Not sure how to handle multiple Contexts!", Context));
+                        if (Sm.Core.Util.isArray(ReferencePoint)) {
+                            if (ReferencePoint.length === 1) ReferencePoint = ReferencePoint[0];
+                            else return Promise.reject(new Sm.Exceptions.Error("Not sure how to handle multiple ReferencePoint!", ReferencePoint));
                         }
-                        return Context.prompt_edit();
+                        return ReferencePoint.prompt_edit();
                     }
                 });
         Sm.Abstraction.Prompt.makePrompt(Sm.Abstraction.Prompt.EditEntityPrompt);

@@ -9,8 +9,8 @@ define(['require', 'Sm', 'jquery', 'Emitter', 'Sm-Abstraction-Views-View'], func
          */
         Sm.Abstraction.Views.RelationshipIndexView = Sm.Abstraction.Views.View.extend(
             {
-                object_type:     'RelationshipIndexView',
-                initialize:      function (settings) {
+                object_type:       'RelationshipIndexView',
+                initialize:        function (settings) {
                     /** @type {Sm.Abstraction.RelationshipIndex}  */
                     this.elements = {items: null};
                     Sm.Abstraction.Views.View.prototype.initialize.apply(this, arguments);
@@ -19,19 +19,18 @@ define(['require', 'Sm', 'jquery', 'Emitter', 'Sm-Abstraction-Views-View'], func
                     var Self              = this;
 
                     RelationshipIndex.on('add_Relationship', function (Relationship, position, context_id) {
-                        var self_context_id = Self.getContext && Self.getContext() && Self.getContext().getR_ID();
                         Self.initRelatedElements();
                     })
                 },
-                setContext:      function (Context) {
-                    if (!Context || !(typeof Context === "object") || !Context.isIdentifiable) {
+                setReferencePoint: function (ReferencePoint) {
+                    if (!ReferencePoint || !(typeof ReferencePoint === "object") || !ReferencePoint.isIdentifiable) {
                         var Resource = this.getResource();
                         var res;
-                        if (res = this.setContext(Resource)) return res;
+                        if (res = this.setReferencePoint(Resource)) return res;
                     }
-                    this.Context = null;
+                    this.ReferencePoint = null;
                 },
-                getItemElements: function () {
+                getItemElements:   function () {
                     return this.$el.children();
                 },
 
@@ -98,11 +97,11 @@ define(['require', 'Sm', 'jquery', 'Emitter', 'Sm-Abstraction-Views-View'], func
                     return Promise.all(promise_array);
                 },
                 _initNonexistentElements: function (end_item_elements) {
-                    var Context    = this.getContext();
-                    var context_id = Context && Context.getR_ID && Context.getR_ID();
+                    var ReferencePoint = this.getReferencePoint();
+                    var reference_id   = ReferencePoint && ReferencePoint.getR_ID && ReferencePoint.getR_ID();
 
                     var RelationshipIndex = this.getResource();
-                    var related_items     = RelationshipIndex.getItems(context_id || null);
+                    var related_items     = RelationshipIndex.getItems(reference_id || null);
                     var RelIndEntity      = RelationshipIndex.getResource();
                     var promise_array     = [];
                     /**
@@ -165,10 +164,15 @@ define(['require', 'Sm', 'jquery', 'Emitter', 'Sm-Abstraction-Views-View'], func
                                    return Self._initNonexistentElements(end_item_elements);
                                })
                                .then(function () {
-                                   var Context         = Self.getContext();
-                                   var context_id      = Context && Context.getR_ID && Context.getR_ID();
+                                   var ReferencePoint  = Self.getReferencePoint();
+                                   var context_id      = ReferencePoint && ReferencePoint.getR_ID && ReferencePoint.getR_ID();
                                    Self.elements.items = end_item_elements;
-                                   Self.$el.append(RelationshipIndex.order_object(end_item_elements, context_id));
+                                   var elements        = RelationshipIndex.order_object(end_item_elements, context_id);
+                                   Self.$el.append(elements);
+                                   elements.forEach(function (item) {
+                                       if (!item || typeof  item !== "object") return;
+                                       if (item.FactshiftView) item.FactshiftView.refresh();
+                                   });
                                    Self.emit('init_RelatedElements');
                                });
                 },

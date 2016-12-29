@@ -27,7 +27,11 @@ define(['require', 'Sm', 'Sm-Abstraction-Views-View', 'Sm-Abstraction-Action-Rep
                 },
                 _click:                           function (e) {
                     var result = Sm.Abstraction.Views.EntityView.prototype._click.apply(this, arguments);
-                    result && this.focus();
+                    if (result) {
+                        this.focus();
+                        e.stopPropagation();
+                        return null;
+                    }
                     return result;
                 },
                 _keydown:                         function (e) {

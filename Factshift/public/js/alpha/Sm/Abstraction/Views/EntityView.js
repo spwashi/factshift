@@ -43,8 +43,8 @@ define(['require', 'Sm', 'jquery', 'Sm-Abstraction-Views-View'], function (requi
                     return Sm.Abstraction.Views.View.prototype.refresh.apply(this, arguments);
                 },
                 /**
-                 * Return an object that represents the context in which something happens
-                 * @return {Sm.context_object}
+                 * Return an object that represents the ReferencePoint in which something happens
+                 * @return {Sm.reference_object}
                  */
                 findNearestRelationship:       function () {
                     var Self = this;
@@ -114,19 +114,19 @@ define(['require', 'Sm', 'jquery', 'Sm-Abstraction-Views-View'], function (requi
                     var is_button_of_type = function (type) {
                         return _is_button && $target.hasClass(type);
                     };
-                    var context_object    = this.findNearestRelationship();
+                    var reference_object  = this.findNearestRelationship();
                     var SelfEntity        = this.getResource();
 
                     if (is_button_of_type('edit')) {
-                        SelfEntity && SelfEntity.isEditable && SelfEntity.prompt_edit(context_object.Relationship);
+                        SelfEntity && SelfEntity.isEditable && SelfEntity.prompt_edit(reference_object.Relationship);
                         e.stopPropagation();
                         return null;
                     } else if (is_button_of_type('add')) {
-                        SelfEntity && SelfEntity.canRelate && SelfEntity.prompt_add_relationship(context_object.Relationship);
+                        SelfEntity && SelfEntity.canRelate && SelfEntity.prompt_add_relationship(reference_object.Relationship);
                         e.stopPropagation();
                         return null;
                     } else if (is_button_of_type('destroy')) {
-                        SelfEntity && SelfEntity.isDestroyable && SelfEntity.prompt_destroy(context_object.Relationship);
+                        SelfEntity && SelfEntity.isDestroyable && SelfEntity.prompt_destroy(reference_object.Relationship);
                         e.stopPropagation();
                         return null;
                     } else if (is_button_of_type('debug')) {
@@ -153,7 +153,7 @@ define(['require', 'Sm', 'jquery', 'Sm-Abstraction-Views-View'], function (requi
                     return Garage.generate('body.' + this.display_type, Entity, {is_synchronous: is_synchronous})
                 },
                 /**
-                 * Initialize the things that make this Element interactable in certain contexts.
+                 * Initialize the things that make this Element interactable in certain ReferencePoint.
                  * E.g. editable, destroyable, etc.
                  * @private
                  */

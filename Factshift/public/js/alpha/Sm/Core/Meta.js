@@ -38,14 +38,14 @@ require(['require', 'Emitter', 'Sm', 'underscore'], function (require, Emitter, 
             },
 
 //Identity-based shit
-            convertToId:              function (item) {
+            convertToId:      function (item) {
                 var table_name;
                 var entity_type = item ? this.entity_type : this.getEntityType(item);
                 if (!entity_type) return false;
                 table_name = underscore.singularize(entity_type.toLowerCase());
                 return table_name + '_id';
             },
-            getEnumValue:             function (enum_name, identifier, what_to_get) {
+            getEnumValue:     function (enum_name, identifier, what_to_get) {
                 var enum_object = this.enums[enum_name];
                 if (!enum_object) return false;
                 for (var t in enum_object) {
@@ -64,7 +64,7 @@ require(['require', 'Emitter', 'Sm', 'underscore'], function (require, Emitter, 
                 }
             },
 //Attribute functions
-            getEntitySubtype:         function (Entity, what_to_get) {
+            getEntitySubtype: function (Entity, what_to_get) {
                 var entity_type = Sm.Core.Meta.getEntityType(Entity) || this.entity_type;
                 if (!entity_type || !(typeof Entity.get === "function")) return false;
                 var subtype;
@@ -72,11 +72,20 @@ require(['require', 'Emitter', 'Sm', 'underscore'], function (require, Emitter, 
                 if (subtype = Entity.get(subtype_identifier)) return this.getEnumValue('types', subtype, what_to_get);
                 return false;
             },
+
             getDefaultAttributes:     function (Entity) {
                 var entity_type = this.entity_type;
                 if (!entity_type) return {};
                 var _config = this._config;
                 return !_config ? {} : ((_config.properties || {}).all || {});
+            },
+            /**
+             * Get a list of the attributes that are required in order to create this Entity
+             * @param {Sm.Abstraction.Entity=}  Entity
+             * @return {Array}
+             */
+            getRequiredAttributes:    function (Entity) {
+                return [];
             },
             getApiSettableAttributes: function (Entity) {
                 var _config = this._config;
@@ -98,10 +107,8 @@ require(['require', 'Emitter', 'Sm', 'underscore'], function (require, Emitter, 
                 }
                 return (_config.properties || {}).api_settable || [];
             },
-            attributeIsValid:         function (attribute, Entity) {
-                return /*probably*/ true;
-            },
-            getDisplayInformation:    function (attribute) {
+
+            getDisplayInformation:  function (attribute) {
                 var _config                                      = this._config || {};
                 _config.properties                               = _config.properties || {};
                 _config.properties.display_types                 = _config.properties.display_types || {};
@@ -110,7 +117,7 @@ require(['require', 'Emitter', 'Sm', 'underscore'], function (require, Emitter, 
                 _config.properties.display_types[attribute].name = _config.properties.display_types[attribute].name || underscore.titleize(attribute.replace('_', ' '));
                 return _config.properties.display_types[attribute];
             },
-            guessAttributeDatatype:   function (attribute) {
+            guessAttributeDatatype: function (attribute) {
                 var _config = this._config || {};
                 if (_config.properties
                     && _config.properties.display_types
@@ -127,7 +134,7 @@ require(['require', 'Emitter', 'Sm', 'underscore'], function (require, Emitter, 
                 }
                 return "short";
             },
-            getAttributeEnumObject:   function (attribute) {
+            getAttributeEnumObject: function (attribute) {
                 var split = attribute.split('_');
                 if (this.entity_type && this.entity_type.toLowerCase() === split[0]) {
                     split.shift();
@@ -144,7 +151,7 @@ require(['require', 'Emitter', 'Sm', 'underscore'], function (require, Emitter, 
              * @param {string}                  relationship_index
              * @return {*}
              */
-            initRelationshipIndex:    function (Entity, relationship_index) {
+            initRelationshipIndex:  function (Entity, relationship_index) {
                 var is_reciprocal = relationship_index.indexOf('reciprocal_') > -1;
                 //remove 'reciprocal_' from the relationship_index
                 is_reciprocal && (relationship_index = relationship_index.replace('reciprocal_', ''));
@@ -176,7 +183,7 @@ require(['require', 'Emitter', 'Sm', 'underscore'], function (require, Emitter, 
              * @throws Sm.Exceptions.Error
              * @returns {Sm.Abstraction.Entity|boolean}
              */
-            initEntity:               function (settings) {
+            initEntity:             function (settings) {
                 var entity_type = (settings ? settings.entity_type : false) || this.getEntityType(settings) || this.entity_type;
                 if (!entity_type) throw  new Sm.Exceptions.Error("Could not find entity type to initialize entity", settings);
                 var SmEntity = Sm.Core.Meta.getSmEntity(entity_type);
@@ -313,7 +320,7 @@ require(['require', 'Emitter', 'Sm', 'underscore'], function (require, Emitter, 
      * Get something from an SmEntity
      * @param {string|Sm.Core.Identifier.Identifiable} entityType
      * @param component
-     * @return {boolean}
+     * @return {*|boolean}
      */
     Sm.Core.Meta.getSmEntityAttribute = function (entityType, component) {
         if (typeof entityType !== "string") entityType = Sm.Core.Meta.getEntityType(entityType);
@@ -324,7 +331,7 @@ require(['require', 'Emitter', 'Sm', 'underscore'], function (require, Emitter, 
     };
     Sm.Core.Meta.getEntityType = function (item) {
         var entity_type;
-        if (typeof item === "object") {
+        if (item && typeof item === "object") {
             if (item.isIdentifiable) {
                 var tmp;
                 if (tmp = item.getEntityType()) entity_type = tmp;

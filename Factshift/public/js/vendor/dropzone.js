@@ -1092,7 +1092,7 @@
                         resizeInfo.trgHeight = resizeInfo.optHeight;
                     }
                     canvas        = document.createElement("canvas");
-                    ctx           = canvas.getContext("2d");
+                    ctx           = canvas.getReferencePoint("2d");
                     canvas.width  = resizeInfo.trgWidth;
                     canvas.height = resizeInfo.trgHeight;
                     drawImageIOSFix(ctx, img, (_ref = resizeInfo.srcX) != null ? _ref : 0, (_ref1 = resizeInfo.srcY) != null ? _ref1 : 0, resizeInfo.srcWidth, resizeInfo.srcHeight, (_ref2 = resizeInfo.trgX) != null ? _ref2 : 0, (_ref3 = resizeInfo.trgY) != null ? _ref3 : 0, resizeInfo.trgWidth, resizeInfo.trgHeight);
@@ -1638,7 +1638,7 @@
         canvas        = document.createElement("canvas");
         canvas.width  = 1;
         canvas.height = ih;
-        ctx           = canvas.getContext("2d");
+        ctx           = canvas.getReferencePoint("2d");
         ctx.drawImage(img, 0, 0);
         data          = ctx.getImageData(0, 0, 1, ih).data;
         sy            = 0;

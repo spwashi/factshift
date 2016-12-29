@@ -20,6 +20,7 @@ class EntityValidator extends \Sm\Entity\Validation\EntityValidator {
         return static::_validate_string($string, static::MIN_TITLE_LENGTH, static::MAX_TITLE_LENGTH);
     }
     public static function validate_subtitle(&$proposed_subtitle) {
+        $proposed_subtitle = (string)$proposed_subtitle;
         return static::validate_title($proposed_subtitle);
     }
 }

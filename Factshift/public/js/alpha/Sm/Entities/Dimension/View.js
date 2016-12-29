@@ -14,9 +14,9 @@ define(['require', 'Sm', 'jquery', 'Sm-Abstraction-Views-View', 'Sm-Abstraction-
                     var target = e.target;
                     e.preventDefault();
                     if ($(e.currentTarget || target).hasClass('tab')) {
-                        var context_object = this.findNearestRelationship();
-                        var Resource       = this.getResource();
-                        Resource && Resource.isEditable && Resource.prompt_edit(context_object.Relationship);
+                        var reference_object = this.findNearestRelationship();
+                        var Resource         = this.getResource();
+                        Resource && Resource.isEditable && Resource.prompt_edit(reference_object.Relationship);
                         e.stopPropagation();
                     }
                     return Sm.Abstraction.Views.EntityView.prototype._click.apply(this, arguments);

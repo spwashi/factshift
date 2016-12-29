@@ -58,7 +58,7 @@ class Environment implements \JsonSerializable {
     
     public function jsonSerialize() {
         return [
-            '_object_type' => 'Context',
+            '_object_type' => 'Environment',
             'ep'           => $this->entry_point,
         ];
     }

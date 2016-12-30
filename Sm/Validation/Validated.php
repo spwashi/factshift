@@ -11,6 +11,10 @@ namespace Sm\Validation;
 use Sm\Validation\Abstraction\Validator;
 
 interface Validated {
-    /** @return Validator */
+    /**
+     * Get the Validator that is going to be used to Validate this class
+     *
+     * @return Validator
+     */
     public function getValidator() : Validator;
 }

@@ -91,11 +91,8 @@ class RelationshipIndex extends Iterator implements \JsonSerializable {
         return $RelationshipEntity;
     }
 #########################################################
-#                Getters, setters, pushers              #
+#                Iterator functions                     #
 #########################################################
-    public function getContextID() {
-        return '_';
-    }
     public function getRelationships() {
         $context_id    = $this->getContextID();
         $identifiers   = $this->item_identifiers[ $context_id ] ?? [ ];
@@ -165,6 +162,26 @@ class RelationshipIndex extends Iterator implements \JsonSerializable {
 #########################################################
 #                Getters, setters, pushers              #
 #########################################################
+    /**
+     * Set the Context in which the RelationshipIndex should be interacted with
+     *
+     * @param $id
+     *
+     * @return $this
+     *
+     */
+    public function setCurrentContextID($id) {
+        $this->CurrentContextID = $id;
+        return $this;
+    }
+    /**
+     * Return the ID of the current Context
+     *
+     * @return string|null
+     */
+    public function getContextId() {
+        return $this->CurrentContextID ?: '-';
+    }
     public function getAllEntityTypes() {
         $linked_entities = $this->linked_entities;
         $entity_types    = [ ];

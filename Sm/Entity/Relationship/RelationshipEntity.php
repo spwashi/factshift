@@ -60,6 +60,14 @@ class RelationshipEntity extends Entity implements \JsonSerializable, EditVictim
 #########################################################
 #            Getters and Setters                        #
 #########################################################
+    /**
+     * @param string|null $identifier If this is specified and it's an Identifiable object, return the Entities that aren't it.
+     *                                Otherwise, get the entity_type from the identifier and return the Entities that match.
+     *
+     * @todo consider whether this is a code smell, as each different possible identifier input returns a different thing (match/not match)
+     *
+     * @return Entity[]|Entity
+     */
     public function getItems($identifier = null) {
         if (!$identifier) return $this->Entities;
         $entity_type = EntityMeta::convert_to_something($identifier);
@@ -172,7 +180,6 @@ class RelationshipEntity extends Entity implements \JsonSerializable, EditVictim
     public function jsonSerialize() {
         return static::jsonSerializeCompact();
     }
-    
     public function jsonSerializeCompact($w_r_to = null) {
         $entities = [ ];
         # --- This allows us to exclude one from the results

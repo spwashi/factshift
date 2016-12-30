@@ -10,7 +10,6 @@ namespace Factshift\Entity\Relationship;
 
 use Factshift\Entity\Abstraction\FactshiftEntity;
 use Sm\Entity\Model\EntityMeta;
-use Sm\Identifier\Identifiable;
 
 class RelationshipIndex extends \Sm\Entity\Relationship\RelationshipIndex {
     /** @var FactshiftEntity $CurrentContext The current context in which these relationships are valid */
@@ -19,29 +18,8 @@ class RelationshipIndex extends \Sm\Entity\Relationship\RelationshipIndex {
     protected $CurrentContextID = null;
     protected $items            = [ ];
 #########################################################
-#                Getters, setters, pushers              #
+#                Initializers and Constructors          #
 #########################################################
-    public function setCurrentContext(FactshiftEntity $entity) {
-        $this->CurrentContext = $entity;
-        return $this;
-    }
-    /**
-     * Return the ID of the current Context
-     *
-     * @return string|null
-     */
-    public function getContextId() {
-        if ($this->CurrentContext) {
-            $id = $this->CurrentContext->getUniqueIdentifier(Identifiable::ENT_ID);
-            if (!$id) $id = $this->CurrentContext->getUniqueIdentifier(Identifiable::TYPED_IDENTIFIER);
-            $this->CurrentContextID = $id;
-            return $id;
-        } else if (isset($this->CurrentContextID)) {
-            return $this->CurrentContextID;
-        }
-        return '-';
-    }
-    
     public function initMap($OtherEntity, $Map = null) {
         $Map                        = parent::initMap($OtherEntity, $Map);
         $relationship_is_reciprocal = strpos($this->relationship_index, 'reciprocal_') === 0;
@@ -74,7 +52,6 @@ class RelationshipIndex extends \Sm\Entity\Relationship\RelationshipIndex {
         if ($Map) $RelationshipEntity->addModel($Map);
         return $RelationshipEntity;
     }
-    
     public static function interpret_relationship_index($relationship_index) {
         $relationship_index = parent::interpret_relationship_index($relationship_index);
         # --- I changed the names of these relationship_types.

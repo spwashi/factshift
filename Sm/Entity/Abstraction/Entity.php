@@ -70,12 +70,17 @@ abstract class Entity implements \JsonSerializable, Identifiable, Validated {
     public static function init() {
         return new static;
     }
-    public function getDefaultAttributes() {
-        return EntityMeta::get_entity_type_properties($this->_entity_type);
-    }
 #########################################################
 #            Getters and Setters                        #
 #########################################################
+    /**
+     * Get the default attributes of this Entity
+     *
+     * @return array|mixed
+     */
+    public function getDefaultAttributes() {
+        return EntityMeta::get_entity_type_properties($this->_entity_type);
+    }
     /**
      * Get an attribute of an Entity
      *
@@ -85,13 +90,6 @@ abstract class Entity implements \JsonSerializable, Identifiable, Validated {
      */
     public function &__get($name) {
         return $this->get($name);
-    }
-    public function hasAttribute($attribute) {
-        if (!$this->PrimaryModel) {
-            $defaults = $this->getDefaultAttributes();
-            return array_key_exists($attribute, $defaults);
-        }
-        return $this->PrimaryModel->hasAttribute($attribute);
     }
     /**
      * Get the attributes of an Entity
@@ -119,7 +117,7 @@ abstract class Entity implements \JsonSerializable, Identifiable, Validated {
         $this->set([ $name => $value ]);
     }
     /**
-     * Set the attributes of the Entity
+     * Set the attributes of the Entity. If the Model that would hold these attributes doesn't exist, store them internally
      *
      * @param array $attributes
      *
@@ -137,10 +135,6 @@ abstract class Entity implements \JsonSerializable, Identifiable, Validated {
         }
         return $this;
     }
-    public function getAttributes() {
-        if ($this->PrimaryModel) return $this->PrimaryModel->getAttributes();
-        return $this->attributes;
-    }
     /**
      * Get a string that can uniquely identify an Entity
      * todo think about whether this should just return some values from the Model or not
@@ -152,7 +146,15 @@ abstract class Entity implements \JsonSerializable, Identifiable, Validated {
     public function getUniqueIdentifier($type = null) {
         return $this->PrimaryModel ? $this->PrimaryModel->getUniqueIdentifier($type) : false;
     }
-    ## static getters and setters
+    /**
+     * Get the attributes of this Entity
+     *
+     * @return array|mixed
+     */
+    public function getAttributes() {
+        if ($this->PrimaryModel) return $this->PrimaryModel->getAttributes();
+        return $this->attributes;
+    }
     /**
      * Get the entity_type
      *
@@ -161,7 +163,6 @@ abstract class Entity implements \JsonSerializable, Identifiable, Validated {
     public function getEntityType() {
         return $this->_entity_type ?? static::$entity_type ?? EntityMeta::convert_to_something(static::class);
     }
-    
     /**
      * @return \Sm\Entity\Validation\EntityValidator|\Sm\Validation\Abstraction\Validator|\Sm\Validation\RejectingValidator
      */
@@ -172,6 +173,16 @@ abstract class Entity implements \JsonSerializable, Identifiable, Validated {
             if (class_exists($classname)) return new $classname($this);
         }
         return new RejectingValidator;
+    }
+#########################################################
+#            Attribute functions                        #
+#########################################################
+    public function hasAttribute($attribute) {
+        if (!$this->PrimaryModel) {
+            $defaults = $this->getDefaultAttributes();
+            return array_key_exists($attribute, $defaults);
+        }
+        return $this->PrimaryModel->hasAttribute($attribute);
     }
 #########################################################
 #            Model functions                            #
@@ -192,6 +203,11 @@ abstract class Entity implements \JsonSerializable, Identifiable, Validated {
         }
         return $this;
     }
+    /**
+     * Make sure the necessary Models of this Entity exist
+     *
+     * @return bool
+     */
     public function makeModels() {
         $model_type = EntityMeta::entity_type_to_model_type($this->_entity_type);
         if (is_array($model_type)) return false;
@@ -204,6 +220,8 @@ abstract class Entity implements \JsonSerializable, Identifiable, Validated {
         return true;
     }
     /**
+     * Get the Model that holds the core attributes of this Entity
+     *
      * @return Model
      */
     public function &getPrimaryModel() {
@@ -212,6 +230,14 @@ abstract class Entity implements \JsonSerializable, Identifiable, Validated {
 #########################################################
 #            CRUD                                       #
 #########################################################
+    /**
+     * Initialize the PrimaryModel by "finding" it based on an identifier
+     *
+     * @param $identifier
+     *
+     * @return $this
+     * @throws \Sm\Entity\Model\ModelNotFoundException
+     */
     public function findModel($identifier) {
         $make_model = $this->makeModels();
         if (!$make_model) throw new ModelNotFoundException("Could not initialize Model");
@@ -219,6 +245,11 @@ abstract class Entity implements \JsonSerializable, Identifiable, Validated {
         $this->addModel($Model, Entity::PURPOSE_PRIMARY);
         return $this;
     }
+    /**
+     * Create the Model, save the Entity
+     *
+     * @return bool|null
+     */
     public function create() {
         if (!$this->PrimaryModel) if (!$this->makeModels()) return null;
         return $this->PrimaryModel->create();
@@ -254,6 +285,13 @@ abstract class Entity implements \JsonSerializable, Identifiable, Validated {
         ];
         return $attributes;
     }
+    /**
+     * Return an array to serialize this object in the most compact way possible. Useful to avoid circular references
+     *
+     * @param array|null $config
+     *
+     * @return array
+     */
     public function jsonSerializeCompact($config = null) {
         return $attributes = [
             '_entity_type' => $this->_entity_type,

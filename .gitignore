@@ -2,6 +2,7 @@
 # IntelliJ project files
 .idea
 *.iml
+Logs
 out
 gen
 Factshift/_pages/

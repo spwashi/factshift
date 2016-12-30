@@ -83,6 +83,13 @@ class RelationshipEntity extends Entity implements \JsonSerializable, EditVictim
         
         return empty($items) ? null : (count($items) === 1 ? $items[0] : $items);
     }
+    /**
+     * Check to see if this Relationship has a specific Entity Identifier
+     *
+     * @param $entity_identifier
+     *
+     * @return bool
+     */
     public function relationshipContains($entity_identifier) {
         foreach ($this->Entities as $index => $item) {
             if (
@@ -90,7 +97,7 @@ class RelationshipEntity extends Entity implements \JsonSerializable, EditVictim
                 $item->getUniqueIdentifier(Identifiable::ENT_ID) == $entity_identifier ||
                 $item->getUniqueIdentifier(Identifiable::TYPED_IDENTIFIER) == $entity_identifier
             ) {
-                return $index;
+                return true;
             }
         }
         return false;
@@ -106,6 +113,14 @@ class RelationshipEntity extends Entity implements \JsonSerializable, EditVictim
             if (class_exists($classname)) return new $classname($this);
         }
         return parent::getValidator();
+    }
+    /**
+     * Return the identifier of the Context in which this Relationship exists
+     *
+     * @return null
+     */
+    public function getContextID() {
+        return null;
     }
 #########################################################
 #            Normalized Entities                        #

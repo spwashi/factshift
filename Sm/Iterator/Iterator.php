@@ -19,7 +19,6 @@ abstract class Iterator implements \Iterator, \JsonSerializable {
     public function length() {
         return count($this->item_identifiers);
     }
-    
     public function locate($locate) {
         foreach ($this->items as $index => $item) {
             if ($item === $locate) return $index;
@@ -63,29 +62,25 @@ abstract class Iterator implements \Iterator, \JsonSerializable {
             $this->items[ $index ]    = $item;
         }
     }
-    
     function rewind() {
         $this->position = 0;
     }
-    
     function current() {
         return $this->items[ $this->item_identifiers[ $this->position ] ];
     }
-    
     function key() {
         return $this->item_identifiers[ $this->position ];
     }
-    
     function next() {
         ++$this->position;
     }
-    
     function valid() {
         if (isset($this->item_identifiers[ $this->position ])) {
             $position = $this->item_identifiers[ $this->position ];
         } else return false;
         return isset($this->items[ $position ]);
     }
+    
     function jsonSerialize() {
         $return_array = [ ];
         foreach ($this->item_identifiers as $position => $id) {

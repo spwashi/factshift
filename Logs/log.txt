@@ -9,3 +9,36 @@ cleared
 --------------------------------------------------------------------------------------------------------------------------
  {12-29-2016  15:44:23} 	  line {67}	 of {Factshift/Entity/Model/Abstraction/FactshiftModel.php};
 {"bind_value":{":ent_id":"sec_122916vDRdEvh1"},"bind_reference":[]}
+--------------------------------------------------------------------------------------------------------------------------
+-------------------------{12-30-2016  11:09:45}---------------------------------------------------------------------------
+--------------------------------------------------------------------------------------------------------------------------
+ {12-30-2016  11:09:45} 	  line {127}	 of {Sm/Entity/Relationship/RelationshipIndex.php};
+	-->		foot
+
+ {12-30-2016  11:09:45} 	  line {127}	 of {Sm/Entity/Relationship/RelationshipIndex.php};
+	-->		foot
+
+ {12-30-2016  11:09:45} 	  line {127}	 of {Sm/Entity/Relationship/RelationshipIndex.php};
+	-->		foot
+
+ {12-30-2016  11:09:45} 	  line {127}	 of {Sm/Entity/Relationship/RelationshipIndex.php};
+	-->		foot
+
+ {12-30-2016  11:09:45} 	  line {127}	 of {Sm/Entity/Relationship/RelationshipIndex.php};
+	-->		foot
+
+ {12-30-2016  11:09:45} 	  line {127}	 of {Sm/Entity/Relationship/RelationshipIndex.php};
+	-->		foot
+
+ {12-30-2016  11:09:45} 	  line {127}	 of {Sm/Entity/Relationship/RelationshipIndex.php};
+	-->		foot
+
+ {12-30-2016  11:09:45} 	  line {127}	 of {Sm/Entity/Relationship/RelationshipIndex.php};
+	-->		foot
+
+--------------------------------------------------------------------------------------------------------------------------
+-------------------------{12-30-2016  11:10:48}---------------------------------------------------------------------------
+--------------------------------------------------------------------------------------------------------------------------
+ {12-30-2016  11:10:48} 	  line {127}	 of {Sm/Entity/Relationship/RelationshipIndex.php};
+	-->		foot
+

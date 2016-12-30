@@ -9,12 +9,12 @@ namespace Sm\Entity\Relationship;
 
 
 use Sm\Core\Inflector;
-use Sm\Development\Log;
 use Sm\Entity\Abstraction\Entity;
 use Sm\Entity\Model\Abstraction\Model;
 use Sm\Entity\Model\EntityMeta;
 use Sm\Entity\Model\Identifier;
 use Sm\Identifier\Identifiable;
+use Sm\Identifier\UnidentifiableError;
 use Sm\Iterator\Iterator;
 
 class RelationshipIndex extends Iterator implements \JsonSerializable {
@@ -37,6 +37,7 @@ class RelationshipIndex extends Iterator implements \JsonSerializable {
     protected $items;
     /** @var Entity $Entity The entity that this RelationshipIndex belongs to */
     protected $Entity;
+    protected $CurrentContextID = '-';
 #########################################################
 #               Constructors/initializers               #
 #########################################################
@@ -92,6 +93,78 @@ class RelationshipIndex extends Iterator implements \JsonSerializable {
 #########################################################
 #                Getters, setters, pushers              #
 #########################################################
+    public function getContextID() {
+        return '_';
+    }
+    public function getRelationships() {
+        $context_id    = $this->getContextID();
+        $identifiers   = $this->item_identifiers[ $context_id ] ?? [ ];
+        $relationships = [ ];
+        foreach ($identifiers as $identifier) {
+            $relationships[ $identifier ] = $this->items[ $identifier ];
+        }
+        return $relationships;
+    }
+    public function length() {
+        return count($this->item_identifiers[ $this->getContextID() ]);
+    }
+    public function getItem($index) {
+        return $this->items[ $index ] ?? null;
+    }
+    /**
+     * @param Identifiable|Identifiable[]|mixed $item
+     * @param null                              $index
+     *
+     * @throws \Sm\Identifier\UnidentifiableError
+     */
+    public function push(&$item, $index = null) {
+        $context_id = $this->getContextID();
+        if ($item instanceof Identifiable) {
+            $identifier = $index??$item->getUniqueIdentifier();
+            if ($identifier === false) throw new UnidentifiableError([ "Could not identify item", $item, ]);
+            if ($item instanceof RelationshipEntity) $context_id = $item->getContextID() ?? $context_id;
+            if ($identifier) {
+                $this->item_identifiers[ $context_id ]   = $this->item_identifiers[ $context_id ] ?? [ ];
+                $this->item_identifiers[ $context_id ][] = $identifier;
+                $this->items[ $identifier ]              = $item;
+                return;
+            }
+        }
+        if (is_array($item)) {
+            $count = 0;
+            foreach ($item as $key => $value) {
+                # The key only matters if it isn't an id
+                $this->push($value, $key == $count ? null : $key);
+                $count++;
+            }
+        } else {
+            $index                                   = $index ?? count($this->item_identifiers[ $this->getContextID() ]);
+            $this->item_identifiers[ $context_id ]   = $this->item_identifiers[ $context_id ] ?? [ ];
+            $this->item_identifiers[ $context_id ][] = $index;
+            $this->items[ $index ]                   = $item;
+        }
+    }
+    function rewind() {
+        $this->position = 0;
+    }
+    function current() {
+        return $this->items[ $this->item_identifiers[ $this->getContextID() ][ $this->position ] ];
+    }
+    function key() {
+        return $this->item_identifiers[ $this->getContextID() ][ $this->position ];
+    }
+    function next() {
+        ++$this->position;
+    }
+    function valid() {
+        if (isset($this->item_identifiers[ $this->getContextID() ][ $this->position ])) {
+            $position = $this->item_identifiers[ $this->getContextID() ][ $this->position ];
+        } else return false;
+        return isset($this->items[ $position ]);
+    }
+#########################################################
+#                Getters, setters, pushers              #
+#########################################################
     public function getAllEntityTypes() {
         $linked_entities = $this->linked_entities;
         $entity_types    = [ ];
@@ -122,9 +195,6 @@ class RelationshipIndex extends Iterator implements \JsonSerializable {
     public function getLinkedEntities() {
         return $this->linked_entities;
     }
-    public function push(&$relationship, $index = null) {
-        return parent::push($relationship, $index);
-    }
     /**
      * @return Entity
      */
@@ -143,7 +213,8 @@ class RelationshipIndex extends Iterator implements \JsonSerializable {
         $index_plural   = Inflector::pluralize($index);
         $is_same_index  = ($index == $this->relationship_index) || ($index_singular == $this->index_singular) || ($index_plural == $this->relationship_index);
         $EntityIterator = [ ];
-        foreach ($this->items as $key => $item) {
+        $Relationships  = $this->getRelationships();
+        foreach ($Relationships as $key => $item) {
             $entities = $item->getItems($entity_type ? $entity_type : $this->Entity);
             if ($entities instanceof Entity) {
                 $EntityIterator[] = $entities;

@@ -1,22 +1,16 @@
-# factshift
-
-This project is in the infancy of its rebirth; I started a while ago with a very naive "cross that bridge when we get there" mentality, and as a result, have had to modify great portions of the codebase to add back the level of flexibility that is going to be required to see this to fruition. I also had a weird proprietary approach to coding, which excluded the idea of using too many plugins or libraries (not that PHP has great library support to begin with), and that resulted in some missing abstraction that I've spent the last several weeks trying to rectify.
-
-That being said, what's here now is the Framework that I've developed for both PHP and JS. The PHP Framework is located in the "Sm" directory, with the project files being located in the "Factshift" directory. Database config info is located in Factshift/Core/drivers/registry.php, and depends upon a MySql database. Visiting the url "/dev/p" should create the tables, but there might need to be some reconfiguring of the Dev Controller to do so. JavaScript files are located in Factshift/public/alpha, and use Factshift/public/alpha/require_config.js to load dependencies. The site has a single point of entry, index.php, which defines an autoloader and routes the URL to proper Controllers that render each page. 
-
 # Description/Intro (you can skim this part)
 ### tl;dr
-    This project seeks to tailor the educational experience of its users based on their needs, interests, and goals. Admittedly, it's a bit ambitious, but there will be phases of development that will make things a little bit easier to manage. Content will initially be pulled from Wikipedia or linked from other sources (Paul's Online Notes, Khan Academy, etc). That content, by demand will be restructured and formatted to extend the accessibility of the information covered. At the very least, initially we will be a place to view and collect resources towards a goal.
+This project seeks to tailor the educational experience of its users based on their needs, interests, and goals. Admittedly, it's a bit ambitious, but there will be phases of development that will make things a little bit easier to manage. Content will initially be pulled from Wikipedia or linked from other sources (Paul's Online Notes, Khan Academy, etc). That content, by demand will be restructured and formatted to extend the accessibility of the information covered. At the very least, initially we will be a place to view and collect resources towards a goal.
 
 ## Objective
 ### tl;dr-
-    The goal is to make education more accessible.
+The goal is to make education more accessible.
 
 Everyone has their own needs, interests, and struggles, and it doesn't make sense to present information as if all of these are going to be the same for all people. After finding the basic building blocks that go into what's being taught, we reformat and reassemble them to create an experience that accomodates for what makes someone unique.
 
 ## Implementation
 ### tl;dr-
-	Starting with content pulled from resources like Wikipedia, or linked to resources like KhanAcademy, we provide learners with a way to view information that would be helpful for their classes. From there, we have a system to break these down into components and change the presentation style of each component. Because there is a decent amount of granular customization, machine learning will be implemented to make some of the decisions for the users ahead of time.
+Starting with content pulled from resources like Wikipedia, or linked to resources like KhanAcademy, we provide learners with a way to view information that would be helpful for their classes. From there, we have a system to break these down into components and change the presentation style of each component. Because there is a decent amount of granular customization, machine learning will be implemented to make some of the decisions for the users ahead of time.
 
 ### Structure
 Following the design of Wikipedia, each Concept will get a Page representation. Information on the Page will broken down into Sections, which are often implemented in the form of paragraphs.

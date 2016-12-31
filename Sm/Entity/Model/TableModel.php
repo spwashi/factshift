@@ -144,7 +144,7 @@ class TableModel extends Model {
         
         $_is_start = true;
         if (!$search && static::canFindAll()) {
-//            $sql->where('1=1');
+            $sql->where('1=1');
         } else {
             foreach ($search as $column_name => $value) {
                 $not = false;

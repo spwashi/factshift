@@ -64,8 +64,6 @@ class FactshiftModel extends TableModel {
                 $sql
                     ->insert([ 'ent_id' ], [ $this->ent_id ])
                     ->table('entities');
-            Log::init($qry->buildQry())->log_it();
-            
             if (!$qry->run()->was_successful()) {
                 Log::init([ 'failed', $this ])->log_it();
                 return false;

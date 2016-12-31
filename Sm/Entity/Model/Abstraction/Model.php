@@ -124,9 +124,7 @@ abstract class Model implements \JsonSerializable, Identifiable {
                 if ($do_validate) {
                     $this->attributes[ $attr ] = $val;
                 } else $this->attributes[ $attr ] = $val;
-                if ($mark_as_changed) {
-                    $this->_changed[ $attr ] = $previous_value;
-                }
+                if ($mark_as_changed && !array_key_exists($this->_changed, $attr)) $this->_changed[ $attr ] = $previous_value;
             } else {
                 $this->_errors['not_set'][ $attr ] = $val;
             }
@@ -205,7 +203,7 @@ abstract class Model implements \JsonSerializable, Identifiable {
      * @param      $search
      * @param null $attributes
      *
-     * @return \Sm\Entity\Model\Abstraction\Model
+     * @return \Sm\Entity\Model\Abstraction\Model|static
      * @throws \Sm\Entity\Model\ModelNotFoundException
      */
     public static function &find($search, $attributes = null) : Model {

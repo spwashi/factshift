@@ -114,8 +114,14 @@ define(['require', 'Sm', 'jquery', 'Sm-Abstraction-Prompt-Prompt', 'Sm-Abstracti
                     this.relationship_index = relationship_index;
                     var Garage              = Sm.Core.Meta.getSmEntityAttribute(Entity, 'Garage') || new (Sm.Abstraction.Garage);
 
-                    var Map = this._getMap(relationship_index);
-
+                    var Map               = this._getMap(relationship_index);
+                    var position;
+                    var RelationshipIndex = Entity.getRelationshipIndex(relationship_index);
+                    var context_id        = RelationshipIndex.getDefaultContextId();
+                    position              = RelationshipIndex.count(context_id);
+                    Sm.CONFIG.DEBUG && console.log(Map);
+                    Map.setAttributes({'position': position});
+                    Sm.CONFIG.DEBUG && console.log(position);
                     return Garage
                         .generate(
                             'modal.add_relationship_type.[' + relationship_index + ']',

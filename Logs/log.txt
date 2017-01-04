@@ -41,3 +41,11 @@ cleared
  {01-04-2017  13:52:06} 	  line {84}	 of {Factshift/Entity/Model/Map/Abstraction/FactshiftMapModel.php};
 	-->		UPDATE `dimension_section_map`  SET `position` = `position` - 1 WHERE `section_id`  = 1 AND `dimension_id`  = 5  AND `position` < 1 AND `position` >= 0 AND `position` > 0 AND `id` <> 1
 
+--------------------------------------------------------------------------------------------------------------------------
+-------------------------{01-04-2017  16:31:59}---------------------------------------------------------------------------
+--------------------------------------------------------------------------------------------------------------------------
+ {01-04-2017  16:31:59} 	 code {42000} line {83}	 of {Factshift/Entity/Model/Map/Abstraction/FactshiftMapModel.php};
+	0 => str     : 	SQLSTATE[42000]: Syntax error or access violation: 1064 You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near '' at line 1
+	1 => str     : 	
+	         				UPDATE `section_section_map`  SET `position` = `position` + 1 WHERE `primary_section_id`  = 2 AND `secondary_section_id`  = 8 AND `user_id`  = 3  AND `position` >= 0 AND `position` > 0 AND `id` <>  
+

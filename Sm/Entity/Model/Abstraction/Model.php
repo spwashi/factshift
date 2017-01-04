@@ -124,7 +124,7 @@ abstract class Model implements \JsonSerializable, Identifiable {
                 if ($do_validate) {
                     $this->attributes[ $attr ] = $val;
                 } else $this->attributes[ $attr ] = $val;
-                if ($mark_as_changed && !array_key_exists($this->_changed, $attr)) $this->_changed[ $attr ] = $previous_value;
+                if ($mark_as_changed && !array_key_exists($attr, $this->_changed)) $this->_changed[ $attr ] = $previous_value;
             } else {
                 $this->_errors['not_set'][ $attr ] = $val;
             }

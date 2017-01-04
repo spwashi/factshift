@@ -11,7 +11,6 @@ namespace Factshift\Entity\Model\Map\Abstraction;
 use Factshift\Core\Factshift;
 use Factshift\Entity\Model\Abstraction\FactshiftModel;
 use Sm\Database\Abstraction\Sql;
-use Sm\Development\Log;
 
 /**
  * Class FactshiftMapModel
@@ -40,14 +39,29 @@ class FactshiftMapModel extends FactshiftModel {
         return $where_clause;
     }
     public function update_series_position($action = 'update') {
+        if (!$this->hasAttribute('position')) return true;
         /** @var Sql $sql */
         Factshift::_()->IoC->resolveSql($sql);
         if (!$sql) return false;
         $table_name = static::$table_name;
         $id         = $this->id;
-        $position   = $this->position;
+        $position   = max(0, $this->position ?? 0);
+        if (!array_key_exists('position', $this->_changed)) $action = $action === 'delete' ? $action : 'update';
+        $old_position = $this->_changed['position'] ?? 0;
         switch ($action) {
             case 'update':
+                if ($old_position > $position) {
+                    $update_action       = ' SET `position` = `position` + 1 ';
+                    $update_where_clause = " AND `position` > {$position} AND `position` <= {$old_position} ";
+                } elseif ($old_position < $position) {
+                    $update_action       = ' SET `position` = `position` - 1 ';
+                    $update_where_clause = " AND `position` < {$position} AND `position` >= {$old_position} ";
+                } else {
+                    $update_action       = ' SET `position` = `position` ';
+                    $update_where_clause = ' AND 1=0 ';
+                }
+                break;
+            case 'create':
                 $update_action       = " SET `position` = `position` + 1 ";
                 $update_where_clause = " AND `position` >= {$position} ";
                 break;
@@ -66,11 +80,19 @@ class FactshiftMapModel extends FactshiftModel {
         
         
         $sql->setQry($qry);
-        Log::init($sql->getQry())->log_it();
-        return true;
+        $sql->run();
+        return $sql->was_successful();
+    }
+    public function save() : bool {
+        Factshift::_()->IoC->connection->beginTransaction();
+        $this->update_series_position('update');
+        $result = parent::save();
+        Factshift::_()->IoC->connection->commitTransaction();
+        return $result;
     }
     public function create() :bool {
         Factshift::_()->IoC->connection->beginTransaction();
+        $this->update_series_position('create');
         parent::create();
         Factshift::_()->IoC->connection->commitTransaction();
     }

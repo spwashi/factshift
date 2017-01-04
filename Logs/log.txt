@@ -1,43 +1,43 @@
 cleared
 --------------------------------------------------------------------------------------------------------------------------
--------------------------{12-30-2016  13:19:26}---------------------------------------------------------------------------
+-------------------------{01-04-2017  13:48:18}---------------------------------------------------------------------------
 --------------------------------------------------------------------------------------------------------------------------
- {12-30-2016  13:19:26} 	  line {47}	 of {Factshift/Entity/Model/Map/Abstraction/FactshiftMapModel.php};
-	-->		UPDATE dimension_section_map SET `position` = `position` + 1 WHERE section_id=1dimension_id=5
+ {01-04-2017  13:48:18} 	  line {83}	 of {Factshift/Entity/Model/Map/Abstraction/FactshiftMapModel.php};
+	-->		UPDATE `dimension_section_map`  SET `position` = `position` WHERE `section_id`  = 1 AND `dimension_id`  = 5  AND 1-0 AND `position` > 0 AND `id` <> 1
 
 --------------------------------------------------------------------------------------------------------------------------
--------------------------{12-30-2016  13:20:04}---------------------------------------------------------------------------
+-------------------------{01-04-2017  13:48:34}---------------------------------------------------------------------------
 --------------------------------------------------------------------------------------------------------------------------
- {12-30-2016  13:20:04} 	  line {48}	 of {Factshift/Entity/Model/Map/Abstraction/FactshiftMapModel.php};
-	-->		UPDATE dimension_section_map SET `position` = `position` + 1 WHERE section_id=1 AND dimension_id=5
+ {01-04-2017  13:48:34} 	  line {83}	 of {Factshift/Entity/Model/Map/Abstraction/FactshiftMapModel.php};
+	-->		UPDATE `dimension_section_map`  SET `position` = `position` WHERE `section_id`  = 1 AND `dimension_id`  = 5  AND 1=0 AND `position` > 0 AND `id` <> 1
 
 --------------------------------------------------------------------------------------------------------------------------
--------------------------{12-30-2016  13:21:01}---------------------------------------------------------------------------
+-------------------------{01-04-2017  13:49:56}---------------------------------------------------------------------------
 --------------------------------------------------------------------------------------------------------------------------
- {12-30-2016  13:21:01} 	  line {48}	 of {Factshift/Entity/Model/Map/Abstraction/FactshiftMapModel.php};
-	-->		UPDATE dimension_section_map SET `position` = `position` + 1 WHERE `section_id`  = 1 AND `dimension_id`  = 5
+ {01-04-2017  13:49:56} 	  line {83}	 of {Factshift/Entity/Model/Map/Abstraction/FactshiftMapModel.php};
+	-->		UPDATE `dimension_section_map`  SET `position` = `position` - 1 WHERE `section_id`  = 1 AND `dimension_id`  = 5  AND `position` < 1 AND `position` >= 0 AND `position` > 0 AND `id` <> 1
 
 --------------------------------------------------------------------------------------------------------------------------
--------------------------{12-30-2016  13:25:01}---------------------------------------------------------------------------
+-------------------------{01-04-2017  13:50:07}---------------------------------------------------------------------------
 --------------------------------------------------------------------------------------------------------------------------
- {12-30-2016  13:25:01} 	  line {50}	 of {Factshift/Entity/Model/Map/Abstraction/FactshiftMapModel.php};
-	-->		UPDATE `dimension_section_map` SET `position` = `position` + 1 WHERE `section_id`  = 1 AND `dimension_id`  = 5 AND `position` >= 0 AND `id` <> 1
+ {01-04-2017  13:50:07} 	  line {83}	 of {Factshift/Entity/Model/Map/Abstraction/FactshiftMapModel.php};
+	-->		UPDATE `dimension_section_map`  SET `position` = `position` - 1 WHERE `section_id`  = 1 AND `dimension_id`  = 5  AND `position` < 1 AND `position` >= 0 AND `position` > 0 AND `id` <> 1
 
 --------------------------------------------------------------------------------------------------------------------------
--------------------------{12-30-2016  13:26:21}---------------------------------------------------------------------------
+-------------------------{01-04-2017  13:50:26}---------------------------------------------------------------------------
 --------------------------------------------------------------------------------------------------------------------------
- {12-30-2016  13:26:21} 	  line {56}	 of {Factshift/Entity/Model/Map/Abstraction/FactshiftMapModel.php};
-	-->		Unlabeled happenstance logged
+ {01-04-2017  13:50:26} 	  line {83}	 of {Factshift/Entity/Model/Map/Abstraction/FactshiftMapModel.php};
+	-->		UPDATE `dimension_section_map`  SET `position` = `position` - 1 WHERE `section_id`  = 1 AND `dimension_id`  = 5  AND `position` < 1 AND `position` >= 0 AND `position` > 0 AND `id` <> 1
 
 --------------------------------------------------------------------------------------------------------------------------
--------------------------{12-30-2016  13:26:32}---------------------------------------------------------------------------
+-------------------------{01-04-2017  13:51:08}---------------------------------------------------------------------------
 --------------------------------------------------------------------------------------------------------------------------
- {12-30-2016  13:26:32} 	  line {56}	 of {Factshift/Entity/Model/Map/Abstraction/FactshiftMapModel.php};
-	-->		UPDATE `{$table_name}` SET `position` = `position` + 1 WHERE " . $this->_get_series_where_clause() . " AND `position` >= {$position} AND `id` <> $id
+ {01-04-2017  13:51:08} 	  line {84}	 of {Factshift/Entity/Model/Map/Abstraction/FactshiftMapModel.php};
+	-->		UPDATE `dimension_section_map`  SET `position` = `position` - 1 WHERE `section_id`  = 1 AND `dimension_id`  = 5  AND `position` < 1 AND `position` >= 0 AND `position` > 0 AND `id` <> 1
 
 --------------------------------------------------------------------------------------------------------------------------
--------------------------{12-31-2016  12:00:48}---------------------------------------------------------------------------
+-------------------------{01-04-2017  13:52:06}---------------------------------------------------------------------------
 --------------------------------------------------------------------------------------------------------------------------
- {12-31-2016  12:00:48} 	  line {69}	 of {Factshift/Entity/Model/Map/Abstraction/FactshiftMapModel.php};
-	-->		UPDATE `dimension_section_map`  SET `position` = `position` + 1 WHERE `section_id`  = 1 AND `dimension_id`  = 5  AND `position` >= 0 AND `position` > 0 AND `id` <> 1
+ {01-04-2017  13:52:06} 	  line {84}	 of {Factshift/Entity/Model/Map/Abstraction/FactshiftMapModel.php};
+	-->		UPDATE `dimension_section_map`  SET `position` = `position` - 1 WHERE `section_id`  = 1 AND `dimension_id`  = 5  AND `position` < 1 AND `position` >= 0 AND `position` > 0 AND `id` <> 1
 

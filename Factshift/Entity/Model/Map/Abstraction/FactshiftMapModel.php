@@ -46,7 +46,7 @@ class FactshiftMapModel extends FactshiftModel {
         $table_name = static::$table_name;
         $id         = $this->id;
         $position   = max(0, $this->position ?? 0);
-        if (!array_key_exists('position', $this->_changed)) $action = $action === 'delete' ? $action : 'update';
+        if (!array_key_exists('position', $this->_changed)) $action = $action === 'destroy' ? $action : 'update';
         $old_position = $this->_changed['position'] ?? 0;
         switch ($action) {
             case 'update':
@@ -65,7 +65,7 @@ class FactshiftMapModel extends FactshiftModel {
                 $update_action       = " SET `position` = `position` + 1 ";
                 $update_where_clause = " AND `position` >= {$position} ";
                 break;
-            case 'delete':
+            case 'destroy':
                 $update_action       = " SET `position` = `position` + 1 ";
                 $update_where_clause = " AND `position` >= {$position} ";
                 break;
@@ -76,8 +76,6 @@ class FactshiftMapModel extends FactshiftModel {
             "WHERE " . $this->_get_series_where_clause() . " " .
             $update_where_clause .
             "AND `position` > 0 ";
-        
-        
         $sql->setQry($qry);
         $sql->run();
         return $sql->was_successful();
@@ -93,6 +91,13 @@ class FactshiftMapModel extends FactshiftModel {
         Factshift::_()->IoC->connection->beginTransaction();
         $this->update_series_position('create');
         $result = parent::create();
+        Factshift::_()->IoC->connection->commitTransaction();
+        return $result;
+    }
+    public function destroy() :bool {
+        Factshift::_()->IoC->connection->beginTransaction();
+        $this->update_series_position('destroy');
+        $result = parent::destroy();
         Factshift::_()->IoC->connection->commitTransaction();
         return $result;
     }

@@ -40,6 +40,7 @@ foreach ($m_tables as $model_name => $model_details) {
             else if (Util::endsWith($property, 'position')) $prop_type = 'int';
             else if (Util::endsWith($property, 'status')) $prop_type = 'status';
             else if ($property === 'update_dt') $prop_type = 'u_dt';
+            else if ($property === 'description' || $property === 'content') $prop_type = 'text';
             else if ($property === 'creation_dt') $prop_type = 'n_dt';
             else
                 $prop_type =
@@ -47,8 +48,7 @@ foreach ($m_tables as $model_name => $model_details) {
                         (Util::endsWith($property, 'type') ? 'type' :
                             ($property == "alias" ? 'alias' :
                                 (Util::endsWith($property, '_dt') ? 'dt' :
-                                    (Util::endsWith($property, 'role') ? 'role' :
-                                        (strpos($property, 'description') > -1 ? 'lvc' : 'vc')))));
+                                    (Util::endsWith($property, 'role') ? 'role' : 'vc'))));
             $tables[ $table_name ][ $property ] = $prop_type;
             $prop_string .= ' * @property ';
             switch ($prop_type) {
@@ -183,7 +183,8 @@ foreach ($tables as $table => $properties) {
                 $query_array[] = "{$property_name} VARCHAR(75) CHARACTER SET utf8 COLLATE utf8_general_ci NULL";
                 break;
             case 'text':
-                $query_array[] = "{$property_name} TEXT ";
+                $query_array[] = "{$property_name} TEXT CHARACTER SET utf8 COLLATE utf8_general_ci NULL";
+                break;
             case 'lvc':
                 $query_array[] = "{$property_name} VARCHAR(3000) CHARACTER SET utf8 COLLATE utf8_general_ci NULL";
                 break;

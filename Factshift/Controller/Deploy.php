@@ -35,6 +35,7 @@ class Deploy {
         $DBH        = $connection->getConnection();
         $connection->beginTransaction();
         $output_string = implode(";\n", str_replace(" ", '  ', $output));
+        echo "<pre>{$output_string}</pre>";
         foreach ($output as $item) {
             $DBH->prepare($item)->execute();
         }

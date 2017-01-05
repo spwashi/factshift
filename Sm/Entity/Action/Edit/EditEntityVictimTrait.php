@@ -41,7 +41,7 @@ trait EditEntityVictimTrait {
                 $EditActionResponse->setResource($this);
             } else {
                 $EditActionResponse->setStatus(false);
-                $EditActionResponse->setMessage(ResponseMessage::init(null, "Could not successfully create entity"));
+                $EditActionResponse->setMessage(ResponseMessage::init(null, "Could not successfully edit entity"));
             }
         }
         return $EditActionResponse;

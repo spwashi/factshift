@@ -32,6 +32,10 @@ class FactshiftMapModel extends FactshiftModel {
         $first        = true;
         foreach ($this->attributes as $index => $attribute) {
             if (strpos($index, '_id')) {
+                if (!$attribute || empty($attribute)) {
+                    $where_clause = '1=0';
+                    break;
+                }
                 $where_clause .= ($first ? '' : ' AND ') . "`$index`  = $attribute";
                 $first = false;
             }

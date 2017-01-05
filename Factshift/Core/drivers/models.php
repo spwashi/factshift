@@ -184,7 +184,6 @@ return [
                 'content_location' => null,
                 'ent_id'           => null,
                 'user_id'          => null,
-                'has_title'        => false,
                 'section_type'     => 1,
                 'update_dt'        => null,
                 'creation_dt'      => null,
@@ -532,7 +531,6 @@ return [
                     'subtitle',
                     'content',
                     'section_type',
-                    'has_title',
                     'content_location',
                 ],
                 'api_gettable'  => '*',
@@ -541,7 +539,6 @@ return [
                 'standard' => [
                     'properties' => [
                         'title',
-                        'has_title',
                         'subtitle',
                         'content',
                         'section_type',
@@ -550,7 +547,6 @@ return [
                 'image'    => [
                     'properties' => [
                         'title',
-                        'has_title',
                         'subtitle',
                         'content_location',
                         'section_type',
@@ -559,7 +555,6 @@ return [
                 'video'    => [
                     'properties' => [
                         'title',
-                        'has_title',
                         'subtitle',
                         'content_location',
                         'section_type',
@@ -568,7 +563,6 @@ return [
                 'audio'    => [
                     'properties' => [
                         'title',
-                        'has_title',
                         'subtitle',
                         'content_location',
                         'section_type',
@@ -577,7 +571,6 @@ return [
                 'mirror'   => [
                     'properties' => [
                         'title',
-                        'has_title',
                         'subtitle',
                         'content_location',
                         'section_type',

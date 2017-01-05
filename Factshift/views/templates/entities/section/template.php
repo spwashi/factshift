@@ -12,8 +12,8 @@ use Sm\View\View;
 
 /** @var Section $Section */
 $s_section          = XSS::escape(json_encode($Section, JSON_HEX_APOS));
-$s_title            = XSS::escape($Section->title ?: '---');
-$s_has_title        = intval($Section->has_title);
+$s_title            = XSS::escape($Section->title ?: '');
+$s_has_title        = strlen($s_title);
 $s_subtitle         = XSS::escape($Section->subtitle ?: '---');
 $s_ent_id           = $Section->ent_id;
 $s_type             = $Section->section_type;

@@ -95,7 +95,7 @@ class EntityValidator extends Validator {
         }
         foreach ($this->_validating_properties as $index => $property) {
             if (!method_exists($this, "validate_{$index}")) {
-                $this->validated_not_set[ $index ] = new Response(ResponseMessage::init(null, "Unable to set property."), null);
+                $this->validated_corrected[ $index ] = new Response(ResponseMessage::init(null, "Unable to set property."), Validator::VALIDATION_NOT_SET);
             } else if ($this->allowed_attributes && (!in_array($index, $this->allowed_attributes))) {
                 $this->validated_not_set[ $index ] = new Response(ResponseMessage::init(null, "Cannot set property."), false);
             } else {

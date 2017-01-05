@@ -1,164 +1,200 @@
 cleared
 --------------------------------------------------------------------------------------------------------------------------
--------------------------{01-04-2017  20:50:06}---------------------------------------------------------------------------
+-------------------------{01-04-2017  21:21:13}---------------------------------------------------------------------------
 --------------------------------------------------------------------------------------------------------------------------
- {01-04-2017  20:50:06} 	  line {35}	 of {Sm/Entity/Action/Create/CreateEntityVictimTrait.php};
+ {01-04-2017  21:21:13} 	  line {35}	 of {Sm/Entity/Action/Create/CreateEntityVictimTrait.php};
+	0 	=>		 arr(4)[
+		title       => str     : 	Hello
+		subtitle    => str     : 	Why
+		alias       => str     : 	hello-why
+		description => str     : 	Hello
+	]
+	1 => object  : 	{"success":true,"message":null,"data":{"changed_attributes":{"success":{"title":"Hello","subtitle":"Why","alias":"hello-why","description":"Hello"},"failed":[],"adjusted":[]},"entity":null},"_object_type":"Response"}
+
+ {01-04-2017  21:21:13} 	  line {35}	 of {Sm/Entity/Action/Create/CreateEntityVictimTrait.php};
+	0 	=>		 arr(2)[
+		title       => str     : 	Overview
+		description => str     : 	Standard information about this concept
+	]
+	1 => object  : 	{"success":true,"message":null,"data":{"changed_attributes":{"success":{"title":"Overview","description":"Standard information about this concept"},"failed":[],"adjusted":[]},"entity":null},"_object_type":"Response"}
+
+ {01-04-2017  21:21:13} 	  line {51}	 of {Factshift/Action/Entity/UserCreatePageAction.php};
+{"_entity_type":"Dimension","_object_type":"Entity","attributes":{"id":1,"user_id":1,"title":"Overview","description":"Standard information about this concept","ent_id":"dim_010417E-2H_K","update_dt":null,"creation_dt":"2017-01-04 21:21:13","_model_type":"Dimension","_object_type":"Model"},"relationships":[],"_permissions":{"edit":true,"destroy":false}}
+ {01-04-2017  21:21:13} 	  line {19}	 of {Factshift/Entity/Validation/Abstraction/RelationshipValidator.php};
+	0 => str     : 	here
+	1 => int     : 	1
+
+ {01-04-2017  21:21:13} 	  line {35}	 of {Sm/Entity/Action/Create/CreateEntityVictimTrait.php};
+	0 	=>		 arr(1)[
+		position => int     : 	1
+	]
+	1 => object  : 	{"success":true,"message":null,"data":{"changed_attributes":{"success":{"position":1},"failed":[],"adjusted":{"page_id":{"success":1,"message":"Unable to set property.","_object_type":"Response"},"dimension_id":{"success":1,"message":"Unable to set property.","_object_type":"Response"},"update_dt":{"success":1,"message":"Unable to set property.","_object_type":"Response"},"creation_dt":{"success":1,"message":"Unable to set property.","_object_type":"Response"},"dimension_role":{"success":1,"message":"Unable to set property.","_object_type":"Response"}}},"entity":null},"_object_type":"Response"}
+
+ {01-04-2017  21:21:13} 	 code {42000} line {80}	 of {Factshift/Entity/Model/Map/Abstraction/FactshiftMapModel.php};
+	0 => str     : 	SQLSTATE[42000]: Syntax error or access violation: 1064 You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near 'AND `dimension_id`  =   AND `position` >= 1 AND `position` > 0' at line 1
+	1 => str     : 	
+	         				UPDATE `page_dimension_map`  SET `position` = `position` + 1 WHERE `page_id`  =  AND `dimension_id`  =   AND `position` >= 1 AND `position` > 0  
+
+--------------------------------------------------------------------------------------------------------------------------
+-------------------------{01-04-2017  21:24:06}---------------------------------------------------------------------------
+--------------------------------------------------------------------------------------------------------------------------
+ {01-04-2017  21:24:06} 	  line {35}	 of {Sm/Entity/Action/Create/CreateEntityVictimTrait.php};
+	0 	=>		 arr(4)[
+		title       => str     : 	One
+		subtitle    => str     : 	Two
+		alias       => str     : 	one-two
+		description => str     : 	
+	]
+	1 => object  : 	{"success":true,"message":null,"data":{"changed_attributes":{"success":{"title":"One","subtitle":"Two","alias":"one-two","description":""},"failed":[],"adjusted":[]},"entity":null},"_object_type":"Response"}
+
+ {01-04-2017  21:24:07} 	  line {35}	 of {Sm/Entity/Action/Create/CreateEntityVictimTrait.php};
+	0 	=>		 arr(2)[
+		title       => str     : 	Overview
+		description => str     : 	Standard information about this concept
+	]
+	1 => object  : 	{"success":true,"message":null,"data":{"changed_attributes":{"success":{"title":"Overview","description":"Standard information about this concept"},"failed":[],"adjusted":[]},"entity":null},"_object_type":"Response"}
+
+ {01-04-2017  21:24:07} 	  line {51}	 of {Factshift/Action/Entity/UserCreatePageAction.php};
+{"_entity_type":"Dimension","_object_type":"Entity","attributes":{"id":2,"user_id":1,"title":"Overview","description":"Standard information about this concept","ent_id":"dim_010417UhO3cD3PW","update_dt":null,"creation_dt":"2017-01-04 21:24:07","_model_type":"Dimension","_object_type":"Model"},"relationships":[],"_permissions":{"edit":true,"destroy":false}}
+ {01-04-2017  21:24:07} 	  line {19}	 of {Factshift/Entity/Validation/Abstraction/RelationshipValidator.php};
+	0 => str     : 	here
+	1 => int     : 	1
+
+ {01-04-2017  21:24:07} 	  line {35}	 of {Sm/Entity/Action/Create/CreateEntityVictimTrait.php};
+	0 	=>		 arr(1)[
+		position => int     : 	1
+	]
+	1 => object  : 	{"success":true,"message":null,"data":{"changed_attributes":{"success":{"position":1},"failed":[],"adjusted":{"page_id":{"success":1,"message":"Unable to set property.","_object_type":"Response"},"dimension_id":{"success":1,"message":"Unable to set property.","_object_type":"Response"},"update_dt":{"success":1,"message":"Unable to set property.","_object_type":"Response"},"creation_dt":{"success":1,"message":"Unable to set property.","_object_type":"Response"},"dimension_role":{"success":1,"message":"Unable to set property.","_object_type":"Response"}}},"entity":null},"_object_type":"Response"}
+
+--------------------------------------------------------------------------------------------------------------------------
+-------------------------{01-04-2017  21:24:50}---------------------------------------------------------------------------
+--------------------------------------------------------------------------------------------------------------------------
+ {01-04-2017  21:24:50} 	  line {35}	 of {Sm/Entity/Action/Create/CreateEntityVictimTrait.php};
 	0 	=>		 arr(2)[
 		title       => str     : 	Overview
 		description => NULL    : 	
 	]
-	1 => object  : 	{"success":true,"message":null,"data":{"changed_attributes":{"success":{"title":"Overview","description":null},"failed":{"id":{"success":false,"message":"Cannot set property.","_object_type":"Response"},"user_id":{"success":null,"message":"Unable to set property.","_object_type":"Response"},"ent_id":{"success":false,"message":"Cannot set property.","_object_type":"Response"},"update_dt":{"success":null,"message":"Unable to set property.","_object_type":"Response"},"creation_dt":{"success":null,"message":"Unable to set property.","_object_type":"Response"}},"adjusted":[]},"entity":null},"_object_type":"Response"}
+	1 => object  : 	{"success":true,"message":null,"data":{"changed_attributes":{"success":{"title":"Overview","description":null},"failed":{"id":{"success":false,"message":"Cannot set property.","_object_type":"Response"},"ent_id":{"success":false,"message":"Cannot set property.","_object_type":"Response"}},"adjusted":{"user_id":{"success":1,"message":"Unable to set property.","_object_type":"Response"},"update_dt":{"success":1,"message":"Unable to set property.","_object_type":"Response"},"creation_dt":{"success":1,"message":"Unable to set property.","_object_type":"Response"}}},"entity":null},"_object_type":"Response"}
 
 --------------------------------------------------------------------------------------------------------------------------
--------------------------{01-04-2017  20:50:06}---------------------------------------------------------------------------
+-------------------------{01-04-2017  21:24:51}---------------------------------------------------------------------------
 --------------------------------------------------------------------------------------------------------------------------
- {01-04-2017  20:50:06} 	  line {19}	 of {Factshift/Entity/Validation/Abstraction/RelationshipValidator.php};
-	0 => str     : 	here
-	1 => int     : 	1
-
- {01-04-2017  20:50:06} 	  line {35}	 of {Sm/Entity/Action/Create/CreateEntityVictimTrait.php};
-	0 	=>		 arr(1)[
-		position => int     : 	1
-	]
-	1 => object  : 	{"success":true,"message":null,"data":{"changed_attributes":{"success":{"position":1},"failed":{"page_id":{"success":null,"message":"Unable to set property.","_object_type":"Response"},"dimension_id":{"success":null,"message":"Unable to set property.","_object_type":"Response"},"dimension_role":{"success":null,"message":"Unable to set property.","_object_type":"Response"}},"adjusted":[]},"entity":null},"_object_type":"Response"}
-
---------------------------------------------------------------------------------------------------------------------------
--------------------------{01-04-2017  20:51:02}---------------------------------------------------------------------------
---------------------------------------------------------------------------------------------------------------------------
- {01-04-2017  20:51:02} 	  line {35}	 of {Sm/Entity/Action/Create/CreateEntityVictimTrait.php};
-	0 	=>		 arr(5)[
-		title        => str     : 	 - 
-		subtitle     => str     : 	
-		content      => str     : 	 - 
-		has_title    => int     : 	0
-		section_type => int     : 	1
-	]
-	1 => object  : 	{"success":true,"message":null,"data":{"changed_attributes":{"success":{"title":" - ","subtitle":"","content":" - ","has_title":0,"section_type":1},"failed":{"id":{"success":false,"message":"Cannot set property.","_object_type":"Response"},"content_location":{"success":null,"message":"Unable to set property.","_object_type":"Response"},"ent_id":{"success":false,"message":"Cannot set property.","_object_type":"Response"},"user_id":{"success":null,"message":"Unable to set property.","_object_type":"Response"},"update_dt":{"success":null,"message":"Unable to set property.","_object_type":"Response"},"creation_dt":{"success":null,"message":"Unable to set property.","_object_type":"Response"}},"adjusted":[]},"entity":null},"_object_type":"Response"}
-
---------------------------------------------------------------------------------------------------------------------------
--------------------------{01-04-2017  20:51:02}---------------------------------------------------------------------------
---------------------------------------------------------------------------------------------------------------------------
- {01-04-2017  20:51:02} 	  line {19}	 of {Factshift/Entity/Validation/Abstraction/RelationshipValidator.php};
+ {01-04-2017  21:24:51} 	  line {19}	 of {Factshift/Entity/Validation/Abstraction/RelationshipValidator.php};
 	0 => str     : 	here
 	1 => int     : 	0
 
- {01-04-2017  20:51:02} 	  line {35}	 of {Sm/Entity/Action/Create/CreateEntityVictimTrait.php};
+ {01-04-2017  21:24:51} 	  line {35}	 of {Sm/Entity/Action/Create/CreateEntityVictimTrait.php};
+	0 	=>		 arr(1)[
+		position => int     : 	0
+	]
+	1 => object  : 	{"success":true,"message":null,"data":{"changed_attributes":{"success":{"position":0},"failed":[],"adjusted":{"page_id":{"success":1,"message":"Unable to set property.","_object_type":"Response"},"dimension_id":{"success":1,"message":"Unable to set property.","_object_type":"Response"},"dimension_role":{"success":1,"message":"Unable to set property.","_object_type":"Response"}}},"entity":null},"_object_type":"Response"}
+
+--------------------------------------------------------------------------------------------------------------------------
+-------------------------{01-04-2017  21:25:00}---------------------------------------------------------------------------
+--------------------------------------------------------------------------------------------------------------------------
+ {01-04-2017  21:25:00} 	  line {35}	 of {Sm/Entity/Action/Create/CreateEntityVictimTrait.php};
+	0 	=>		 arr(5)[
+		title        => str     : 	-
+		subtitle     => str     : 	
+		content      => str     : 	-
+		has_title    => int     : 	0
+		section_type => int     : 	1
+	]
+	1 => object  : 	{"success":true,"message":null,"data":{"changed_attributes":{"success":{"title":"-","subtitle":"","content":"-","has_title":0,"section_type":1},"failed":{"id":{"success":false,"message":"Cannot set property.","_object_type":"Response"},"ent_id":{"success":false,"message":"Cannot set property.","_object_type":"Response"}},"adjusted":{"content_location":{"success":1,"message":"Unable to set property.","_object_type":"Response"},"user_id":{"success":1,"message":"Unable to set property.","_object_type":"Response"},"update_dt":{"success":1,"message":"Unable to set property.","_object_type":"Response"},"creation_dt":{"success":1,"message":"Unable to set property.","_object_type":"Response"}}},"entity":null},"_object_type":"Response"}
+
+--------------------------------------------------------------------------------------------------------------------------
+-------------------------{01-04-2017  21:25:00}---------------------------------------------------------------------------
+--------------------------------------------------------------------------------------------------------------------------
+ {01-04-2017  21:25:00} 	  line {19}	 of {Factshift/Entity/Validation/Abstraction/RelationshipValidator.php};
+	0 => str     : 	here
+	1 => int     : 	0
+
+ {01-04-2017  21:25:00} 	  line {35}	 of {Sm/Entity/Action/Create/CreateEntityVictimTrait.php};
 	0 	=>		 arr(3)[
 		section_type => int     : 	1
 		section_role => int     : 	1
 		position     => int     : 	0
 	]
-	1 => object  : 	{"success":true,"message":null,"data":{"changed_attributes":{"success":{"section_type":1,"section_role":1,"position":0},"failed":{"section_id":{"success":null,"message":"Unable to set property.","_object_type":"Response"},"dimension_id":{"success":null,"message":"Unable to set property.","_object_type":"Response"}},"adjusted":[]},"entity":null},"_object_type":"Response"}
+	1 => object  : 	{"success":true,"message":null,"data":{"changed_attributes":{"success":{"section_type":1,"section_role":1,"position":0},"failed":[],"adjusted":{"section_id":{"success":1,"message":"Unable to set property.","_object_type":"Response"},"dimension_id":{"success":1,"message":"Unable to set property.","_object_type":"Response"}}},"entity":null},"_object_type":"Response"}
 
 --------------------------------------------------------------------------------------------------------------------------
--------------------------{01-04-2017  20:52:18}---------------------------------------------------------------------------
+-------------------------{01-04-2017  21:26:56}---------------------------------------------------------------------------
 --------------------------------------------------------------------------------------------------------------------------
- {01-04-2017  20:52:18} 	  line {35}	 of {Sm/Entity/Action/Create/CreateEntityVictimTrait.php};
-	0 	=>		 arr(5)[
+ {01-04-2017  21:26:56} 	  line {35}	 of {Sm/Entity/Action/Create/CreateEntityVictimTrait.php};
+	0 	=>		 arr(4)[
 		title        => str     : 	-
 		subtitle     => str     : 	
 		content      => str     : 	-
-		has_title    => int     : 	0
 		section_type => int     : 	1
 	]
-	1 => object  : 	{"success":true,"message":null,"data":{"changed_attributes":{"success":{"title":"-","subtitle":"","content":"-","has_title":0,"section_type":1},"failed":{"id":{"success":false,"message":"Cannot set property.","_object_type":"Response"},"content_location":{"success":null,"message":"Unable to set property.","_object_type":"Response"},"ent_id":{"success":false,"message":"Cannot set property.","_object_type":"Response"},"user_id":{"success":null,"message":"Unable to set property.","_object_type":"Response"},"update_dt":{"success":null,"message":"Unable to set property.","_object_type":"Response"},"creation_dt":{"success":null,"message":"Unable to set property.","_object_type":"Response"}},"adjusted":[]},"entity":null},"_object_type":"Response"}
+	1 => object  : 	{"success":true,"message":null,"data":{"changed_attributes":{"success":{"title":"-","subtitle":"","content":"-","section_type":1},"failed":{"id":{"success":false,"message":"Cannot set property.","_object_type":"Response"},"ent_id":{"success":false,"message":"Cannot set property.","_object_type":"Response"}},"adjusted":{"content_location":{"success":1,"message":"Unable to set property.","_object_type":"Response"},"user_id":{"success":1,"message":"Unable to set property.","_object_type":"Response"},"update_dt":{"success":1,"message":"Unable to set property.","_object_type":"Response"},"creation_dt":{"success":1,"message":"Unable to set property.","_object_type":"Response"}}},"entity":null},"_object_type":"Response"}
 
 --------------------------------------------------------------------------------------------------------------------------
--------------------------{01-04-2017  20:52:18}---------------------------------------------------------------------------
+-------------------------{01-04-2017  21:26:56}---------------------------------------------------------------------------
 --------------------------------------------------------------------------------------------------------------------------
- {01-04-2017  20:52:18} 	  line {19}	 of {Factshift/Entity/Validation/Abstraction/RelationshipValidator.php};
+ {01-04-2017  21:26:56} 	  line {19}	 of {Factshift/Entity/Validation/Abstraction/RelationshipValidator.php};
 	0 => str     : 	here
 	1 => int     : 	1
 
- {01-04-2017  20:52:18} 	  line {35}	 of {Sm/Entity/Action/Create/CreateEntityVictimTrait.php};
+ {01-04-2017  21:26:56} 	  line {35}	 of {Sm/Entity/Action/Create/CreateEntityVictimTrait.php};
 	0 	=>		 arr(3)[
 		section_type => int     : 	1
 		section_role => int     : 	1
 		position     => int     : 	1
 	]
-	1 => object  : 	{"success":true,"message":null,"data":{"changed_attributes":{"success":{"section_type":1,"section_role":1,"position":1},"failed":{"section_id":{"success":null,"message":"Unable to set property.","_object_type":"Response"},"dimension_id":{"success":null,"message":"Unable to set property.","_object_type":"Response"}},"adjusted":[]},"entity":null},"_object_type":"Response"}
+	1 => object  : 	{"success":true,"message":null,"data":{"changed_attributes":{"success":{"section_type":1,"section_role":1,"position":1},"failed":[],"adjusted":{"section_id":{"success":1,"message":"Unable to set property.","_object_type":"Response"},"dimension_id":{"success":1,"message":"Unable to set property.","_object_type":"Response"}}},"entity":null},"_object_type":"Response"}
 
 --------------------------------------------------------------------------------------------------------------------------
--------------------------{01-04-2017  20:53:09}---------------------------------------------------------------------------
+-------------------------{01-04-2017  21:28:15}---------------------------------------------------------------------------
 --------------------------------------------------------------------------------------------------------------------------
- {01-04-2017  20:53:09} 	  line {35}	 of {Sm/Entity/Action/Create/CreateEntityVictimTrait.php};
-	0 	=>		 arr(5)[
+ {01-04-2017  21:28:15} 	  line {35}	 of {Sm/Entity/Action/Create/CreateEntityVictimTrait.php};
+	0 	=>		 arr(4)[
 		title        => str     : 	-
 		subtitle     => str     : 	
 		content      => str     : 	-
-		has_title    => int     : 	0
 		section_type => int     : 	1
 	]
-	1 => object  : 	{"success":true,"message":null,"data":{"changed_attributes":{"success":{"title":"-","subtitle":"","content":"-","has_title":0,"section_type":1},"failed":{"id":{"success":false,"message":"Cannot set property.","_object_type":"Response"},"content_location":{"success":null,"message":"Unable to set property.","_object_type":"Response"},"ent_id":{"success":false,"message":"Cannot set property.","_object_type":"Response"},"user_id":{"success":null,"message":"Unable to set property.","_object_type":"Response"},"update_dt":{"success":null,"message":"Unable to set property.","_object_type":"Response"},"creation_dt":{"success":null,"message":"Unable to set property.","_object_type":"Response"}},"adjusted":[]},"entity":null},"_object_type":"Response"}
+	1 => object  : 	{"success":true,"message":null,"data":{"changed_attributes":{"success":{"title":"-","subtitle":"","content":"-","section_type":1},"failed":{"id":{"success":false,"message":"Cannot set property.","_object_type":"Response"},"ent_id":{"success":false,"message":"Cannot set property.","_object_type":"Response"}},"adjusted":{"content_location":{"success":1,"message":"Unable to set property.","_object_type":"Response"},"user_id":{"success":1,"message":"Unable to set property.","_object_type":"Response"},"update_dt":{"success":1,"message":"Unable to set property.","_object_type":"Response"},"creation_dt":{"success":1,"message":"Unable to set property.","_object_type":"Response"}}},"entity":null},"_object_type":"Response"}
 
 --------------------------------------------------------------------------------------------------------------------------
--------------------------{01-04-2017  20:53:09}---------------------------------------------------------------------------
+-------------------------{01-04-2017  21:28:15}---------------------------------------------------------------------------
 --------------------------------------------------------------------------------------------------------------------------
- {01-04-2017  20:53:09} 	  line {19}	 of {Factshift/Entity/Validation/Abstraction/RelationshipValidator.php};
+ {01-04-2017  21:28:15} 	  line {19}	 of {Factshift/Entity/Validation/Abstraction/RelationshipValidator.php};
 	0 => str     : 	here
 	1 => int     : 	0
 
- {01-04-2017  20:53:09} 	  line {35}	 of {Sm/Entity/Action/Create/CreateEntityVictimTrait.php};
+ {01-04-2017  21:28:15} 	  line {35}	 of {Sm/Entity/Action/Create/CreateEntityVictimTrait.php};
 	0 	=>		 arr(3)[
 		position             => int     : 	0
 		relationship_type    => str     : 	1
 		relationship_subtype => str     : 	1
 	]
-	1 => object  : 	{"success":true,"message":null,"data":{"changed_attributes":{"success":{"position":0,"relationship_type":"1","relationship_subtype":"1"},"failed":{"primary_section_id":{"success":null,"message":"Unable to set property.","_object_type":"Response"},"secondary_section_id":{"success":null,"message":"Unable to set property.","_object_type":"Response"},"relationship_status":{"success":null,"message":"Unable to set property.","_object_type":"Response"},"user_id":{"success":null,"message":"Unable to set property.","_object_type":"Response"},"adopts_children":{"success":null,"message":"Unable to set property.","_object_type":"Response"}},"adjusted":[]},"entity":null},"_object_type":"Response"}
+	1 => object  : 	{"success":true,"message":null,"data":{"changed_attributes":{"success":{"position":0,"relationship_type":"1","relationship_subtype":"1"},"failed":[],"adjusted":{"primary_section_id":{"success":1,"message":"Unable to set property.","_object_type":"Response"},"secondary_section_id":{"success":1,"message":"Unable to set property.","_object_type":"Response"},"relationship_status":{"success":1,"message":"Unable to set property.","_object_type":"Response"},"user_id":{"success":1,"message":"Unable to set property.","_object_type":"Response"},"adopts_children":{"success":1,"message":"Unable to set property.","_object_type":"Response"}}},"entity":null},"_object_type":"Response"}
 
 --------------------------------------------------------------------------------------------------------------------------
--------------------------{01-04-2017  20:53:14}---------------------------------------------------------------------------
+-------------------------{01-04-2017  21:28:31}---------------------------------------------------------------------------
 --------------------------------------------------------------------------------------------------------------------------
- {01-04-2017  20:53:14} 	  line {35}	 of {Sm/Entity/Action/Create/CreateEntityVictimTrait.php};
-	0 	=>		 arr(5)[
+ {01-04-2017  21:28:31} 	  line {35}	 of {Sm/Entity/Action/Create/CreateEntityVictimTrait.php};
+	0 	=>		 arr(4)[
 		title        => str     : 	-
 		subtitle     => str     : 	
 		content      => str     : 	-
-		has_title    => int     : 	0
 		section_type => int     : 	1
 	]
-	1 => object  : 	{"success":true,"message":null,"data":{"changed_attributes":{"success":{"title":"-","subtitle":"","content":"-","has_title":0,"section_type":1},"failed":{"id":{"success":false,"message":"Cannot set property.","_object_type":"Response"},"content_location":{"success":null,"message":"Unable to set property.","_object_type":"Response"},"ent_id":{"success":false,"message":"Cannot set property.","_object_type":"Response"},"user_id":{"success":null,"message":"Unable to set property.","_object_type":"Response"},"update_dt":{"success":null,"message":"Unable to set property.","_object_type":"Response"},"creation_dt":{"success":null,"message":"Unable to set property.","_object_type":"Response"}},"adjusted":[]},"entity":null},"_object_type":"Response"}
+	1 => object  : 	{"success":true,"message":null,"data":{"changed_attributes":{"success":{"title":"-","subtitle":"","content":"-","section_type":1},"failed":{"id":{"success":false,"message":"Cannot set property.","_object_type":"Response"},"ent_id":{"success":false,"message":"Cannot set property.","_object_type":"Response"}},"adjusted":{"content_location":{"success":1,"message":"Unable to set property.","_object_type":"Response"},"user_id":{"success":1,"message":"Unable to set property.","_object_type":"Response"},"update_dt":{"success":1,"message":"Unable to set property.","_object_type":"Response"},"creation_dt":{"success":1,"message":"Unable to set property.","_object_type":"Response"}}},"entity":null},"_object_type":"Response"}
 
 --------------------------------------------------------------------------------------------------------------------------
--------------------------{01-04-2017  20:53:14}---------------------------------------------------------------------------
+-------------------------{01-04-2017  21:28:31}---------------------------------------------------------------------------
 --------------------------------------------------------------------------------------------------------------------------
- {01-04-2017  20:53:14} 	  line {19}	 of {Factshift/Entity/Validation/Abstraction/RelationshipValidator.php};
+ {01-04-2017  21:28:31} 	  line {19}	 of {Factshift/Entity/Validation/Abstraction/RelationshipValidator.php};
 	0 => str     : 	here
 	1 => int     : 	1
 
- {01-04-2017  20:53:14} 	  line {35}	 of {Sm/Entity/Action/Create/CreateEntityVictimTrait.php};
+ {01-04-2017  21:28:31} 	  line {35}	 of {Sm/Entity/Action/Create/CreateEntityVictimTrait.php};
 	0 	=>		 arr(3)[
 		position             => int     : 	1
 		relationship_type    => str     : 	1
 		relationship_subtype => str     : 	1
 	]
-	1 => object  : 	{"success":true,"message":null,"data":{"changed_attributes":{"success":{"position":1,"relationship_type":"1","relationship_subtype":"1"},"failed":{"primary_section_id":{"success":null,"message":"Unable to set property.","_object_type":"Response"},"secondary_section_id":{"success":null,"message":"Unable to set property.","_object_type":"Response"},"relationship_status":{"success":null,"message":"Unable to set property.","_object_type":"Response"},"user_id":{"success":null,"message":"Unable to set property.","_object_type":"Response"},"adopts_children":{"success":null,"message":"Unable to set property.","_object_type":"Response"}},"adjusted":[]},"entity":null},"_object_type":"Response"}
-
---------------------------------------------------------------------------------------------------------------------------
--------------------------{01-04-2017  20:53:18}---------------------------------------------------------------------------
---------------------------------------------------------------------------------------------------------------------------
- {01-04-2017  20:53:18} 	  line {35}	 of {Sm/Entity/Action/Create/CreateEntityVictimTrait.php};
-	0 	=>		 arr(5)[
-		title        => str     : 	-
-		subtitle     => str     : 	
-		content      => str     : 	-
-		has_title    => int     : 	0
-		section_type => int     : 	1
-	]
-	1 => object  : 	{"success":true,"message":null,"data":{"changed_attributes":{"success":{"title":"-","subtitle":"","content":"-","has_title":0,"section_type":1},"failed":{"id":{"success":false,"message":"Cannot set property.","_object_type":"Response"},"content_location":{"success":null,"message":"Unable to set property.","_object_type":"Response"},"ent_id":{"success":false,"message":"Cannot set property.","_object_type":"Response"},"user_id":{"success":null,"message":"Unable to set property.","_object_type":"Response"},"update_dt":{"success":null,"message":"Unable to set property.","_object_type":"Response"},"creation_dt":{"success":null,"message":"Unable to set property.","_object_type":"Response"}},"adjusted":[]},"entity":null},"_object_type":"Response"}
-
---------------------------------------------------------------------------------------------------------------------------
--------------------------{01-04-2017  20:53:18}---------------------------------------------------------------------------
---------------------------------------------------------------------------------------------------------------------------
- {01-04-2017  20:53:18} 	  line {19}	 of {Factshift/Entity/Validation/Abstraction/RelationshipValidator.php};
-	0 => str     : 	here
-	1 => int     : 	2
-
- {01-04-2017  20:53:18} 	  line {35}	 of {Sm/Entity/Action/Create/CreateEntityVictimTrait.php};
-	0 	=>		 arr(3)[
-		position             => int     : 	2
-		relationship_type    => str     : 	1
-		relationship_subtype => str     : 	1
-	]
-	1 => object  : 	{"success":true,"message":null,"data":{"changed_attributes":{"success":{"position":2,"relationship_type":"1","relationship_subtype":"1"},"failed":{"primary_section_id":{"success":null,"message":"Unable to set property.","_object_type":"Response"},"secondary_section_id":{"success":null,"message":"Unable to set property.","_object_type":"Response"},"relationship_status":{"success":null,"message":"Unable to set property.","_object_type":"Response"},"user_id":{"success":null,"message":"Unable to set property.","_object_type":"Response"},"adopts_children":{"success":null,"message":"Unable to set property.","_object_type":"Response"}},"adjusted":[]},"entity":null},"_object_type":"Response"}
+	1 => object  : 	{"success":true,"message":null,"data":{"changed_attributes":{"success":{"position":1,"relationship_type":"1","relationship_subtype":"1"},"failed":[],"adjusted":{"primary_section_id":{"success":1,"message":"Unable to set property.","_object_type":"Response"},"secondary_section_id":{"success":1,"message":"Unable to set property.","_object_type":"Response"},"relationship_status":{"success":1,"message":"Unable to set property.","_object_type":"Response"},"user_id":{"success":1,"message":"Unable to set property.","_object_type":"Response"},"adopts_children":{"success":1,"message":"Unable to set property.","_object_type":"Response"}}},"entity":null},"_object_type":"Response"}
 

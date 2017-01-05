@@ -33,15 +33,12 @@ class Deploy {
         /** @var \Sm\Database\Connection $connection */
         $connection = App::_()->IoC->connection;
         $DBH        = $connection->getConnection();
-        $str        = [ ];
-        $loop       = [ ];
-        $loop       = $output;
         $connection->beginTransaction();
-        $output_string = implode(';', str_replace("\n", '', $output));
-        $DBH->prepare($output_string)->execute();
+        $output_string = implode(";\n", str_replace(" ", '  ', $output));
+        foreach ($output as $item) {
+            $DBH->prepare($item)->execute();
+        }
         $connection->commitTransaction();
-        
         return View::init($output);
-        return View::init($str);
     }
 }

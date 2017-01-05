@@ -164,9 +164,13 @@ define(['require', 'Sm', 'Emitter', 'Sm-Abstraction-MapEntity', 'Sm-Abstraction-
                 var Self = this;
                 Sm.CONFIG.DEBUG && console.log(Self.Map, Self.Map.get('id'));
                 var ajax = $.ajax({
-                                      url:    url,
-                                      method: (!Self.Map || !Self.Map.get('id')) ? 'POST' : 'PUT',
-                                      data:   data
+                                      url:     url,
+                                      headers: {
+                                          Accept:         "application/json, text/javascript, */*; q=0.01",
+                                          "Content-Type": "application/json"
+                                      },
+                                      method:  (!Self.Map || !Self.Map.get('id')) ? 'POST' : 'PUT',
+                                      data:    data
                                   });
                 return Promise.resolve(ajax).then(function (data) {
                     Sm.CONFIG.DEBUG && console.log(data);

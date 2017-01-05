@@ -89,7 +89,7 @@ foreach ($m_tables as $model_name => $model_details) {
                 $v[]         = "($id, '" . str_replace('_', '-', strtolower($value)) . "')";
                 $variables[] = "\tTYPE_" . strtoupper($value) . "\t= {$id}";
             }
-            $insert .= implode(',', $v) . ';';
+            $insert .= implode(',', $v) . '';
             $end_insert[] = $insert;
         }
         if ($model_file) {
@@ -192,7 +192,7 @@ foreach ($tables as $table => $properties) {
                 break;
         }
     }
-    $aggregate_query_array[] = trim("CREATE TABLE IF NOT EXISTS {$table} (\n\t" . implode(",\n\t", array_merge($query_array, $end_of_query_array)), ', ') . "\n);";
+    $aggregate_query_array[] = trim("CREATE TABLE IF NOT EXISTS {$table} (\n\t" . implode(",\n\t", array_merge($query_array, $end_of_query_array)), ', ') . "\n)";
 }
 
 $secondary_query = array_merge($secondary_query, $end_insert);

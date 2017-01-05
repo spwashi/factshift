@@ -7,7 +7,6 @@
 
 use Factshift\Core\Factshift;
 use Factshift\Entity\Dimension;
-use Factshift\Entity\Model\Map\DimensionSectionMap;
 use Factshift\Entity\Page;
 use Factshift\Entity\Validation\PageValidator;
 use Factshift\User\AppUser;
@@ -44,13 +43,6 @@ $urls         = [ ];
 $urls['edit'] = Factshift::_()->IoC->router->generate_url('page_view', [ $Page->context, $Page->alias, 'edit' ], $is_debug ? '?debug' : '');
 
 $urls['view'] = Factshift::_()->IoC->router->generate_url('page_view', [ $Page->context, $Page->alias ], $is_debug ? '?debug' : '');
-
-$map = DimensionSectionMap::find(1);
-echo $map->position;
-$map->position = $map->position + 1;
-$map->save();
-
-
 ?>
 
 <input type="hidden" id="usr_id" value="<?= $User->id ?>" />

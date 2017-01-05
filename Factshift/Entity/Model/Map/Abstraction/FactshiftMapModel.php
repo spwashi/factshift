@@ -75,8 +75,7 @@ class FactshiftMapModel extends FactshiftModel {
             "UPDATE `{$table_name}` {$update_action}" .
             "WHERE " . $this->_get_series_where_clause() . " " .
             $update_where_clause .
-            "AND `position` > 0 " .
-            "AND `id` <> $id";
+            "AND `position` > 0 ";
         
         
         $sql->setQry($qry);
@@ -93,8 +92,9 @@ class FactshiftMapModel extends FactshiftModel {
     public function create() :bool {
         Factshift::_()->IoC->connection->beginTransaction();
         $this->update_series_position('create');
-        parent::create();
+        $result = parent::create();
         Factshift::_()->IoC->connection->commitTransaction();
+        return $result;
     }
     public function jsonSerialize() {
         $ret = parent::jsonSerialize();

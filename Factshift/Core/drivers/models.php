@@ -178,9 +178,9 @@ return [
             'linked_entities' => [ 'user_id' => 'User' ],
             'properties'      => [
                 'id'               => null,
-                'title'            => ' - ',
+                'title'            => '-',
                 'subtitle'         => null,
-                'content'          => ' - ',
+                'content'          => '-',
                 'content_location' => null,
                 'ent_id'           => null,
                 'user_id'          => null,
@@ -196,9 +196,9 @@ return [
             'linked_entities' => [ 'user_id' => 'User' ],
             'properties'      => [
                 'id'          => null,
-                'title'       => ' - ',
+                'title'       => '-',
                 'subtitle'    => null,
-                'content'     => ' - ',
+                'content'     => '-',
                 'ent_id'      => null,
                 'user_id'     => null,
                 'update_dt'   => null,
@@ -279,7 +279,7 @@ return [
             'properties'      => [
                 'id'          => null,
                 'user_id'     => null,
-                'title'       => null,
+                'title'       => 'Overview',
                 'description' => null,
                 'ent_id'      => null,
                 'update_dt'   => null,
@@ -523,11 +523,9 @@ return [
             ],
             'properties'    => [
                 'display_types' => [
-                    'has_title'   => [ 'name' => 'Display Title?' ],
                     'content'     => [ 'type' => 'long' ],
                     'update_dt'   => [ 'name' => 'Last Updated', 'type' => 'datetime' ],
                     'creation_dt' => [ 'name' => 'Creation Date', 'type' => 'datetime' ],
-                    'words'       => [ 'type' => 'array' ],
                 ],
                 'api_settable'  => [
                     'title',

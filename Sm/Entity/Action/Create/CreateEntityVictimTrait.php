@@ -9,6 +9,7 @@ namespace Sm\Entity\Action\Create;
 
 
 use Sm\Action\Create\CreateAction;
+use Sm\Development\Log;
 use Sm\Entity\Abstraction\Entity;
 use Sm\Response\ResponseMessage;
 use Sm\User\Abstraction\AppUser;
@@ -31,6 +32,7 @@ trait CreateEntityVictimTrait {
         $changed_attributes   = $CreateActionResponse->getSuccessfulEdits();
         $Actor                = $editAction->getActor();
         if ($Actor instanceof AppUser && $Actor instanceof Entity) $this->set([ 'user_id' => $Actor->id ]);
+        Log::init([ $changed_attributes, $editAction->getResponse() ])->log_it();
         /** @var Entity $this */
         if ($this instanceof Entity) {
             $this->set($changed_attributes);

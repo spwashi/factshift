@@ -266,7 +266,6 @@ require(['require', 'Emitter', 'Sm', 'underscore'], function (require, Emitter, 
                 var relationship_details = this.getRelationshipDetails(relationship_index);
                 if (!relationship_details) return false;
                 var OtherEntityType = relationship_details.entity_type;
-                Sm.CONFIG.DEBUG && console.log(OtherEntityType);
                 return this.getMapEntityType(OtherEntityType);
             }
         });

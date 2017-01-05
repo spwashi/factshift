@@ -14,7 +14,6 @@ use Sm\Action\Edit\EditVictim;
 use Sm\Action\Exception\ActionException;
 use Sm\Controller\Abstraction\Controller;
 use Sm\Core\App;
-use Sm\Core\IoC;
 use Sm\Development\Log;
 use Sm\Entity\Entity;
 use Sm\Entity\EntityIterator;
@@ -26,7 +25,6 @@ use Sm\Identifier\Identifiable;
 use Sm\Iterator\Iterator;
 use Sm\Response\Response;
 use Sm\Response\ResponseMessage;
-use Factshift\Libs\Session\Session;
 
 class API extends Controller {
     public static function route(...$route_array) {

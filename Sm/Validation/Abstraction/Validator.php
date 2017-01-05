@@ -7,6 +7,7 @@
 
 namespace Sm\Validation\Abstraction;
 
+use Sm\Core\Util;
 use Sm\Entity\Model\EntityMeta;
 use Sm\Response\Response;
 use Sm\Response\ResponseMessage;
@@ -66,9 +67,9 @@ abstract class Validator {
         $proposed_number = null;
         return new Response(ResponseMessage::init(null, "Improper value for attribute. Must be numeric."), false);
     }
-    public static function _validate_string($string, $min, $max) {
-        if (!is_string($string) && !is_numeric($string))
-            return new Response(ResponseMessage::init(null, "Must be a string"), false);
+    public static function _validate_string($string, $min, $max, $liberal = true) {
+        if (Util::can_be_string($string) && $liberal) $string = (string)$string;
+        if (!is_string($string) && !is_numeric($string)) return new Response(ResponseMessage::init(null, "Must be a string"), false);
         
         $length = strlen($string);
         if ($length < $min) {

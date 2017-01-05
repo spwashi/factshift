@@ -1,51 +1,164 @@
 cleared
 --------------------------------------------------------------------------------------------------------------------------
--------------------------{01-04-2017  13:48:18}---------------------------------------------------------------------------
+-------------------------{01-04-2017  20:50:06}---------------------------------------------------------------------------
 --------------------------------------------------------------------------------------------------------------------------
- {01-04-2017  13:48:18} 	  line {83}	 of {Factshift/Entity/Model/Map/Abstraction/FactshiftMapModel.php};
-	-->		UPDATE `dimension_section_map`  SET `position` = `position` WHERE `section_id`  = 1 AND `dimension_id`  = 5  AND 1-0 AND `position` > 0 AND `id` <> 1
+ {01-04-2017  20:50:06} 	  line {35}	 of {Sm/Entity/Action/Create/CreateEntityVictimTrait.php};
+	0 	=>		 arr(2)[
+		title       => str     : 	Overview
+		description => NULL    : 	
+	]
+	1 => object  : 	{"success":true,"message":null,"data":{"changed_attributes":{"success":{"title":"Overview","description":null},"failed":{"id":{"success":false,"message":"Cannot set property.","_object_type":"Response"},"user_id":{"success":null,"message":"Unable to set property.","_object_type":"Response"},"ent_id":{"success":false,"message":"Cannot set property.","_object_type":"Response"},"update_dt":{"success":null,"message":"Unable to set property.","_object_type":"Response"},"creation_dt":{"success":null,"message":"Unable to set property.","_object_type":"Response"}},"adjusted":[]},"entity":null},"_object_type":"Response"}
 
 --------------------------------------------------------------------------------------------------------------------------
--------------------------{01-04-2017  13:48:34}---------------------------------------------------------------------------
+-------------------------{01-04-2017  20:50:06}---------------------------------------------------------------------------
 --------------------------------------------------------------------------------------------------------------------------
- {01-04-2017  13:48:34} 	  line {83}	 of {Factshift/Entity/Model/Map/Abstraction/FactshiftMapModel.php};
-	-->		UPDATE `dimension_section_map`  SET `position` = `position` WHERE `section_id`  = 1 AND `dimension_id`  = 5  AND 1=0 AND `position` > 0 AND `id` <> 1
+ {01-04-2017  20:50:06} 	  line {19}	 of {Factshift/Entity/Validation/Abstraction/RelationshipValidator.php};
+	0 => str     : 	here
+	1 => int     : 	1
+
+ {01-04-2017  20:50:06} 	  line {35}	 of {Sm/Entity/Action/Create/CreateEntityVictimTrait.php};
+	0 	=>		 arr(1)[
+		position => int     : 	1
+	]
+	1 => object  : 	{"success":true,"message":null,"data":{"changed_attributes":{"success":{"position":1},"failed":{"page_id":{"success":null,"message":"Unable to set property.","_object_type":"Response"},"dimension_id":{"success":null,"message":"Unable to set property.","_object_type":"Response"},"dimension_role":{"success":null,"message":"Unable to set property.","_object_type":"Response"}},"adjusted":[]},"entity":null},"_object_type":"Response"}
 
 --------------------------------------------------------------------------------------------------------------------------
--------------------------{01-04-2017  13:49:56}---------------------------------------------------------------------------
+-------------------------{01-04-2017  20:51:02}---------------------------------------------------------------------------
 --------------------------------------------------------------------------------------------------------------------------
- {01-04-2017  13:49:56} 	  line {83}	 of {Factshift/Entity/Model/Map/Abstraction/FactshiftMapModel.php};
-	-->		UPDATE `dimension_section_map`  SET `position` = `position` - 1 WHERE `section_id`  = 1 AND `dimension_id`  = 5  AND `position` < 1 AND `position` >= 0 AND `position` > 0 AND `id` <> 1
+ {01-04-2017  20:51:02} 	  line {35}	 of {Sm/Entity/Action/Create/CreateEntityVictimTrait.php};
+	0 	=>		 arr(5)[
+		title        => str     : 	 - 
+		subtitle     => str     : 	
+		content      => str     : 	 - 
+		has_title    => int     : 	0
+		section_type => int     : 	1
+	]
+	1 => object  : 	{"success":true,"message":null,"data":{"changed_attributes":{"success":{"title":" - ","subtitle":"","content":" - ","has_title":0,"section_type":1},"failed":{"id":{"success":false,"message":"Cannot set property.","_object_type":"Response"},"content_location":{"success":null,"message":"Unable to set property.","_object_type":"Response"},"ent_id":{"success":false,"message":"Cannot set property.","_object_type":"Response"},"user_id":{"success":null,"message":"Unable to set property.","_object_type":"Response"},"update_dt":{"success":null,"message":"Unable to set property.","_object_type":"Response"},"creation_dt":{"success":null,"message":"Unable to set property.","_object_type":"Response"}},"adjusted":[]},"entity":null},"_object_type":"Response"}
 
 --------------------------------------------------------------------------------------------------------------------------
--------------------------{01-04-2017  13:50:07}---------------------------------------------------------------------------
+-------------------------{01-04-2017  20:51:02}---------------------------------------------------------------------------
 --------------------------------------------------------------------------------------------------------------------------
- {01-04-2017  13:50:07} 	  line {83}	 of {Factshift/Entity/Model/Map/Abstraction/FactshiftMapModel.php};
-	-->		UPDATE `dimension_section_map`  SET `position` = `position` - 1 WHERE `section_id`  = 1 AND `dimension_id`  = 5  AND `position` < 1 AND `position` >= 0 AND `position` > 0 AND `id` <> 1
+ {01-04-2017  20:51:02} 	  line {19}	 of {Factshift/Entity/Validation/Abstraction/RelationshipValidator.php};
+	0 => str     : 	here
+	1 => int     : 	0
+
+ {01-04-2017  20:51:02} 	  line {35}	 of {Sm/Entity/Action/Create/CreateEntityVictimTrait.php};
+	0 	=>		 arr(3)[
+		section_type => int     : 	1
+		section_role => int     : 	1
+		position     => int     : 	0
+	]
+	1 => object  : 	{"success":true,"message":null,"data":{"changed_attributes":{"success":{"section_type":1,"section_role":1,"position":0},"failed":{"section_id":{"success":null,"message":"Unable to set property.","_object_type":"Response"},"dimension_id":{"success":null,"message":"Unable to set property.","_object_type":"Response"}},"adjusted":[]},"entity":null},"_object_type":"Response"}
 
 --------------------------------------------------------------------------------------------------------------------------
--------------------------{01-04-2017  13:50:26}---------------------------------------------------------------------------
+-------------------------{01-04-2017  20:52:18}---------------------------------------------------------------------------
 --------------------------------------------------------------------------------------------------------------------------
- {01-04-2017  13:50:26} 	  line {83}	 of {Factshift/Entity/Model/Map/Abstraction/FactshiftMapModel.php};
-	-->		UPDATE `dimension_section_map`  SET `position` = `position` - 1 WHERE `section_id`  = 1 AND `dimension_id`  = 5  AND `position` < 1 AND `position` >= 0 AND `position` > 0 AND `id` <> 1
+ {01-04-2017  20:52:18} 	  line {35}	 of {Sm/Entity/Action/Create/CreateEntityVictimTrait.php};
+	0 	=>		 arr(5)[
+		title        => str     : 	-
+		subtitle     => str     : 	
+		content      => str     : 	-
+		has_title    => int     : 	0
+		section_type => int     : 	1
+	]
+	1 => object  : 	{"success":true,"message":null,"data":{"changed_attributes":{"success":{"title":"-","subtitle":"","content":"-","has_title":0,"section_type":1},"failed":{"id":{"success":false,"message":"Cannot set property.","_object_type":"Response"},"content_location":{"success":null,"message":"Unable to set property.","_object_type":"Response"},"ent_id":{"success":false,"message":"Cannot set property.","_object_type":"Response"},"user_id":{"success":null,"message":"Unable to set property.","_object_type":"Response"},"update_dt":{"success":null,"message":"Unable to set property.","_object_type":"Response"},"creation_dt":{"success":null,"message":"Unable to set property.","_object_type":"Response"}},"adjusted":[]},"entity":null},"_object_type":"Response"}
 
 --------------------------------------------------------------------------------------------------------------------------
--------------------------{01-04-2017  13:51:08}---------------------------------------------------------------------------
+-------------------------{01-04-2017  20:52:18}---------------------------------------------------------------------------
 --------------------------------------------------------------------------------------------------------------------------
- {01-04-2017  13:51:08} 	  line {84}	 of {Factshift/Entity/Model/Map/Abstraction/FactshiftMapModel.php};
-	-->		UPDATE `dimension_section_map`  SET `position` = `position` - 1 WHERE `section_id`  = 1 AND `dimension_id`  = 5  AND `position` < 1 AND `position` >= 0 AND `position` > 0 AND `id` <> 1
+ {01-04-2017  20:52:18} 	  line {19}	 of {Factshift/Entity/Validation/Abstraction/RelationshipValidator.php};
+	0 => str     : 	here
+	1 => int     : 	1
+
+ {01-04-2017  20:52:18} 	  line {35}	 of {Sm/Entity/Action/Create/CreateEntityVictimTrait.php};
+	0 	=>		 arr(3)[
+		section_type => int     : 	1
+		section_role => int     : 	1
+		position     => int     : 	1
+	]
+	1 => object  : 	{"success":true,"message":null,"data":{"changed_attributes":{"success":{"section_type":1,"section_role":1,"position":1},"failed":{"section_id":{"success":null,"message":"Unable to set property.","_object_type":"Response"},"dimension_id":{"success":null,"message":"Unable to set property.","_object_type":"Response"}},"adjusted":[]},"entity":null},"_object_type":"Response"}
 
 --------------------------------------------------------------------------------------------------------------------------
--------------------------{01-04-2017  13:52:06}---------------------------------------------------------------------------
+-------------------------{01-04-2017  20:53:09}---------------------------------------------------------------------------
 --------------------------------------------------------------------------------------------------------------------------
- {01-04-2017  13:52:06} 	  line {84}	 of {Factshift/Entity/Model/Map/Abstraction/FactshiftMapModel.php};
-	-->		UPDATE `dimension_section_map`  SET `position` = `position` - 1 WHERE `section_id`  = 1 AND `dimension_id`  = 5  AND `position` < 1 AND `position` >= 0 AND `position` > 0 AND `id` <> 1
+ {01-04-2017  20:53:09} 	  line {35}	 of {Sm/Entity/Action/Create/CreateEntityVictimTrait.php};
+	0 	=>		 arr(5)[
+		title        => str     : 	-
+		subtitle     => str     : 	
+		content      => str     : 	-
+		has_title    => int     : 	0
+		section_type => int     : 	1
+	]
+	1 => object  : 	{"success":true,"message":null,"data":{"changed_attributes":{"success":{"title":"-","subtitle":"","content":"-","has_title":0,"section_type":1},"failed":{"id":{"success":false,"message":"Cannot set property.","_object_type":"Response"},"content_location":{"success":null,"message":"Unable to set property.","_object_type":"Response"},"ent_id":{"success":false,"message":"Cannot set property.","_object_type":"Response"},"user_id":{"success":null,"message":"Unable to set property.","_object_type":"Response"},"update_dt":{"success":null,"message":"Unable to set property.","_object_type":"Response"},"creation_dt":{"success":null,"message":"Unable to set property.","_object_type":"Response"}},"adjusted":[]},"entity":null},"_object_type":"Response"}
 
 --------------------------------------------------------------------------------------------------------------------------
--------------------------{01-04-2017  16:31:59}---------------------------------------------------------------------------
+-------------------------{01-04-2017  20:53:09}---------------------------------------------------------------------------
 --------------------------------------------------------------------------------------------------------------------------
- {01-04-2017  16:31:59} 	 code {42000} line {83}	 of {Factshift/Entity/Model/Map/Abstraction/FactshiftMapModel.php};
-	0 => str     : 	SQLSTATE[42000]: Syntax error or access violation: 1064 You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near '' at line 1
-	1 => str     : 	
-	         				UPDATE `section_section_map`  SET `position` = `position` + 1 WHERE `primary_section_id`  = 2 AND `secondary_section_id`  = 8 AND `user_id`  = 3  AND `position` >= 0 AND `position` > 0 AND `id` <>  
+ {01-04-2017  20:53:09} 	  line {19}	 of {Factshift/Entity/Validation/Abstraction/RelationshipValidator.php};
+	0 => str     : 	here
+	1 => int     : 	0
+
+ {01-04-2017  20:53:09} 	  line {35}	 of {Sm/Entity/Action/Create/CreateEntityVictimTrait.php};
+	0 	=>		 arr(3)[
+		position             => int     : 	0
+		relationship_type    => str     : 	1
+		relationship_subtype => str     : 	1
+	]
+	1 => object  : 	{"success":true,"message":null,"data":{"changed_attributes":{"success":{"position":0,"relationship_type":"1","relationship_subtype":"1"},"failed":{"primary_section_id":{"success":null,"message":"Unable to set property.","_object_type":"Response"},"secondary_section_id":{"success":null,"message":"Unable to set property.","_object_type":"Response"},"relationship_status":{"success":null,"message":"Unable to set property.","_object_type":"Response"},"user_id":{"success":null,"message":"Unable to set property.","_object_type":"Response"},"adopts_children":{"success":null,"message":"Unable to set property.","_object_type":"Response"}},"adjusted":[]},"entity":null},"_object_type":"Response"}
+
+--------------------------------------------------------------------------------------------------------------------------
+-------------------------{01-04-2017  20:53:14}---------------------------------------------------------------------------
+--------------------------------------------------------------------------------------------------------------------------
+ {01-04-2017  20:53:14} 	  line {35}	 of {Sm/Entity/Action/Create/CreateEntityVictimTrait.php};
+	0 	=>		 arr(5)[
+		title        => str     : 	-
+		subtitle     => str     : 	
+		content      => str     : 	-
+		has_title    => int     : 	0
+		section_type => int     : 	1
+	]
+	1 => object  : 	{"success":true,"message":null,"data":{"changed_attributes":{"success":{"title":"-","subtitle":"","content":"-","has_title":0,"section_type":1},"failed":{"id":{"success":false,"message":"Cannot set property.","_object_type":"Response"},"content_location":{"success":null,"message":"Unable to set property.","_object_type":"Response"},"ent_id":{"success":false,"message":"Cannot set property.","_object_type":"Response"},"user_id":{"success":null,"message":"Unable to set property.","_object_type":"Response"},"update_dt":{"success":null,"message":"Unable to set property.","_object_type":"Response"},"creation_dt":{"success":null,"message":"Unable to set property.","_object_type":"Response"}},"adjusted":[]},"entity":null},"_object_type":"Response"}
+
+--------------------------------------------------------------------------------------------------------------------------
+-------------------------{01-04-2017  20:53:14}---------------------------------------------------------------------------
+--------------------------------------------------------------------------------------------------------------------------
+ {01-04-2017  20:53:14} 	  line {19}	 of {Factshift/Entity/Validation/Abstraction/RelationshipValidator.php};
+	0 => str     : 	here
+	1 => int     : 	1
+
+ {01-04-2017  20:53:14} 	  line {35}	 of {Sm/Entity/Action/Create/CreateEntityVictimTrait.php};
+	0 	=>		 arr(3)[
+		position             => int     : 	1
+		relationship_type    => str     : 	1
+		relationship_subtype => str     : 	1
+	]
+	1 => object  : 	{"success":true,"message":null,"data":{"changed_attributes":{"success":{"position":1,"relationship_type":"1","relationship_subtype":"1"},"failed":{"primary_section_id":{"success":null,"message":"Unable to set property.","_object_type":"Response"},"secondary_section_id":{"success":null,"message":"Unable to set property.","_object_type":"Response"},"relationship_status":{"success":null,"message":"Unable to set property.","_object_type":"Response"},"user_id":{"success":null,"message":"Unable to set property.","_object_type":"Response"},"adopts_children":{"success":null,"message":"Unable to set property.","_object_type":"Response"}},"adjusted":[]},"entity":null},"_object_type":"Response"}
+
+--------------------------------------------------------------------------------------------------------------------------
+-------------------------{01-04-2017  20:53:18}---------------------------------------------------------------------------
+--------------------------------------------------------------------------------------------------------------------------
+ {01-04-2017  20:53:18} 	  line {35}	 of {Sm/Entity/Action/Create/CreateEntityVictimTrait.php};
+	0 	=>		 arr(5)[
+		title        => str     : 	-
+		subtitle     => str     : 	
+		content      => str     : 	-
+		has_title    => int     : 	0
+		section_type => int     : 	1
+	]
+	1 => object  : 	{"success":true,"message":null,"data":{"changed_attributes":{"success":{"title":"-","subtitle":"","content":"-","has_title":0,"section_type":1},"failed":{"id":{"success":false,"message":"Cannot set property.","_object_type":"Response"},"content_location":{"success":null,"message":"Unable to set property.","_object_type":"Response"},"ent_id":{"success":false,"message":"Cannot set property.","_object_type":"Response"},"user_id":{"success":null,"message":"Unable to set property.","_object_type":"Response"},"update_dt":{"success":null,"message":"Unable to set property.","_object_type":"Response"},"creation_dt":{"success":null,"message":"Unable to set property.","_object_type":"Response"}},"adjusted":[]},"entity":null},"_object_type":"Response"}
+
+--------------------------------------------------------------------------------------------------------------------------
+-------------------------{01-04-2017  20:53:18}---------------------------------------------------------------------------
+--------------------------------------------------------------------------------------------------------------------------
+ {01-04-2017  20:53:18} 	  line {19}	 of {Factshift/Entity/Validation/Abstraction/RelationshipValidator.php};
+	0 => str     : 	here
+	1 => int     : 	2
+
+ {01-04-2017  20:53:18} 	  line {35}	 of {Sm/Entity/Action/Create/CreateEntityVictimTrait.php};
+	0 	=>		 arr(3)[
+		position             => int     : 	2
+		relationship_type    => str     : 	1
+		relationship_subtype => str     : 	1
+	]
+	1 => object  : 	{"success":true,"message":null,"data":{"changed_attributes":{"success":{"position":2,"relationship_type":"1","relationship_subtype":"1"},"failed":{"primary_section_id":{"success":null,"message":"Unable to set property.","_object_type":"Response"},"secondary_section_id":{"success":null,"message":"Unable to set property.","_object_type":"Response"},"relationship_status":{"success":null,"message":"Unable to set property.","_object_type":"Response"},"user_id":{"success":null,"message":"Unable to set property.","_object_type":"Response"},"adopts_children":{"success":null,"message":"Unable to set property.","_object_type":"Response"}},"adjusted":[]},"entity":null},"_object_type":"Response"}
 

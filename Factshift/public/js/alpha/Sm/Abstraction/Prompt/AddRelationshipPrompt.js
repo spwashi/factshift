@@ -119,9 +119,7 @@ define(['require', 'Sm', 'jquery', 'Sm-Abstraction-Prompt-Prompt', 'Sm-Abstracti
                     var RelationshipIndex = Entity.getRelationshipIndex(relationship_index);
                     var context_id        = RelationshipIndex.getDefaultContextId();
                     position              = RelationshipIndex.count(context_id);
-                    Sm.CONFIG.DEBUG && console.log(Map);
                     Map.setAttributes({'position': position});
-                    Sm.CONFIG.DEBUG && console.log(position);
                     return Garage
                         .generate(
                             'modal.add_relationship_type.[' + relationship_index + ']',

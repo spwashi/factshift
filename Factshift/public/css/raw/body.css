@@ -168,10 +168,10 @@ body > .row,
 #add-concept {
   width: 500px;
 }
-.relationship-container .select2-selection {
+.relationship_index .select2-selection {
   width: 300px;
 }
-.relationship-container .select2-selection .select2-selection__choice {
+.relationship_index .select2-selection .select2-selection__choice {
   padding: 5px;
 }
 .sm-tooltip {
@@ -986,7 +986,7 @@ body > .row,
 .tooltip.definition-relationship .factshift-section {
   border-bottom: thin solid #ccc;
 }
-.tooltip.definition-relationship .relationship-container > header {
+.tooltip.definition-relationship .relationship_index > header {
   display: none;
 }
 .tooltip.definition-relationship .relationship-type-title,

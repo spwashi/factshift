@@ -4,8 +4,8 @@
 define(['require', 'Sm', 'Emitter', 'underscore', 'Sm-Core-Core', 'Sm-Abstraction-templates-_template'], function (require, Sm, Emitter, _) {
     Sm.Abstraction.Garage = Emitter.extend(
         {
-            cached_templates: null,
-
+            cached_templates:      null,
+            template_object:       null,
             init:                  function (entity_type) {
                 this.entity_type = entity_type || null;
             },
@@ -86,16 +86,19 @@ define(['require', 'Sm', 'Emitter', 'underscore', 'Sm-Core-Core', 'Sm-Abstractio
                         } catch (e) {Sm.CONFIG.DEBUG && console.log(e);}
                     }
                 }
-                var Self        = this;
-                var last_called = [];
-                var last_result = [];
+                var Self            = this;
+                var last_called     = [];
+                var last_result     = [];
+                var result_is_final = function (result) {return typeof result === "string" || Sm.Core.Util.isNode(result) || result instanceof jQuery};
+                var fn              = function (obj, subtype) {
+                    var res               = false;
+                    var obj_can_be_result = result_is_final(obj);
+                    template_identifier === 'relationship.std' && (subtype === 'std') && Sm.CONFIG.DEBUG && console.log(obj, subtype, res);
 
-                var fn            = function (obj, subtype) {
-                    var res = false;
                     if (typeof obj === "boolean" || typeof obj === "number") return obj;
-                    if (typeof obj === "string") res = obj;
+                    if (obj_can_be_result) res = obj;
                     if (obj && subtype) {
-                        if (typeof obj === "string") res = obj;
+                        if (obj_can_be_result) return res = obj;
                         else if (typeof obj === "function" || (typeof obj[subtype] === "function" && (obj = obj[subtype]))) {
                             //Make sure this function doesn't get called more than once;
                             var i = last_called.indexOf(obj);
@@ -110,13 +113,16 @@ define(['require', 'Sm', 'Emitter', 'underscore', 'Sm-Core-Core', 'Sm-Abstractio
                                 Sm.CONFIG.DEBUG && console.log(e);
                             }
 
-                        } else if (obj[subtype]) res = obj[subtype];
+                        } else if (obj[subtype]) {
+                            res = obj[subtype];
+                        }
                         else if (subtype !== 'std') return fn(obj, 'std') || false;
                         else res = false;
                     }
                     return res;
                 };
-                var resolve       = function (string) {
+                var resolve         = function (string) {
+
                     var attributes;
                     if (data.Resource && typeof data.Resource === "object" && data.Resource.getAttributes) {
                         attributes = data.Resource.getAttributes();
@@ -125,14 +131,18 @@ define(['require', 'Sm', 'Emitter', 'underscore', 'Sm-Core-Core', 'Sm-Abstractio
                     } else {
                         attributes = data;
                     }
-                    var processed_string = data ? Self.fillTemplate(attributes, string) : string;
-                    for (var index in replace_object) {
-                        if (!replace_object.hasOwnProperty(index)) continue;
-                        processed_string = processed_string.replace(index, replace_object[index]);
+
+                    var processed_string = string;
+                    if (typeof string === "string") {
+                        processed_string = data ? Self.fillTemplate(attributes, string) : string;
+                        for (var index in replace_object) {
+                            if (!replace_object.hasOwnProperty(index)) continue;
+                            processed_string = processed_string.replace(index, replace_object[index]);
+                        }
                     }
                     return is_synchronous ? processed_string : Promise.resolve(processed_string);
                 };
-                var last_searched = [];
+                var last_searched   = [];
                 /**
                  * Iterate through the array of whatever we are looking for and try to pull the last string from it.
                  * If we get to a point where we cannot find something that we are looking for, we fallback to a default string.
@@ -142,12 +152,12 @@ define(['require', 'Sm', 'Emitter', 'underscore', 'Sm-Core-Core', 'Sm-Abstractio
                     var template_search_index = search_indices[j];
                     //This is the last thing that we looked for
                     last_searched.splice(0, 0, j ? search_indices[j - 1] : false);
-                    var search_result           = null;
+                    var search_result           = [];
                     var _empty_template_indices = [];
                     for (var k = 0; k < templates.length; k++) {
-                        templates[k] = search_result = fn(templates[k], template_search_index);
-                        if (typeof search_result === "string") return resolve(search_result);
-                        if (!search_result) _empty_template_indices.forEach(function (index) {templates[index] = search_result;});
+                        templates[k] = search_result[k] = fn(templates[k], template_search_index);
+                        if (result_is_final(search_result[k])) return resolve(search_result[k]);
+                        // if (!search_result[k]) _empty_template_indices.forEach(function (index) {templates[index] = search_result[index];});
                         _empty_template_indices.push(k);
                     }
                     //If the primary object is a string already, we are okay and should stop looking.
@@ -155,6 +165,7 @@ define(['require', 'Sm', 'Emitter', 'underscore', 'Sm-Core-Core', 'Sm-Abstractio
                 return resolve("__CONTENT__");
             },
             fillTemplate:          function (attributes, string) {
+                if (typeof string !== "string") return string;
                 attributes              = this.getAttributesFromData(attributes);
                 var underscore_template = _.template(string);
                 return underscore_template(attributes);
@@ -163,9 +174,9 @@ define(['require', 'Sm', 'Emitter', 'underscore', 'Sm-Core-Core', 'Sm-Abstractio
                 settings           = settings || {};
                 var is_synchronous = settings.is_synchronous || false;
                 var Self           = this;
-                var resolve        = function (template) {
-                    template = Self.fillTemplate(data, template);
-                    return !is_synchronous ? Promise.resolve(template) : template;
+                var resolve        = function (string) {
+                    string = Self.fillTemplate(data, string);
+                    return !is_synchronous ? Promise.resolve(string) : string;
                 };
                 var templates      = [this.getTemplateObject(data), this.getTemplateObject()];
                 var fragment       = this.createFragmentHTML(template_identifier, templates, data, {
@@ -176,6 +187,7 @@ define(['require', 'Sm', 'Emitter', 'underscore', 'Sm-Core-Core', 'Sm-Abstractio
             },
             getTemplateObject:     function (data) {
                 if (!data)return Sm.Abstraction.templates._template;
+                if (this.template_object) return this.template_object;
                 var entity_type = Sm.Core.Meta.getEntityType(data);
                 var template_object;
                 if (!entity_type && data.Resource) {

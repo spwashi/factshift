@@ -39,7 +39,7 @@ define(['require', 'Sm',
                 this.relationships                = {};
                 this._relationships               = {};
                 this.reciprocal_relationships     = {};
-                this.RelationshipIndices          = [];
+                this.RelationshipIndices          = {};
                 identification_object             = identification_object || {};
                 this.entity_type                  = this.entity_type || identification_object.entity_type;
                 identification_object.object_type = this.object_type;
@@ -363,6 +363,22 @@ define(['require', 'Sm',
              */
             getRelationshipIndex:          function (relationship_index) {
                 return this._initRelationshipIndex(relationship_index);
+            },
+            getRelationshipIndices:        function (get_all) {
+                get_all = !!get_all;
+                var rel_indices;
+                if (get_all) {
+                    rel_ind = this.RelationshipIndices;
+                    return Sm.Core.Util.merge_objects(rel_ind, {});
+                }
+                rel_indices                = this.relationships;
+                var r_rel_inds             = this.reciprocal_relationships;
+                var reciprocal_rel_indices = {};
+                for (var rel_ind in r_rel_inds) {
+                    if (!r_rel_inds.hasOwnProperty(rel_ind)) continue;
+                    reciprocal_rel_indices['reciprocal_' + rel_ind] = r_rel_inds[rel_ind];
+                }
+                return Sm.Core.Util.merge_objects(rel_indices, reciprocal_rel_indices);
             },
             /**
              * Get a Relationship based on an entity identifier (anything that can uniquely identify an entity)

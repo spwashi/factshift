@@ -26,8 +26,10 @@ define(['require', 'Sm', 'backbone', 'Sm-Abstraction-Stateful', 'Sm-Abstraction-
             /**
              * @constructor
              * @param {{}}                                      config
+             * @param {HTMLElement=}                            config.el
              * @param {Sm.r_id}                                 config.resource_r_id
              * @param {string}                                  config.resource_type
+             * @param {string}                                  config.display_type
              * @param {Sm.Core.Identifier.Identifiable=}        config.Resource
              * @param {Sm.Core.Identifier.Identifiable|HTMLElement=}        config.ReferencePoint
              * @param {function}                                config.resolve
@@ -37,11 +39,13 @@ define(['require', 'Sm', 'backbone', 'Sm-Abstraction-Stateful', 'Sm-Abstraction-
                 config             = config || {};
                 this.resource_r_id = this.resource_r_id || config.resource_r_id || (config.Resource && config.Resource.getR_ID && config.Resource.getR_ID());
                 this.resource_type = this.resource_type || config.resource_type || this.resource_type;
+                this.display_type  = this.display_type || config.display_type || this.display_type;
                 this.setReferencePoint(config.ReferencePoint || (this.el && this.el.parentNode ? this.el.parentNode : null));
                 this.Identifier = new Sm.Core.Identifier(this, {
                     object_type: this.resource_type + '_View',
                     r_id:        this.cid
                 });
+                this.setStatus('rendered', !!config.el);
                 this.refresh();
                 this.initViewElement();
             },
@@ -72,16 +76,26 @@ define(['require', 'Sm', 'backbone', 'Sm-Abstraction-Stateful', 'Sm-Abstraction-
                 if (!property) return this.el;
                 return null;
             },
+            isRendered:         function () {
+                return this.queryStatus('rendered')
+            },
+            setDisplayType:     function (display_type) {
+                this.display_type = display_type;
+            },
             /**
              * Render the View and change the Element
              * @param {{}}          settings
              * @param {boolean}     settings.is_synchronous
+             * @param {boolean}     settings.only_unrendered
              * @return {*}
              */
             render:             function (settings) {
-                settings = settings || {};
+                settings           = settings || {};
+                var is_synchronous = !!settings.is_synchronous;
+                if (!!settings.only_unrendered) {
+                    if (this.isRendered()) return is_synchronous ? this.el : Promise.resolve(this.el);
+                }
                 this.setStatus('rendering', true);
-                var is_synchronous    = !!settings.is_synchronous;
                 var outer             = this._generateOuterHTML(is_synchronous);
                 var inner             = this._generateInnerHTML(is_synchronous);
                 var outer_html, inner_html;
@@ -98,6 +112,7 @@ define(['require', 'Sm', 'backbone', 'Sm-Abstraction-Stateful', 'Sm-Abstraction-
                     Self.initViewElement();
                     Self.emit && Self.emit('render', el);
                     Self.setStatus('rendering', false);
+                    Self.setStatus('rendered', true);
                     return Self.el;
                 };
                 if (!is_synchronous) {

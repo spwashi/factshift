@@ -1,8 +1,8 @@
 /**
  * Created by Sam Washington on 12/9/16.
  */
-define(['require', 'Sm', 'jquery', 'Emitter', 'Sm-Abstraction-Views-View'], function (require, Sm, $, Emitter) {
-    Sm.Core.dependencies.on_load('Abstraction-Views-View', function () {
+define(['require', 'Sm', 'jquery', 'Emitter', 'Sm-Abstraction-Views-View', 'Sm-Abstraction-RelationshipIndex-_template'], function (require, Sm, $, Emitter) {
+    Sm.Core.dependencies.on_load(['Abstraction-Views-View', 'Abstraction-RelationshipIndex-_template'], function () {
         /**
          * @class Sm.Abstraction.RelationshipIndexView
          * @extends Sm.Abstraction.Views.View
@@ -34,6 +34,10 @@ define(['require', 'Sm', 'jquery', 'Emitter', 'Sm-Abstraction-Views-View'], func
                     return this.$el.children();
                 },
 
+                getGarage: function () {
+                    return Sm.Abstraction.RelationshipIndex.getGarage();
+                },
+
                 /**
                  * Make sure the elements that are already under the RelationshipIndexView are initialized and
                  * all that Jazz.
@@ -42,9 +46,13 @@ define(['require', 'Sm', 'jquery', 'Emitter', 'Sm-Abstraction-Views-View'], func
                  * @return {*|Promise}
                  * @private
                  */
-                _initExistentElements:    function (end_item_elements) {
+                _initExistentElements:    function () {
+                    var end_item_elements = this.elements.items = this.elements.items || {};
                     var children                 = this.getItemElements();
                     var children_count           = children.length;
+                    var RelationshipIndex        = this.getResource();
+                    var context_id               = null;
+                    var Self                     = this;
                     /**
                      * Callback to run when the entity_type of the element has been loaded
                      * @param {Sm.entity_type}  entity_type         The Entity Type of the element that we are going to try to initialize
@@ -55,14 +63,17 @@ define(['require', 'Sm', 'jquery', 'Emitter', 'Sm-Abstraction-Views-View'], func
                     var get_when_loaded_callback = function (entity_type, el, end_item_elements) {
                         return function () {
                             return Sm.Core.Meta.getSmEntity(entity_type).Wrapper
-                                     .hydrate_element(el)
+                                     .hydrate_element(el, Self)
                                      .then(function (View) {
                                          var Entity = View.getResource();
                                          if (!Entity) return null;
-
+                                         var Relationship               = RelationshipIndex.getItem(RelationshipIndex.indexOf(Entity, context_id), context_id);
                                          /** @type {Sm.r_id} entity_r_id */
                                          var entity_r_id                = Entity.getR_ID();
-                                         end_item_elements[entity_r_id] = View.el;
+                                         end_item_elements[entity_r_id] = {
+                                             View:         View,
+                                             Relationship: Relationship
+                                         };
 
                                          return View.el;
                                      });
@@ -96,7 +107,8 @@ define(['require', 'Sm', 'jquery', 'Emitter', 'Sm-Abstraction-Views-View'], func
                     }
                     return Promise.all(promise_array);
                 },
-                _initNonexistentElements: function (end_item_elements) {
+                _initNonexistentElements: function () {
+                    var end_item_elements = this.elements.items = this.elements.items || {};
                     var ReferencePoint = this.getReferencePoint();
                     var reference_id   = ReferencePoint && ReferencePoint.getR_ID && ReferencePoint.getR_ID();
 
@@ -111,14 +123,13 @@ define(['require', 'Sm', 'jquery', 'Emitter', 'Sm-Abstraction-Views-View'], func
                      */
                     for (var related_r_id in related_items) {
                         if (!related_items.hasOwnProperty(related_r_id)) continue;
-
-                        // If we've already initialized the elements, don't do it again
                         if (related_r_id in end_item_elements) continue;
+                        // If we've already initialized the elements, don't do it again
 
-                        var relationship = related_items[related_r_id];
+                        var Relationship = related_items[related_r_id];
 
                         // Get the entities that are not the one that holds this RelationshipIndex
-                        var other_entities = relationship.getOtherEntities(RelIndEntity.getR_ID());
+                        var other_entities = Relationship.getOtherEntities(RelIndEntity.getR_ID());
 
                         // Not entirely sure how to deal with Relationships that hold more than two relations
                         if (other_entities.length > 1) return Promise.reject("Not sure how to handle relationships between more than two Entities!");
@@ -128,14 +139,20 @@ define(['require', 'Sm', 'jquery', 'Emitter', 'Sm-Abstraction-Views-View'], func
                         if (!OtherEntity) continue;
 
                         /** @type {Sm.Abstraction.Views.View} OtherView A View belonging to the OtherEntity */
-                        var OtherView = OtherEntity.initNewView();
+                        var OtherView = OtherEntity.initNewView(null, this);
                         if (!OtherView) continue;
-
+                        var relationship_obj = {
+                            View:         OtherView,
+                            Relationship: Relationship
+                        };
+                        OtherView.setDisplayType(this.display_type);
                         // Render the Other View and add it to the end_item_elements
-                        var render_promise = OtherView.render({is_synchronous: false}).then(function (res) {
-                            end_item_elements[related_r_id] = res;
-                            return res;
-                        }).catch(function (e) {
+                        var render_promise = OtherView.render().then((function (related_r_id, relationship_obj) {
+                            return function (res) {
+                                end_item_elements[related_r_id] = relationship_obj;
+                                return res;
+                            }
+                        })(related_r_id, relationship_obj)).catch(function (e) {
                             Sm.CONFIG.DEBUG && console.log(e);
                             return null;
                         });
@@ -146,6 +163,16 @@ define(['require', 'Sm', 'jquery', 'Emitter', 'Sm-Abstraction-Views-View'], func
 
                     return Promise.all(promise_array);
                 },
+                _generateOuterHTML:       function (is_synchronous) {
+                    var Entity = this.getResource();
+                    var Garage = this.getGarage();
+                    return Garage.generate('body_outer.' + this.display_type, Entity, {is_synchronous: is_synchronous})
+                },
+                _generateInnerHTML:       function (is_synchronous) {
+                    var Entity = this.getResource();
+                    var Garage = this.getGarage();
+                    return Garage.generate('body.' + this.display_type, Entity, {is_synchronous: is_synchronous})
+                },
                 /**
                  * Make sure the Views that correspond to the Entities related via this RelationshipIndex
                  * (that aren't the Entity holding this Relationship) are initialized properly
@@ -155,19 +182,45 @@ define(['require', 'Sm', 'jquery', 'Emitter', 'Sm-Abstraction-Views-View'], func
                     var Self              = this;
                     var RelationshipIndex = this.getResource();
                     var RelIndEntity      = RelationshipIndex.getResource();
-                    if (!RelIndEntity) return Promise.reject("The relationship index is not complete without an Entity");
+                    if (!RelIndEntity) return Promise.reject("The relation;ship index is not complete without an Entity");
 
-                    var end_item_elements = Sm.Core.Util.merge_objects({}, this.elements.items);
+                    var end_item_elements;
 
-                    return this._initExistentElements(end_item_elements)
+                    end_item_elements = this.elements.items = this.elements.items || {};
+
+                    var render_el;
+                    if (this.display_type === "preview") {
+                        render_el = function (ViewObject) {
+                            var View = ViewObject.View;
+                            View.setDisplayType(Self.display_type);
+                            var Relationship     = ViewObject.Relationship;
+                            var RelationshipView = Relationship.convertToView(null, Self);
+                            Sm.CONFIG.DEBUG && console.log(RelationshipView);
+                            RelationshipView.setDisplayType(Self.display_type);
+                            RelationshipView.setActiveViews([View]);
+                            return RelationshipView.render();
+                        }
+                    } else {
+                        render_el = function (ViewObject) {
+                            return ViewObject.View.getElement();
+                        }
+                    }
+
+                    return this._initExistentElements()
                                .then(function (res) {
-                                   return Self._initNonexistentElements(end_item_elements);
+                                   return Self._initNonexistentElements();
                                })
                                .then(function () {
-                                   var ReferencePoint  = Self.getReferencePoint();
-                                   var context_id      = ReferencePoint && ReferencePoint.getR_ID && ReferencePoint.getR_ID();
-                                   Self.elements.items = end_item_elements;
-                                   var elements        = RelationshipIndex.order_object(end_item_elements, context_id);
+                                   var ReferencePoint        = Self.getReferencePoint();
+                                   var context_id            = ReferencePoint && ReferencePoint.getR_ID && ReferencePoint.getR_ID();
+                                   var Views                 = RelationshipIndex.order_object(end_item_elements, context_id);
+                                   var all_elements_rendered = [];
+                                   for (var i = 0; i < Views.length; i++) {
+                                       all_elements_rendered.push(render_el(Views[i]));
+                                   }
+                                   return Promise.all(all_elements_rendered);
+                               })
+                               .then(function (elements) {
                                    Self.$el.append(elements);
                                    elements.forEach(function (item) {
                                        if (!item || typeof  item !== "object") return;
@@ -185,6 +238,7 @@ define(['require', 'Sm', 'jquery', 'Emitter', 'Sm-Abstraction-Views-View'], func
                     return res;
                 }
             });
+
         Emitter.mixin(Sm.Abstraction.Views.RelationshipIndexView.prototype);
     }, 'Abstraction-Views-RelationshipIndexView');
 });

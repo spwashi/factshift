@@ -105,8 +105,8 @@
     }
 }
 
-.view_relationship-container {
-    .relationship-container, .relationship-subtype-container {
+.view_relationship_index-container {
+    .relationship_index, .relationship_subindex {
         > .content {
             margin-left : 20px;
         }
@@ -119,6 +119,16 @@
     .relationship {
         padding       : 5px auto;
         margin-bottom : 7px;
+        padding-left  : 70px;
+        position      : relative;
+        .button-control {
+            width        : 50px;
+            padding-left : 10px;
+            .destroy { float : right; }
+            .edit { float : left; }
+            left         : 0;
+            top          : 0;
+        }
         > .content {
             .clearfix;
         }

@@ -12,10 +12,6 @@ define(['require', 'Sm', 'Sm-Abstraction-Views-View', 'Sm-Abstraction-Action-Rep
          */
         Sm.Entities.Section.View = Sm.Abstraction.Views.EntityView.extend(
             {
-                initViewElement:                  function () {
-                    var el = Sm.Abstraction.Views.EntityView.prototype.initViewElement.apply(this, arguments);
-                    return el;
-                },
                 setAttributeElement_section_type: function (value) {
                     var Entity = this.getResource();
                     var Meta   = Sm.Core.Meta.getSmEntityAttribute(Entity, 'Meta');

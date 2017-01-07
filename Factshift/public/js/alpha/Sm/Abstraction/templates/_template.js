@@ -29,6 +29,7 @@ define(['require', 'Sm'], function (require, Sm) {
                     Template.modal.action_button({text: 'Save', action: 'save'})
                 ];
                 if (is_entity && reference_type === 'Relationship') template.push(Template.modal.action_button({text: 'Edit Relationship', action: 'edit_relationship'}));
+                if (is_entity) template.push(Template.modal.action_button({text: 'View Relationships', action: 'view_relationship_indices'}));
                 template.push('</div>', '</div>');
                 return template.join('');
             },
@@ -87,19 +88,19 @@ define(['require', 'Sm'], function (require, Sm) {
              * @param button_config.action
              * @private
              */
-            action_button:         function (button_config) {
+            action_button:             function (button_config) {
                 var inside = button_config.text;
                 var action = button_config.action;
 
                 return '<button class="action modal-button ' + action + '" data-action="' + action + '">' + inside + '</button>';
             },
-            destroy:               '<div class="content">Are you sure you want to destroy these entities?</div>',
+            destroy:                   '<div class="content">Are you sure you want to destroy these entities?</div>',
             /**
              * @this Sm.Abstraction.Garage
              * @return {string}
              */
             //
-            add_relationship_type: function (data) {
+            add_relationship_type:     function (data) {
                 var Entity             = data.Entity || false;
                 var OtherEntity        = data.OtherEntity || false;
                 var relationship_index = data.relationship_index || null;
@@ -133,7 +134,7 @@ define(['require', 'Sm'], function (require, Sm) {
                 d += '<div class="button-container control_group add_relationship-container">\n    <button class="action modal-button" data-action="add_relationship" data-data="">Add relationship</button>\n</div>\n</div>';
                 return d;
             },
-            add_relationship:      function (data) {
+            add_relationship:          function (data) {
                 var Entity = data;
                 if (!Entity || !(typeof  Entity === "object") || !data.isIdentifiable) throw new Sm.Exceptions.Error("Not action on an entity!", data);
                 var type = Entity.getEntityType();
@@ -159,13 +160,39 @@ define(['require', 'Sm'], function (require, Sm) {
                 }
                 template += "</select>\n</div>";
                 return template;
+            },
+            view_relationship_indices: function (data) {
+                data                    = data || {};
+                var Entity              = data.Entity || null;
+                var RelationshipIndices = Entity.getRelationshipIndices();
+                var element             = $('<div class="view_relationship_index-container"></div>');
+                var ordered_indices     = Object.keys(RelationshipIndices).sort();
+                for (var i = 0; i < ordered_indices.length; i++) {
+                    var index                 = ordered_indices[i];
+                    var RelationshipIndex     = RelationshipIndices[index];
+                    var RelationshipIndexView = RelationshipIndex.initNewView();
+                    RelationshipIndexView.setDisplayType('preview');
+                    RelationshipIndexView.render();
+                    element.append(RelationshipIndexView.getElement())
+                }
+                Sm.CONFIG.DEBUG && console.log(element);
+                return element;
             }
         },
         body_outer:     {
-            full: function (Entity) {
+            full:    function (Entity) {
                 var entity_type = (Sm.Core.Meta.getEntityType(Entity) || '').toLowerCase();
                 var template    = [
                     '<div class="factshift-entity factshift-' + entity_type + '" data-entity_type="' + entity_type + '" data-ent_id="<%- typeof ent_id === \'string\' ?ent_id:\'\'%>" data-id="<%- typeof id !== \'undefined\'?id:\'\'%>">',
+                    '__CONTENT__',
+                    '</div>'
+                ];
+                return template.join('');
+            },
+            preview: function (Entity) {
+                var entity_type = (Sm.Core.Meta.getEntityType(Entity) || '').toLowerCase();
+                var template    = [
+                    '<div class="factshift-entity preview factshift-' + entity_type + '" data-entity_type="' + entity_type + '" data-ent_id="<%- typeof ent_id === \'string\' ?ent_id:\'\'%>" data-id="<%- typeof id !== \'undefined\'?id:\'\'%>">',
                     '__CONTENT__',
                     '</div>'
                 ];
@@ -233,6 +260,7 @@ define(['require', 'Sm'], function (require, Sm) {
                 return after_template;
             },
             full:        '<div class="<%- typeof content === \'string\'?\'content\':(typeof alias === \'string\'?\'alias\':(!!title && typeof title === \'string\'?\'title\':\' \'))%>">\n    <%- typeof content === "string"?content:(typeof alias === "string"?alias:(typeof title === "string"?title:" "))%>\n</div>\n',
+            preview:     '<div class="<%- typeof content === \'string\'?\'content\':(typeof alias === \'string\'?\'alias\':(!!title && typeof title === \'string\'?\'title\':\' \'))%>">\n    <%- typeof content === "string"?content:(typeof alias === "string"?alias:(typeof title === "string"?title:" "))%>\n</div>\n',
             /**
              * @this Sm.Abstraction.Garage
              * @param Resource

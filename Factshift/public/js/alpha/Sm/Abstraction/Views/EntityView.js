@@ -26,9 +26,7 @@ define(['require', 'Sm', 'jquery', 'Sm-Abstraction-Views-View'], function (requi
                     var Resource = this.getResource();
                     if (!Resource || !Resource.on) return;
                     var Self = this;
-                    Resource.on('update', function (changed) {
-                        Self.update(changed);
-                    });
+                    Resource.on('update', function (changed) {Self.update(changed);});
                     Resource.on('destroy', function () {Self.destroy();});
                 },
 //------------------------
@@ -199,7 +197,7 @@ define(['require', 'Sm', 'jquery', 'Sm-Abstraction-Views-View'], function (requi
                  */
                 getRelationshipIndexContainer: function (relationship_index) {
                     var $el = this.$el || $(this.el);
-                    return $el.children('.relationship-container[data-relationship_index="' + relationship_index + '"]')[0] || null;
+                    return $el.children('.relationship_index[data-relationship_index="' + relationship_index + '"]')[0] || null;
                 },
                 /**
                  * Set the value of an attribute for this View.

@@ -157,6 +157,8 @@ define(['require', 'Sm', 'Emitter', 'Sm-Abstraction-MapEntity', 'Sm-Abstraction-
             getEntityTypesArray:          function () {
                 return this.getEntityArray().map(function (item) {return item.getEntityType();});
             },
+
+            getViewType: function () {return Sm.Abstraction.Views.RelationshipView},
 //
             save:                         function () {
                 var url  = Sm.urls.api.generate('save', this);
@@ -210,6 +212,9 @@ define(['require', 'Sm', 'Emitter', 'Sm-Abstraction-MapEntity', 'Sm-Abstraction-
             toJSON:                       function () {return this.getAttributes()}
 //
         });
+    Sm.Abstraction.Relationship.getGarage = function () {
+        return new (Sm.Abstraction.Garage.extend());
+    };
     /**
      * Serves to initialize a relationship.
      *
@@ -221,17 +226,26 @@ define(['require', 'Sm', 'Emitter', 'Sm-Abstraction-MapEntity', 'Sm-Abstraction-
         return new Sm.Abstraction.Relationship(RelatedEntities, map);
     };
 
+    require(['Sm-Abstraction-Relationship-_template']);
+    Sm.Core.dependencies.on_load(['Abstraction_Relationship-_template'], function () {
+        Sm.Abstraction.Relationship.getGarage = function () {
+            return new (Sm.Abstraction.Garage.extend({template_object: Sm.Abstraction.Relationship.templates._template}))
+        };
+    }, 'Abstraction_Relationship-Garage');
     /**
      * Make sure Relationships are Identifiable
      */
     Sm.Core.dependencies.on_load(['Core_Identifier'], function () {
         Sm.Core.Util.mixin(Sm.Core.Identifier.Identifiable, Sm.Abstraction.Relationship);
     }, 'Abstraction_Relationship');
-
     /**
      * Make the Relationship Editable
      */
     Sm.Core.dependencies.on_load(['Abstraction-Editable'], function () {
         Sm.Core.Util.mixin(Sm.Abstraction.Editable, Sm.Abstraction.Relationship)
     }, 'Abstraction_Relationship:Editable');
+    require(['Sm-Abstraction-Views-RelationshipView']);
+    Sm.Core.dependencies.on_load(['Abstraction_Views', 'Abstraction-Views-RelationshipView'], function () {
+        Sm.Core.Util.mixin(Sm.Abstraction.Views.Viewable, Sm.Abstraction.Relationship);
+    }, 'Abstraction_Relationship:Viewable');
 });

@@ -62,6 +62,6 @@ $s_content_location = XSS::escape($Section->content_location);
                 <div data-attribute="content" class="content"><?= $s_content ?></div>
             </div>
         <?php } ?>
-    <div data-ent_id="<?= $s_ent_id ?>" data-relationship_index="composition" class="relationship-container composition-container entity-container">{{o_composition}}</div>
-    <div data-ent_id="<?= $s_ent_id ?>" data-relationship_index="children" class="relationship-container children-container entity-container">{{o_children}}</div>
+    <div data-ent_id="<?= $s_ent_id ?>" data-relationship_index="composition" class="relationship_index composition-container entity-container">{{o_composition}}</div>
+    <div data-ent_id="<?= $s_ent_id ?>" data-relationship_index="children" class="relationship_index children-container entity-container">{{o_children}}</div>
 </section>

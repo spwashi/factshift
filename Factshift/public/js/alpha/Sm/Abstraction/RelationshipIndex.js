@@ -333,7 +333,21 @@ define(['require', 'Sm', 'Emitter', 'Sm-Core-Core'], function (require, Sm, Emit
                  * @return {number}
                  */
                 indexOf:                   function (Relationship, context_id) {
-                    return this._initContext(context_id)._list.indexOf(this.getRelationshipIdentifier(Relationship));
+                    var identifier;
+                    if (Relationship && typeof Relationship === "object" && Relationship.getObjectType && Relationship.getObjectType()) {
+                        identifier = Relationship.getR_ID();
+                    } else {
+                        identifier = this.getRelationshipIdentifier(Relationship);
+                    }
+                    var list = this._initContext(context_id)._list;
+                    return list.indexOf(identifier);
+                },
+                getItem:                   function (index, context_id) {
+                    var context = this._initContext(context_id);
+                    var list    = context._list;
+                    var items   = context.items;
+                    if (index > -1 && index < list.length) return items[list[index]] || null;
+                    return null;
                 },
                 /**
                  * Change the position of a Relationship in a certain RelationshipContext
@@ -360,11 +374,20 @@ define(['require', 'Sm', 'Emitter', 'Sm-Core-Core'], function (require, Sm, Emit
                 fetch:   function () {},
                 toJSON:  function () {}
             });
-
+    Sm.Abstraction.RelationshipIndex.getGarage = function () {
+        return new (Sm.Abstraction.Garage.extend());
+    };
     Sm.Core.dependencies.on_load(['Abstraction_RelationshipIndex', 'Abstraction_Relationship'], ':Relationships');
     Sm.Core.dependencies.on_load(['Core_Identifier'], function () {
         Sm.Core.Util.mixin(Sm.Core.Identifier.Identifiable, Sm.Abstraction.RelationshipIndex);
     }, 'Abstraction_RelationshipIndex');
+
+    require(['Sm-Abstraction-RelationshipIndex-_template']);
+    Sm.Core.dependencies.on_load(['Abstraction_RelationshipIndex-_template'], function () {
+        Sm.Abstraction.RelationshipIndex.getGarage = function () {
+            return new (Sm.Abstraction.Garage.extend({template_object: Sm.Abstraction.RelationshipIndex.templates._template}))
+        };
+    }, 'Abstraction_RelationshipIndex-Garage');
 
     require(['Sm-Abstraction-Views-RelationshipIndexView']);
     Sm.Core.dependencies.on_load(['Abstraction_Views', 'Abstraction-Views-RelationshipIndexView'], function () {

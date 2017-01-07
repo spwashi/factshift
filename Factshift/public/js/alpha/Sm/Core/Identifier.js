@@ -145,6 +145,7 @@ require(['require', 'Class', 'Sm', 'Sm-Core-Util'], function (require, Class, Sm
             if (Sm.Core.Meta.isEntId(r_id)) identification.ent_id = r_id;
             else identification.r_id = r_id;
         }
+        if (!identification) return null;
         identification = Sm.Core.Identifier.normalize_identifier(identification, identification.entity_type || false) || {};
         var ent_id     = identification.ent_id || false;
         r_id           = r_id || identification.r_id;

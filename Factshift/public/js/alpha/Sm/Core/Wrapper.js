@@ -54,7 +54,7 @@ require(['require', 'Sm', 'Emitter', 'jquery'], function (require, Sm, Emitter, 
                 };
                 return Sm.Core.dependencies.on_load('Entities-' + this.entity_type + '-Entity', when_loaded);
             },
-            hydrate_element: function (el) {
+            hydrate_element: function (el, ReferencePoint) {
                 var Self      = this;
                 var data_set  = el.dataset || {id: null, ent_id: null, model: null};
                 var raw_model = data_set.model || "null";
@@ -67,7 +67,7 @@ require(['require', 'Sm', 'Emitter', 'jquery'], function (require, Sm, Emitter, 
                         var Entity = _model ? Self.initEntity({entity: _model}) : Self.initEntity(data_set);
                         if (!Entity) return Promise.reject("Could not initialize element without an entity");
                         try {
-                            var View = Entity.convertToView(el);
+                            var View = Entity.getView(ReferencePoint) || Entity.convertToView(el);
                             Entity.addView(View);
                             View.refresh();
                             return View;

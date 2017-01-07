@@ -73,7 +73,7 @@ $urls['view'] = Factshift::_()->IoC->router->generate_url('page_view', [ $Page->
             <h1 class="title">{{title}}</h1>
             <h2 class="subtitle">{{subtitle}}</h2>
         </div>
-        <ul class="dimensions-container no-selection entity-container relationship-container lst">
+        <ul class="dimensions-container no-selection entity-container relationship_index lst">
             <?php foreach ($Page->relationships->dimensions->getItems('dimension') as $Dimension): ?>
                 <?php
                 /**@var Dimension $Dimension */
@@ -137,7 +137,7 @@ $urls['view'] = Factshift::_()->IoC->router->generate_url('page_view', [ $Page->
         <?php endif ?>
     </section>
     <div class="content">
-        <div class="relationship-container sections-container entity-container" data-relationship_index="sections" data-ent_id="<?= $CurrentDimension ? $CurrentDimension->ent_id : null ?>" data-id="<?= $CurrentDimension ? $CurrentDimension->id : null ?>">
+        <div class="relationship_index sections-container entity-container" data-relationship_index="sections" data-ent_id="<?= $CurrentDimension ? $CurrentDimension->ent_id : null ?>" data-id="<?= $CurrentDimension ? $CurrentDimension->id : null ?>">
             <?= $section_string ?>
         </div>
     </div>

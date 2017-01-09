@@ -22,15 +22,16 @@ require.config(
             Sm:      ALPHA_URL + "Sm",
 
             /////////////////
-            "Sm-init":            ALPHA_URL + "Sm/init",
-            "Sm-Core-Core":       ALPHA_URL + "Sm/Core/Core",
-            "Sm-Core-Identifier": ALPHA_URL + "Sm/Core/Identifier",
-            "Sm-Core-Meta":       ALPHA_URL + "Sm/Core/Meta",
-            "Sm-Core-SmEntity":   ALPHA_URL + "Sm/Core/SmEntity",
-            "Sm-Core-Util":       ALPHA_URL + "Sm/Core/Util",
-            "Sm-Core-Wrapper":    ALPHA_URL + "Sm/Core/Wrapper",
-            "Sm-urls-api":        ALPHA_URL + "Sm/urls/api",
-            "Sm-urls-main":       ALPHA_URL + "Sm/urls/main",
+            "Sm-init":                ALPHA_URL + "Sm/init",
+            "Sm-Core-Core":           ALPHA_URL + "Sm/Core/Core",
+            "Sm-Core-Identifier":     ALPHA_URL + "Sm/Core/Identifier",
+            "Sm-Core-ReferencePoint": ALPHA_URL + "Sm/Core/ReferencePoint",
+            "Sm-Core-Meta":           ALPHA_URL + "Sm/Core/Meta",
+            "Sm-Core-SmEntity":       ALPHA_URL + "Sm/Core/SmEntity",
+            "Sm-Core-Util":           ALPHA_URL + "Sm/Core/Util",
+            "Sm-Core-Wrapper":        ALPHA_URL + "Sm/Core/Wrapper",
+            "Sm-urls-api":            ALPHA_URL + "Sm/urls/api",
+            "Sm-urls-main":           ALPHA_URL + "Sm/urls/main",
 
             "Sm-Abstraction-Entity":                      ALPHA_URL + "Sm/Abstraction/Entity",
             "Sm-Abstraction-Emitter":                     ALPHA_URL + "Sm/Abstraction/Emitter",
@@ -45,6 +46,7 @@ require.config(
 
             "Sm-Abstraction-Editable":    ALPHA_URL + "Sm/Abstraction/Editable",
             "Sm-Abstraction-Stateful":    ALPHA_URL + "Sm/Abstraction/Stateful",
+            "Sm-Abstraction-Selector":    ALPHA_URL + "Sm/Abstraction/Selector",
             "Sm-Abstraction-Permittable": ALPHA_URL + "Sm/Abstraction/Permittable",
 
             "Sm-Abstraction-Views-View":                  ALPHA_URL + "Sm/Abstraction/Views/View",

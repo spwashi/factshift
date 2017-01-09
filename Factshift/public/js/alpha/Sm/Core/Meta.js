@@ -149,10 +149,12 @@ require(['require', 'Emitter', 'Sm', 'underscore'], function (require, Emitter, 
              * Construct and return a new RelationshipIndex
              * @param {Sm.Abstraction.Entity}   Entity
              * @param {string}                  relationship_index
-             * @return {*}
+             * @param server_RelationshipIndex
+             * @return {Sm.Abstraction.RelationshipIndex}
              */
-            initRelationshipIndex:  function (Entity, relationship_index) {
-                var is_reciprocal = relationship_index.indexOf('reciprocal_') > -1;
+            initRelationshipIndex:  function (Entity, relationship_index, server_RelationshipIndex) {
+                var is_reciprocal        = relationship_index.indexOf('reciprocal_') > -1;
+                server_RelationshipIndex = server_RelationshipIndex || {};
                 //remove 'reciprocal_' from the relationship_index
                 is_reciprocal && (relationship_index = relationship_index.replace('reciprocal_', ''));
                 var entity_info = this._config;
@@ -167,10 +169,19 @@ require(['require', 'Emitter', 'Sm', 'underscore'], function (require, Emitter, 
                     is_reciprocal:     is_reciprocal,
                     relationship_info: relationships_info[relationship_index]
                 };
-                return new Sm.Abstraction.RelationshipIndex(
+
+                var context_id = server_RelationshipIndex.context_id || null;
+
+                var RelationshipIndex = new Sm.Abstraction.RelationshipIndex(
                     Entity.getR_ID(),
                     relationship_index,
                     details);
+                var list              = server_RelationshipIndex.list || {};
+                for (var c_id in list) {
+                    if (!list.hasOwnProperty(c_id)) continue;
+                    RelationshipIndex.initRelationshipContext(c_id)
+                }
+                return RelationshipIndex;
             },
             /**
              * Delegates initializing the Entity to the proper Wrapper

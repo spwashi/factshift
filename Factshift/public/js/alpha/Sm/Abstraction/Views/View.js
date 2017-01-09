@@ -54,7 +54,7 @@ define(['require', 'Sm', 'backbone', 'Sm-Abstraction-Stateful', 'Sm-Abstraction-
              * @param {Sm.Core.Identifier.Identifiable|HTMLElement=}         ReferencePoint
              */
             setReferencePoint:  function (ReferencePoint) {
-                this.ReferencePoint = ReferencePoint;
+                this.ReferencePoint = Sm.Core.ReferencePoint.init(ReferencePoint);
             },
             /**
              * Get the ReferencePoint in which an element exists
@@ -254,7 +254,7 @@ define(['require', 'Sm', 'backbone', 'Sm-Abstraction-Stateful', 'Sm-Abstraction-
                 if (cid == view_identifier) return Views[cid];
                 else if (view_identifier === Views[cid].el) return Views[cid];
                 else if (Views[cid] === view_identifier) return Views[cid];
-                else if (Views[cid].getReferencePoint() == view_identifier) return Views[cid];
+                else if (Sm.Core.ReferencePoint.compare(Views[cid].getReferencePoint(), view_identifier)) return Views[cid];
             }
             return false;
         },
@@ -280,6 +280,17 @@ define(['require', 'Sm', 'backbone', 'Sm-Abstraction-Stateful', 'Sm-Abstraction-
             return new ViewType(view_init);
         }
     };
+
+    Sm.Core.dependencies.on_load(['Core-ReferencePoint'], function () {
+        Sm.Core.ReferencePoint.register_object_type_handler(function (item) {return item instanceof Sm.Abstraction.Views.View;}, function (item, identification_obj) {
+            identification_obj.r_id = item.cid;
+        });
+        Sm.Core.ReferencePoint.register_object_type_updater('HTMLElement', function (ReferencePoint) {
+            var Resource = ReferencePoint.getResource();
+            if (Resource.FactshiftView) return Sm.Core.ReferencePoint.init(Resource.FactshiftView);
+            return ReferencePoint;
+        });
+    });
 
     Sm.Core.dependencies.on_load(['Core_Identifier', 'Abstraction_Stateful', 'Abstraction_Permittable'], function () {
         Sm.Core.Util.mixin(Sm.Core.Identifier.Identifiable, Sm.Abstraction.Views.View);

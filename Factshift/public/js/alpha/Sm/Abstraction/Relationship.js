@@ -160,7 +160,7 @@ define(['require', 'Sm', 'Emitter', 'Sm-Abstraction-MapEntity', 'Sm-Abstraction-
 
             getViewType: function () {return Sm.Abstraction.Views.RelationshipView},
 //
-            save:                         function () {
+            save:        function () {
                 var url  = Sm.urls.api.generate('save', this);
                 var data = JSON.stringify(this);
                 var Self = this;
@@ -182,7 +182,7 @@ define(['require', 'Sm', 'Emitter', 'Sm-Abstraction-MapEntity', 'Sm-Abstraction-
             /**
              * Convert this Relationship to a URL
              */
-            url:                          function () {
+            url:         function () {
                 var EntityArr  = this.getEntityArray();
                 var url        = '';
                 var rel_index  = false;
@@ -209,7 +209,7 @@ define(['require', 'Sm', 'Emitter', 'Sm-Abstraction-MapEntity', 'Sm-Abstraction-
                 }
                 return url;
             },
-            toJSON:                       function () {return this.getAttributes()}
+            toJSON:      function () {return this.getAttributes()}
 //
         });
     Sm.Abstraction.Relationship.getGarage = function () {
@@ -244,8 +244,15 @@ define(['require', 'Sm', 'Emitter', 'Sm-Abstraction-MapEntity', 'Sm-Abstraction-
     Sm.Core.dependencies.on_load(['Abstraction-Editable'], function () {
         Sm.Core.Util.mixin(Sm.Abstraction.Editable, Sm.Abstraction.Relationship)
     }, 'Abstraction_Relationship:Editable');
+
+    require(['Sm-Abstraction-Selector']);
+    Sm.Core.dependencies.on_load(['Abstraction-Stateful', 'Abstraction-Selector'], function () {
+        Sm.Core.Util.mixin(Sm.Abstraction.Selector, Sm.Abstraction.Relationship, false, true);
+        Sm.Core.Util.mixin(Sm.Abstraction.Stateful, Sm.Abstraction.Relationship);
+    }, 'Relationship:Selector');
+
     require(['Sm-Abstraction-Views-RelationshipView']);
-    Sm.Core.dependencies.on_load(['Abstraction_Views', 'Abstraction-Views-RelationshipView'], function () {
+    Sm.Core.dependencies.on_load(['Abstraction_Views', 'Abstraction-Views-RelationshipView', 'Relationship:Selector'], function () {
         Sm.Core.Util.mixin(Sm.Abstraction.Views.Viewable, Sm.Abstraction.Relationship);
     }, 'Abstraction_Relationship:Viewable');
 });

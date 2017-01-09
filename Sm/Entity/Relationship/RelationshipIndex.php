@@ -278,12 +278,12 @@ class RelationshipIndex extends Iterator implements \JsonSerializable {
             '_object_type' => 'RelationshipIndex',
             '_entity_type' => $this->Entity ? $this->Entity->getEntityType() : null,
             '_meta'        => [
-                'list'               => $this->item_identifiers,
                 'index_singular'     => $this->index_singular,
                 'relationship_index' => $this->relationship_index,
             ],
-            
-            'items' => array_map(function ($item) use ($selfEntity) {
+            'context_id'   => $this->getContextId(),
+            'list'         => $this->item_identifiers,
+            'items'        => array_map(function ($item) use ($selfEntity) {
                 return $item instanceof Entity ? $item->jsonSerializeCompact($selfEntity) : false;
             }, $this->items),
         ];

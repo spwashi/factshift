@@ -23,7 +23,7 @@ define(['require', 'Sm', 'Sm-Abstraction-Views-View', 'Sm-Abstraction-Action-Rep
                 },
                 _click:                           function (e) {
                     var result = Sm.Abstraction.Views.EntityView.prototype._click.apply(this, arguments);
-                    if (result) {
+                    if (result && this.display_type === 'full') {
                         this.focus();
                         e.stopPropagation();
                         return null;
@@ -39,24 +39,11 @@ define(['require', 'Sm', 'Sm-Abstraction-Views-View', 'Sm-Abstraction-Action-Rep
                 },
                 focus:                            function () {
                     this.$el.addClass('focused');
-                    OneView = this;
-                    TwoView = TwoView || this;
-                    Sm.Entities.Section.Wrapper.focusView(this);
-                    var Entity = this.getResource();
-                    if (Entity) {
-                        var Micros     = Entity.getRelationshipIndex('micros');
-                        var MicroItems = Micros.getItems();
-                        for (var section_r_id in MicroItems) {
-                            if (!MicroItems.hasOwnProperty(section_r_id)) continue;
-                            /** @type {Sm.Abstraction.Relationship} Micro */
-                            var Micro       = MicroItems[section_r_id];
-                            var OtherEntity = Sm.Core.Identifier.identify(section_r_id);
-                        }
-                    }
+                    Sm.Entities.Section.Wrapper.focus(this);
                     return this;
                 },
                 blur:                             function () {
-                    Sm.Entities.Section.Wrapper.blurView(this);
+                    Sm.Entities.Section.Wrapper.blur(this);
                     this.$el.removeClass('focused');
                     return this;
                 }

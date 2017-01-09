@@ -7,10 +7,11 @@ require(['require', 'Class', 'Sm', 'Sm-Core-Util'], function (require, Class, Sm
     /**
      * @typedef {{}} identification_object
      * @property id
-     * @property {Sm.ent_id}           ent_id
-     * @property {Sm.object_type}      object_type
-     * @property {entity_type}         entity_type
-     * @property {Sm.r_id|Sm.ent_id}   r_id
+     * @property {Sm.ent_id}                                ent_id
+     * @property {Sm.object_type}                           object_type
+     * @property {entity_type}                              entity_type
+     * @property {Sm.Core.Identifier.Identifiable}          Resource
+     * @property {Sm.r_id|Sm.ent_id}                        r_id
      */
 
     /**
@@ -64,11 +65,11 @@ require(['require', 'Class', 'Sm', 'Sm-Core-Util'], function (require, Class, Sm
              * @param {identification_object}    identification_object
              */
             refresh: function (identification_object) {
-                var Resource          = this.Resource;
+                this.Resource         = this.Resource || identification_object.Resource;
                 identification_object = identification_object || {};
                 /** @type {Sm.ent_id} this._ent_id */
-                this._ent_id = this._ent_id || identification_object.ent_id || Resource.ent_id || false;
-                this._id          = this._id || parseInt(identification_object.id || Resource.id) || false;
+                this._ent_id = this._ent_id || identification_object.ent_id || false;
+                this._id          = this._id || parseInt(identification_object.id) || false;
                 this._object_type = this._object_type || identification_object.object_type || false;
                 this.entity_type  = this.entity_type || identification_object.entity_type;
                 if (!this.entity_type && this._ent_id && Sm.Core.dependencies.is_loaded('Core_Meta')) {
@@ -95,6 +96,7 @@ require(['require', 'Class', 'Sm', 'Sm-Core-Util'], function (require, Class, Sm
             getEntityType: function () { return this.entity_type; },
             getId:         function () { return this._id; },
             getTypedId:    function () { return this._typed_id; },
+            getR_ID:       function () { return this._r_id; },
             getEntId:      function () { return this._ent_id; }
         });
     /**
@@ -230,7 +232,7 @@ require(['require', 'Class', 'Sm', 'Sm-Core-Util'], function (require, Class, Sm
          */
         getR_ID:        function () {
             if (!this.Identifier) return false;
-            return this.Identifier._r_id;
+            return this.Identifier.getR_ID();
         },
         /**
          * Get the ent_id of whatever's being identified

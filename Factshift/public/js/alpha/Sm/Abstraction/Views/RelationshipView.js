@@ -9,8 +9,8 @@ define(['require', 'Sm', 'jquery', 'Emitter', 'Sm-Abstraction-Views-View', 'Sm-A
          */
         Sm.Abstraction.Views.RelationshipView = Sm.Abstraction.Views.View.extend(
             {
-                object_type:       'RelationshipView',
-                initialize:        function (settings) {
+                object_type:     'RelationshipView',
+                initialize:      function (settings) {
                     /** @type {Sm.Abstraction.Relationship}  */
                     this.elements = {items: null};
                     this.ActiveViews = settings.ActiveViews || [];
@@ -22,18 +22,45 @@ define(['require', 'Sm', 'jquery', 'Emitter', 'Sm-Abstraction-Views-View', 'Sm-A
                     Resource.on('update', function (changed) {Self.update(changed);});
                     Resource.on('destroy', function () {Self.destroy();});
                 },
-                setReferencePoint: function (ReferencePoint) {
-                    if (!ReferencePoint || !(typeof ReferencePoint === "object") || !ReferencePoint.isIdentifiable) {
-                        var Resource = this.getResource();
-                        var res;
-                        if (res = this.setReferencePoint(Resource)) return res;
-                    }
-                    this.ReferencePoint = null;
+                events:          {
+                    click: '_click'
                 },
-                setActiveViews:    function (Views) {
+                _click:          function (e) {
+                    var target            = e.target;
+                    var $target           = $(target);
+                    var _is_button        = $target.hasClass('button');
+                    var is_button_of_type = function (type) {
+                        return _is_button && $target.hasClass(type);
+                    };
+                    var Relationship      = this.getResource();
+
+                    if (is_button_of_type('edit')) {
+                        Relationship && Relationship.isEditable && Relationship.prompt_edit();
+                        e.stopPropagation();
+                        return null;
+                    } else if (is_button_of_type('destroy')) {
+                        Relationship && Relationship.isDestroyable && Relationship.prompt_destroy();
+                        e.stopPropagation();
+                        return null;
+                    }
+                    this.focus();
+                    e.stopPropagation();
+                    return null;
+                },
+                focus:           function () {
+                    this.$el.addClass('focused');
+                    Sm.Abstraction.Relationship.focus(this);
+                    return this;
+                },
+                blur:            function () {
+                    Sm.Abstraction.Relationship.blur(this);
+                    this.$el.removeClass('focused');
+                    return this;
+                },
+                setActiveViews:  function (Views) {
                     this.ActiveViews = Views;
                 },
-                getItemElements:   function () {
+                getItemElements: function () {
                     return this.$el.children();
                 },
 

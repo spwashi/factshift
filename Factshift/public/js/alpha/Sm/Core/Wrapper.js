@@ -131,7 +131,9 @@ require(['require', 'Sm', 'Emitter', 'jquery'], function (require, Sm, Emitter, 
             removeEntityStatus:   function (entity, status) {Sm.CONFIG.DEBUG && console.log('implement')}
 
         });
-    Sm.Core.dependencies.on_load(['Abstraction_Stateful'], function () {
+    require(['Sm-Abstraction-Selector']);
+    Sm.Core.dependencies.on_load(['Abstraction-Stateful', 'Abstraction-Selector'], function () {
+        Sm.Core.Util.mixin(Sm.Abstraction.Selector, Sm.Core.Wrapper);
         Sm.Core.Util.mixin(Sm.Abstraction.Stateful, Sm.Core.Wrapper);
     }, 'Core_Wrapper');
 });

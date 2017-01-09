@@ -216,7 +216,7 @@ define(['require', 'Sm', 'Emitter', 'Sm-Core-Core'], function (require, Sm, Emit
                  * @return {Sm.r_id}
                  */
                 getDefaultContextId:    function () {
-                    return '-';
+                    return Sm.Abstraction.RelationshipIndex.getDefaultContextId();
                 },
                 /**
                  * Iterate through an object and return an array of its elements in order based on the _list
@@ -228,7 +228,7 @@ define(['require', 'Sm', 'Emitter', 'Sm-Core-Core'], function (require, Sm, Emit
                     if (!object || !(typeof object === "object")) return [];
                     var ret_arr             = [];
                     context_id              = context_id || this.getDefaultContextId();
-                    var RelationshipContext = this._initContext(context_id);
+                    var RelationshipContext = this.initRelationshipContext(context_id);
                     var list                = RelationshipContext._list;
                     for (var i = 0; i < list.length; i++) {
                         var identifier = list[i];
@@ -243,22 +243,27 @@ define(['require', 'Sm', 'Emitter', 'Sm-Core-Core'], function (require, Sm, Emit
                  * @return {{}}
                  */
                 getItems:               function (context_id) {
-                    var RelationshipContext = this._initContext(context_id);
+                    var RelationshipContext = this.initRelationshipContext(context_id);
                     return RelationshipContext.items;
                 },
                 count:                  function (context_id) {
-                    var context = this._initContext(context_id);
+                    var context = this.initRelationshipContext(context_id);
                     return context._list.length;
                 },
 
                 /**
                  * Initialize a Context object for us to store relationships in
                  * @param {Sm.r_id} context_id
+                 * @param {Array=}  list
                  * @return {Sm.Abstraction.RelationshipIndex.RelationshipContext}
-                 * @private
                  */
-                _initContext: function (context_id) {
+                initRelationshipContext: function (context_id, list) {
                     context_id = context_id || this.getDefaultContextId();
+                    var Identifier;
+                    Identifier = Sm.Core.Identifier.retrieve(context_id) || null;
+                    if (Identifier) context_id = Identifier.getR_ID();
+                    var Context = Sm.Abstraction.RelationshipIndex.getContext(context_id);
+                    context_id  = Context.getR_ID();
                     if (this.RelationshipContextContainer[context_id]) return this.RelationshipContextContainer[context_id];
                     /**
                      * @typedef {{}} Sm.Abstraction.RelationshipIndex.RelationshipContext
@@ -267,7 +272,7 @@ define(['require', 'Sm', 'Emitter', 'Sm-Core-Core'], function (require, Sm, Emit
                      */
 
                     /** @type {Sm.Abstraction.RelationshipIndex.RelationshipContext} context */
-                    var RelationshipContext = this.RelationshipContextContainer[context_id] = {_list: [], items: {}};
+                    var RelationshipContext = this.RelationshipContextContainer[context_id] = {_list: list || [], items: {}};
 
                     // If the context is the default context, set this _list and items as that of the relationship context
                     if (context_id == this.getDefaultContextId()) {
@@ -294,7 +299,7 @@ define(['require', 'Sm', 'Emitter', 'Sm-Core-Core'], function (require, Sm, Emit
                      * @type {any}
                      */
                     var index               = this.getRelationshipIdentifier(Relationship);
-                    var RelationshipContext = this._initContext(context_id);
+                    var RelationshipContext = this.initRelationshipContext(context_id);
                     if (this.indexOf(Relationship) > -1) return this.moveRelationship(Relationship, position, context_id);
                     RelationshipContext.items[index] = Relationship;
                     var list                         = RelationshipContext._list;
@@ -310,7 +315,7 @@ define(['require', 'Sm', 'Emitter', 'Sm-Core-Core'], function (require, Sm, Emit
                  * @return {boolean}
                  */
                 removeRelationship:        function (Relationship, context_id) {
-                    var context = this._initContext(context_id);
+                    var context = this.initRelationshipContext(context_id);
                     var index   = this.indexOf(Relationship, context_id);
                     if (index < 0) return false;
                     context._list.splice(index, 1);
@@ -339,11 +344,11 @@ define(['require', 'Sm', 'Emitter', 'Sm-Core-Core'], function (require, Sm, Emit
                     } else {
                         identifier = this.getRelationshipIdentifier(Relationship);
                     }
-                    var list = this._initContext(context_id)._list;
+                    var list = this.initRelationshipContext(context_id)._list;
                     return list.indexOf(identifier);
                 },
                 getItem:                   function (index, context_id) {
-                    var context = this._initContext(context_id);
+                    var context = this.initRelationshipContext(context_id);
                     var list    = context._list;
                     var items   = context.items;
                     if (index > -1 && index < list.length) return items[list[index]] || null;
@@ -357,7 +362,7 @@ define(['require', 'Sm', 'Emitter', 'Sm-Core-Core'], function (require, Sm, Emit
                  * @return {*}
                  */
                 moveRelationship:          function (Relationship, position, context_id) {
-                    var RelationshipContext = this._initContext(context_id);
+                    var RelationshipContext = this.initRelationshipContext(context_id);
                     var index               = this.indexOf(Relationship, context_id);
                     if (index < 0) return this.addRelationship(Relationship, position, context_id);
                     var identifier = RelationshipContext._list[index];
@@ -374,6 +379,23 @@ define(['require', 'Sm', 'Emitter', 'Sm-Core-Core'], function (require, Sm, Emit
                 fetch:   function () {},
                 toJSON:  function () {}
             });
+
+    Sm.Abstraction.RelationshipIndex.getDefaultContextId = function () {
+        return '-';
+    };
+    Sm.Abstraction.RelationshipIndex.getContext          = function (context_id) {
+        context_id = context_id || Sm.Abstraction.RelationshipIndex.getDefaultContextId();
+        if (context_id && context_id.indexOf('Context:') < 0) context_id = 'Context:' + context_id;
+        var resource_id = context_id.replace('Context:', '');
+        var Context     = Sm.Core.Identifier.retrieve(context_id);
+        if (!Context) {
+            var Resource = Sm.Core.Identifier.identify(resource_id) || null;
+            Context      = new Sm.Core.Identifier(Resource, {r_id: context_id});
+            Context.refresh({Resource: Resource})
+        }
+        return Context;
+    };
+
     Sm.Abstraction.RelationshipIndex.getGarage = function () {
         return new (Sm.Abstraction.Garage.extend());
     };

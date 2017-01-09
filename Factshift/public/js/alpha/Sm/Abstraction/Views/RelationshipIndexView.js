@@ -9,33 +9,37 @@ define(['require', 'Sm', 'jquery', 'Emitter', 'Sm-Abstraction-Views-View', 'Sm-A
          */
         Sm.Abstraction.Views.RelationshipIndexView = Sm.Abstraction.Views.View.extend(
             {
-                object_type:       'RelationshipIndexView',
-                initialize:        function (settings) {
+                object_type:     'RelationshipIndexView',
+                initialize:      function (settings) {
                     /** @type {Sm.Abstraction.RelationshipIndex}  */
                     this.elements = {items: null};
                     Sm.Abstraction.Views.View.prototype.initialize.apply(this, arguments);
 
                     var RelationshipIndex = this.getResource();
+                    this.context_id       = settings.context_id || RelationshipIndex.getDefaultContextId();
                     var Self              = this;
 
                     RelationshipIndex.on('add_Relationship', function (Relationship, position, context_id) {
                         Self.initRelatedElements();
                     })
                 },
-                setReferencePoint: function (ReferencePoint) {
-                    if (!ReferencePoint || !(typeof ReferencePoint === "object") || !ReferencePoint.isIdentifiable) {
-                        var Resource = this.getResource();
-                        var res;
-                        if (res = this.setReferencePoint(Resource)) return res;
-                    }
-                    this.ReferencePoint = null;
-                },
-                getItemElements:   function () {
+                getItemElements: function () {
                     return this.$el.children();
                 },
 
-                getGarage: function () {
+                getGarage:    function () {
                     return Sm.Abstraction.RelationshipIndex.getGarage();
+                },
+                getContext:   function () {
+                    return Sm.Abstraction.RelationshipIndex.getContext(this.context_id);
+                },
+                getContextId: function () {
+                    var Context = this.getContext();
+                    return Context ? Context.getR_ID() : null;
+                },
+                setContext:   function (context_id) {
+                    this.context_id = context_id;
+                    return this;
                 },
 
                 /**
@@ -51,7 +55,7 @@ define(['require', 'Sm', 'jquery', 'Emitter', 'Sm-Abstraction-Views-View', 'Sm-A
                     var children                 = this.getItemElements();
                     var children_count           = children.length;
                     var RelationshipIndex        = this.getResource();
-                    var context_id               = null;
+                    var context_id               = this.getContextId();
                     var Self                     = this;
                     /**
                      * Callback to run when the entity_type of the element has been loaded
@@ -109,11 +113,8 @@ define(['require', 'Sm', 'jquery', 'Emitter', 'Sm-Abstraction-Views-View', 'Sm-A
                 },
                 _initNonexistentElements: function () {
                     var end_item_elements = this.elements.items = this.elements.items || {};
-                    var ReferencePoint = this.getReferencePoint();
-                    var reference_id   = ReferencePoint && ReferencePoint.getR_ID && ReferencePoint.getR_ID();
-
                     var RelationshipIndex = this.getResource();
-                    var related_items     = RelationshipIndex.getItems(reference_id || null);
+                    var related_items     = RelationshipIndex.getItems(this.getContextId());
                     var RelIndEntity      = RelationshipIndex.getResource();
                     var promise_array     = [];
                     /**
@@ -195,7 +196,6 @@ define(['require', 'Sm', 'jquery', 'Emitter', 'Sm-Abstraction-Views-View', 'Sm-A
                             View.setDisplayType(Self.display_type);
                             var Relationship     = ViewObject.Relationship;
                             var RelationshipView = Relationship.convertToView(null, Self);
-                            Sm.CONFIG.DEBUG && console.log(RelationshipView);
                             RelationshipView.setDisplayType(Self.display_type);
                             RelationshipView.setActiveViews([View]);
                             return RelationshipView.render();
@@ -211,8 +211,7 @@ define(['require', 'Sm', 'jquery', 'Emitter', 'Sm-Abstraction-Views-View', 'Sm-A
                                    return Self._initNonexistentElements();
                                })
                                .then(function () {
-                                   var ReferencePoint        = Self.getReferencePoint();
-                                   var context_id            = ReferencePoint && ReferencePoint.getR_ID && ReferencePoint.getR_ID();
+                                   var context_id            = Self.getContextId();
                                    var Views                 = RelationshipIndex.order_object(end_item_elements, context_id);
                                    var all_elements_rendered = [];
                                    for (var i = 0; i < Views.length; i++) {
@@ -240,5 +239,12 @@ define(['require', 'Sm', 'jquery', 'Emitter', 'Sm-Abstraction-Views-View', 'Sm-A
             });
 
         Emitter.mixin(Sm.Abstraction.Views.RelationshipIndexView.prototype);
+        Sm.Core.dependencies.on_load(['Core-ReferencePoint'], function () {
+            Sm.Core.ReferencePoint.register_object_type_handler(function (item) {
+                return item instanceof Sm.Abstraction.Views.RelationshipIndexView;
+            }, function (item, identification_obj) {
+                identification_obj.r_id = item.cid + '|' + item.getContextId();
+            });
+        });
     }, 'Abstraction-Views-RelationshipIndexView');
 });

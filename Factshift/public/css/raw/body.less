@@ -502,6 +502,20 @@ body > .row,
     }
 }
 
+.relationship {
+    > .button-control {
+        display  : none;
+        position : absolute;
+        right    : -37px;
+    }
+    &.focused {
+        border-left : thick solid @module_color_focus;
+        > .button-control {
+            display : block;
+        }
+    }
+}
+
 .description-container {
     border-top  : thick solid #ccc;
     padding-top : 5px;

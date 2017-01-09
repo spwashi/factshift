@@ -16,12 +16,13 @@ define(['jquery', 'Sm'], function ($, Sm) {
         arrayDiff:     function (arr, subtract_array) {
             return arr.filter(function (i) {return subtract_array.indexOf(i) < 0;});
         },
-        mixin:         function (mixin_proto, item, overwrite) {
+        mixin:         function (mixin_proto, item, overwrite, literal) {
             overwrite = !!overwrite;
             for (var property in mixin_proto) {
                 if (!mixin_proto.hasOwnProperty(property)) continue;
-                if (overwrite || !(property in item.prototype)) {
-                    item.prototype[property] = mixin_proto[property];
+                var actual_item = literal ? item : item.prototype;
+                if (overwrite || !(property in actual_item)) {
+                    actual_item[property] = mixin_proto[property];
                 }
             }
         },

@@ -877,6 +877,17 @@ body > .row,
 .concept.preview.factshift-concept.preview > .button-control {
   display: block;
 }
+.relationship > .button-control {
+  display: none;
+  position: absolute;
+  right: -37px;
+}
+.relationship.focused {
+  border-left: thick solid #307252;
+}
+.relationship.focused > .button-control {
+  display: block;
+}
 .description-container {
   border-top: thick solid #ccc;
   padding-top: 5px;

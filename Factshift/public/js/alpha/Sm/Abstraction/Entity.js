@@ -86,9 +86,9 @@ define(['require', 'Sm',
                 var when_relationship_index = function () {
                     for (var relationship_index in relationships) {
                         if (!relationships.hasOwnProperty(relationship_index)) continue;
-                        Self._initRelationshipIndex(relationship_index);
                         var server_RelationshipIndex = relationships[relationship_index];
-                        var items                    = server_RelationshipIndex.items || {};
+                        Self._initRelationshipIndex(relationship_index, server_RelationshipIndex);
+                        var items = server_RelationshipIndex.items || {};
                         for (var id in items) {
                             if (!items.hasOwnProperty(id)) continue;
                             /** @type {Object<string, Sm.json_entity>} OtherEntities */
@@ -151,14 +151,15 @@ define(['require', 'Sm',
              *
              * @param {string} relationship_index
              *
+             * @param server_RelationshipIndex
              * @return {Sm.Abstraction.RelationshipIndex}
              */
-            _initRelationshipIndex:        function (relationship_index) {
+            _initRelationshipIndex:        function (relationship_index, server_RelationshipIndex) {
                 // If the relationship exists, return it
                 if (this.RelationshipIndices[relationship_index]) return this.RelationshipIndices[relationship_index];
 
                 /** @type {Sm.Abstraction.RelationshipIndex} RelationshipIndex */
-                var RelationshipIndex                        = this.SmEntity.Meta.initRelationshipIndex(this, relationship_index);
+                var RelationshipIndex                        = this.SmEntity.Meta.initRelationshipIndex(this, relationship_index, server_RelationshipIndex);
                 // Whether or not this RelationshipIndex exists out of reciprocity
                 var isReciprocal                             = RelationshipIndex.isReciprocal();
                 this.RelationshipIndices[relationship_index] = RelationshipIndex;

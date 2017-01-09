@@ -134,6 +134,7 @@ class Entity extends Abstraction\Entity implements \JsonSerializable {
         if (!is_string($relationship_index)) return $reference_to_null;
         /** @var RelationshipIndex $RelIndex */
         $RelIndex = $this->relationships->$relationship_index;
+        if (!$RelIndex) return $reference_to_null;
         if ($RelIndex->checkUpToDate()) {
             if (is_callable($loop)) {
                 foreach ($RelIndex as $index => $item) {

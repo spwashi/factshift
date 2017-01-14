@@ -216,7 +216,6 @@ define(['require', 'Sm', 'Emitter', 'underscore', 'jquery', 'Sm-Core-Core', 'Sm-
                     data        = data.Resource || null;
                     entity_type = Sm.Core.Identifier.getEntityType(data);
                 }
-                Sm.CONFIG.DEBUG && console.log(entity_type);
                 var SmEntity = Sm.Core.Meta.getSmEntity(entity_type);
                 if (!SmEntity || !data) return Sm.Abstraction.templates._template;
                 var subtype = SmEntity.Meta.getEntitySubtype(data);

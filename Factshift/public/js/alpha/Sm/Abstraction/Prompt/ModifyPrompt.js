@@ -23,15 +23,12 @@ define(['require', 'Sm', 'Sm-Abstraction-Prompt-Prompt', 'Sm-Abstraction-Modal-M
 
                 _generateInnerHTML:   function (is_synchronous) {
                     var Resource       = this.getResource();
-                    var Garage         = Sm.Core.Identifier.getRootObjectAttribute(Resource, 'Garage') ||  (Sm.Abstraction.Garage);
+                    var Garage         = Sm.Core.Identifier.getRootObjectAttribute(Resource, 'Garage') || (Sm.Abstraction.Garage);
                     var ReferencePoint = this.getReferencePoint();
 
                     var outer = Garage.generate('modal_outer.' + this.action, {Resource: Resource, ReferencePoint: ReferencePoint}, {is_synchronous: is_synchronous});
                     var inner = Garage.generate('body.form', {Resource: Resource}, {is_synchronous: is_synchronous});
-                    if (!is_synchronous) {
-                        inner.then(function (i) {Sm.CONFIG.DEBUG && console.log(i);});
-                    }
-                    var html = Sm.Abstraction.Garage.replaceContentPlaceholder(outer, inner, is_synchronous);
+                    var html  = Sm.Abstraction.Garage.replaceContentPlaceholder(outer, inner, is_synchronous);
                     return html;
                 },
                 _keydown:             function (e) {

@@ -164,8 +164,9 @@ require(['require', 'Emitter', 'Sm', 'underscore'], function (require, Emitter, 
                     var relationships_info =
                             (is_reciprocal ? entity_info.reciprocal_relationships : entity_info.relationships);
 
-                    if (!relationships_info || !relationships_info[relationship_index]) Sm.CONFIG.DEBUG && console.log("Could not use " + relationship_index + ' to relate in ' + this.entity_type);
-                    else rel_index_details.relationship_info = relationships_info[relationship_index];
+                    if (relationships_info && relationships_info[relationship_index]) {
+                        rel_index_details.relationship_info = relationships_info[relationship_index];
+                    }
                 }
 
                 var RelationshipIndex = new Sm.Abstraction.RelationshipIndex(

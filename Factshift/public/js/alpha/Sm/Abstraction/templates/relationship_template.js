@@ -20,7 +20,6 @@ require(['require'], function (require) {
             },
             body_inner:     {
                 form: function (data, display_type, is_synchronous) {
-                    Sm.CONFIG.DEBUG && console.log(is_synchronous);
                     var Relationship = data.Resource || null;
                     if (!Relationship) throw new Sm.Exceptions.Error("Cannot edit resource!");
                     var Map = Relationship.getMap();

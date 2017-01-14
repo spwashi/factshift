@@ -1,7 +1,7 @@
 /**
  * Created by Sam Washington on 11/6/16.
  */
-require(['require', 'Class', 'Sm', 'Sm-Core-Util'], function (require, Class, Sm) {
+require(['require', 'Class', 'Sm', 'underscore', 'inflection', 'Sm-Core-Util'], function (require, Class, Sm, underscore) {
     var Util = Sm.Core.Util;
 
     /**
@@ -68,15 +68,22 @@ require(['require', 'Class', 'Sm', 'Sm-Core-Util'], function (require, Class, Sm
                 this.Resource         = this.Resource || identification_object.Resource;
                 identification_object = identification_object || {};
                 /** @type {Sm.ent_id} this._ent_id */
-                this._ent_id = this._ent_id || identification_object.ent_id || false;
-                this._id          = this._id || parseInt(identification_object.id) || false;
-                this._object_type = this._object_type || identification_object.object_type || false;
-                this.entity_type  = this.entity_type || identification_object.entity_type;
-                if (!this.entity_type && this._ent_id && Sm.Core.dependencies.is_loaded('Core_Meta')) {
-                    this.entity_type = Sm.Core.Meta.getEntityType(this._ent_id);
+                var ent_id            = this._ent_id || identification_object.ent_id || false;
+                var id                = this._id || parseInt(identification_object.id) || false;
+                var object_type       = this._object_type || identification_object.object_type || false;
+                var entity_type       = this.entity_type || identification_object.entity_type;
+
+                id && (this._id = id);
+                ent_id && (this._ent_id = ent_id);
+                object_type && (this._object_type = object_type);
+
+                if (!entity_type && ent_id && Sm.Core.dependencies.is_loaded('Core_Meta')) {
+                    entity_type = Sm.Core.Identifier.getEntityType(ent_id);
                 }
-                if (this.entity_type && this._id)
-                    this._typed_id = this._typed_id || (this.entity_type + '|' + this._id);
+
+                entity_type && (this.entity_type = entity_type);
+
+                if (entity_type && id) this._typed_id = this._typed_id || (this.entity_type + '|' + this._id);
                 this.register(this._ent_id).register(this._typed_id).register(this._r_id);
                 return this;
             },
@@ -92,12 +99,12 @@ require(['require', 'Class', 'Sm', 'Sm-Core-Util'], function (require, Class, Sm
             },
 
             getResource:   function () { return this.Resource || false; },
-            getObjectType: function () { return this._object_type; },
-            getEntityType: function () { return this.entity_type; },
-            getId:         function () { return this._id; },
-            getTypedId:    function () { return this._typed_id; },
-            getR_ID:       function () { return this._r_id; },
-            getEntId:      function () { return this._ent_id; }
+            getObjectType: function () { return this._object_type || null; },
+            getEntityType: function () { return this.entity_type || null; },
+            getId:         function () { return this._id || null; },
+            getTypedId:    function () { return this._typed_id || null; },
+            getR_ID:       function () { return this._r_id || null; },
+            getEntId:      function () { return this._ent_id || null; }
         });
     /**
      * An object that stores the various keys that can be used to uniquely identify an object
@@ -155,7 +162,7 @@ require(['require', 'Class', 'Sm', 'Sm-Core-Util'], function (require, Class, Sm
         if (ent_id && ent_id in IdRegistry) return IdRegistry[ent_id].refresh(identification);
         var id       = identification.id || false;
         id           = id ? parseInt(id) : false;
-        var type     = identification.entity_type || Sm.Core.Meta.getEntityType(ent_id) || '';
+        var type     = identification.entity_type || Sm.Core.Identifier.getEntityType(ent_id) || '';
         var typed_id = type && type.length && id ? type + '|' + id : null;
         if (typed_id && typed_id in IdRegistry) return IdRegistry[typed_id].refresh(identification);
     };
@@ -178,6 +185,55 @@ require(['require', 'Class', 'Sm', 'Sm-Core-Util'], function (require, Class, Sm
         if (object_type) object_type = ('' + object_type).charAt(0) + object_type.substr(1).replace(/[aeiou]/ig, '') + '|';
         return object_type + Util.randomString(15);
     };
+
+    Sm.Core.Identifier.getRootObject          = function (item) {
+        if (!item) return null;
+        if (Sm.Core.dependencies.is_loaded('Core-Meta')) {
+            var SmEntity = Sm.Core.Meta.getSmEntity(item);
+            if (SmEntity) return SmEntity;
+        }
+        var object_type;
+        if (typeof item === "string") object_type = item;
+        else if (typeof  item === "object" && item.isIdentifiable) {
+            if (item.getRootObject) return item.getRootObject();
+            object_type = item.getObjectType();
+        }
+
+        if (!object_type) return null;
+        if (object_type in Sm.Abstraction) return Sm.Abstraction[object_type];
+        else if (object_type in Sm.Core) return Sm.Core[object_type];
+        return null;
+    };
+    Sm.Core.Identifier.getRootObjectAttribute = function (item, component, only_existent) {
+        if (!item) return null;
+        if (typeof  item === "object") {
+            var getter = 'get' + component;
+            if (typeof item[getter] === "function") return item[getter]();
+        }
+        var RootObject = Sm.Core.Identifier.getRootObject(item);
+        if (!RootObject) return null;
+        if (RootObject[component]) return RootObject[component];
+        return !only_existent ? (Sm.Core.Identifier.getRootObject(component) || null) : null;
+    };
+    Sm.Core.Identifier.getEntityType          = function (item) {
+        var entity_type;
+        if (item && typeof item === "object") {
+            if (item.isIdentifiable) {
+                var tmp;
+                if (tmp = item.getEntityType()) entity_type = tmp;
+                else if (tmp = item.getEntId()) entity_type = tmp;
+            } else {
+                if (!!item.entity) return Sm.Core.Identifier.getEntityType(item.entity);
+                else if (item._entity_type) entity_type = item._entity_type;
+                else if (item.entity_type)  entity_type = item.entity_type;
+            }
+        } else if (typeof item === "string") {
+            if (!Sm.Entities[item]) entity_type = underscore(underscore.titleize(item.replace('_id', ''))).singularize();
+            else entity_type = item;
+        } else return false;
+        return entity_type;
+    };
+
     /**
      * An object that has a registered identity
      * @class Sm.Core.Identifier.Identifiable

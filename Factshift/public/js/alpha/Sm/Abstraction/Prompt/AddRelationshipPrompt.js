@@ -21,9 +21,40 @@ define(['require', 'Sm', 'jquery', 'Sm-Abstraction-Prompt-Prompt', 'Sm-Abstracti
                     this.relationship_index = null;
                     return ret;
                 },
-                _generateInnerHTML:           function (is_synchronous) {
+                on_change_relationship_index: function (relationship_index, e) {
+                    var select   = e.target || e;
+                    var $select  = $(select);
+                    var Entity   = this.getResource();
+                    var $element = this.get_content_element(true);
+                    if (!relationship_index) return Promise.resolve();
+                    this.relationship_index = relationship_index;
+                    var Garage              = Sm.Core.Identifier.getRootObjectAttribute(Entity, 'Garage') || (Sm.Abstraction.Garage);
+
+                    var position;
+                    var RelationshipIndex = Entity.getRelationshipIndex(relationship_index);
+                    var context_id        = RelationshipIndex.getDefaultContextId();
+                    position              = RelationshipIndex.count(context_id);
+
+                    var Map = this._getMap(relationship_index);
+                    Map.setAttributes({'position': position});
+                    return Garage
+                        .generate(
+                            'modal.add_relationship_type.[' + relationship_index + ']',
+                            {Entity: Entity, Map: Map})
+                        .then(function (map_form) {
+                            var $el             = $(map_form);
+                            var $change_element = $element.find('#map-form').eq(0);
+                            if ($change_element[0]) {
+                                $change_element.replaceWith($el);
+                            } else {
+                                $el.insertAfter($select.parent());
+                            }
+                        });
+                },
+
+                _generateInnerHTML:  function (is_synchronous) {
                     var Entity            = this.getResource();
-                    var Garage            = Sm.Core.Meta.getSmEntityAttribute(Entity, 'Garage') || new (Sm.Abstraction.Garage);
+                    var Garage            = Sm.Core.Identifier.getRootObjectAttribute(Entity, 'Garage') || (Sm.Abstraction.Garage);
                     var outer             = Garage.generate('modal_outer.add_relationship', {Resource: Entity, ReferencePoint: this.getReferencePoint()}, {is_synchronous: is_synchronous});
                     var inner             = Garage.generate('modal.add_relationship', Entity, {is_synchronous: is_synchronous});
                     var outer_html, inner_html;
@@ -45,27 +76,42 @@ define(['require', 'Sm', 'jquery', 'Sm-Abstraction-Prompt-Prompt', 'Sm-Abstracti
                     }
 
                 },
-                on_add_relationship:          function (data, e) {
+                _getMap:             function (relationship_index) {
+                    if (!relationship_index) if (!this.Map) throw new Sm.Exceptions.Error("Not sure how to map these entities");
+
+                    var Entity               = this.getResource();
+                    /** @type {Sm.Core.Meta} Meta */
+                    var Meta                 = Sm.Core.Identifier.getRootObjectAttribute(Entity, 'Meta') || (Sm.Core.Meta);
+                    var relationship_details = Meta.getRelationshipDetails(relationship_index) || null;
+                    var map_type             = Meta.getMapTypeFromRelationshipIndex(relationship_index) || null;
+
+                    if (map_type === Sm.Core.Identifier.getEntityType(this.Map))  return this.Map;
+
+                    var MapSmEntity = Sm.Core.Meta.getSmEntity(map_type);
+                    if (!MapSmEntity) return Promise.reject("Could not map relationship index");
+
+                    return this.Map = MapSmEntity.Meta.initEntity();
+                },
+                on_add_relationship: function (data, e) {
                     var form_attributes      = Sm.Abstraction.Views.View.get_attributes_from_form(
                         this.get_content_element(true).find('#map-form'),
                         '[data-attribute]');
                     var Entity               = this.getResource();
-                    var Meta                 = Sm.Core.Meta.getSmEntityAttribute(Entity, 'Meta') || (Sm.Core.Meta);
+                    var Meta                 = Sm.Core.Identifier.getRootObjectAttribute(Entity, 'Meta') || (Sm.Core.Meta);
                     var relationship_details = Meta.getRelationshipDetails(this.relationship_index) || null;
                     var OtherEntity          = this.OtherEntity || null;
                     var relationship_index   = this.relationship_index;
                     var OtherEntityType      = OtherEntity ? OtherEntity.entity_type : relationship_details.entity_type;
-                    var map_type             = Meta.getMapEntityType(OtherEntityType) || null;
-
-                    var MapSmEntity = Sm.Core.Meta.getSmEntity(map_type);
-                    if (!MapSmEntity) return Promise.reject("Could not map relationship index");
-                    var Map = this.Map || MapSmEntity.Meta.initEntity();
+                    var Map                  = this.Map;
                     Map.setAttributes(form_attributes);
                     var Self = this;
 
                     var complete_add_relationship = function () {
                         return Entity.addRelationship(OtherEntity, relationship_index, Map).then(function (Relationship) {
-                            if (Relationship) return Relationship.save().then(function () {Self.close()});
+                            if (Relationship) {
+                                Relationship.set_relationship_index(relationship_index);
+                                return Relationship.save().then(function () {Self.close()});
+                            }
                             return null;
                         });
                     };
@@ -87,52 +133,6 @@ define(['require', 'Sm', 'jquery', 'Sm-Abstraction-Prompt-Prompt', 'Sm-Abstracti
                         return create_entity.then(complete_add_relationship);
                     }
                     return Promise.resolve(complete_add_relationship());
-                },
-                _getMap:                      function (relationship_index) {
-                    if (!relationship_index) if (!this.Map) throw new Sm.Exceptions.Error("Not sure how to map these entities");
-
-                    var Entity               = this.getResource();
-                    /** @type {Sm.Core.Meta} Meta */
-                    var Meta                 = Sm.Core.Meta.getSmEntityAttribute(Entity, 'Meta') || (Sm.Core.Meta);
-                    var relationship_details = Meta.getRelationshipDetails(relationship_index) || null;
-                    Sm.CONFIG.DEBUG && console.log(relationship_details);
-                    var map_type = Meta.getMapTypeFromRelationshipIndex(relationship_index) || null;
-
-                    if (map_type === Sm.Core.Meta.getEntityType(this.Map))  return this.Map;
-
-                    var MapSmEntity = Sm.Core.Meta.getSmEntity(map_type);
-                    if (!MapSmEntity) return Promise.reject("Could not map relationship index");
-
-                    return this.Map = MapSmEntity.Meta.initEntity();
-                },
-                on_change_relationship_index: function (relationship_index, e) {
-                    var select   = e.target || e;
-                    var $select  = $(select);
-                    var Entity   = this.getResource();
-                    var $element = this.get_content_element(true);
-                    if (!relationship_index) return Promise.resolve();
-                    this.relationship_index = relationship_index;
-                    var Garage              = Sm.Core.Meta.getSmEntityAttribute(Entity, 'Garage') || new (Sm.Abstraction.Garage);
-
-                    var Map               = this._getMap(relationship_index);
-                    var position;
-                    var RelationshipIndex = Entity.getRelationshipIndex(relationship_index);
-                    var context_id        = RelationshipIndex.getDefaultContextId();
-                    position              = RelationshipIndex.count(context_id);
-                    Map.setAttributes({'position': position});
-                    return Garage
-                        .generate(
-                            'modal.add_relationship_type.[' + relationship_index + ']',
-                            {Entity: Entity, Map: Map})
-                        .then(function (map_form) {
-                            var $el             = $(map_form);
-                            var $change_element = $element.find('#map-form').eq(0);
-                            if ($change_element[0]) {
-                                $change_element.replaceWith($el);
-                            } else {
-                                $el.insertAfter($select.parent());
-                            }
-                        });
                 }
             });
         Sm.Abstraction.Prompt.makePrompt(Sm.Abstraction.Prompt.AddRelationshipPrompt);

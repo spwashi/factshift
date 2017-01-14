@@ -95,7 +95,7 @@ require(['require', 'Sm', 'Emitter', 'jquery'], function (require, Sm, Emitter, 
                 settings        = settings || {};
                 /** @type {Sm.json_entity|boolean}  */
                 var entity      = settings.entity || false;
-                var entity_type = this.entity_type || Sm.Core.Meta.getEntityType(entity);
+                var entity_type = this.entity_type || Sm.Core.Identifier.getEntityType(entity);
                 entity          = entity || {};
                 var model       = entity.attributes || {};
                 /**

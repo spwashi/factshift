@@ -128,8 +128,9 @@ define(['require', 'Sm', 'Emitter', 'Sm-Abstraction-Views-View'], function (requ
                     ModalHandler.add(this);
                     this.emit('open');
                     if (this.queryStatus('rendering') === null) {
-                        this.render({is_synchronous: true});
-                        try { document.documentElement.appendChild(this.el);} catch (e) {console.log(e) }
+                        this.render().then(function (el) {
+                            try { document.documentElement.appendChild(el);} catch (e) {console.log(e) }
+                        });
                     }
                     var promise_object = {};
                     /**

@@ -36,6 +36,7 @@ define(['require', 'Sm',
              * @param config
              */
             init:                          function (entity, identification_object, config) {
+                entity                            = entity || {};
                 this.relationships                = {};
                 this._relationships               = {};
                 this.reciprocal_relationships     = {};
@@ -43,9 +44,8 @@ define(['require', 'Sm',
                 identification_object             = identification_object || {};
                 this.entity_type                  = this.entity_type || identification_object.entity_type;
                 identification_object.object_type = this.object_type;
-                var SmEntity                      = this.SmEntity = Sm.Core.Meta.getSmEntity(this.entity_type);
-                this.Identifier = new Sm.Core.Identifier(this, identification_object);
-                this.Model      = null;
+                this.Identifier                   = new Sm.Core.Identifier(this, identification_object);
+                this.Model                        = null;
                 if (entity._permissions) {
                     this._initPermissions(entity._permissions);
                     delete entity._permissions;
@@ -66,9 +66,14 @@ define(['require', 'Sm',
             _initModel:                    function (model) {
                 model = model || {};
                 // If the model already exists, silently set the properties
-                if (this.Model) this.Model.set(model, {silent: true});
+                if (this.Model) {
+                    this.Model.set(model, {silent: true});
+                }
                 // Otherwise, create a new Model
-                else this.Model = new (this.SmEntity.Model)(model || {});
+                else {
+                    var ModelType = Sm.Core.Identifier.getRootObjectAttribute(this, 'Model') || Sm.Abstraction.Model;
+                    this.Model    = new (ModelType)(model || {});
+                }
                 // The Entity of the Model is this
                 this.Model.setEntity(this);
                 return this.Model;
@@ -157,9 +162,10 @@ define(['require', 'Sm',
             _initRelationshipIndex:        function (relationship_index, server_RelationshipIndex) {
                 // If the relationship exists, return it
                 if (this.RelationshipIndices[relationship_index]) return this.RelationshipIndices[relationship_index];
-
+                var Meta = Sm.Core.Identifier.getRootObjectAttribute(this, 'Meta');
+                if (!Meta) throw new Sm.Exceptions.Error("Unsure of how to initialize Relationship Index", arguments);
                 /** @type {Sm.Abstraction.RelationshipIndex} RelationshipIndex */
-                var RelationshipIndex                        = this.SmEntity.Meta.initRelationshipIndex(this, relationship_index, server_RelationshipIndex);
+                var RelationshipIndex                        = Meta.initRelationshipIndex(this, relationship_index, server_RelationshipIndex);
                 // Whether or not this RelationshipIndex exists out of reciprocity
                 var isReciprocal                             = RelationshipIndex.isReciprocal();
                 this.RelationshipIndices[relationship_index] = RelationshipIndex;
@@ -213,7 +219,9 @@ define(['require', 'Sm',
                 return Sm.Core.Util.merge_objects({}, this.Model.attributes);
             },
             getModifiableAttributes:       function () {
-                return this.SmEntity.Meta.getApiSettableAttributes(this);
+                var Meta = Sm.Core.Identifier.getRootObjectAttribute(this, 'Meta');
+                if (!Meta) throw new Sm.Exceptions.Error("Unsure of how to get attributes", arguments);
+                return Meta.getApiSettableAttributes(this);
             },
             /**
              * Get the attributes that were set before the Entity was saved
@@ -235,11 +243,7 @@ define(['require', 'Sm',
 //------------------------
 //--    Mixin Functions
 //------------------------
-            /**
-             * @inheritDoc
-             * @return {Sm.Abstraction.EntityView}
-             */
-            getViewType:                   function () {return this.SmEntity.View;},
+            getViewType:                   function () {return (Sm.Core.Meta.getSmEntity(this.entity_type) || {}).View || Sm.Abstraction.EntityView || Sm.Abstraction.Views.View},
 //------------------------
 //--    Relationship Functions
 //------------------------
@@ -249,14 +253,16 @@ define(['require', 'Sm',
              * @return {{}|[]}
              */
             getPotentialRelationshipTypes: function (do_list) {
-                return Sm.Core.Meta.getSmEntityAttribute(this, 'Meta').getPotentialRelationshipTypes(this, do_list);
+                var Meta = Sm.Core.Identifier.getRootObjectAttribute(this, 'Meta');
+                if (!Meta) return null;
+                return Meta.getPotentialRelationshipTypes(this, do_list);
             },
             /**
              * Function to add a relationship to the MvCombo's Relationship Index
              * todo There's an error in which two entities can be related via 4 relationship_indices. Fix that.
              * @param {Sm.Abstraction.Entity}               Entity
              * @param {string}                              relationship_index
-             * @param {{}}                                  map
+             * @param {{}|Sm.Abstraction.Entity=}                                  map
              * @param {int=}                                map.position
              * @param {Sm.r_id=}                            map.context_id
              * @param {Sm.Abstraction.Relationship=}        Relationship
@@ -301,21 +307,13 @@ define(['require', 'Sm',
                  */
                 var is_being_reciprocated = !!Relationship;
                 if (!Relationship) {
-                    var RelatedEntities = {};
-                    var map_index_self  = RelationshipIndex.get_map_index_details({map: map, Entity: this});
-                    var map_index_other = RelationshipIndex.get_map_index_details({map: map, Entity: Entity});
-                    if (!map_index_self || !map_index_other) throw new Sm.Exceptions.Error("Could not link entities to a map index", {
-                        self:    this,
-                        other:   Entity,
-                        rel_ind: relationship_index
-                    });
-                    RelatedEntities[map_index_self.map_index]  = this;
-                    RelatedEntities[map_index_other.map_index] = Entity;
-                    Relationship                               = Sm.Abstraction.Relationship.createRelationship([this.getR_ID(), Entity.getR_ID()], Map || map);
+                    Relationship = RelationshipIndex.createRelationship(Entity, Map || map);
                     // Sm.CONFIG.DEBUG && console.log(Relationship);
                 }
                 this.registerRelationship(Entity, Relationship, relationship_index);
-                var possible_others = this.SmEntity.Meta.getPotentialRelationshipTypes(Entity, true);
+                var Meta = Sm.Core.Identifier.getRootObjectAttribute(this, 'Meta');
+                if (!Meta) throw new Sm.Exceptions.Error("Unsure of where to add relationship", arguments);
+                var possible_others = Meta.getPotentialRelationshipTypes(Entity, true);
                 //This is here because sometimes we add a relationship from one entity only,
                 //  and doing that could mean that the relationship is only represented from one direction.
                 //  An example would be the relationship between sections and dimensions -
@@ -342,7 +340,6 @@ define(['require', 'Sm',
              */
             registerRelationship:          function (Entity, Relationship, relationship_index) {
                 var entity_r_id       = Entity.getR_ID();
-                var relationship_r_id = Relationship.getR_ID();
                 var rels              = this._relationships[entity_r_id] = this._relationships[entity_r_id] || {};
                 if (relationship_index in rels) return true;
                 rels[relationship_index] = Relationship;
@@ -554,7 +551,7 @@ define(['require', 'Sm',
     /**
      * Make sure the Entity is Viewable
      */
-    Sm.Core.dependencies.on_load(['Abstraction-Views'], function () {
+    Sm.Core.dependencies.on_load(['Abstraction-Views-View'], function () {
         Sm.Core.Util.mixin(Sm.Abstraction.Views.Viewable, Sm.Abstraction.Entity);
     }, 'Abstraction_Entity:Viewable');
 

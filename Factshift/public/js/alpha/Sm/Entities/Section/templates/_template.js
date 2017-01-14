@@ -2,35 +2,49 @@
  * Created by Sam Washington on 1/4/16.
  */
 require(['require'], function (require) {
-    Sm.Entities.Section.templates           = Sm.Entities.Section.templates || {};
+    Sm.Entities.Section.templates = Sm.Entities.Section.templates || {};
+
+    var create_section = function (Section, display_type) {
+        display_type   = display_type || 'std';
+        var attributes = this.generate('body_outer.element_attributes.[' + display_type + ']', Section, true);
+        var template   = [
+            '<section ' + attributes + '>',
+            this.generate('button_control', Section, true),
+            '__CONTENT__',
+            '</section>'
+        ];
+        return template.join('');
+    };
+
     Sm.Entities.Section.templates._template = {
         body_outer:    {
-            full:    function (Entity) {
-                var subtype  = Sm.Entities.Section.Meta.getEntitySubtype(Entity);
-                var template = [
-                    '<section title="<%- subtitle %>" class="factshift-section factshift-entity  <% if( ! title.length) {%>no-title<% } %> ' + subtype + '" data-entity_type="Section" data-ent_id="<%- ent_id %>" data-id="<%- id %>" data-title=\'<%- title %>\'>',
-                    '__BUTTON_CONTROL__',
-                    '__CONTENT__',
-                    '</section>'
-                ];
-                return template.join('');
+            class_string:       {
+                std: function (Entity, display_type) {
+                    var subtype = Sm.Entities.Section.Meta.getEntitySubtype(Entity);
+                    return 'factshift-section factshift-entity<% if( ! title.length) {%> no-title<% } %> ' + subtype + ' ' + (display_type || 'std');
+                }
             },
-            preview: function (Entity) {
-                var subtype  = Sm.Entities.Section.Meta.getEntitySubtype(Entity);
-                var template = [
-                    '<section title="<%- subtitle %>" class="preview factshift-section factshift-entity  <% if( ! title.length) {%>no-title<% } %> ' + subtype + '" data-entity_type="Section" data-ent_id="<%- ent_id %>" data-id="<%- id %>" data-title=\'<%- title %>\'>',
-                    '__BUTTON_CONTROL__',
-                    '__CONTENT__',
-                    '</section>'
-                ];
-                return template.join('');
-            }
+            element_attributes: {
+                std: function (Entity, display_type) {
+                    var class_string = this.generate('body_outer.class_string[' + display_type + ']', Entity, {is_synchronous: true});
+                    return 'title="<%- subtitle %>" class="' + class_string + '" data-entity_type="Section" data-ent_id="<%- ent_id %>" data-id="<%- id %>" data-title="<%- title %>"'
+                }
+            },
+
+            std:     function (Entity) {return create_section.apply(this, [Entity])},
+            preview: function (Entity) {return create_section.apply(this, [Entity, 'preview'])},
+            tag:     function (Entity) {return create_section.apply(this, [Entity, 'tag'])}
         },
         body:          {
-            full:    function (data) {
+            std:     function (data, display_type) {
+                data = data || {};
                 return '<div class="focus upper">\n    <div class="pan left "><i class="fa left fa-caret-left"></i></div>\n    <div class="pan right"><i class="fa right fa-caret-right"></i></div>\n</div>\n<header>\n    <div class="dev id"><%- id %></div>\n    <% if(title.length) { %><h3 class="title" data-attribute="title"><%- title %></h3> <% } %>\n</header>\n<div class="content" data-attribute="content"><%- content || (title.length ? \' \' : \' -- \')%></div>\n<div data-relationship_index="composition" data-ent_id="<%- ent_id %>" class="relationship_index composition-container"></div>\n<div data-relationship_index="children" data-ent_id="<%- ent_id %>" class="relationship_index children-container"></div>'
             },
             preview: function (data) {
+                data = data || {};
+                return '<header>\n    <div class="dev id"><%- id %></div>\n    <% if(title.length) { %><h3 class="title" data-attribute="title"><%- title %></h3> <% } %>\n</header>\n<div class="content" data-attribute="content"><%- content || (title.length ? \' \' : \' -- \')%></div>'
+            },
+            tag:     function (data) {
                 return '<header>\n    <div class="dev id"><%- id %></div>\n    <% if(title.length) { %><h3 class="title" data-attribute="title"><%- title %></h3> <% } %>\n</header>\n<div class="content" data-attribute="content"><%- content || (title.length ? \' \' : \' -- \')%></div>'
             }
         },

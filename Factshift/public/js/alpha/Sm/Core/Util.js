@@ -9,14 +9,14 @@ define(['jquery', 'Sm'], function ($, Sm) {
      * @alias Sm.Core.Util
      */
     Sm.Core.Util = {
-        isNumeric:     function (number) {
+        isNumeric:                   function (number) {
             return $.isNumeric(number);
         },
-        isArray:       function (item) {return $.isArray(item);},
-        arrayDiff:     function (arr, subtract_array) {
+        isArray:                     function (item) {return $.isArray(item);},
+        arrayDiff:                   function (arr, subtract_array) {
             return arr.filter(function (i) {return subtract_array.indexOf(i) < 0;});
         },
-        mixin:         function (mixin_proto, item, overwrite, literal) {
+        mixin:                       function (mixin_proto, item, overwrite, literal) {
             overwrite = !!overwrite;
             for (var property in mixin_proto) {
                 if (!mixin_proto.hasOwnProperty(property)) continue;
@@ -26,7 +26,7 @@ define(['jquery', 'Sm'], function ($, Sm) {
                 }
             }
         },
-        randomString:  function (length, chars) {
+        randomString:                function (length, chars) {
             chars      = chars || '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ_-';
             var result = '';
             for (var i = length; i > 0; --i) result += chars[Math.floor(Math.random() * chars.length)];
@@ -39,7 +39,7 @@ define(['jquery', 'Sm'], function ($, Sm) {
          * @param overwriting_object
          * @returns {{}}
          */
-        merge_objects: function (original_object, overwriting_object) {
+        merge_objects:               function (original_object, overwriting_object) {
             var obj3 = {};
             if (!!original_object && typeof original_object === 'object') {
                 for (var attr_name in original_object) {
@@ -56,7 +56,34 @@ define(['jquery', 'Sm'], function ($, Sm) {
             }
             return obj3;
         },
-        createElement: function (string) {
+        iterateUnknownSynchronicity: function (items, is_synchronous, callback, on_complete) {
+            callback    = typeof  callback === "function" ? callback : function (item, previous) {return item};
+            items       = Sm.Core.Util.isArray(items) ? items : [items];
+            on_complete = typeof  on_complete === "function" ? on_complete : function (item) {return item};
+            if (!is_synchronous) {
+                var MainPromise = Promise.resolve();
+                var results     = [];
+                for (var k = 0; k < items.length; k++) {
+                    var fn      = (function (item, item_index) {
+                        return function (previous) {
+                            item_index && results.push(previous);
+                            return callback(item, previous);
+                        }
+                    })(items[k], k);
+                    MainPromise = (MainPromise).then(fn);
+
+                }
+                return MainPromise.then(function (previous) {
+                    results.push(previous);
+                    return on_complete(previous, results);
+                });
+            } else {
+                var last_result = null;
+                for (var i = 0; i < items.length; i++) {last_result = callback(items[i], last_result);}
+                return on_complete(last_result);
+            }
+        },
+        createElement:               function (string) {
             var div;
             div           = document.createElement("div");
             div.innerHTML = string;
@@ -69,7 +96,7 @@ define(['jquery', 'Sm'], function ($, Sm) {
          * @param el
          * @return {*}
          */
-        isElement:     function (el) {
+        isElement:                   function (el) {
             return (
                 typeof HTMLElement === "object" ? el instanceof HTMLElement : //DOM2
                 el && typeof el === "object" && el !== null && el.nodeType === 1 && typeof el.nodeName === "string"
@@ -81,7 +108,7 @@ define(['jquery', 'Sm'], function ($, Sm) {
          * @param el
          * @return {*}
          */
-        isNode:        function (el) {
+        isNode:                      function (el) {
             return (
                 typeof Node === "object" ? el instanceof Node :
                 el && typeof el === "object" && typeof el.nodeType === "number" && typeof el.nodeName === "string"

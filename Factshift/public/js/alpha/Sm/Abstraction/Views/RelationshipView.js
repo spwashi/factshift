@@ -33,9 +33,9 @@ define(['require', 'Sm', 'jquery', 'Emitter', 'Sm-Abstraction-Views-View', 'Sm-A
                         return _is_button && $target.hasClass(type);
                     };
                     var Relationship      = this.getResource();
-
+                    var children          = this.$el.children('.factshift-entity').toArray().map(function (item) {return item.FactshiftView && item.FactshiftView.getResource()}).filter(function (item) {return item});
                     if (is_button_of_type('edit')) {
-                        Relationship && Relationship.isEditable && Relationship.prompt_edit();
+                        Relationship && Relationship.isEditable && Relationship.prompt_edit(children.length < 2 ? (children[0] || null) : children);
                         e.stopPropagation();
                         return null;
                     } else if (is_button_of_type('destroy')) {
@@ -64,17 +64,14 @@ define(['require', 'Sm', 'jquery', 'Emitter', 'Sm-Abstraction-Views-View', 'Sm-A
                     return this.$el.children();
                 },
 
-                getGarage:           function () {
-                    return Sm.Abstraction.Relationship.getGarage();
-                },
                 _generateOuterHTML:  function (is_synchronous) {
                     var Relationship = this.getResource();
-                    var Garage       = this.getGarage();
+                    var Garage       = Sm.Core.Identifier.getRootObjectAttribute(this, 'Garage');
                     return Garage.generate('body_outer.' + this.display_type, Relationship, {is_synchronous: is_synchronous})
                 },
                 _generateInnerHTML:  function (is_synchronous) {
                     var Entity = this.getResource();
-                    var Garage = this.getGarage();
+                    var Garage = Sm.Core.Identifier.getRootObjectAttribute(this, 'Garage');
                     return is_synchronous ? '' : Promise.resolve('');
                 },
                 /**

@@ -76,6 +76,10 @@ require.config(
             "Sm-Entities-Page-View":       ALPHA_URL + "Sm/Entities/Page/View",
             "Sm-Entities-Page-PageEntity": ALPHA_URL + "Sm/Entities/Page/PageEntity",
 
+            "Sm-Entities-Placeholder-View":              ALPHA_URL + "Sm/Entities/Placeholder/View",
+            "Sm-Entities-Placeholder-templates-_template":         ALPHA_URL + "Sm/Entities/Placeholder/templates/_template",
+            "Sm-Entities-Placeholder-PlaceholderEntity": ALPHA_URL + "Sm/Entities/Placeholder/PlaceholderEntity",
+
             "Sm-Entities-Dimension-View":            ALPHA_URL + "Sm/Entities/Dimension/View",
             "Sm-Entities-Dimension-DimensionEntity": ALPHA_URL + "Sm/Entities/Dimension/DimensionEntity"
             /////////////////

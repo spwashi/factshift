@@ -12,37 +12,27 @@ define(['require', 'Sm', 'Sm-Abstraction-Prompt-Prompt', 'Sm-Abstraction-Modal-M
                     var Self     = this;
                     if (Resource) {
                         Resource.on && Resource.on('update', function (changed) {Self.render()});
-                        var entity_type                            = Resource.getEntityType();
-                        entity_type                                = entity_type.toLowerCase();
-                        this['on_change_' + entity_type + '_type'] = this['on_change_' + entity_type + '_type'] || this.on_change_type;
+                        var entity_type = Resource.getEntityType();
+                        if (entity_type) {
+                            entity_type                                = entity_type.toLowerCase();
+                            this['on_change_' + entity_type + '_type'] = this['on_change_' + entity_type + '_type'] || this.on_change_type;
+                        }
                     }
                     return ret;
                 },
 
                 _generateInnerHTML:   function (is_synchronous) {
                     var Resource       = this.getResource();
-                    var Garage         = Sm.Core.Meta.getSmEntityAttribute(Resource, 'Garage') || new (Sm.Abstraction.Garage);
+                    var Garage         = Sm.Core.Identifier.getRootObjectAttribute(Resource, 'Garage') ||  (Sm.Abstraction.Garage);
                     var ReferencePoint = this.getReferencePoint();
 
                     var outer = Garage.generate('modal_outer.' + this.action, {Resource: Resource, ReferencePoint: ReferencePoint}, {is_synchronous: is_synchronous});
-                    var inner = Garage.generate('body.form', Resource, {is_synchronous: is_synchronous});
-
-                    var outer_html, inner_html;
-                    var when_all_rendered = function () {return outer_html.replace('__CONTENT__', inner_html);};
-
+                    var inner = Garage.generate('body.form', {Resource: Resource}, {is_synchronous: is_synchronous});
                     if (!is_synchronous) {
-                        return outer.then(function (result) {
-                            outer_html = result;
-                            return inner.then(function (result) {
-                                inner_html = result;
-                                return when_all_rendered();
-                            })
-                        })
-                    } else {
-                        outer_html = outer;
-                        inner_html = inner;
-                        return when_all_rendered();
+                        inner.then(function (i) {Sm.CONFIG.DEBUG && console.log(i);});
                     }
+                    var html = Sm.Abstraction.Garage.replaceContentPlaceholder(outer, inner, is_synchronous);
+                    return html;
                 },
                 _keydown:             function (e) {
                     var Self = this;
@@ -71,8 +61,10 @@ define(['require', 'Sm', 'Sm-Abstraction-Prompt-Prompt', 'Sm-Abstraction-Modal-M
                     return res;
                 },
                 _init_button_control: function () {
-                    var Self           = this;
-                    var button_control = Self.get_content_element(true).find('.button-control')[0];
+                    var Self            = this;
+                    var content_element = Self.get_content_element(true);
+                    if (!content_element) return false;
+                    var button_control = content_element.find('.button-control')[0];
                     if (!button_control) return false;
                     var Resource = Self.getResource();
                     Resource &&

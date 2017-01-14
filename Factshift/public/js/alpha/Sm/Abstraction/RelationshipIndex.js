@@ -164,7 +164,7 @@ define(['require', 'Sm', 'Emitter', 'Sm-Core-Core'], function (require, Sm, Emit
                             // todo will this cause issues with reciprocity?
                             if (found_by_type[self_entity_type] && (found_by_type[self_entity_type].first != found_by_type[self_entity_type].last)) {
                                 // Say that the last map_index we found that can also reference this entity type is something that we're looking for
-                                potential_map_indices.push(is_reciprocal ? found_by_type[entity_type].last : found_by_type[entity_type].first)
+                                potential_map_indices.push(is_reciprocal ? found_by_type[self_entity_type].last : found_by_type[self_entity_type].first)
                             }
                         } else if (found_by_type[entity_type]) {
                             // otherwise, look for the entity type in the object that lists the first and last occurrence of map indices for it.
@@ -282,6 +282,28 @@ define(['require', 'Sm', 'Emitter', 'Sm-Core-Core'], function (require, Sm, Emit
                     return RelationshipContext;
                 },
 
+                createRelationship:        function (OtherEntities, map) {
+                    if (!Sm.Core.Util.isArray(OtherEntities)) OtherEntities = [OtherEntities];
+                    else if (OtherEntities.length !== 1) throw new Sm.Exceptions.Error("Not sure how to add relationship", {
+                        self:    this.getResource(),
+                        other:   OtherEntities,
+                        rel_ind: this.get_relationship_index()
+                    });
+                    var Entity            = OtherEntities[0];
+                    var RelationshipIndex = this;
+                    var SelfEntity        = this.getResource();
+                    var RelatedEntities   = {};
+                    var map_index_self    = RelationshipIndex.get_map_index_details({map: map, Entity: SelfEntity});
+                    var map_index_other   = RelationshipIndex.get_map_index_details({map: map, Entity: Entity});
+                    if (!map_index_self || !map_index_other) throw new Sm.Exceptions.Error("Could not link entities to a map index", {
+                        self:    SelfEntity,
+                        other:   OtherEntities,
+                        rel_ind: this.get_relationship_index()
+                    });
+                    RelatedEntities[map_index_self.map_index]  = SelfEntity;
+                    RelatedEntities[map_index_other.map_index] = Entity;
+                    return Sm.Abstraction.Relationship.createRelationship([SelfEntity.getR_ID(), Entity.getR_ID()], Map || map);
+                },
                 /**
                  * Add a Relationship to this RelationshipIndex at a specified RelationshipContext
                  * @param {Sm.Abstraction.Relationship} Relationship
@@ -379,6 +401,8 @@ define(['require', 'Sm', 'Emitter', 'Sm-Core-Core'], function (require, Sm, Emit
                 fetch:   function () {},
                 toJSON:  function () {}
             });
+    require(['Sm-Abstraction-Views-RelationshipIndexView']);
+    require(['Sm-Abstraction-RelationshipIndex-_template']);
 
     Sm.Abstraction.RelationshipIndex.getDefaultContextId = function () {
         return '-';
@@ -396,23 +420,14 @@ define(['require', 'Sm', 'Emitter', 'Sm-Core-Core'], function (require, Sm, Emit
         return Context;
     };
 
-    Sm.Abstraction.RelationshipIndex.getGarage = function () {
-        return new (Sm.Abstraction.Garage.extend());
-    };
     Sm.Core.dependencies.on_load(['Abstraction_RelationshipIndex', 'Abstraction_Relationship'], ':Relationships');
     Sm.Core.dependencies.on_load(['Core_Identifier'], function () {
         Sm.Core.Util.mixin(Sm.Core.Identifier.Identifiable, Sm.Abstraction.RelationshipIndex);
     }, 'Abstraction_RelationshipIndex');
-
-    require(['Sm-Abstraction-RelationshipIndex-_template']);
-    Sm.Core.dependencies.on_load(['Abstraction_RelationshipIndex-_template'], function () {
-        Sm.Abstraction.RelationshipIndex.getGarage = function () {
-            return new (Sm.Abstraction.Garage.extend({template_object: Sm.Abstraction.RelationshipIndex.templates._template}))
-        };
+    Sm.Core.dependencies.on_load(['Abstraction_RelationshipIndex-_template', 'Abstraction-Garage'], function () {
+        Sm.Abstraction.RelationshipIndex.Garage = new (Sm.Abstraction.Garage.extend({template_object: Sm.Abstraction.RelationshipIndex.templates._template}))('RelationshipIndex');
     }, 'Abstraction_RelationshipIndex-Garage');
-
-    require(['Sm-Abstraction-Views-RelationshipIndexView']);
-    Sm.Core.dependencies.on_load(['Abstraction_Views', 'Abstraction-Views-RelationshipIndexView'], function () {
+    Sm.Core.dependencies.on_load(['Abstraction_RelationshipIndex-Garage', 'Abstraction-Views-RelationshipIndexView'], function () {
         Sm.Core.Util.mixin(Sm.Abstraction.Views.Viewable, Sm.Abstraction.RelationshipIndex);
     }, 'Abstraction_RelationshipIndex:Viewable');
 });

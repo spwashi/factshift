@@ -892,9 +892,13 @@ class EntityMeta {
                 $relationships            = [ ];
                 $er_k                     = $entity_relationships[ $key ];
                 foreach ($er_k as $index => $rel_config) {
+                    if (isset($item['relationship_display_types']) && isset($item['relationship_display_types'][ $index ])) {
+                        $rel_config = array_merge($rel_config, $item['relationship_display_types'][ $index ]);
+                    }
                     if (strpos($index, 'reciprocal_') === 0) $reciprocal_relationships[ str_replace('reciprocal_', '', $index) ] = $rel_config;
                     else $relationships[ $index ] = $rel_config;
                 }
+                
                 $item['relationships']            = $relationships;
                 $item['reciprocal_relationships'] = $reciprocal_relationships;
             }

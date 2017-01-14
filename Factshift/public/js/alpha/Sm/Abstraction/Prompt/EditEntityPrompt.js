@@ -11,19 +11,8 @@ define(['require', 'Sm', 'Sm-Abstraction-Prompt-Prompt', 'Sm-Abstraction-Modal-M
                         this.on('render', function (el) {});
                         return res;
                     },
-                    on_edit_relationship:         function () {
-                        var ReferencePoint = this.getReferencePoint();
-
-                        if (!ReferencePoint || !ReferencePoint.isEditable) return Promise.reject(new Sm.Exceptions.Error("Cannot edit relationship "));
-
-                        if (Sm.Core.Util.isArray(ReferencePoint)) {
-                            if (ReferencePoint.length === 1) ReferencePoint = ReferencePoint[0];
-                            else return Promise.reject(new Sm.Exceptions.Error("Not sure how to handle multiple ReferencePoint!", ReferencePoint));
-                        }
-                        return ReferencePoint.prompt_edit();
-                    },
                     on_view_relationship_indices: function () {
-                        var Garage   = Sm.Core.Meta.getSmEntityAttribute(Entity, 'Garage') || new (Sm.Abstraction.Garage);
+                        var Garage   = Sm.Core.Identifier.getRootObjectAttribute(Entity, 'Garage') ||  (Sm.Abstraction.Garage);
                         var Entity   = this.getResource();
                         var $element = this.get_content_element(true);
                         var $select  = $element.find('.content.form');

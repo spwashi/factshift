@@ -2,6 +2,8 @@
  * Created by Sam Washington on 11/8/16.
  */
 define(['require', 'Sm', 'Emitter', 'Sm-Core-Core'], function (require, Sm, Emitter) {
+    var entity_config_object = Sm.Entities._info.entities;
+
     /**
      * @class Sm.Core.SmEntity
      *
@@ -72,5 +74,37 @@ define(['require', 'Sm', 'Emitter', 'Sm-Core-Core'], function (require, Sm, Emit
                 Self.templates = Self.templates || {};
             }
         });
+
+    Sm.Core.SmEntity._get_config = function (entity_name) {
+        entity_name = entity_name.split('|').sort().join('|');
+        return Promise.resolve(entity_config_object[entity_name] || null)
+    };
+
+    Sm.Core.SmEntity._on_entity_load = function (entity_name) {
+        Sm.Core.dependencies.add(entity_name);
+        var lower           = entity_name.toLowerCase();
+        var html_identifier = '.factshift-' + lower;
+        var models_string   = document.getElementById(lower + '_models');
+        var SmEntity        = Sm.Core.Meta.getSmEntity(entity_name);
+        var elements        = lower.indexOf('|') > 0 ? [] : $(html_identifier).toArray();
+        var models_json     = models_string ? JSON.parse(models_string.textContent) : null;
+        try { SmEntity.Wrapper.hydrate(models_json, elements);} catch (e) {Sm.CONFIG.DEBUG && console.log(e, models_json); }
+    };
+    Sm.Core.SmEntity._require_entity = function (entity_name, dependencies) {
+        dependencies = dependencies || [];
+        if (dependencies.indexOf(entity_name + 'Entity') < 0) new Sm.Core.SmEntity(entity_name);
+        var r  = dependencies.map(function (t) {return 'Sm-Entities-' + entity_name + '-' + t;});
+        var wl = dependencies.map(function (t) {return 'Entities-' + entity_name + '-' + t;});
+        r.length && require(r);
+        return Sm.Core.dependencies.on_load(wl, Sm.Core.SmEntity._on_entity_load.bind(null, entity_name), entity_name);
+    };
+    Sm.Core.SmEntity.load_entity     = function (entity_name, dependencies) {
+        return Sm.Core.SmEntity._get_config(entity_name).then(function (entity_config) {
+            return Sm.Core.SmEntity._require_entity(entity_name, dependencies);
+        }).catch(function (e) {
+            Sm.CONFIG.DEBUG && console.log(e);
+        });
+    };
+
     Sm.Core.dependencies.add('Core_SmEntity');
 });

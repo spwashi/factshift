@@ -21,11 +21,18 @@ define(['require', 'Sm', 'Emitter', 'Sm-Abstraction-MapEntity', 'Sm-Abstraction-
                 this.Map = null;
                 this.Identifier = new Sm.Core.Identifier(
                     this,
-                    {
-                        object_type: 'Relationship',
-                        entity_type: Sm.Core.Meta.getMapEntityType(this.getEntityTypesArray())
-                    });
-                this._initMap(map);
+                    {object_type: 'Relationship'});
+                this._initEntity(map);
+            },
+            _initEntity:                  function (map) {
+                if (!this.Map) {
+                    map = map || {};
+                    if (!(map instanceof Sm.Abstraction.Entity)) this.Map = new Sm.Core.Meta.initEntityPlaceholder(map);
+                    else this.Map = map;
+                    this._initMap(map);
+                }
+                else this.Map.refresh(map);
+                return this.Map;
             },
             /**
              * Initialize a Map when we can
@@ -34,13 +41,13 @@ define(['require', 'Sm', 'Emitter', 'Sm-Abstraction-MapEntity', 'Sm-Abstraction-
              * @private
              */
             _initMap:                     function (map) {
-                this.Map             = null;
+                map                  = Sm.Core.Util.merge_objects(this.Map.getAttributes(), map || {});
                 var entity_array     = this.getEntityTypesArray();
                 var Self             = this;
                 var refresh_identity = function (MapEntityType) {
                     Self.Identifier.refresh({entity_type: MapEntityType});
                 };
-                if (map && map.object_type && map.object_type == 'Entity') {
+                if (map instanceof Sm.Abstraction.Entity) {
                     this.Map = map;
                     return this.Map;
                 }
@@ -121,8 +128,8 @@ define(['require', 'Sm', 'Emitter', 'Sm-Abstraction-MapEntity', 'Sm-Abstraction-
                 return this.Map ? this.Map.getAttributes() : null;
             },
             getModifiableAttributes:      function () {
-                if (!this.Map) return {};
-                return this.Map.getModifiableAttributes();
+                if (!this.Map) return [];
+                return [].concat(this.Map.getModifiableAttributes(), ['entity_container']);
             },
             /**
              * Return an array of the Entities held in this Relationship
@@ -157,10 +164,11 @@ define(['require', 'Sm', 'Emitter', 'Sm-Abstraction-MapEntity', 'Sm-Abstraction-
             getEntityTypesArray:          function () {
                 return this.getEntityArray().map(function (item) {return item.getEntityType();});
             },
+            getMap:                       function () {return this.Map || null;},
 
-            getViewType: function () {return Sm.Abstraction.Views.RelationshipView},
+            getViewType:            function () {return Sm.Abstraction.Views.RelationshipView},
 //
-            save:        function () {
+            save:                   function () {
                 var url  = Sm.urls.api.generate('save', this);
                 var data = JSON.stringify(this);
                 var Self = this;
@@ -179,13 +187,16 @@ define(['require', 'Sm', 'Emitter', 'Sm-Abstraction-MapEntity', 'Sm-Abstraction-
                     return data;
                 });
             },
+            set_relationship_index: function (relationship_index) {
+                this.relationship_index = relationship_index;
+            },
             /**
              * Convert this Relationship to a URL
              */
-            url:         function () {
+            url:                    function () {
                 var EntityArr  = this.getEntityArray();
                 var url        = '';
-                var rel_index  = false;
+                var rel_index  = this.relationship_index || false;
                 var relIndices = this.relationship_index_r_ids;
                 for (var j = 0; j < relIndices.length; j++) {
                     var rel_ind_r_id = relIndices[j];
@@ -199,7 +210,7 @@ define(['require', 'Sm', 'Emitter', 'Sm-Abstraction-MapEntity', 'Sm-Abstraction-
                 }
                 for (var i = 0; i < EntityArr.length; i++) {
                     var Entity = EntityArr[i];
-                    if (i === 0)
+                    if (i === 0 || !rel_index)
                         url += Entity.url();
                     else {
                         url += rel_index + '/';
@@ -209,12 +220,18 @@ define(['require', 'Sm', 'Emitter', 'Sm-Abstraction-MapEntity', 'Sm-Abstraction-
                 }
                 return url;
             },
-            toJSON:      function () {return this.getAttributes()}
+            toJSON:                 function () {return this.getAttributes()}
 //
         });
-    Sm.Abstraction.Relationship.getGarage = function () {
-        return new (Sm.Abstraction.Garage.extend());
-    };
+    require(['Sm-Abstraction-Relationship-_template']);
+    require(['Sm-Abstraction-Selector']);
+    require(['Sm-Abstraction-Views-RelationshipView']);
+
+    Sm.Core.dependencies.on_load(['Abstraction-Garage', 'Abstraction_Relationship-_template'], function () {
+        var template                       = Sm.Abstraction.Relationship.templates._template;
+        Sm.Abstraction.Relationship.Garage =
+            new (Sm.Abstraction.Garage.extend({template_object: template}))('Relationship');
+    });
     /**
      * Serves to initialize a relationship.
      *
@@ -226,16 +243,10 @@ define(['require', 'Sm', 'Emitter', 'Sm-Abstraction-MapEntity', 'Sm-Abstraction-
         return new Sm.Abstraction.Relationship(RelatedEntities, map);
     };
 
-    require(['Sm-Abstraction-Relationship-_template']);
-    Sm.Core.dependencies.on_load(['Abstraction_Relationship-_template'], function () {
-        Sm.Abstraction.Relationship.getGarage = function () {
-            return new (Sm.Abstraction.Garage.extend({template_object: Sm.Abstraction.Relationship.templates._template}))
-        };
-    }, 'Abstraction_Relationship-Garage');
     /**
      * Make sure Relationships are Identifiable
      */
-    Sm.Core.dependencies.on_load(['Core_Identifier'], function () {
+    Sm.Core.dependencies.on_load(['Core-Identifier'], function () {
         Sm.Core.Util.mixin(Sm.Core.Identifier.Identifiable, Sm.Abstraction.Relationship);
     }, 'Abstraction_Relationship');
     /**
@@ -244,15 +255,11 @@ define(['require', 'Sm', 'Emitter', 'Sm-Abstraction-MapEntity', 'Sm-Abstraction-
     Sm.Core.dependencies.on_load(['Abstraction-Editable'], function () {
         Sm.Core.Util.mixin(Sm.Abstraction.Editable, Sm.Abstraction.Relationship)
     }, 'Abstraction_Relationship:Editable');
-
-    require(['Sm-Abstraction-Selector']);
     Sm.Core.dependencies.on_load(['Abstraction-Stateful', 'Abstraction-Selector'], function () {
         Sm.Core.Util.mixin(Sm.Abstraction.Selector, Sm.Abstraction.Relationship, false, true);
         Sm.Core.Util.mixin(Sm.Abstraction.Stateful, Sm.Abstraction.Relationship);
     }, 'Relationship:Selector');
-
-    require(['Sm-Abstraction-Views-RelationshipView']);
-    Sm.Core.dependencies.on_load(['Abstraction_Views', 'Abstraction-Views-RelationshipView', 'Relationship:Selector'], function () {
+    Sm.Core.dependencies.on_load(['Abstraction-Views', 'Abstraction-Views-RelationshipView', 'Relationship:Selector'], function () {
         Sm.Core.Util.mixin(Sm.Abstraction.Views.Viewable, Sm.Abstraction.Relationship);
     }, 'Abstraction_Relationship:Viewable');
 });

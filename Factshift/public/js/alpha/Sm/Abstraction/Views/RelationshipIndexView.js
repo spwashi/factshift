@@ -27,9 +27,6 @@ define(['require', 'Sm', 'jquery', 'Emitter', 'Sm-Abstraction-Views-View', 'Sm-A
                     return this.$el.children();
                 },
 
-                getGarage:    function () {
-                    return Sm.Abstraction.RelationshipIndex.getGarage();
-                },
                 getContext:   function () {
                     return Sm.Abstraction.RelationshipIndex.getContext(this.context_id);
                 },
@@ -166,12 +163,12 @@ define(['require', 'Sm', 'jquery', 'Emitter', 'Sm-Abstraction-Views-View', 'Sm-A
                 },
                 _generateOuterHTML:       function (is_synchronous) {
                     var Entity = this.getResource();
-                    var Garage = this.getGarage();
+                    var Garage = Sm.Core.Identifier.getRootObjectAttribute(this, 'Garage');
                     return Garage.generate('body_outer.' + this.display_type, Entity, {is_synchronous: is_synchronous})
                 },
                 _generateInnerHTML:       function (is_synchronous) {
                     var Entity = this.getResource();
-                    var Garage = this.getGarage();
+                    var Garage = Sm.Core.Identifier.getRootObjectAttribute(this, 'Garage');
                     return Garage.generate('body.' + this.display_type, Entity, {is_synchronous: is_synchronous})
                 },
                 /**

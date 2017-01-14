@@ -14,7 +14,7 @@ define(['require', 'Sm', 'Sm-Abstraction-Views-View', 'Sm-Abstraction-Action-Rep
             {
                 setAttributeElement_section_type: function (value) {
                     var Entity = this.getResource();
-                    var Meta   = Sm.Core.Meta.getSmEntityAttribute(Entity, 'Meta');
+                    var Meta   = Sm.Core.Identifier.getRootObjectAttribute(Entity, 'Meta');
                     if (!Meta) return false;
                     var subtype = Meta.getEntitySubtype(Entity);
                     Sm.CONFIG.DEBUG && console.log(subtype);
@@ -23,7 +23,14 @@ define(['require', 'Sm', 'Sm-Abstraction-Views-View', 'Sm-Abstraction-Action-Rep
                 },
                 _click:                           function (e) {
                     var result = Sm.Abstraction.Views.EntityView.prototype._click.apply(this, arguments);
-                    if (result && this.display_type === 'full') {
+                    if (result && this.display_type === 'full' || this.display_type === 'std') {
+                        var Entity      = this.getResource();
+                        var OtherEntity = Sm.Entities.Section.Meta.initEntityPlaceholder();
+                        Sm.CONFIG.DEBUG && console.log(OtherEntity);
+
+                        Entity.addRelationship(OtherEntity, 'children').then(function (result) {
+                            result && result.prompt_edit();
+                        });
                         this.focus();
                         e.stopPropagation();
                         return null;

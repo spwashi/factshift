@@ -1,8 +1,13 @@
 /**
  * Created by Sam Washington on 11/6/16.
  */
-define(['require', 'Sm', 'Emitter', 'underscore', 'Sm-Core-Core', 'Sm-Abstraction-templates-_template'], function (require, Sm, Emitter, _) {
-    Sm.Abstraction.Garage = Emitter.extend(
+define(['require', 'Sm', 'Emitter', 'underscore', 'jquery', 'Sm-Core-Core', 'Sm-Abstraction-templates-_template'], function (require, Sm, Emitter, _, $) {
+    var is_promise                                  = function (item) {return item && (item instanceof Promise || item.then);};
+    /**
+     * @class Sm.Abstraction.Garage
+     * @alias Sm.Abstraction.Garage
+     */
+    var Garage                                      = Emitter.extend(
         {
             cached_templates:      null,
             template_object:       null,
@@ -86,43 +91,13 @@ define(['require', 'Sm', 'Emitter', 'underscore', 'Sm-Core-Core', 'Sm-Abstractio
                         } catch (e) {Sm.CONFIG.DEBUG && console.log(e);}
                     }
                 }
-                var Self            = this;
-                var last_called     = [];
-                var last_result     = [];
-                var result_is_final = function (result) {return typeof result === "string" || Sm.Core.Util.isNode(result) || result instanceof jQuery};
-                var fn              = function (obj, subtype) {
-                    var res               = false;
-                    var obj_can_be_result = result_is_final(obj);
-                    template_identifier === 'relationship.std' && (subtype === 'std') && Sm.CONFIG.DEBUG && console.log(obj, subtype, res);
-
-                    if (typeof obj === "boolean" || typeof obj === "number") return obj;
-                    if (obj_can_be_result) res = obj;
-                    if (obj && subtype) {
-                        if (obj_can_be_result) return res = obj;
-                        else if (typeof obj === "function" || (typeof obj[subtype] === "function" && (obj = obj[subtype]))) {
-                            //Make sure this function doesn't get called more than once;
-                            var i = last_called.indexOf(obj);
-                            try {
-                                if (i < 0) {
-                                    res = obj.apply(Self, [data]);
-                                    last_called.push(obj);
-                                    last_result.push(res);
-                                }
-                                else res = last_result[i];
-                            } catch (e) {
-                                Sm.CONFIG.DEBUG && console.log(e);
-                            }
-
-                        } else if (obj[subtype]) {
-                            res = obj[subtype];
-                        }
-                        else if (subtype !== 'std') return fn(obj, 'std') || false;
-                        else res = false;
-                    }
-                    return res;
+                var Self                  = this;
+                var previously_called     = [];
+                var previous_call_results = [];
+                var result_is_final       = function (result) {
+                    return result && (is_promise(result) || typeof result === "string" || Sm.Core.Util.isNode(result) || result instanceof jQuery)
                 };
-                var resolve         = function (string) {
-
+                var resolve               = function (string) {
                     var attributes;
                     if (data.Resource && typeof data.Resource === "object" && data.Resource.getAttributes) {
                         attributes = data.Resource.getAttributes();
@@ -142,27 +117,75 @@ define(['require', 'Sm', 'Emitter', 'underscore', 'Sm-Core-Core', 'Sm-Abstractio
                     }
                     return is_synchronous ? processed_string : Promise.resolve(processed_string);
                 };
-                var last_searched   = [];
+                var search                = function (obj, display_type, intended_display_type) {
+                    intended_display_type = intended_display_type || display_type;
+                    var res               = false;
+                    var obj_can_be_result = result_is_final(obj);
+
+                    if (typeof obj === "boolean" || typeof obj === "number" || !obj) return obj;
+                    if (obj_can_be_result) res = obj;
+                    if (obj && display_type) {
+                        if (obj_can_be_result) return res = obj;
+                        else if (typeof obj === "function" || (typeof obj[display_type] === "function" && (obj = obj[display_type]))) {
+                            //Make sure this function doesn't get called more than once;
+                            var i = previously_called.indexOf(obj);
+                            try {
+                                if (i < 0) {
+                                    res = obj.apply(Self, [data || {}, intended_display_type, is_synchronous]);
+                                    previously_called.push(obj);
+                                    previous_call_results.push(res);
+                                }
+                                else res = previous_call_results[i];
+                            } catch (e) {
+                                Sm.CONFIG.DEBUG && console.log(e);
+                            }
+
+                        } else if (obj[display_type]) {
+                            res = obj[display_type];
+                        }
+                        else res = false;
+                    }
+                    return res;
+                };
+                var intended_search_index = null;
                 /**
                  * Iterate through the array of whatever we are looking for and try to pull the last string from it.
                  * If we get to a point where we cannot find something that we are looking for, we fallback to a default string.
                  */
                 for (var j = 0; j < search_indices.length; j++) {
                     //The current thing that we are looking for
-                    var template_search_index = search_indices[j];
+                    var template_search_index   = search_indices[j];
                     //This is the last thing that we looked for
-                    last_searched.splice(0, 0, j ? search_indices[j - 1] : false);
-                    var search_result           = [];
+                    var search_results          = [];
                     var _empty_template_indices = [];
-                    for (var k = 0; k < templates.length; k++) {
-                        templates[k] = search_result[k] = fn(templates[k], template_search_index);
-                        if (result_is_final(search_result[k])) return resolve(search_result[k]);
-                        // if (!search_result[k]) _empty_template_indices.forEach(function (index) {templates[index] = search_result[index];});
-                        _empty_template_indices.push(k);
+                    var other_results_found     = false;
+                    var len                     = templates.length;
+
+                    var find_results = function (templates, template_search_index, intended_search_index, search_results) {
+                        var other_results_found = false;
+                        for (var i = 0; i < templates.length; i++) {
+                            var current_template = templates[i];
+                            if (!!search_results[i]) continue;
+                            var result        = search(current_template, template_search_index, intended_search_index, search_results);
+                            search_results[i] = result;
+                            if (!other_results_found && result_is_final(result)) return result;
+                            other_results_found = other_results_found || !!result;
+                        }
+                        return null;
+                    };
+                    var result       = find_results(templates, template_search_index, intended_search_index, search_results);
+                    if (!search_results.filter(function (i) {return i;}).length && template_search_index !== 'std') result = find_results(templates, 'std', template_search_index, search_results);
+                    if (result) return resolve(result);
+
+                    templates = [].concat(search_results);
+                    if (j === search_indices.length - 1 && template_search_index !== 'std') {
+                        search_indices.push('std');
+                        intended_search_index = template_search_index;
+                    } else {
+                        intended_search_index = null;
                     }
-                    //If the primary object is a string already, we are okay and should stop looking.
                 }
-                return resolve("__CONTENT__");
+                return resolve("");
             },
             fillTemplate:          function (attributes, string) {
                 if (typeof string !== "string") return string;
@@ -171,29 +194,29 @@ define(['require', 'Sm', 'Emitter', 'underscore', 'Sm-Core-Core', 'Sm-Abstractio
                 return underscore_template(attributes);
             },
             generate:              function (template_identifier, data, settings) {
+                if (typeof  settings === "boolean") settings = {is_synchronous: settings};
                 settings           = settings || {};
                 var is_synchronous = settings.is_synchronous || false;
                 var Self           = this;
-                var resolve        = function (string) {
+                if (!data) Sm.CONFIG.DEBUG && console.log(arguments);
+                var resolve   = function (string) {
                     string = Self.fillTemplate(data, string);
                     return !is_synchronous ? Promise.resolve(string) : string;
                 };
-                var templates      = [this.getTemplateObject(data), this.getTemplateObject()];
-                var fragment       = this.createFragmentHTML(template_identifier, templates, data, {
-                    is_synchronous: is_synchronous,
-                    replace:        {__BUTTON_CONTROL__: "button_control"}
-                });
+                var templates = [this.getTemplateObject(data), this.getTemplateObject(null)];
+                var fragment  = this.createFragmentHTML(template_identifier, templates, data, {is_synchronous: is_synchronous});
                 return !is_synchronous ? fragment.then(resolve) : resolve(fragment);
             },
             getTemplateObject:     function (data) {
                 if (!data)return Sm.Abstraction.templates._template;
                 if (this.template_object) return this.template_object;
-                var entity_type = Sm.Core.Meta.getEntityType(data);
+                var entity_type = Sm.Core.Identifier.getEntityType(data);
                 var template_object;
                 if (!entity_type && data.Resource) {
                     data        = data.Resource || null;
-                    entity_type = Sm.Core.Meta.getEntityType(data);
+                    entity_type = Sm.Core.Identifier.getEntityType(data);
                 }
+                Sm.CONFIG.DEBUG && console.log(entity_type);
                 var SmEntity = Sm.Core.Meta.getSmEntity(entity_type);
                 if (!SmEntity || !data) return Sm.Abstraction.templates._template;
                 var subtype = SmEntity.Meta.getEntitySubtype(data);
@@ -207,8 +230,52 @@ define(['require', 'Sm', 'Emitter', 'underscore', 'Sm-Core-Core', 'Sm-Abstractio
              * @return {*}
              */
             getAttributesFromData: function (data) {
+                data = data || {};
                 return data.getAttributes ? data.getAttributes() : data;
             }
         });
+    Sm.Abstraction.Garage                           = new Garage(null);
+    Sm.Abstraction.Garage.extend                    = Garage.extend.bind(Garage);
+    Sm.Abstraction.Garage.Proto                     = Garage;
+    Sm.Abstraction.Garage.replaceContentPlaceholder = function (outer, inner, is_synchronous, identifier) {
+        if (!is_synchronous) {
+            inner = is_promise(inner) ? inner : Promise.resolve(inner);
+            outer = is_promise(outer) ? outer : Promise.resolve(outer);
+            return outer.then(function (outer_result) {
+                return inner.then(function (inner_result) {
+                    return Sm.Abstraction.Garage.replaceContentPlaceholder(outer_result, inner_result, true);
+                })
+            })
+        } else {
+            var is_correct = function (item) {return item && (typeof item === "string" || item instanceof $ || Sm.Core.Util.isNode(item) || Sm.Core.Util.isArray(item));};
+            if (!is_correct(outer)) outer = '__CONTENT__';
+            if (!inner) inner = '';
+            else if (!is_correct(inner)) inner = '__CONTENT__';
+        }
+        identifier               = identifier || null;
+        var replacement_happened = false;
+        if (typeof outer === "string") {
+            if (typeof inner === "string" && outer.indexOf('__CONTENT__') > -1) {
+                identifier           = null;
+                outer                = $(outer.replace('__CONTENT__', inner));
+                replacement_happened = true;
+            } else {
+                identifier = identifier || ("replace-gi-tmp" + Sm.Core.Util.randomString(3, 'abcdefg'));
+                outer      = $(outer.replace('__CONTENT__', '<div id="' + identifier + '"></div>'));
+            }
+        }
+        if (identifier && !replacement_happened) {
+            var $container;
+            if (($container = outer.find('#' + identifier)).length) {
+                $container.replaceWith($(inner));
+            } else {
+                outer.append(inner);
+            }
+        }
+        return outer;
+    };
+    Sm.Abstraction.Garage.normalizeResult           = function (item, is_synchronous) {
+        return Sm.Abstraction.Garage.replaceContentPlaceholder(item, null, is_synchronous);
+    };
     Sm.Core.dependencies.add('Abstraction-Garage');
 });

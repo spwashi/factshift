@@ -22,7 +22,7 @@ define(['require', 'Sm', 'backbone', 'Sm-Abstraction-Stateful', 'Sm-Abstraction-
             object_type:  'View',
             display_type: 'std',
 
-            events:             {},
+            events:            {},
             /**
              * @constructor
              * @param {{}}                                      config
@@ -35,7 +35,7 @@ define(['require', 'Sm', 'backbone', 'Sm-Abstraction-Stateful', 'Sm-Abstraction-
              * @param {function}                                config.resolve
              * @param {function}                                config.reject
              */
-            initialize:         function (config) {
+            initialize:        function (config) {
                 config             = config || {};
                 this.resource_r_id = this.resource_r_id || config.resource_r_id || (config.Resource && config.Resource.getR_ID && config.Resource.getR_ID());
                 this.resource_type = this.resource_type || config.resource_type || this.resource_type;
@@ -53,14 +53,14 @@ define(['require', 'Sm', 'backbone', 'Sm-Abstraction-Stateful', 'Sm-Abstraction-
              * Set the ReferencePoint in which a View exists
              * @param {Sm.Core.Identifier.Identifiable|HTMLElement=}         ReferencePoint
              */
-            setReferencePoint:  function (ReferencePoint) {
+            setReferencePoint: function (ReferencePoint) {
                 this.ReferencePoint = Sm.Core.ReferencePoint.init(ReferencePoint);
             },
             /**
              * Get the ReferencePoint in which an element exists
              * @return {Sm.Core.Identifier.Identifiable|HTMLElement}
              */
-            getReferencePoint:  function () {
+            getReferencePoint: function () {
                 return this.ReferencePoint;
             },
             /**
@@ -68,25 +68,32 @@ define(['require', 'Sm', 'backbone', 'Sm-Abstraction-Stateful', 'Sm-Abstraction-
              * @param el
              * @return {*}
              */
-            setElement:         function (el) {
+            setElement:        function (el) {
                 var res = Backbone.View.prototype.setElement.apply(this, arguments);
                 return res;
             },
-            getElement:         function (property) {
+            getElement:        function (property) {
                 if (!property) return this.el;
                 return null;
             },
-            isRendered:         function () {
+            isRendered:        function () {
                 return this.queryStatus('rendered')
             },
-            setDisplayType:     function (display_type) {
+            setDisplayType:    function (display_type) {
                 this.display_type = display_type;
             },
+
+            getRootObject: function () {
+                var Resource = this.getResource();
+                if (!Resource || !Resource.isIdentifiable) return null;
+                return Sm.Core.Identifier.getRootObject(Resource);
+            },
+
             /**
              * Render the View and change the Element
-             * @param {{}}          settings
-             * @param {boolean}     settings.is_synchronous
-             * @param {boolean}     settings.only_unrendered
+             * @param {{}=}             settings
+             * @param {boolean=false}   settings.is_synchronous
+             * @param {boolean=false}   settings.only_unrendered
              * @return {*}
              */
             render:             function (settings) {
@@ -98,13 +105,12 @@ define(['require', 'Sm', 'backbone', 'Sm-Abstraction-Stateful', 'Sm-Abstraction-
                 this.setStatus('rendering', true);
                 var outer             = this._generateOuterHTML(is_synchronous);
                 var inner             = this._generateInnerHTML(is_synchronous);
-                var outer_html, inner_html;
+                var outer_html, inner_html, html;
                 var Self              = this;
-                var when_all_rendered = function () {
-                    var html_string = outer_html.replace('__CONTENT__', inner_html);
-                    var el          = Sm.Core.Util.createElement(html_string);
-                    var old_el      = Self.el;
-                    Self.el         = el;
+                var when_all_rendered = function (el) {
+                    if (!el) return null;
+                    var old_el = Self.el;
+                    Self.el    = el[0] || el;
                     Self.setElement(el);
                     Self.refresh();
                     $(old_el).replaceWith(el);
@@ -115,18 +121,12 @@ define(['require', 'Sm', 'backbone', 'Sm-Abstraction-Stateful', 'Sm-Abstraction-
                     Self.setStatus('rendered', true);
                     return Self.el;
                 };
+                html                  = Sm.Abstraction.Garage.replaceContentPlaceholder(outer, inner, is_synchronous);
+
                 if (!is_synchronous) {
-                    return outer.then(function (result) {
-                        outer_html = result;
-                        return inner.then(function (result) {
-                            inner_html = result;
-                            return when_all_rendered();
-                        })
-                    })
+                    return html.then(when_all_rendered);
                 } else {
-                    outer_html = outer;
-                    inner_html = inner;
-                    return when_all_rendered();
+                    return when_all_rendered(html);
                 }
             },
             /**
@@ -173,7 +173,7 @@ define(['require', 'Sm', 'backbone', 'Sm-Abstraction-Stateful', 'Sm-Abstraction-
             getResource:        function () {
                 if (this.resource_r_id) return Sm.Core.Identifier.identify(this.resource_r_id);
                 return null;
-            }
+            },
         });
     Sm.Abstraction.Views.View.element_references = {};
     /**
@@ -235,7 +235,7 @@ define(['require', 'Sm', 'backbone', 'Sm-Abstraction-Stateful', 'Sm-Abstraction-
          * Return the VIewType to use for initialization
          * @return {Sm.Abstraction.Views.View}
          */
-        getViewType:   function () {return Sm.Abstraction.Views.View;},
+        getViewType:   function () {return Sm.Core.Identifier.getRootObjectAttribute(this, 'View') || Sm.Abstraction.Views.View;},
         /** @param {Sm.Abstraction.Views.View}   View */
         addView:       function (View) {
             if (Sm.Core.Util.isElement(View)) View = this.convertToView(View);

@@ -510,7 +510,7 @@ return [
             ],
         ],
         'Section'    => [
-            'relationships' => [
+            'relationships'              => [
                 'children',
                 'micros',
                 'composition',
@@ -520,7 +520,7 @@ return [
                 'concepts',
                 'users',
             ],
-            'properties'    => [
+            'properties'                 => [
                 'display_types' => [
                     'content'     => [ 'type' => 'long' ],
                     'update_dt'   => [ 'name' => 'Last Updated', 'type' => 'datetime' ],
@@ -535,7 +535,12 @@ return [
                 ],
                 'api_gettable'  => '*',
             ],
-            'types'         => [
+            'relationship_display_types' => [
+                'reciprocal_micros' => [
+                    'display_name' => 'Macros',
+                ],
+            ],
+            'types'                      => [
                 'standard' => [
                     'properties' => [
                         'title',

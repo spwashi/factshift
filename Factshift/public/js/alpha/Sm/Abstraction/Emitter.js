@@ -32,6 +32,12 @@ define(['Class'], function (Class) {
                                          this.events     = [];
                                          this._callbacks = {}
                                      },
+                                     /**
+                                      *
+                                      * @param event
+                                      * @param fn
+                                      * @return {Emitter}
+                                      */
                                      on:                 function (event, fn) {
                                          if (this._emitted_events && this._emitted_events[event]) {
                                              if (typeof fn === 'function') {

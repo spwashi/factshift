@@ -6,7 +6,7 @@ require(['require', 'Sm-Abstraction-Relationship-_template'], function (require)
         Sm.Abstraction.RelationshipIndex.templates           = Sm.Abstraction.RelationshipIndex.templates || {};
         Sm.Abstraction.RelationshipIndex.templates._template = {
             body_outer:   {
-                std:     function (RelationshipIndex) {
+                std: function (RelationshipIndex) {
                     var relationship_index = RelationshipIndex.get_relationship_index();
                     var ent_id             = RelationshipIndex.getResource().getEntId();
                     var template           = [
@@ -24,7 +24,7 @@ require(['require', 'Sm-Abstraction-Relationship-_template'], function (require)
                     var RelationshipIndex = data.RelationshipIndex;
                     var OtherView         = data.OtherView;
                     if (!OtherView) return '<div class="error"></div>';
-                    var RelationshipGarage = Sm.Abstraction.Relationship.getGarage();
+                    var RelationshipGarage = Sm.Core.Identifier.getRootObjectAttribute(Relationship || 'Relationship', 'Garage');
                     var outer              = RelationshipGarage.generate('body_outer.std', Relationship, {is_synchronous: true});
                     var OtherEl            = OtherView.render({is_synchronous: true, only_unrendered: true});
                     outer                  = outer.replace('__CONTENT__', '');
@@ -35,7 +35,7 @@ require(['require', 'Sm-Abstraction-Relationship-_template'], function (require)
                 }
             },
             body:         {
-                std:     function (data) {
+                std: function (data) {
                     var relationship_index_title = _.titleize(data.get_relationship_index());
                     return '<header class="title" data-attribute="title">' + relationship_index_title + '</header>'
                 }

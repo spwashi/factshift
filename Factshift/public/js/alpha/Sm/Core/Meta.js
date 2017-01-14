@@ -65,7 +65,7 @@ require(['require', 'Emitter', 'Sm', 'underscore'], function (require, Emitter, 
             },
 //Attribute functions
             getEntitySubtype: function (Entity, what_to_get) {
-                var entity_type = Sm.Core.Meta.getEntityType(Entity) || this.entity_type;
+                var entity_type = Sm.Core.Identifier.getEntityType(Entity) || this.entity_type;
                 if (!entity_type || !(typeof Entity.get === "function")) return false;
                 var subtype;
                 var subtype_identifier = entity_type.toLowerCase() + '_type';
@@ -88,7 +88,7 @@ require(['require', 'Emitter', 'Sm', 'underscore'], function (require, Emitter, 
                 return [];
             },
             getApiSettableAttributes: function (Entity) {
-                var _config = this._config;
+                var _config = this._config || {};
                 var subtype, subtype_config;
                 if (Entity && _config.types && (subtype = this.getEntitySubtype(Entity)) && (subtype_config = _config.types[subtype])) {
                     var properties = subtype_config.properties || null;
@@ -98,7 +98,7 @@ require(['require', 'Emitter', 'Sm', 'underscore'], function (require, Emitter, 
                     }
                     if (subtype_config && typeof subtype_config === "object") {
                         var OtherMeta;
-                        if (subtype_config.entity_type && (OtherMeta = Sm.Core.Meta.getSmEntityAttribute(subtype_config.entity_type, 'Meta'))) {
+                        if (subtype_config.entity_type && (OtherMeta = Sm.Core.Identifier.getRootObjectAttribute(subtype_config.entity_type, 'Meta'))) {
                             properties._entity_type = [];
                             return (OtherMeta.getApiSettableAttributes(Entity) || []).concat(properties || []);
                         }
@@ -154,29 +154,26 @@ require(['require', 'Emitter', 'Sm', 'underscore'], function (require, Emitter, 
              */
             initRelationshipIndex:  function (Entity, relationship_index, server_RelationshipIndex) {
                 var is_reciprocal        = relationship_index.indexOf('reciprocal_') > -1;
+                var rel_index_details    = {is_reciprocal: is_reciprocal};
                 server_RelationshipIndex = server_RelationshipIndex || {};
                 //remove 'reciprocal_' from the relationship_index
                 is_reciprocal && (relationship_index = relationship_index.replace('reciprocal_', ''));
                 var entity_info = this._config;
-                if (!entity_info) throw new Sm.Exceptions.Error("Could not find entity info for " + this.entity_type);
-                var relationships_info =
-                        (is_reciprocal
-                            ? entity_info.reciprocal_relationships
-                            : entity_info.relationships);
-                if (!relationships_info || !relationships_info[relationship_index])
-                    throw new Sm.Exceptions.Error("Could not use " + relationship_index + ' to relate in ' + this.entity_type, [Entity, relationship_index, this, entity_info, is_reciprocal]);
-                var details = {
-                    is_reciprocal:     is_reciprocal,
-                    relationship_info: relationships_info[relationship_index]
-                };
 
-                var context_id = server_RelationshipIndex.context_id || null;
+                if (entity_info) {
+                    var relationships_info =
+                            (is_reciprocal ? entity_info.reciprocal_relationships : entity_info.relationships);
+
+                    if (!relationships_info || !relationships_info[relationship_index]) Sm.CONFIG.DEBUG && console.log("Could not use " + relationship_index + ' to relate in ' + this.entity_type);
+                    else rel_index_details.relationship_info = relationships_info[relationship_index];
+                }
 
                 var RelationshipIndex = new Sm.Abstraction.RelationshipIndex(
                     Entity.getR_ID(),
                     relationship_index,
-                    details);
-                var list              = server_RelationshipIndex.list || {};
+                    rel_index_details);
+
+                var list = server_RelationshipIndex.list || {};
                 for (var c_id in list) {
                     if (!list.hasOwnProperty(c_id)) continue;
                     RelationshipIndex.initRelationshipContext(c_id)
@@ -201,6 +198,12 @@ require(['require', 'Emitter', 'Sm', 'underscore'], function (require, Emitter, 
                 if (!SmEntity) throw  new Sm.Exceptions.Error("Could not find SmEntity", settings);
                 return SmEntity.Wrapper.initEntity(settings);
             },
+            initEntityPlaceholder:  function (attributes) {
+                var entity_type = this.entity_type || null;
+                var Meta        = Sm.Core.Identifier.getRootObjectAttribute('Placeholder', 'Meta');
+                var Entity      = Meta.initEntity(attributes);
+                return Entity;
+            },
 
             /**
              * Get the entity type of a resource
@@ -208,7 +211,7 @@ require(['require', 'Emitter', 'Sm', 'underscore'], function (require, Emitter, 
              * @return {boolean|Sm.entity_type}
              */
             getEntityType:                   function (item) {
-                return Sm.Core.Meta.getEntityType(item);
+                return Sm.Core.Identifier.getEntityType(item);
             },
             getRelationshipType:             function (relationship_identifier, what_to_get) {
                 Sm.CONFIG.DEBUG && console.log('implement get relationship type');
@@ -304,14 +307,17 @@ require(['require', 'Emitter', 'Sm', 'underscore'], function (require, Emitter, 
     };
     /**
      *
-     * @param {Sm.entity_type}              entityType
+     * @param {Sm.entity_type}              entity_type
      * @return {Sm.Core.SmEntity|boolean}
      */
-    Sm.Core.Meta.getSmEntity = function (entityType) {
-        entityType = this.getEntityType(entityType);
-        return Sm.Entities && Sm.Entities[entityType] ? Sm.Entities[entityType] : (false);
+    Sm.Core.Meta.getSmEntity = function (entity_type) {
+        entity_type = this.getEntityType(entity_type);
+        return Sm.Entities && Sm.Entities[entity_type] ? Sm.Entities[entity_type] : (false);
     };
-    Sm.Core.Meta.isEntId = function (id) {
+    Sm.Core.Meta.getRootObject = function (item) {
+        return Sm.Core.Meta.getSmEntity(item) || Sm.Core.Identifier.getObjectType();
+    };
+    Sm.Core.Meta.isEntId       = function (id) {
         var ent_id_length = 25;
         var is_ent_id     =
                 (typeof item === 'string') &&
@@ -323,40 +329,10 @@ require(['require', 'Emitter', 'Sm', 'underscore'], function (require, Emitter, 
             Sm.CONFIG.DEBUG && console.log(id, ' - is ent id');
         }
     };
-    Sm.Core.Meta.isId    = function (id) {
+    Sm.Core.Meta.isId          = function (id) {
         return Sm.Core.Util.isNumeric(id);
     };
-    /**
-     * Get something from an SmEntity
-     * @param {string|Sm.Core.Identifier.Identifiable} entityType
-     * @param component
-     * @return {*|boolean}
-     */
-    Sm.Core.Meta.getSmEntityAttribute = function (entityType, component) {
-        if (typeof entityType !== "string") entityType = Sm.Core.Meta.getEntityType(entityType);
-        if (!entityType) return false;
-        var SmEntity = Sm.Core.Meta.getSmEntity(entityType);
-        if (!SmEntity) return false;
-        return SmEntity && SmEntity[component] ? SmEntity[component] : false;
-    };
-    Sm.Core.Meta.getEntityType = function (item) {
-        var entity_type;
-        if (item && typeof item === "object") {
-            if (item.isIdentifiable) {
-                var tmp;
-                if (tmp = item.getEntityType()) entity_type = tmp;
-                else if (tmp = item.getEntId()) entity_type = tmp;
-            } else {
-                if (!!item.entity) return Sm.Core.Meta.getEntityType(item.entity);
-                else if (item._entity_type) entity_type = item._entity_type;
-                else if (item.entity_type)  entity_type = item.entity_type;
-            }
-        } else if (typeof item === "string") {
-            if (!Sm.Entities[item]) entity_type = underscore(underscore.titleize(item.replace('_id', ''))).singularize();
-            else entity_type = item;
-        } else return false;
-        return entity_type;
-    };
+
     /** @type {Sm.Core.Meta|function} Sm.Core.Meta.Proto */
     Sm.Core.Meta.Proto = Meta;
     Sm.Core.dependencies.add('Core_Meta');

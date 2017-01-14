@@ -142,12 +142,12 @@ define(['require', 'Sm', 'jquery', 'Sm-Abstraction-Views-View'], function (requi
 //------------------------
                 _generateOuterHTML:            function (is_synchronous) {
                     var Entity = this.getResource();
-                    var Garage = Sm.Core.Meta.getSmEntityAttribute(Entity, 'Garage') || new (Sm.Abstraction.Garage);
+                    var Garage = Sm.Core.Identifier.getRootObjectAttribute(Entity, 'Garage') || (Sm.Abstraction.Garage);
                     return Garage.generate('body_outer.' + this.display_type, Entity, {is_synchronous: is_synchronous})
                 },
                 _generateInnerHTML:            function (is_synchronous) {
                     var Entity = this.getResource();
-                    var Garage = Sm.Core.Meta.getSmEntityAttribute(Entity, 'Garage') || new (Sm.Abstraction.Garage);
+                    var Garage = Sm.Core.Identifier.getRootObjectAttribute(Entity, 'Garage') || (Sm.Abstraction.Garage);
                     return Garage.generate('body.' + this.display_type, Entity, {is_synchronous: is_synchronous})
                 },
                 /**

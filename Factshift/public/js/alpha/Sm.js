@@ -13,7 +13,6 @@ define([
            'backbone'
        ],
        /**
-        * @lends Sm
         * @param require
         * @param $
         * @param Cocktail
@@ -99,7 +98,7 @@ define([
                 * @return {boolean}
                 * @private
                 */
-               resolve: function (name) {
+               resolve:               function (name) {
                    var waiting = this._waiting[name];
                    if (!waiting || waiting.timeout === false) return false;
 
@@ -111,8 +110,8 @@ define([
                    delete this._waiting[name];
                    fn(name);
                },
-               _bb:     {},
-               on_load: function (dependencies, fn, name, timeout, other) {
+               _bb:                   {},
+               on_load:               function (dependencies, fn, name, timeout, other) {
                    // format all of the dependencies, removing the ones that already have been loaded
                    dependencies = this._correct_dependencies(dependencies);
                    if (typeof fn === "string") {
@@ -213,7 +212,7 @@ define([
                        }
                        return true;
                    }
-                   name = name.toLowerCase().trim();
+                   name = this._correct_name(name);
                    return !!this._loaded[name];
                }
            };

@@ -11,15 +11,34 @@ require(['require'], function (require) {
                     var r_id     = Relationship.getR_ID();
                     var template = [
                         '<div class="relationship" data-r_id="' + r_id + '">',
-                        '__BUTTON_CONTROL__',
+                        this.generate('button_control', Relationship, true),
                         '__CONTENT__',
                         '</div>'
                     ];
                     return template.join('');
                 }
             },
-            body:           {
-                std: '__CONTENT__'
+            body_inner:     {
+                form: function (data, display_type, is_synchronous) {
+                    Sm.CONFIG.DEBUG && console.log(is_synchronous);
+                    var Relationship = data.Resource || null;
+                    if (!Relationship) throw new Sm.Exceptions.Error("Cannot edit resource!");
+                    var Map = Relationship.getMap();
+                    if (!Map || !Relationship.isEditable || !Map.isEditable) throw new Sm.Exceptions.Error("Cannot edit resource!");
+                    var MapGarage = Sm.Core.Identifier.getRootObjectAttribute(Map, 'Garage') || (new Sm.Abstraction.Garage);
+
+                    var entity_container = this.generate('body_inner._form_value.[entity_container]', {attribute: 'entity_container', Resource: Relationship});
+                    var map_form         = MapGarage.generate('body_inner.form', {Resource: Map}, {is_synchronous: true});
+                    var items            = [map_form, entity_container];
+
+                    var when_complete = function (previous, results) {
+                        var $incident = $(results.shift() || null);
+                        for (var i = 0; i < results.length; i++) {$incident = $incident.add(results[i]);}
+                        return $incident;
+                    };
+                    var walk_fn       = function (item) {return Sm.Abstraction.Garage.normalizeResult(item, is_synchronous);};
+                    return Sm.Core.Util.iterateUnknownSynchronicity(items, is_synchronous, walk_fn, when_complete)
+                }
             }
         };
     }, 'Abstraction-Relationship-_template');

@@ -60,9 +60,10 @@ define(['jquery', 'Sm'], function ($, Sm) {
             callback    = typeof  callback === "function" ? callback : function (item, previous) {return item};
             items       = Sm.Core.Util.isArray(items) ? items : [items];
             on_complete = typeof  on_complete === "function" ? on_complete : function (item) {return item};
+            var results = [];
+
             if (!is_synchronous) {
                 var MainPromise = Promise.resolve();
-                var results     = [];
                 for (var k = 0; k < items.length; k++) {
                     var fn      = (function (item, item_index) {
                         return function (previous) {
@@ -79,9 +80,21 @@ define(['jquery', 'Sm'], function ($, Sm) {
                 });
             } else {
                 var last_result = null;
-                for (var i = 0; i < items.length; i++) {last_result = callback(items[i], last_result);}
-                return on_complete(last_result);
+                for (var i = 0; i < items.length; i++) {
+                    last_result = callback(items[i], last_result);
+                    results.push(last_result)
+                }
+                return on_complete(last_result, results);
             }
+        },
+        combineJqueryArray:          function (results) {
+            var len = 1;
+            if (results && !Sm.Core.Util.isArray(results)) results = [results];
+            else len = results.length;
+            if (!results || !len) return $();
+            var $incident = $(results.shift() || null);
+            for (var i = 0; i < len; i++) {$incident = $incident.add(results[i]);}
+            return $incident;
         },
         createElement:               function (string) {
             var div;

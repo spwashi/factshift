@@ -38,12 +38,13 @@ require(['require', 'Class', 'Sm', 'underscore', 'inflection', 'Sm-Core-Util'], 
              * @return {*}
              */
             toJSON:  function () {
-                //  create a temporary object to return, minus the Resource that comes with it\
-                //  We remove the Resource to avoid cyclic serialization
-                var faux_merge = Util.merge_objects(this, {});
-                if ("Resource" in faux_merge) delete  faux_merge.Resource;
-                //  return the object as the serialized object
-                return faux_merge;
+                var end  = {};
+                var Self = this;
+                ['ent_id', 'typed_id', 'object_type', 'entity_type', 'r_id'].forEach(function (item) {
+                    if (item in Self)
+                        end[item] = Self[item];
+                });
+                return end;
             },
             /**
              * @constructor
@@ -53,9 +54,9 @@ require(['require', 'Class', 'Sm', 'underscore', 'inflection', 'Sm-Core-Util'], 
             init:    function (Resource, identification_object) {
                 identification_object = identification_object || {};
                 if (identification_object.ent_id && identification_object.entity_type) {
-                    this._r_id = identification_object.ent_id + '|' + identification_object.entity_type;
+                    this.r_id = identification_object.ent_id + '|' + identification_object.entity_type;
                 } else {
-                    this._r_id = identification_object.r_id || Sm.Core.Identifier._generate_r_id(identification_object.object_type || identification_object.object_type || null);
+                    this.r_id = identification_object.r_id || Sm.Core.Identifier._generate_r_id(identification_object.object_type || identification_object.object_type || null);
                 }
                 this.Resource = Resource || false;
                 this.refresh(identification_object);
@@ -67,15 +68,15 @@ require(['require', 'Class', 'Sm', 'underscore', 'inflection', 'Sm-Core-Util'], 
             refresh: function (identification_object) {
                 this.Resource         = this.Resource || identification_object.Resource;
                 identification_object = identification_object || {};
-                /** @type {Sm.ent_id} this._ent_id */
-                var ent_id            = this._ent_id || identification_object.ent_id || false;
-                var id                = this._id || parseInt(identification_object.id) || false;
-                var object_type       = this._object_type || identification_object.object_type || false;
+                /** @type {Sm.ent_id} this.ent_id */
+                var ent_id            = this.ent_id || identification_object.ent_id || false;
+                var id                = this.id || parseInt(identification_object.id) || false;
+                var object_type       = this.object_type || identification_object.object_type || false;
                 var entity_type       = this.entity_type || identification_object.entity_type;
 
-                id && (this._id = id);
-                ent_id && (this._ent_id = ent_id);
-                object_type && (this._object_type = object_type);
+                id && (this.id = id);
+                ent_id && (this.ent_id = ent_id);
+                object_type && (this.object_type = object_type);
 
                 if (!entity_type && ent_id && Sm.Core.dependencies.is_loaded('Core_Meta')) {
                     entity_type = Sm.Core.Identifier.getEntityType(ent_id);
@@ -83,8 +84,8 @@ require(['require', 'Class', 'Sm', 'underscore', 'inflection', 'Sm-Core-Util'], 
 
                 entity_type && (this.entity_type = entity_type);
 
-                if (entity_type && id) this._typed_id = this._typed_id || (this.entity_type + '|' + this._id);
-                this.register(this._ent_id).register(this._typed_id).register(this._r_id);
+                if (entity_type && id) this.typed_id = this.typed_id || (this.entity_type + '|' + this.id);
+                this.register(this.ent_id).register(this.typed_id).register(this.r_id);
                 return this;
             },
 
@@ -99,12 +100,12 @@ require(['require', 'Class', 'Sm', 'underscore', 'inflection', 'Sm-Core-Util'], 
             },
 
             getResource:   function () { return this.Resource || false; },
-            getObjectType: function () { return this._object_type || null; },
+            getObjectType: function () { return this.object_type || null; },
             getEntityType: function () { return this.entity_type || null; },
-            getId:         function () { return this._id || null; },
-            getTypedId:    function () { return this._typed_id || null; },
-            getR_ID:       function () { return this._r_id || null; },
-            getEntId:      function () { return this._ent_id || null; }
+            getId:         function () { return this.id || null; },
+            getTypedId:    function () { return this.typed_id || null; },
+            getR_ID:       function () { return this.r_id || null; },
+            getEntId:      function () { return this.ent_id || null; }
         });
     /**
      * An object that stores the various keys that can be used to uniquely identify an object

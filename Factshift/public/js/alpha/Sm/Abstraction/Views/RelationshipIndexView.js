@@ -2,6 +2,7 @@
  * Created by Sam Washington on 12/9/16.
  */
 define(['require', 'Sm', 'jquery', 'Emitter', 'Sm-Abstraction-Views-View', 'Sm-Abstraction-RelationshipIndex-_template'], function (require, Sm, $, Emitter) {
+    var active_inits = {};
     Sm.Core.dependencies.on_load(['Abstraction-Views-View', 'Abstraction-RelationshipIndex-_template'], function () {
         /**
          * @class Sm.Abstraction.RelationshipIndexView
@@ -167,9 +168,12 @@ define(['require', 'Sm', 'jquery', 'Emitter', 'Sm-Abstraction-Views-View', 'Sm-A
                     return Garage.generate('body_outer.' + this.display_type, Entity, {is_synchronous: is_synchronous})
                 },
                 _generateInnerHTML:       function (is_synchronous) {
-                    var Entity = this.getResource();
-                    var Garage = Sm.Core.Identifier.getRootObjectAttribute(this, 'Garage');
-                    return Garage.generate('body.' + this.display_type, Entity, {is_synchronous: is_synchronous})
+                    var RelationshipIndex = this.getResource();
+                    var Garage            = Sm.Core.Identifier.getRootObjectAttribute(this, 'Garage');
+                    return Garage.generate('body.' + this.display_type, RelationshipIndex, {is_synchronous: is_synchronous}).then(function (res) {
+                        Sm.CONFIG.DEBUG && console.log(res);
+                        return res;
+                    })
                 },
                 /**
                  * Make sure the Views that correspond to the Entities related via this RelationshipIndex
@@ -181,7 +185,8 @@ define(['require', 'Sm', 'jquery', 'Emitter', 'Sm-Abstraction-Views-View', 'Sm-A
                     var RelationshipIndex = this.getResource();
                     var RelIndEntity      = RelationshipIndex.getResource();
                     if (!RelIndEntity) return Promise.reject("The relation;ship index is not complete without an Entity");
-
+                    var id   = '[' + RelationshipIndex.getR_ID() + '](' + RelationshipIndex.get_relationship_index() + ')';
+                    var rand = active_inits[id] = Sm.Core.Util.randomString(4);
                     var end_item_elements;
 
                     end_item_elements = this.elements.items = this.elements.items || {};
@@ -195,7 +200,7 @@ define(['require', 'Sm', 'jquery', 'Emitter', 'Sm-Abstraction-Views-View', 'Sm-A
                             var RelationshipView = Relationship.convertToView(null, Self);
                             RelationshipView.setDisplayType(Self.display_type);
                             RelationshipView.setActiveViews([View]);
-                            return RelationshipView.render();
+                            return RelationshipView.render({is_synchronous: true});
                         }
                     } else {
                         render_el = function (ViewObject) {
@@ -217,13 +222,18 @@ define(['require', 'Sm', 'jquery', 'Emitter', 'Sm-Abstraction-Views-View', 'Sm-A
                                    return Promise.all(all_elements_rendered);
                                })
                                .then(function (elements) {
-                                   Self.$el.append(elements);
-                                   elements.forEach(function (item) {
-                                       if (!item || typeof  item !== "object") return;
-                                       if (item.FactshiftView) item.FactshiftView.refresh();
-                                   });
+                                   if (rand == active_inits[id])
+                                       Self._append_items(elements);
                                    Self.emit('init_RelatedElements');
                                });
+                },
+                _append_items:            function (elements) {
+                    //this.$el.find('.factshift-entity,.factshift-relationship').detach();
+                    elements.forEach(function (item) {
+                        if (!item || typeof  item !== "object") return;
+                        if (item.FactshiftView) item.FactshiftView.refresh();
+                    });
+                    this.$el.append(elements);
                 },
                 refresh:                  function () {
                     var res  = Sm.Abstraction.Views.View.prototype.refresh.apply(this, arguments);

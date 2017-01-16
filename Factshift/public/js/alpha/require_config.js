@@ -5,7 +5,10 @@ var ALPHA_URL = FACTSHIFT_JS_URL + "alpha/";
 require.config(
     {
         paths: {
-            jquery:      FACTSHIFT_JS_URL + "vendor/jquery.min",
+            jquery:      [
+                "https://code.jquery.com/jquery-2.2.4",
+                FACTSHIFT_JS_URL + "vendor/jquery.min"
+            ],
             Promise:     FACTSHIFT_JS_URL + "vendor/Promise",
             backbone:    FACTSHIFT_JS_URL + "vendor/backbone",
             Cocktail:    FACTSHIFT_JS_URL + "vendor/Cocktail",
@@ -76,9 +79,9 @@ require.config(
             "Sm-Entities-Page-View":       ALPHA_URL + "Sm/Entities/Page/View",
             "Sm-Entities-Page-PageEntity": ALPHA_URL + "Sm/Entities/Page/PageEntity",
 
-            "Sm-Entities-Placeholder-View":              ALPHA_URL + "Sm/Entities/Placeholder/View",
-            "Sm-Entities-Placeholder-templates-_template":         ALPHA_URL + "Sm/Entities/Placeholder/templates/_template",
-            "Sm-Entities-Placeholder-PlaceholderEntity": ALPHA_URL + "Sm/Entities/Placeholder/PlaceholderEntity",
+            "Sm-Entities-Placeholder-View":                ALPHA_URL + "Sm/Entities/Placeholder/View",
+            "Sm-Entities-Placeholder-templates-_template": ALPHA_URL + "Sm/Entities/Placeholder/templates/_template",
+            "Sm-Entities-Placeholder-PlaceholderEntity":   ALPHA_URL + "Sm/Entities/Placeholder/PlaceholderEntity",
 
             "Sm-Entities-Dimension-View":            ALPHA_URL + "Sm/Entities/Dimension/View",
             "Sm-Entities-Dimension-DimensionEntity": ALPHA_URL + "Sm/Entities/Dimension/DimensionEntity"

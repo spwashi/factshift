@@ -3,6 +3,7 @@
  */
 define(['require', 'Sm', 'Emitter', 'underscore', 'jquery', 'Sm-Core-Core', 'Sm-Abstraction-templates-_template'], function (require, Sm, Emitter, _, $) {
     var is_promise                                  = function (item) {return item && (item instanceof Promise || item.then);};
+    var active_functions                            = [];
     /**
      * @class Sm.Abstraction.Garage
      * @alias Sm.Abstraction.Garage
@@ -119,33 +120,32 @@ define(['require', 'Sm', 'Emitter', 'underscore', 'jquery', 'Sm-Core-Core', 'Sm-
                 };
                 var search                = function (obj, display_type, intended_display_type) {
                     intended_display_type = intended_display_type || display_type;
-                    var res               = false;
+                    var result            = false;
                     var obj_can_be_result = result_is_final(obj);
 
                     if (typeof obj === "boolean" || typeof obj === "number" || !obj) return obj;
-                    if (obj_can_be_result) res = obj;
-                    if (obj && display_type) {
-                        if (obj_can_be_result) return res = obj;
-                        else if (typeof obj === "function" || (typeof obj[display_type] === "function" && (obj = obj[display_type]))) {
-                            //Make sure this function doesn't get called more than once;
-                            var i = previously_called.indexOf(obj);
-                            try {
-                                if (i < 0) {
-                                    res = obj.apply(Self, [data || {}, intended_display_type, is_synchronous]);
-                                    previously_called.push(obj);
-                                    previous_call_results.push(res);
-                                }
-                                else res = previous_call_results[i];
-                            } catch (e) {
-                                Sm.CONFIG.DEBUG && console.log(e);
-                            }
-
-                        } else if (obj[display_type]) {
-                            res = obj[display_type];
+                    if (obj_can_be_result) return result = obj;
+                    else if (typeof obj === "function" || (typeof obj[display_type] === "function" && (obj = obj[display_type]))) {
+                        //Make sure this function doesn't get called more than once;
+                        if (active_functions.indexOf(obj) > -1) {
+                            return false;
                         }
-                        else res = false;
+                        var i = previously_called.indexOf(obj);
+                        if (i > -1) {
+                            result = previous_call_results[i]
+                        } else {
+                            active_functions.push(obj);
+                            result = obj.apply(Self, [data || {}, intended_display_type, is_synchronous]);
+                            active_functions.splice(active_functions.indexOf(obj), 1);
+
+                            previously_called.push(obj);
+                            previous_call_results.push(result);
+                        }
+                    } else if (obj[display_type]) {
+                        return result = obj[display_type];
                     }
-                    return res;
+                    else return false;
+                    return result;
                 };
                 var intended_search_index = null;
                 /**

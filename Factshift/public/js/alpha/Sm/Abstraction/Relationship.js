@@ -1,7 +1,7 @@
 /**
  * Created by Sam Washington on 11/6/16.
  */
-define(['require', 'Sm', 'Emitter', 'Sm-Abstraction-MapEntity', 'Sm-Abstraction-Editable'], function (require, Sm, Emitter) {
+define(['require', 'Sm', 'Emitter', 'Sm-Core-Core', 'Sm-Abstraction-MapEntity', 'Sm-Abstraction-Editable'], function (require, Sm, Emitter) {
     /**
      * @class Sm.Abstraction.Relationship
      * @augments Sm.Core.Identifier.Identifiable
@@ -41,12 +41,9 @@ define(['require', 'Sm', 'Emitter', 'Sm-Abstraction-MapEntity', 'Sm-Abstraction-
              * @private
              */
             _initMap:                     function (map) {
-                map                  = Sm.Core.Util.merge_objects(this.Map.getAttributes(), map || {});
-                var entity_array     = this.getEntityTypesArray();
-                var Self             = this;
-                var refresh_identity = function (MapEntityType) {
-                    Self.Identifier.refresh({entity_type: MapEntityType});
-                };
+                map              = Sm.Core.Util.merge_objects(this.Map.getAttributes(), map || {});
+                var entity_array = this.getEntityTypesArray();
+                var Self         = this;
                 if (map instanceof Sm.Abstraction.Entity) {
                     this.Map = map;
                     return this.Map;
@@ -70,9 +67,6 @@ define(['require', 'Sm', 'Emitter', 'Sm-Abstraction-MapEntity', 'Sm-Abstraction-
                                 this.RelatedEntityIdentifiers
                             ]);
                     }
-
-                    // Refresh the Identity of the Relationship
-                    refresh_identity(map_entity_type);
 
                     /** @type {Sm.Abstraction.Entity} this.Map The Entity that represents this Relationship */
                     this.Map = MapSmEntity.Meta.initEntity({

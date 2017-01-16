@@ -2,7 +2,7 @@
  * Created by Sam Washington on 11/6/16.
  */
 define(['require', 'Sm',
-        'Emitter', 'Sm-Core-Identifier',
+        'Emitter', 'Sm-Core-Core', 'Sm-Core-Identifier',
         'Sm-Abstraction-Stateful', 'Sm-Abstraction-Permittable',
         'Sm-Abstraction-Editable', 'Sm-Abstraction-Prompt-AddRelationshipPrompt',
         'Sm-Abstraction-Prompt-EditEntityPrompt'
@@ -339,8 +339,8 @@ define(['require', 'Sm',
              * @return {boolean}
              */
             registerRelationship:          function (Entity, Relationship, relationship_index) {
-                var entity_r_id       = Entity.getR_ID();
-                var rels              = this._relationships[entity_r_id] = this._relationships[entity_r_id] || {};
+                var entity_r_id = Entity.getR_ID();
+                var rels        = this._relationships[entity_r_id] = this._relationships[entity_r_id] || {};
                 if (relationship_index in rels) return true;
                 rels[relationship_index] = Relationship;
                 return false;

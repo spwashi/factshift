@@ -133,7 +133,7 @@ define(['require', 'Sm', 'jquery'], function (require, Sm, $) {
                 var d = '<div class="form" id="map-form">\n  ';
                 for (var p = 0; p < attributes.length; p++) {
                     var attr = attributes[p];
-                    d += this.generate('body_inner._form_value.[' + attr + ']', {attribute: attr, Resource: Map, Meta: MapMeta}, {is_synchronous: true});
+                    d += this.generate('form._form_value.[' + attr + ']', {attribute: attr, Resource: Map, Meta: MapMeta}, {is_synchronous: true});
                 }
                 d += '<div class="button-container control_group add_relationship-container">\n    <button class="action modal-button" data-action="add_relationship" data-data="">Add relationship</button>\n</div>\n</div>';
                 return d;
@@ -184,31 +184,77 @@ define(['require', 'Sm', 'jquery'], function (require, Sm, $) {
             }
         },
         body_outer:  {
-            std:     function (Entity, display_type) {
-                var entity_type = (Sm.Core.Identifier.getEntityType(Entity) || '').toLowerCase();
-                var template    = [
-                    '<div class="factshift-entity factshift-' + entity_type + ' ' + display_type + '" data-entity_type="' + entity_type + '" data-ent_id="<%- typeof ent_id === \'string\' ?ent_id:\'\'%>" data-id="<%- typeof id !== \'undefined\'?id:\'\'%>">',
+            class_string:       {
+                /**
+                 *
+                 * @param {Sm.Core.Identifier.Identifiable} item
+                 * @param display_type
+                 * @return {*}
+                 */
+                std: function (item, display_type) {
+                    var object_type   = (item.getObjectType() || '').toLowerCase();
+                    var entity_string = '';
+                    if (object_type === 'Entity') {
+                        var entity_type    = Sm.Core.Meta.getEntityType(item);
+                        var entity_subtype = Sm.Core.Meta.getEntitySubtype(item);
+                        if (entity_type)entity_string += ' factshift-' + entity_type.toLowerCase();
+                        if (entity_subtype)entity_string += entity_type.toLowerCase();
+                    }
+                    return 'factshift-' + object_type + ' ' + display_type + ' ' + entity_string;
+                }
+            },
+            element_attributes: {
+                std: function (Entity, display_type) {
+                    var class_string    = 'class="' + this.generate('body_outer.class_string[' + display_type + ']', Entity, true) + '"';
+                    var identity        = Entity.Identifier.toJSON();
+                    var identity_string = [];
+                    for (var property in identity) {
+                        if (!identity.hasOwnProperty(property)) continue;
+                        var item = identity[property];
+                        item     = typeof  item === "string" ? item : JSON.stringify(item);
+                        identity_string.push("data-" + property + '="' + item + '"')
+                    }
+                    return class_string + ' ' + identity_string.join(' ');
+                }
+            },
+
+            std:  function (Entity, display_type) {
+                display_type   = display_type || 'std';
+                var attributes = this.generate('body_outer.element_attributes.[' + display_type + ']', Entity, true);
+                var template   = [
+                    '<div ' + attributes + '>',
                     '__CONTENT__',
                     '</div>'
                 ];
                 return template.join('');
             },
-            preview: function (Entity) {
-                var entity_type = (Sm.Core.Identifier.getEntityType(Entity) || '').toLowerCase();
-                var template    = [
-                    '<div class="factshift-entity preview factshift-' + entity_type + '" data-entity_type="' + entity_type + '" data-ent_id="<%- typeof ent_id === \'string\' ?ent_id:\'\'%>" data-id="<%- typeof id !== \'undefined\'?id:\'\'%>">',
-                    '__CONTENT__',
-                    '</div>'
-                ];
-                return template.join('');
-            },
-            form:    function (data) {
+            form: function (data) {
                 var Resource    = data.Resource || {};
                 var r_id_string = Resource.getR_ID ? "data-r_id='" + Resource.getR_ID() + "'" : '';
                 return "<div class='form' " + r_id_string + "></div>";
             }
         },
         body_inner:  {
+            form: function (data, is_synchronous) {
+                var Resource = data.Resource || null;
+                if (!Resource || typeof Resource !== "object" || !Resource.isIdentifiable) throw  new Sm.Exceptions.Error("Could not edit resource");
+                if (!Resource.isEditable) throw new Sm.Exceptions.Error("Cannot edit resource");
+                var Meta       = Sm.Core.Identifier.getRootObjectAttribute(Resource, 'Meta') || Sm.Core.Meta;
+                var attributes = Resource.getModifiableAttributes();
+                var items      = [];
+
+                for (var i = 0; i < attributes.length; i++) {
+                    var attr = attributes[i];
+                    items.push(this.generate('form._form_value.[' + attr + ']', {attribute: attr, Resource: Resource, Meta: Meta}, true));
+                }
+
+                if (!items.length) return null;
+                var when_complete = function (previous, results) {return Sm.Core.Util.combineJqueryArray(results);};
+                var walk_fn       = function (item) {return Sm.Abstraction.Garage.normalizeResult(item, is_synchronous);};
+                return Sm.Core.Util.iterateUnknownSynchronicity(items, is_synchronous, walk_fn, when_complete)
+            }
+        },
+        form:        {
             _form_value: {
                 std:              function (data) {
                     data          = data || {};
@@ -285,26 +331,14 @@ define(['require', 'Sm', 'jquery'], function (require, Sm, $) {
                     }
                     return $template;
                 }
-            },
-            form:        function (data) {
-                var Resource = data.Resource || null;
-                if (!Resource || typeof Resource !== "object" || !Resource.isIdentifiable) throw  new Sm.Exceptions.Error("Could not edit resource");
-                if (!Resource.isEditable) throw new Sm.Exceptions.Error("Cannot edit resource");
-                var Meta       = Sm.Core.Identifier.getRootObjectAttribute(Resource, 'Meta') || Sm.Core.Meta;
-                var attributes = Resource.getModifiableAttributes();
-                var items      = [];
-                for (var i = 0; i < attributes.length; i++) {
-                    var attr = attributes[i];
-                    items.push(this.generate('body_inner._form_value.[' + attr + ']', {attribute: attr, Resource: Resource, Meta: Meta}, {is_synchronous: true}));
-                }
-                if (!items.length) return null;
-                return $(items);
             }
         },
 
         body:           {
-            std:     '<div class="<%- typeof content === \'string\'?\'content\':(typeof alias === \'string\'?\'alias\':(typeof title === \'string\'?\'title\':\' \'))%>">\n    <%- typeof content === "string"?content:(typeof alias === "string"?alias:(typeof title === "string"?title:" "))%>\n</div>\n',
-            preview: '<div class="<%- typeof content === \'string\'?\'content\':(typeof alias === \'string\'?\'alias\':(typeof title === \'string\'?\'title\':\' \'))%>">\n    <%- typeof content === "string"?content:(typeof alias === "string"?alias:(typeof title === "string"?title:" "))%>\n</div>\n',
+            std:     function () {
+                Sm.CONFIG.DEBUG && console.log(this.entity_type);
+                return '<div class="<%- typeof content === \'string\'?\'content\':(typeof alias === \'string\'?\'alias\':(typeof title === \'string\'?\'title\':\' \'))%>">\n    <%- typeof content === "string"?content:(typeof alias === "string"?alias:(typeof title === "string"?title:" "))%>\n</div>\n';
+            },
             /**
              * @this Sm.Abstraction.Garage
              * @param data
@@ -315,7 +349,6 @@ define(['require', 'Sm', 'jquery'], function (require, Sm, $) {
                 data      = data || {};
                 var outer = this.generate('body_outer.form', data, is_synchronous);
                 var inner = this.generate('body_inner.form', data, is_synchronous);
-
                 return Sm.Abstraction.Garage.replaceContentPlaceholder(outer, inner);
             }
         },

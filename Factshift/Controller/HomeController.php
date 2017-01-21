@@ -16,7 +16,7 @@ use Sm\View\View;
 
 class HomeController extends Controller {
     public function index() {
-        return $this->view->insertContentCreate('user/home.php')->setTitle('Home', 'Where the heart is');
+        return $this->View->insertContentCreate('user/home.php')->setTitle('Home', 'Where the heart is');
     }
     
     public function pas() {
@@ -31,7 +31,7 @@ class HomeController extends Controller {
         $v              = View::create('allenhall/allenotes.php', $variables);
         if ($error_messages) $v->addMessages($error_messages);
         
-        return $this->view->insertContent($v)->setTitle('Allenotes');
+        return $this->View->insertContent($v)->setTitle('Allenotes');
     }
     
     public function allenotes($date = null) {
@@ -47,7 +47,7 @@ class HomeController extends Controller {
         $cmd = '/usr/local/bin/python3.3 /var/www/dev/s/Factshift/scripts/allenhall/g_a.py ' . $date . ' 2>&1';
         exec($cmd, $o);
         $sidebar = View::create('allenhall/notes.php', [ 'output' => $o ])->enforceTemplate('sidebar.php');
-        return $this->view->insertContentCreate('allenhall/generic.php')
+        return $this->View->insertContentCreate('allenhall/generic.php')
                           ->addFeature('sidebar', $sidebar)
                           ->insertContentCreate('allenhall/finished_allenotes.html')
                           ->setTitle('Allenotes', 'Allenotes generated for this week');

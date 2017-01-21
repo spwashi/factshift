@@ -13,11 +13,16 @@ use Sm\Entity\Model\EntityMeta;
 use Sm\Process\Process;
 use Sm\View\View;
 
-class Deploy {
+class Dev extends HomeController {
+    public function index() {
+        $View = $this->View;
+        $View->setTitle('Development Access Suite')->insertContentCreate('dev/index.php');
+        return $View;
+    }
     public function cl() {
         $f = fopen(BASE_PATH . 'Logs/log.txt', 'w');
         if (!$f) return false;
-        fwrite($f, "cleared\n");
+        fwrite($f, "");
         fclose($f);
         return true;
     }

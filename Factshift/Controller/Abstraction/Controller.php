@@ -13,7 +13,7 @@ use Sm\View\View;
  * Class FactshiftController
  *
  * @package Factshift\Controller\Abstraction
- * @property View $view
+ * @property View $View
  */
 abstract class Controller extends \Sm\Controller\Abstraction\Controller {
     /** @var View */
@@ -21,7 +21,7 @@ abstract class Controller extends \Sm\Controller\Abstraction\Controller {
     
     public function __construct() {
         /** @var View view */
-        $this->view = View::init()
+        $this->View = View::init()
                           ->enforceTemplate('test/layout.php')
                           ->insertContent('Facts the way you need them', '{{site_description}}');
     }

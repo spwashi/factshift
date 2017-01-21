@@ -85,7 +85,7 @@ class Router extends Abstraction\Router {
             $route->parameters = [ ];
             foreach ($best_match['parameters'] as $index => $value) {
                 if ($value == 'method' || $value == '*') {
-                    $route->method = $explode_uri[ $index ];
+                    $route->method = $explode_uri[ $index ] ?? null;
                 } else {
                     $route->parameters[ $value ] = $explode_uri[ $index ];
                 }
@@ -216,9 +216,9 @@ class Router extends Abstraction\Router {
                 if (isset($pattern_portion_qualifier[1])) {
                     $p_p_q = $pattern_portion_qualifier[1];
                 } elseif ($match[0] == 'method' || $match[0] == '*') {
-                    $p_p_q = '[a-zA-Z\d]*';
+                    $p_p_q = '?[a-zA-Z\d]*';
                 } else {
-                    $p_p_q = '[a-zA-Z\d]*';
+                    $p_p_q = '?[a-zA-Z\d]*';
                 }
                 $pattern_portion_holder_array[] = $p_p_q;
                 

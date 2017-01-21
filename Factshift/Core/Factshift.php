@@ -29,7 +29,7 @@ class Factshift extends App {
         return $PathContainer;
     }
     public function default_route_function() {
-        echo '<span style="font-family: Consolas, sans-serif;">factshift -- {' . $_SERVER['REQUEST_URI'] . '}{' . URI::get_uri_string() . '}</span>';
+        return '<span style="font-family: Consolas, sans-serif;">factshift -- {' . $_SERVER['REQUEST_URI'] . '}{' . URI::get_uri_string() . '}</span>';
     }
     public function change_uri($uri) {
         return ltrim(str_replace('s_dev', '/', $uri), '/');

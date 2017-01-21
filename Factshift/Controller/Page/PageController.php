@@ -26,7 +26,7 @@ class PageController extends Controller {
     public $index_if_null = true;
     
     public function index() {
-        return $this->view->insertContentCreate('page/index.php')->setTitle('Page Home', "View pages you've made, saved, or ");
+        return $this->View->insertContentCreate('page/index.php')->setTitle('Page Home', "View pages you've made, saved, or ");
     }
     
     
@@ -47,7 +47,7 @@ class PageController extends Controller {
         }
         $content = View::create('page/create_form.php', [ 'post_data' => XSS::escape($_POST) ]);
         if (!empty($error_messages)) $content->addMessages($error_messages);
-        return $this->view->setTitle('Page', 'create')->insertContent($content);
+        return $this->View->setTitle('Page', 'create')->insertContent($content);
     }
     
     public function view($context_or_ent_id, $alias = null) {
@@ -122,7 +122,7 @@ class PageController extends Controller {
         ];
         
         /** @var View $view */
-        $view         = $this->view;
+        $view         = $this->View;
         $page_sidebar = View::create('page/page_sidebar.php', $variables)->enforceTemplate('sidebar.php');
         $view
             ->setTitle($Page->title, $Page->subtitle)

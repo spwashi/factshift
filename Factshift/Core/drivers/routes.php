@@ -29,7 +29,7 @@ return [
     [ 'pattern' => 'user/{method}', 'callback' => 'User\UserController@*', ],
     
     #---FOR THE SAKE OF DEPLOYMENT SCRIPTS------------------------------------------------#
-    [ 'pattern' => 'dev/{method}', 'callback' => 'Deploy@*', ],
+    [ 'pattern' => 'dev/{method}', 'callback' => 'Dev@*', ],
     [ 'pattern' => 'test/{method}', 'callback' => 'test@*', ],
     
     #---FOR TESTING PURPOSES ONLY---------------------------------------------------------#

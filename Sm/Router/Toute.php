@@ -20,8 +20,9 @@ class Toute extends Route {
      * @return \Sm\View\Abstraction\View|string|array|null
      */
     public function call($http_method) {
-        $return_result    = null;
-        $default_function = function () { echo ''; }; #The function to run if all else fails
+        $return_result = null;
+        #The function to run if all else fails
+        $default_function = function () { return App::_()->default_route_function(); };
         $APP_NAME         = App::_()->name;
         #Check to see if there is a function or a helper that should be run before we begin processing the route
         if (isset($this->helpers[ Helper::PRE_PROCESS ])) {
@@ -31,8 +32,7 @@ class Toute extends Route {
         Helper::runHelpers(Helper::PRE_PROCESS);
         
         if (!isset($this->callback) || (is_string($this->callback) && $this->callback == '_load_app')) {
-            $default_function = function () { return App::_()->default_route_function(); };
-            $this->callback   = $default_function;
+            $this->callback = $default_function;
         }
         
         if (is_callable($this->callback)) {
@@ -42,7 +42,6 @@ class Toute extends Route {
             $class_name         = $callback_array[0];
             $assumed_class_name = ucfirst($APP_NAME) . '\\Controller\\' . $class_name;
             $class_method       = null;
-            
             #If the 'method' field of the callback explosion ends up being one of these three wildcards, the Router should have set
             #   the name of the method that is to be used
             if (strpos($callback_array[1], '*') !== false) {
@@ -59,7 +58,7 @@ class Toute extends Route {
             }
             if ($class) {
                 #If the class has a property index_if_null set to true, then assume that we're going to use the 'index' method if there hasn't been one chosen
-                if (($class_method == '' || $class_method == null) && isset($class->index_if_null) && $class->index_if_null) {
+                if (($class_method == '' || $class_method == null)) {
                     $class_method = 'index';
                 }
                 

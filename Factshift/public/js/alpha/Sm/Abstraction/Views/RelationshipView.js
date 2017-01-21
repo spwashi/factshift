@@ -26,6 +26,7 @@ define(['require', 'Sm', 'jquery', 'Emitter', 'Sm-Abstraction-Views-View', 'Sm-A
                     click: '_click'
                 },
                 _click:          function (e) {
+
                     var target            = e.target;
                     var $target           = $(target);
                     var _is_button        = $target.hasClass('button');
@@ -36,15 +37,15 @@ define(['require', 'Sm', 'jquery', 'Emitter', 'Sm-Abstraction-Views-View', 'Sm-A
                     var children          = this.$el.children('.factshift-entity').toArray().map(function (item) {return item.FactshiftView && item.FactshiftView.getResource()}).filter(function (item) {return item});
                     if (is_button_of_type('edit')) {
                         Relationship && Relationship.isEditable && Relationship.prompt_edit(children.length < 2 ? (children[0] || null) : children);
-                        e.stopPropagation();
+                        this.cancel_event(e);
                         return null;
                     } else if (is_button_of_type('destroy')) {
                         Relationship && Relationship.isDestroyable && Relationship.prompt_destroy();
-                        e.stopPropagation();
+                        this.cancel_event(e);
                         return null;
                     }
                     this.focus();
-                    e.stopPropagation();
+                    this.cancel_event(e);
                     return null;
                 },
                 focus:           function () {

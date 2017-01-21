@@ -170,10 +170,7 @@ define(['require', 'Sm', 'jquery', 'Emitter', 'Sm-Abstraction-Views-View', 'Sm-A
                 _generateInnerHTML:       function (is_synchronous) {
                     var RelationshipIndex = this.getResource();
                     var Garage            = Sm.Core.Identifier.getRootObjectAttribute(this, 'Garage');
-                    return Garage.generate('body.' + this.display_type, RelationshipIndex, {is_synchronous: is_synchronous}).then(function (res) {
-                        Sm.CONFIG.DEBUG && console.log(res);
-                        return res;
-                    })
+                    return Garage.generate('body.' + this.display_type, RelationshipIndex, {is_synchronous: is_synchronous});
                 },
                 /**
                  * Make sure the Views that correspond to the Entities related via this RelationshipIndex

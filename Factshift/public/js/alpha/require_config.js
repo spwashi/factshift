@@ -6,7 +6,7 @@ require.config(
     {
         paths: {
             jquery:      [
-                "https://code.jquery.com/jquery-2.2.4",
+                // "https://code.jquery.com/jquery-2.2.4",
                 FACTSHIFT_JS_URL + "vendor/jquery.min"
             ],
             Promise:     FACTSHIFT_JS_URL + "vendor/Promise",

@@ -36,9 +36,10 @@ define(['Class'], function (Class) {
                                       *
                                       * @param event
                                       * @param fn
+                                      * @param name
                                       * @return {Emitter}
                                       */
-                                     on:                 function (event, fn) {
+                                     on:                 function (event, fn, name) {
                                          if (this._emitted_events && this._emitted_events[event]) {
                                              if (typeof fn === 'function') {
                                                  fn = this._bindCallback(fn, this._emitted_events[event]);
@@ -47,13 +48,23 @@ define(['Class'], function (Class) {
                                              return this;
                                          }
                                          !this._callbacks && (this._callbacks = {});
+                                         !this._named_callbacks && (this._named_callbacks = {});
+                                         if (name) {
+                                             if (!!this._named_callbacks[name])return this;
+                                             this._named_callbacks[name] = fn;
+                                         }
                                          !this._callbacks[event] && (this._callbacks[event] = []);
                                          typeof fn === 'function' && this._callbacks[event].push(fn);
                                          return this;
                                      },
-                                     once:               function (event, fn) {
+                                     once:               function (event, fn, name) {
                                          !this._callbacks && (this._callbacks = {});
+                                         !this._named_callbacks && (this._named_callbacks = {});
                                          !this._callbacks[event] && (this._callbacks[event] = []);
+                                         if (name) {
+                                             if (!!this._named_callbacks[name])return this;
+                                             this._named_callbacks[name] = fn;
+                                         }
                                          if (typeof fn === 'function') {
                                              var vfn;
                                              var has_been_called = false;
@@ -62,6 +73,7 @@ define(['Class'], function (Class) {
                                                  if (!has_been_called) {
                                                      r               = fn.apply(this, arguments);
                                                      has_been_called = true;
+                                                     this.off(event, vfn);
                                                  }
                                                  return r;
                                              };
@@ -157,7 +169,7 @@ define(['Class'], function (Class) {
                                       * @param name
                                       * @param fn
                                       * @param _self
-                                      * @return {*}
+                                      * @return {function}
                                       */
                                      add_bound:          function (name, fn, _self) {
                                          this._fns = this._fns || {};

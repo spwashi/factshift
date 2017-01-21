@@ -106,6 +106,7 @@ define(['require', 'Sm', 'jquery', 'Sm-Abstraction-Views-View'], function (requi
                 },
                 _keydown:                      function () {return true;},
                 _click:                        function (e) {
+                    if (this.event_was_cancelled(e)) return null;
                     var target            = e.target;
                     var $target           = $(target);
                     var _is_button        = $target.hasClass('button');
@@ -117,15 +118,15 @@ define(['require', 'Sm', 'jquery', 'Sm-Abstraction-Views-View'], function (requi
 
                     if (is_button_of_type('edit')) {
                         SelfEntity && SelfEntity.isEditable && SelfEntity.prompt_edit(reference_object.Relationship);
-                        e.stopPropagation();
+                        this.cancel_event(e);
                         return null;
                     } else if (is_button_of_type('add')) {
                         SelfEntity && SelfEntity.canRelate && SelfEntity.prompt_add_relationship(reference_object.Relationship);
-                        e.stopPropagation();
+                        this.cancel_event(e);
                         return null;
                     } else if (is_button_of_type('destroy')) {
                         SelfEntity && SelfEntity.isDestroyable && SelfEntity.prompt_destroy(reference_object.Relationship);
-                        e.stopPropagation();
+                        this.cancel_event(e);
                         return null;
                     } else if (is_button_of_type('debug')) {
                         Sm.CONFIG.DEBUG && console.log(' -------------------------------- ');
@@ -133,7 +134,7 @@ define(['require', 'Sm', 'jquery', 'Sm-Abstraction-Views-View'], function (requi
                         Sm.CONFIG.DEBUG && console.log(SelfEntity);
                         Sm.CONFIG.DEBUG && console.log(this);
                         Sm.CONFIG.DEBUG && console.log(' -------------------------------- ');
-                        e.stopPropagation();
+                        this.cancel_event(e);
                     }
                     return true;
                 },
@@ -199,6 +200,29 @@ define(['require', 'Sm', 'jquery', 'Sm-Abstraction-Views-View'], function (requi
                     var $el = this.$el || $(this.el);
                     return $el.children('.relationship_index[data-relationship_index="' + relationship_index + '"]')[0] || null;
                 },
+                replaceWithRelationshipIndex:  function (relationship_index, context_id) {
+                    var Entity = this.getResource();
+                    if (!Entity) return Promise.resolve([]);
+                    var RelationshipIndex = Entity.getRelationshipIndex(relationship_index);
+                    var ReferencePoint    = this.getReferencePoint();
+                    var OtherEntities     = RelationshipIndex.getOtherEntitiesList(context_id);
+                    var OtherViews        = OtherEntities.map(function (Entity) {return Entity.convertToView(null, ReferencePoint);});
+                    var Self              = this;
+                    this.blur();
+                    var render_and_refresh = function (item) {
+                        return item.render({only_unrendered: true}).then(function (el) {
+                            item.refresh();
+                            return el;
+                        })
+                    };
+                    return (
+                        Promise.all(OtherViews.map(render_and_refresh))
+                               .then(function (elements) {
+                                   $(Self.getElement()).replaceWith($(elements));
+                                   return elements.map(function (el) {return el.FactshiftView || null;})
+                               })
+                    );
+                },
                 /**
                  * Set the value of an attribute for this View.
                  * Calls a function like "this.setAttributeElement_(attribute_name)} if it exists,
@@ -246,9 +270,11 @@ define(['require', 'Sm', 'jquery', 'Sm-Abstraction-Views-View'], function (requi
                             for (var i = 0; i < relationship_indices.length; i++) {
                                 var relationship_index = relationship_indices[i];
                                 // Wait until we've initialized the RelationshipIndex to actually initialize the View
-                                Entity.on('init_RelationshipIndex:' + relationship_index, function () {
-                                    Self.initElement(relationship_index + '-relationship_index')
-                                });
+                                Entity.on('init_RelationshipIndex:' + relationship_index, (function (relationship_index) {
+                                    return function () {
+                                        Self.initElement(relationship_index + '-relationship_index')
+                                    }
+                                })(relationship_index));
                             }
                         };
                     })(Entity, relationship_indices);
@@ -272,11 +298,9 @@ define(['require', 'Sm', 'jquery', 'Sm-Abstraction-Views-View'], function (requi
                         var Entity            = this.getResource();
                         var RelationshipIndex = Entity.getRelationshipIndex(relationship_index);
                         var RelIndView        = RelationshipIndex.convertToView(rel_el, this);
-                        if (RelIndView.el !== rel_el) {
-                            $(rel_el).replaceWith(RelIndView.el);
-                            RelIndView.refresh();
-                        }
+                        if (RelIndView.el !== rel_el) $(rel_el).replaceWith(RelIndView.el);
                         RelationshipIndex.addView(RelIndView);
+                        RelIndView.refresh();
                         return rel_el;
                     }
                     return this.elements[property] = $el.find('[data-attribute="' + property + '"]')[0] || false;

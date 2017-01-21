@@ -10,6 +10,7 @@ define(['require', 'Sm', 'Sm-Core-Core'], function (require, Sm) {
     Sm.Abstraction.Stateful = {
         setStatus:   function (status, value) {
             if (!status) return false;
+            if (arguments.length === 1) value = true;
             if (typeof status === "object") {
                 for (var name in status) {
                     if (!status.hasOwnProperty(name)) continue;

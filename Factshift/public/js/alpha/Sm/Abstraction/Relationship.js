@@ -137,13 +137,21 @@ define(['require', 'Sm', 'Emitter', 'Sm-Core-Core', 'Sm-Abstraction-MapEntity', 
                 }
                 return Entities;
             },
+            getOneOtherEntity:            function (entity_r_id) {
+                var Others = this.getOtherEntities(entity_r_id);
+                return (Others.length > 1 ? null : Others[0]) || null;
+            },
             /**
              * Get the Entities that are not identified by this r_id
-             * @param {Sm.r_id} entity_r_id
+             * @param {Sm.r_id|Sm.Core.Identifier.Identifiable} entity_r_id
              * @return {Array}
              */
             getOtherEntities:             function (entity_r_id) {
                 var Entities = [];
+                if (typeof entity_r_id !== "string") {
+                    if (!entity_r_id.isIdentifiable) return [];
+                    entity_r_id = entity_r_id.getR_ID();
+                }
                 for (var i = 0; i < this.RelatedEntityIdentifiers.length; i++) {
                     var id = this.RelatedEntityIdentifiers[i];
                     if (entity_r_id === id) continue;

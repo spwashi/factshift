@@ -15,7 +15,8 @@ require(['require', 'Class', 'Sm', 'Sm-Core-Util'], function (require, Class, Sm
             },
             update:      function () {
                 var config_id = locate_callback(this.Resource, ReferencePoint._updaters);
-                return config_id ? this.replace(config_id(this)) : this;
+                var configd   = config_id ? config_id(this) : null;
+                return config_id ? this.replace(configd) : this;
             }
         });
     ReferencePoint._handlers     = {};

@@ -5,7 +5,7 @@ require(['require', 'Sm-Abstraction-Relationship-_template'], function (require)
     Sm.Core.dependencies.on_load(['Abstraction-Relationship-_template'], function () {
         Sm.Abstraction.RelationshipIndex.templates           = Sm.Abstraction.RelationshipIndex.templates || {};
         Sm.Abstraction.RelationshipIndex.templates._template = {
-            body_outer:   {
+            body_outer: {
                 element_attributes: {
                     std: function (RelationshipIndex, display_type) {
                         var relationship_index = RelationshipIndex.get_relationship_index();
@@ -21,7 +21,6 @@ require(['require', 'Sm-Abstraction-Relationship-_template'], function (require)
                 },
                 class_string:       {
                     std: function (RelationshipIndex, display_type) {
-                        Sm.CONFIG.DEBUG && console.log(display_type);
                         var relationship_index = RelationshipIndex.get_relationship_index();
                         var string             = this.generate('body_outer.class_string.[' + display_type + ']', RelationshipIndex, true);
                         string += 'relationship_index relationship-container ' + relationship_index + '-container'
@@ -30,9 +29,8 @@ require(['require', 'Sm-Abstraction-Relationship-_template'], function (require)
 
                 }
             },
-            body:         {
+            body:       {
                 std: function (data) {
-                    Sm.CONFIG.DEBUG && console.log('here');
                     var relationship_index_title = _.titleize(data.get_relationship_index());
                     return '<header class="title" data-attribute="title">' + relationship_index_title + '</header>'
                 }

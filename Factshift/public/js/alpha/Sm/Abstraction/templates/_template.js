@@ -62,7 +62,7 @@ define(['require', 'Sm', 'jquery'], function (require, Sm, $) {
                 var template  = [
                     '<header><h3>Are you sure you want to delete this ' + (is_entity ? Resource.getEntityType() : type) + '?</h3></header>',
                     '<div class="content form aligned ">',
-
+                    '__CONTENT__',
                     '<div class="button-container control_group">',
                     Template.modal.action_button({text: 'Destroy', action: 'destroy'}),
                     Template.modal.action_button({text: 'Cancel', action: 'cancel'}),
@@ -193,8 +193,9 @@ define(['require', 'Sm', 'jquery'], function (require, Sm, $) {
                  */
                 std: function (item, display_type) {
                     var object_type   = (item.getObjectType() || '').toLowerCase();
+                    var root_object   = Sm.Core.Identifier.getRootObject(item);
                     var entity_string = '';
-                    if (object_type === 'Entity') {
+                    if (root_object instanceof Sm.Core.SmEntity) {
                         var entity_type    = Sm.Core.Meta.getEntityType(item);
                         var entity_subtype = Sm.Core.Meta.getEntitySubtype(item);
                         if (entity_type)entity_string += ' factshift-' + entity_type.toLowerCase();
@@ -335,7 +336,7 @@ define(['require', 'Sm', 'jquery'], function (require, Sm, $) {
         },
 
         body:           {
-            std:     function () {
+            std:  function () {
                 Sm.CONFIG.DEBUG && console.log(this.entity_type);
                 return '<div class="<%- typeof content === \'string\'?\'content\':(typeof alias === \'string\'?\'alias\':(typeof title === \'string\'?\'title\':\' \'))%>">\n    <%- typeof content === "string"?content:(typeof alias === "string"?alias:(typeof title === "string"?title:" "))%>\n</div>\n';
             },
@@ -345,7 +346,7 @@ define(['require', 'Sm', 'jquery'], function (require, Sm, $) {
              * @param display_type
              * @param is_synchronous
              */
-            form:    function (data, display_type, is_synchronous) {
+            form: function (data, display_type, is_synchronous) {
                 data      = data || {};
                 var outer = this.generate('body_outer.form', data, is_synchronous);
                 var inner = this.generate('body_inner.form', data, is_synchronous);

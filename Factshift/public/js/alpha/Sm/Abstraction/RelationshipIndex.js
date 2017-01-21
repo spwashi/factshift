@@ -237,6 +237,38 @@ define(['require', 'Sm', 'Emitter', 'Sm-Core-Core'], function (require, Sm, Emit
                     }
                     return ret_arr;
                 },
+                getAllInSeries:         function (as_primary, context_id, return_relationships) {
+                    var RelationshipIndex             = this;
+                    return_relationships              = !!return_relationships;
+                    var SelfEntity                    = RelationshipIndex.getResource();
+                    var parentRelationships           = [];
+                    var parentEntities                = [];
+                    var relationship_index            = RelationshipIndex.get_relationship_index();
+                    var reciprocal_relationship_index = (RelationshipIndex.is_reciprocal ? '' : 'reciprocal_') + relationship_index;
+                    var getLoopFn                     = function (relationship_index, relationship_container, entity_container, getOtherEntity) {
+                        return function (Relationship, index) {
+                            var OtherEntity = (getOtherEntity ? getOtherEntity(Relationship, index) : null) || SelfEntity;
+                            if (!OtherEntity) return null;
+                            var ReciprocalRelationshipIndex = OtherEntity.getRelationshipIndex(relationship_index);
+                            relationship_container.push.apply(relationship_container, ReciprocalRelationshipIndex.getItemList(context_id));
+                            entity_container.push.apply(entity_container, ReciprocalRelationshipIndex.getOtherEntitiesList(context_id))
+                        }
+                    };
+                    var items                         = RelationshipIndex.getItemList(context_id);
+                    var otherEntities                 = RelationshipIndex.getOtherEntitiesList(context_id);
+                    var getParents                    = getLoopFn(reciprocal_relationship_index, parentRelationships, parentEntities, function (r, i) {
+                        return r.getOneOtherEntity(SelfEntity)
+                    });
+                    items.forEach(getParents);
+                    if (!as_primary) return return_relationships ? parentRelationships : parentEntities;
+                    var childrenRelationships = [];
+                    var childrenEntities      = [];
+                    var getChildren           = getLoopFn(relationship_index, childrenRelationships, childrenEntities, function (r, i) {
+                        return parentEntities[i];
+                    });
+                    parentRelationships.forEach(getChildren);
+                    return return_relationships ? childrenRelationships : childrenEntities;
+                },
                 /**
                  * Get the Relationships held in a context
                  * @param {Sm.r_id=}  context_id
@@ -245,6 +277,24 @@ define(['require', 'Sm', 'Emitter', 'Sm-Core-Core'], function (require, Sm, Emit
                 getItems:               function (context_id) {
                     var RelationshipContext = this.initRelationshipContext(context_id);
                     return RelationshipContext.items;
+                },
+                getOtherEntitiesList:   function (context_id) {
+                    var Relationships = this.getItemList(context_id);
+                    var EntityList    = [];
+                    var SelfEntity    = this.getResource();
+                    Relationships.forEach(/** @param {Sm.Abstraction.Relationship} Relationship */function (Relationship) {
+                        EntityList.push.apply(EntityList, Relationship.getOtherEntities(SelfEntity));
+                    });
+                    return EntityList;
+                },
+                getItemList:            function (context_id) {
+                    var items         = this.getItems(context_id);
+                    var Relationships = [];
+                    for (var i in items) {
+                        if (!items.hasOwnProperty(i)) continue;
+                        Relationships.push(items[i]);
+                    }
+                    return Relationships;
                 },
                 count:                  function (context_id) {
                     var context = this.initRelationshipContext(context_id);

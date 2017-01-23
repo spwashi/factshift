@@ -33,6 +33,7 @@ class View extends Abstraction\View {
         }
     }
     
+    
     public function getContent($is_final = false) {
         foreach ($this->errors as $error_name => $message) {
             if (is_string($message) && is_string($this->content))
@@ -59,7 +60,7 @@ class View extends Abstraction\View {
     }
     
     public function insertContentCreate($content_path, $location = '{{content}}', $is_in_view_path = true) {
-        $this->insertContent(static::create($content_path, [ ], $is_in_view_path), $location);
+        $this->insertContent(static::create($content_path, [ ], $is_in_view_path, $this->App), $location);
         return $this;
     }
     

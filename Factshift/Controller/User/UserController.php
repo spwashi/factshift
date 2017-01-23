@@ -22,10 +22,10 @@ use Sm\View\View;
 
 class UserController extends Controller {
     /** @var  View */
-    public $view;
+    public $View;
     
     public function home() {
-        return $this->view->insertContentCreate('user/home.php')->setTitle('User Home');
+        return $this->View->insertContentCreate('user/home.php')->setTitle('User Home');
     }
     
     public function dump() {
@@ -57,7 +57,7 @@ class UserController extends Controller {
         /** @var View $content */
         $content = View::create('user/signup.php', [ 'post_data' => XSS::escape($_POST) ]);
         if (!empty($error_messages)) $content->addMessages($error_messages);
-        return $this->view->insertContent($content)->setTitle('Sign Up');
+        return $this->View->insertContent($content)->setTitle('Sign Up');
     }
     
     public function login() {
@@ -88,7 +88,7 @@ class UserController extends Controller {
                 Log::init($e)->log_it();
             }
         }
-        return $this->view->insertContent($content)->setTitle('Login');
+        return $this->View->insertContent($content)->setTitle('Login');
     }
     
     public function logout() {

@@ -33,32 +33,34 @@ class EntityMeta {
     /**
      * @var Model[]
      */
-    protected static $registry = [ ];
+    protected $registry                               = [ ];
+    protected $enum_values                            = [ ];
+    protected $entity_type_to_model_type              = [ ];
+    protected $entity_type_to_relationships           = [ ];
+    protected $linked_entities_to_model_type          = [ ];
+    protected $model_type_to_linked_entity_properties = [ ];
+    protected $model_type_to_properties               = [ ];
+    protected $entity_type_to_config                  = [ ];
+    protected $prefix_to_model_type                   = [ ];
+    protected $table_to_model_type                    = [ ];
+    protected $standard_config                        = [ ];
+    protected $linked_entities_to_relationships       = [ ];
     
-    protected static $enum_values                            = [ ];
-    protected static $entity_type_to_model_type              = [ ];
-    protected static $entity_type_to_relationships           = [ ];
-    protected static $linked_entities_to_model_type          = [ ];
-    protected static $model_type_to_linked_entity_properties = [ ];
-    protected static $model_type_to_properties               = [ ];
-    protected static $entity_type_to_config                  = [ ];
-    static           $prefix_to_model_type                   = [ ];
-    protected static $table_to_model_type                    = [ ];
-    protected static $standard_config                        = [ ];
-    protected static $linked_entities_to_relationships       = [ ];
-    
-    protected static $debug = [ ];
+    protected $debug = [ ];
 #########################################################
 #            Initialization functions                   #
 #########################################################
-    public static function init(array $array) {
-        $__standard_config                        = $array['_'] ?? [ ];                            #An array of various config settings that we are going to use as defaults
-        static::$standard_config                  = $__standard_config;
-        static::$standard_config['relationships'] = static::$standard_config['relationships'] ?? [ ];
-        static::_init_models($array['models'] ?? null);
-        static::_init_entities($array['entities'] ?? null);
-//        static::$debug = [ static::get_potential_relationships('section', [ 'section', 'concepts' ]) ];
-        return static::$debug;
+    public function __construct(array $config = [ ], $App = null) {
+        $__standard_config                      = $config['_'] ?? [ ];                            #An array of various config settings that we are going to use as defaults
+        $this->standard_config                  = $__standard_config;
+        $this->standard_config['relationships'] = $this->standard_config['relationships'] ?? [ ];
+        $this->_init_models($config['models'] ?? null);
+        $this->App = $App??App::_();
+        $this->_init_entities($config['entities'] ?? null);
+//        $this->debug = [ $this->get_potential_relationships('section', [ 'section', 'concepts' ]) ];
+    }
+    public static function init(array $array, $App = null) {
+        return new static($array, $App);
     }
 #########################################################
 # Public functions that are to be used be other classes #
@@ -70,10 +72,10 @@ class EntityMeta {
      *
      * @return array|mixed
      */
-    public static function get_model_type_properties($model_type) {
-        $model_type = static::convert_to_something($model_type, EntityMeta::TYPE_MODEL_TYPE);
-        if (!$model_type || !isset(static::$model_type_to_properties[ $model_type ])) return [ ];
-        return static::$model_type_to_properties[ $model_type ];
+    public function get_model_type_properties($model_type) {
+        $model_type = $this->convert_to_something($model_type, EntityMeta::TYPE_MODEL_TYPE);
+        if (!$model_type || !isset($this->model_type_to_properties[ $model_type ])) return [ ];
+        return $this->model_type_to_properties[ $model_type ];
     }
     /**
      * Based on a _something_ that can be converted to an entity_type, get the properties associated with the entity
@@ -83,11 +85,11 @@ class EntityMeta {
      *
      * @return array|mixed
      */
-    public static function get_entity_type_properties($entity_type, $property_type = EntityMeta::FIND_DEFAULT) {
-        $entity_type = static::convert_to_something($entity_type, EntityMeta::TYPE_ENTITY_TYPE);
-        if (!$entity_type || !isset(static::$entity_type_to_config[ $entity_type ])) return [ ];
+    public function get_entity_type_properties($entity_type, $property_type = EntityMeta::FIND_DEFAULT) {
+        $entity_type = $this->convert_to_something($entity_type, EntityMeta::TYPE_ENTITY_TYPE);
+        if (!$entity_type || !isset($this->entity_type_to_config[ $entity_type ])) return [ ];
         
-        $config = static::$entity_type_to_config[ $entity_type ]['properties'] ?? [ ];
+        $config = $this->entity_type_to_config[ $entity_type ]['properties'] ?? [ ];
         switch ($property_type) {
             case EntityMeta::FIND_DEFAULT:
                 return $config['all'] ??[ ];
@@ -98,31 +100,31 @@ class EntityMeta {
         }
         return [ ];
     }
-    public static function get_linked_properties($linked_entities) {
-        $mt = static::convert_linked_entities_to_model_type($linked_entities);
-        return static::$model_type_to_linked_entity_properties[ $mt ] ??[ ];
+    public function get_linked_properties($linked_entities) {
+        $mt = $this->convert_linked_entities_to_model_type($linked_entities);
+        return $this->model_type_to_linked_entity_properties[ $mt ] ??[ ];
     }
-    public static function get_enum_value(string $which, $value = null) {
-        $array = static::$enum_values[ Inflector::pluralize(strtolower($which)) ] ?? false;
+    public function get_enum_value(string $which, $value = null) {
+        $array = $this->enum_values[ Inflector::pluralize(strtolower($which)) ] ?? false;
         return isset($value) ? ($array[ $value ] ?? false) : $array;
     }
-    public static function get_index_from_linked_entity($linked_entities, $entity_type_to_find, $is_reciprocal = false) {
-        $entity_type_to_find = static::convert_to_something($entity_type_to_find);
+    public function get_index_from_linked_entity($linked_entities, $entity_type_to_find, $is_reciprocal = false) {
+        $entity_type_to_find = $this->convert_to_something($entity_type_to_find);
         if (!is_array($linked_entities)) {
             $linked_entities = [ $linked_entities, $entity_type_to_find ];
         }
-        $linked_entities      = static::convert_to_something($linked_entities);
-        $linked_entity_string = static::get_linked_entity_string($linked_entities);
+        $linked_entities      = $this->convert_to_something($linked_entities);
+        $linked_entity_string = $this->get_linked_entity_string($linked_entities);
         if (!$linked_entity_string || !strlen($linked_entity_string)) return false;
         
         # --- Get the model type that links the entities
-        $mt = static::convert_linked_entities_to_model_type($linked_entity_string) ??'';
+        $mt = $this->convert_linked_entities_to_model_type($linked_entity_string) ??'';
         
         # --- If there isn't exactly one Model Type (IDK why that's possible) , return false
         if (!$mt || !is_string($mt)) return false;
         
         # --- Get the properties that hold each relationship in the table (or whatever)
-        $linked_properties = static::$model_type_to_linked_entity_properties[ $mt ] ??false;
+        $linked_properties = $this->model_type_to_linked_entity_properties[ $mt ] ??false;
         if (!$linked_entity_string) return false;
         
         $possible_indices = [ ];
@@ -150,10 +152,10 @@ class EntityMeta {
      *
      * @return bool|mixed
      */
-    public static function convert_linked_entities_to_model_type($linked_entities) {
-        if (is_array($linked_entities)) $linked_entities = self::get_linked_entity_string(static::convert_to_something($linked_entities, static::TYPE_ENTITY_TYPE));
+    public function convert_linked_entities_to_model_type($linked_entities) {
+        if (is_array($linked_entities)) $linked_entities = self::get_linked_entity_string($this->convert_to_something($linked_entities, static::TYPE_ENTITY_TYPE));
         if (!is_string($linked_entities)) return false;
-        $model_types = static::$linked_entities_to_model_type[ $linked_entities ] ?? false;
+        $model_types = $this->linked_entities_to_model_type[ $linked_entities ] ?? false;
         $length      = count($model_types);
         if ($model_types && $length) return $length === 1 ? $model_types[0] : $model_types;
         return false;
@@ -169,7 +171,7 @@ class EntityMeta {
      *
      * @return array|bool|mixed|null|string
      */
-    public static function convert_to_something($to_convert, $convert_to = EntityMeta::TYPE_ENTITY_TYPE, $skip_verification = false) {
+    public function convert_to_something($to_convert, $convert_to = EntityMeta::TYPE_ENTITY_TYPE, $skip_verification = false) {
         $entity_type = $model_type = $table_name = $prefix = $classname = null;
         
         #--- I don't know why this is here
@@ -178,7 +180,7 @@ class EntityMeta {
         
         if (is_array($to_convert)) {
             foreach ($to_convert as $k => $nn) {
-                $to_convert[ $k ] = static::convert_to_something($nn, $convert_to, $skip_verification);
+                $to_convert[ $k ] = $this->convert_to_something($nn, $convert_to, $skip_verification);
             }
             return $to_convert;
         }
@@ -186,7 +188,7 @@ class EntityMeta {
             if ($to_convert instanceof TableModel) $table_name = $to_convert->getTableName();
             $entity_type = $model_type = $to_convert->getModelType();
             $classname   = get_class($to_convert);
-            $prefix      = static::get_prefix_from_ent_id($to_convert->get('ent_id'));
+            $prefix      = $this->get_prefix_from_ent_id($to_convert->get('ent_id'));
         } else if ($to_convert instanceof Entity) {
             $entity_type = $to_convert->getEntityType();
         }
@@ -196,19 +198,19 @@ class EntityMeta {
                 $name_arr   = explode('\\', $to_convert);
                 $to_convert = $name_arr[ count($name_arr) - 1 ];
             }
-            $entity_type = $model_type = static::def_convert_to_something($to_convert, 'entity_type');
-            $table_name  = static::def_convert_to_something($to_convert, 'table_name');
+            $entity_type = $model_type = $this->def_convert_to_something($to_convert, 'entity_type');
+            $table_name  = $this->def_convert_to_something($to_convert, 'table_name');
         }
         if (!$skip_verification) {
             #--- Make sure all of the strings that we use to deduce the type of _something_ that we are referring to exists in the right object
-            if ($entity_type && !isset(static::$entity_type_to_config[ $entity_type ])) $entity_type = false;
-            if ($model_type && !isset(static::$model_type_to_properties[ $model_type ])) $model_type = false;
-            if ($table_name && !isset(static::$table_to_model_type[ $table_name ])) $table_name = false;
+            if ($entity_type && !isset($this->entity_type_to_config[ $entity_type ])) $entity_type = false;
+            if ($model_type && !isset($this->model_type_to_properties[ $model_type ])) $model_type = false;
+            if ($table_name && !isset($this->table_to_model_type[ $table_name ])) $table_name = false;
         }
         #--- If the Entity type exists and is mapped to multiple different model types, we don't really know how to deal with things.
         #--- --- log that we don't know what to do
-        if ($entity_type && !$model_type && isset(static::$entity_type_to_model_type[ $entity_type ])) {
-            $model_type = static::$entity_type_to_model_type[ $entity_type ];
+        if ($entity_type && !$model_type && isset($this->entity_type_to_model_type[ $entity_type ])) {
+            $model_type = $this->entity_type_to_model_type[ $entity_type ];
             if (is_array($model_type)) {
                 if (count($model_type) === 1) $model_type = $model_type[0];
                 else Log::init([ "Not sure how to convert to model type", $to_convert, $model_type ])->log_it();
@@ -221,19 +223,19 @@ class EntityMeta {
                 if ($entity_type) return $entity_type;
                 #---
                 if ($model_type) return $model_type;
-                if ($prefix) return static::$prefix_to_model_type[ $prefix ] ?? false;
+                if ($prefix) return $this->prefix_to_model_type[ $prefix ] ?? false;
                 break;
             case (static::TYPE_MODEL_TYPE):
                 if ($model_type) return $model_type;
                 break;
             case (static::TYPE_TABLE):
                 if ($table_name) return $table_name;
-                if ($model_type) return array_search($model_type, static::$table_to_model_type);
-                if ($entity_type && ($res = array_search($entity_type, static::$table_to_model_type))) return $res;
+                if ($model_type) return array_search($model_type, $this->table_to_model_type);
+                if ($entity_type && ($res = array_search($entity_type, $this->table_to_model_type))) return $res;
                 break;
             case (static::TYPE_PREFIX):
                 if ($prefix) return $prefix;
-                if ($model_type) return array_search($entity_type, static::$prefix_to_model_type) ?: false;
+                if ($model_type) return array_search($entity_type, $this->prefix_to_model_type) ?: false;
                 break;
         }
         return false;
@@ -247,11 +249,11 @@ class EntityMeta {
      * @return string
      * @throws \Sm\Entity\Model\ModelNotFoundException
      */
-    public static function model_type_to_classname(string $model_type) {
+    public function model_type_to_classname(string $model_type) {
         if (!$model_type) throw new ModelNotFoundException("There is no model type to use");
         if (strpos($model_type, 'Map')) $model_type = "Map\\$model_type";
         else $model_type .= 'Model';
-        return App::_()->name . '\\Entity\\Model\\' . $model_type;
+        return $this->App->name . '\\Entity\\Model\\' . $model_type;
     }
     /**
      * Get the classname associated with a Model type
@@ -261,8 +263,8 @@ class EntityMeta {
      * @return string
      * @throws \Sm\Entity\EntityNotFoundException
      */
-    public static function entity_type_to_classname(string $entity_type) {
-        return App::_()->name . '\\Entity\\' . $entity_type;
+    public function entity_type_to_classname(string $entity_type) {
+        return $this->App->name . '\\Entity\\' . $entity_type;
     }
     
     /**
@@ -273,8 +275,8 @@ class EntityMeta {
      * @return Model
      * @throws \Sm\Entity\Model\ModelNotFoundException
      */
-    public static function model_type_to_class($model_type) {
-        $classname = static::model_type_to_classname(static::convert_to_something($model_type));
+    public function model_type_to_class($model_type) {
+        $classname = $this->model_type_to_classname($this->convert_to_something($model_type));
         if ($classname && class_exists($classname)) return new $classname();
         throw new ModelNotFoundException("Could not convert {$model_type} to Model class because {$classname} does not exist");
     }
@@ -286,18 +288,18 @@ class EntityMeta {
      * @return \Sm\Entity\Entity
      * @throws \Sm\Entity\Model\ModelNotFoundException
      */
-    public static function entity_type_to_class($entity_type) {
-        $entity_type = static::convert_to_something($entity_type);
-        $classname   = static::entity_type_to_classname($entity_type);
+    public function entity_type_to_class($entity_type) {
+        $entity_type = $this->convert_to_something($entity_type);
+        $classname   = $this->entity_type_to_classname($entity_type);
         if ($classname && class_exists($classname)) return new $classname();
         throw new ModelNotFoundException("Could not convert {$entity_type} to Entity class because {$classname} does not exist");
     }
-    public static function entity_type_to_model_type($entity_type) {
-        $entity_type = static::convert_to_something($entity_type);
-        if (!isset(static::$entity_type_to_model_type[ $entity_type ])) return false;
-        if (is_string(static::$entity_type_to_model_type[ $entity_type ])) return static::$entity_type_to_model_type[ $entity_type ];
-        $len = count(static::$entity_type_to_model_type[ $entity_type ]);
-        return $len === 1 ? static::$entity_type_to_model_type[ $entity_type ][0] : static::$entity_type_to_model_type[ $entity_type ];
+    public function entity_type_to_model_type($entity_type) {
+        $entity_type = $this->convert_to_something($entity_type);
+        if (!isset($this->entity_type_to_model_type[ $entity_type ])) return false;
+        if (is_string($this->entity_type_to_model_type[ $entity_type ])) return $this->entity_type_to_model_type[ $entity_type ];
+        $len = count($this->entity_type_to_model_type[ $entity_type ]);
+        return $len === 1 ? $this->entity_type_to_model_type[ $entity_type ][0] : $this->entity_type_to_model_type[ $entity_type ];
     }
     /**
      * @param null $entity_type
@@ -307,7 +309,7 @@ class EntityMeta {
      * @return array|mixed
      *
      */
-    public static function get_potential_relationships($entity_type = null, $linked_entities_array = null, $skip_reciprocals = false) {
+    public function get_potential_relationships($entity_type = null, $linked_entities_array = null, $skip_reciprocals = false) {
         #--- If the entity type or entities
         if (!$entity_type && !$linked_entities_array) return [ ];
         /**
@@ -320,19 +322,19 @@ class EntityMeta {
         
         #--- Convert the Entity Type to an EntityType if it doesn't exist
         if ($entity_type) {
-            $entity_type = static::convert_to_something($entity_type, static::TYPE_ENTITY_TYPE) ?? null;
+            $entity_type = $this->convert_to_something($entity_type, static::TYPE_ENTITY_TYPE) ?? null;
             #--- If we don't have the entity type, we don't know it. Return an empty array
             if (!$entity_type) return [ ];
         }
         
         #--- If we specified the Entity type but NOT the linked_entities, return all registered relationships under the entity type
         if ($entity_type && !isset($linked_entities_array)) {
-            $le_r = static::$entity_type_to_relationships[ $entity_type ] ?? [ ];
+            $le_r = $this->entity_type_to_relationships[ $entity_type ] ?? [ ];
             return $skip_reciprocals ? array_filter($le_r, $_skip_reciprocals_function, ARRAY_FILTER_USE_KEY) : $le_r;
         }
         
         #--- Make sure the linked_entities are all Entity types
-        $linked_entities_array = static::convert_to_something($linked_entities_array, static::TYPE_ENTITY_TYPE);
+        $linked_entities_array = $this->convert_to_something($linked_entities_array, static::TYPE_ENTITY_TYPE);
         
         #--- If the linked_entities are a string and we have an entity type, turn it into a predictable format (array)
         if (is_string($linked_entities_array)) {
@@ -340,21 +342,21 @@ class EntityMeta {
             $linked_entities_array = [ $entity_type, $linked_entities_array ];
         }
         #--- Convert the linked_entity array into the standard string that we are used to seeing
-        $linked_entities_string = static::get_linked_entity_string($linked_entities_array);
+        $linked_entities_string = $this->get_linked_entity_string($linked_entities_array);
         
         #--- If the two entities aren't related, return an empty array
-        if (!isset(static::$linked_entities_to_relationships[ $linked_entities_string ])) return [ ];
+        if (!isset($this->linked_entities_to_relationships[ $linked_entities_string ])) return [ ];
         
         #--- If we don't know what the Entity type is but we have the linked_entities_string, return the possible related entities
         if (!isset($entity_type)) {
-            $le_r = static::$linked_entities_to_relationships[ $linked_entities_string ];
+            $le_r = $this->linked_entities_to_relationships[ $linked_entities_string ];
             return $skip_reciprocals ? array_filter($le_r, $_skip_reciprocals_function, ARRAY_FILTER_USE_KEY) : $le_r;
         }
         
         #--- There isn't much else we can do without knowing the entity type. This was probably already checked for
         if (!$entity_type) return [ ];
         /** @var array $relationships These are the relationships of the entity */
-        $relationships = static::$entity_type_to_relationships[ $entity_type ] ?? [ ];
+        $relationships = $this->entity_type_to_relationships[ $entity_type ] ?? [ ];
         #--- Iterate through the potential relationship types to see if these two are related
         foreach ($relationships as $index => $relationship) {
             $rel_linked_entities = $relationship['linked_entities']??false;
@@ -369,7 +371,7 @@ class EntityMeta {
                 continue;
             }
             #--- Compare the linked entities to see if they are the same
-            $le_string = static::get_linked_entity_string($rel_linked_entities);
+            $le_string = $this->get_linked_entity_string($rel_linked_entities);
             if ($le_string != $linked_entities_string) unset($relationships[ $index ]);
         }
         return $relationships;
@@ -381,7 +383,7 @@ class EntityMeta {
      *
      * @return bool|string
      */
-    public static function get_prefix_from_ent_id($ent_id) {
+    public function get_prefix_from_ent_id($ent_id) {
         if (!is_string($ent_id) || strlen($ent_id) < 4) return false;
         return substr($ent_id, 0, 4);
     }
@@ -393,7 +395,7 @@ class EntityMeta {
      *
      * @return bool
      */
-    public static function is_id($id) {
+    public function is_id($id) {
         return is_numeric($id);
     }
     /**
@@ -403,8 +405,8 @@ class EntityMeta {
      *
      * @return bool
      */
-    public static function is_ent_id($ent_id) {
-        return is_string($ent_id) && (strlen($ent_id) <= 25) && array_key_exists(substr($ent_id, 0, 4), static::$prefix_to_model_type);
+    public function is_ent_id($ent_id) {
+        return is_string($ent_id) && (strlen($ent_id) <= 25) && array_key_exists(substr($ent_id, 0, 4), $this->prefix_to_model_type);
     }
 #########################################################
 #            Implementation of configuration            #
@@ -417,10 +419,10 @@ class EntityMeta {
      *
      * @return array|string
      */
-    protected static function def_convert_to_something($name, string $what = 'id') {
+    protected function def_convert_to_something($name, string $what = 'id') {
         if (is_array($name)) {
             foreach ($name as $k => $nn) {
-                $name[ $k ] = static::def_convert_to_something($nn, $what);
+                $name[ $k ] = $this->def_convert_to_something($nn, $what);
             }
         } else {
             $lower_name = strtolower($name);
@@ -465,15 +467,15 @@ class EntityMeta {
      *
      * @return string
      */
-    public static function get_linked_entity_string(array $array, $delimiter = '|') {
+    public function get_linked_entity_string(array $array, $delimiter = '|') {
         if (!$array) return '';
         $array_values = self::convert_to_something($array, EntityMeta::TYPE_ENTITY_TYPE, true);
         sort($array_values);
         return implode($delimiter, $array_values);
     }
-    public static function relationship_index_to_entity_type($entity_type, $relationship_index) {
-        $entity_type          = static::convert_to_something($entity_type);
-        $relationship_indices = static::get_potential_relationships($entity_type);
+    public function relationship_index_to_entity_type($entity_type, $relationship_index) {
+        $entity_type          = $this->convert_to_something($entity_type);
+        $relationship_indices = $this->get_potential_relationships($entity_type);
         if (!($relationship_indices[ $relationship_index ] ?? false)) return false;
         if (!($relationship_indices[ $relationship_index ]['entity_type'] ?? false)) return false;
         $other_entity_type = $relationship_indices[ $relationship_index ]['entity_type'];
@@ -487,7 +489,7 @@ class EntityMeta {
      *
      * @return bool|string
      */
-    protected static function get_object_type_from_model_type($model_type) {
+    protected function get_object_type_from_model_type($model_type) {
         if (!is_string($model_type)) return false;
         $str = strtolower($model_type);
         if (strpos($str, 'type')) $object_type = 'Type';
@@ -505,12 +507,12 @@ class EntityMeta {
      *
      * @return array
      */
-    protected static function _normalize_model_config($model_type, $model_config) {
+    protected function _normalize_model_config($model_type, $model_config) {
         if (!is_array($model_config)) $model_config = [ ];
         $model_config['values']          = isset($model_config['values']) && is_array($model_config['values']) ? $model_config['values'] : null;
         $model_config['value_nicknames'] = isset($model_config['value_nicknames']) && is_array($model_config['value_nicknames']) ? $model_config['value_nicknames'] : [ ];
         $model_config['alias_for']       = $model_config['alias_for'] ?? false;
-        $model_config['object_type']     = $model_config['object_type'] ?? static::get_object_type_from_model_type($model_type);
+        $model_config['object_type']     = $model_config['object_type'] ?? $this->get_object_type_from_model_type($model_type);
         $model_config['table']           = $model_config['table'] ?? false;
         $model_config['properties']      = $model_config['properties'] ?? [ ];
         $model_config['prefix']          = $model_config['prefix'] ?? null;
@@ -529,7 +531,7 @@ class EntityMeta {
      *
      * @return array|bool
      */
-    protected static function _normalize_properties($properties) {
+    protected function _normalize_properties($properties) {
         if (!is_array($properties)) return false;
         foreach ($properties as $property_name => $default_value) {
             if (is_numeric($property_name)) {
@@ -548,15 +550,15 @@ class EntityMeta {
      *
      * @return bool
      */
-    protected static function _init_models($models) {
+    protected function _init_models($models) {
         if (!is_array($models)) return false;
         foreach ($models as $model_type => $model_config) {
-            $model_config    = static::_normalize_model_config($model_type, $model_config);
+            $model_config    = $this->_normalize_model_config($model_type, $model_config);
             $values          = $model_config['values'];
             $object_type     = $model_config['object_type'];
             $linked_entities = $model_config['linked_entities'];
             $table_name      = $model_config['table'];
-            if ($table_name) static::$table_to_model_type[ $table_name ] = $model_type;
+            if ($table_name) $this->table_to_model_type[ $table_name ] = $model_type;
             if ($values) {
                 $value_nicknames = $model_config['value_nicknames'];
                 $v_arr           = [ ];
@@ -573,7 +575,7 @@ class EntityMeta {
                     }
                 };
                 //::static
-                static::$enum_values[ Inflector::underscore(Inflector::pluralize($model_type)) ] = $v_arr;
+                $this->enum_values[ Inflector::underscore(Inflector::pluralize($model_type)) ] = $v_arr;
             }
             switch ($object_type) {
                 case 'Map':
@@ -588,17 +590,17 @@ class EntityMeta {
                 case 'Status':
                     break;
             }
-            $linked_entities = static::_normalize_linked_entities($model_type, $linked_entities, $object_type);
+            $linked_entities = $this->_normalize_linked_entities($model_type, $linked_entities, $object_type);
             if ($linked_entities) {
-                $linked_entity_types = static::get_linked_entity_string($linked_entities);
+                $linked_entity_types = $this->get_linked_entity_string($linked_entities);
                 if (strpos($linked_entity_types, '|') === 0) Log::init($linked_entities)->log_it();
-                static::$linked_entities_to_model_type[ $linked_entity_types ] = static::$linked_entities_to_model_type[ $linked_entity_types ] ?? [ ];
-                if (!in_array($model_type, static::$linked_entities_to_model_type[ $linked_entity_types ]))
-                    static::$linked_entities_to_model_type[ $linked_entity_types ][] = $model_type;
-                static::$model_type_to_linked_entity_properties[ $model_type ] = $linked_entities;
+                $this->linked_entities_to_model_type[ $linked_entity_types ] = $this->linked_entities_to_model_type[ $linked_entity_types ] ?? [ ];
+                if (!in_array($model_type, $this->linked_entities_to_model_type[ $linked_entity_types ]))
+                    $this->linked_entities_to_model_type[ $linked_entity_types ][] = $model_type;
+                $this->model_type_to_linked_entity_properties[ $model_type ] = $linked_entities;
             }
-            if ($model_config['prefix']) static::$prefix_to_model_type[ $model_config['prefix'] ] = $model_type;
-            static::$model_type_to_properties[ $model_type ] = static::_normalize_properties($model_config['properties']);
+            if ($model_config['prefix']) $this->prefix_to_model_type[ $model_config['prefix'] ] = $model_type;
+            $this->model_type_to_properties[ $model_type ] = $this->_normalize_properties($model_config['properties']);
         }
         return true;
     }
@@ -609,8 +611,8 @@ class EntityMeta {
      *
      * @return array
      */
-    protected static function _init_entity_relationships($rel_arr, $entity_type, &$deferred_relationship_indices) {
-        static::$linked_entities_to_relationships = static::$linked_entities_to_relationships ??[ ];
+    protected function _init_entity_relationships($rel_arr, $entity_type, &$deferred_relationship_indices) {
+        $this->linked_entities_to_relationships = $this->linked_entities_to_relationships ??[ ];
         foreach ($rel_arr as $index => $rel_config) {
             $already_found_duplicate_entity = false;
             $linked_entity_array            = $rel_config['linked_entities'] ?? [ ];
@@ -632,16 +634,16 @@ class EntityMeta {
                     $dri_le_ri         =& $deferred_relationship_indices[ $_linked_entity_name ]["reciprocal_$index"];
                     $rc                = $rel_config;
                     $rc['entity_type'] = $entity_type;
-                    $dri_le_ri         = static::_merge_relationship_index_config($dri_le_ri, $rc, "reciprocal_$index");
+                    $dri_le_ri         = $this->_merge_relationship_index_config($dri_le_ri, $rc, "reciprocal_$index");
                 }
                 
-                static::$linked_entities_to_relationships[ $linked_entity_string ] =
-                    static::$linked_entities_to_relationships[ $linked_entity_string ] ?? [ ];
+                $this->linked_entities_to_relationships[ $linked_entity_string ] =
+                    $this->linked_entities_to_relationships[ $linked_entity_string ] ?? [ ];
                 
-                static::$linked_entities_to_relationships[ $linked_entity_string ][ $index ] = $rel_config;
+                $this->linked_entities_to_relationships[ $linked_entity_string ][ $index ] = $rel_config;
             }
         }
-        static::$entity_type_to_relationships[ $entity_type ] = is_array($rel_arr) ? $rel_arr : [ ];
+        $this->entity_type_to_relationships[ $entity_type ] = is_array($rel_arr) ? $rel_arr : [ ];
     }
     /**
      * Iterate through the entity config and add them to the registry
@@ -650,7 +652,7 @@ class EntityMeta {
      *
      * @return bool
      */
-    protected static function _init_entities($entities) {
+    protected function _init_entities($entities) {
         if (!is_array($entities)) return false;
         /** @var array $deferred_relationship_indices An array to keep track of the relationships that we have yet to add. Usually reciprocal */
         $deferred_relationship_indices = [ ];
@@ -659,28 +661,28 @@ class EntityMeta {
                 $entity_type   = $entity_config;
                 $entity_config = [ ];
             }
-            $entity_config                                 = static::_normalize_entity_config($entity_type, $entity_config);
+            $entity_config                                 = $this->_normalize_entity_config($entity_type, $entity_config);
             $deferred_relationship_indices[ $entity_type ] = $deferred_relationship_indices[ $entity_type ] ?? [ ];
             $rels                                          = $entity_config['relationships'] ?? [ ];
             $rels                                          = is_array($rels) ? $rels : [ ];
             self::_init_entity_relationships($rels, $entity_type, $deferred_relationship_indices);
-            static::$entity_type_to_config[ $entity_type ] = $entity_config;
+            $this->entity_type_to_config[ $entity_type ] = $entity_config;
             if (isset($entity_config['model_type'])) {
-                static::$entity_type_to_model_type[ $entity_type ] =
+                $this->entity_type_to_model_type[ $entity_type ] =
                     is_array($entity_config['model_type'])
                         ? $entity_config['model_type']
                         : [ $entity_config['model_type'] ];
             }
         }
         foreach ($deferred_relationship_indices as $_entity_type => $_rel_config) {
-            static::$entity_type_to_relationships[ $_entity_type ] = array_merge(static::$entity_type_to_relationships[ $_entity_type ] ??[ ], $_rel_config);
-            if (!isset(static::$entity_type_to_config[ $_entity_type ])) continue;
-            if (!is_array(static::$entity_type_to_config[ $_entity_type ]['relationships'])) {
-                Log::init([ static::$entity_type_to_config[ $_entity_type ]['relationships'] ])->log_it();
+            $this->entity_type_to_relationships[ $_entity_type ] = array_merge($this->entity_type_to_relationships[ $_entity_type ] ??[ ], $_rel_config);
+            if (!isset($this->entity_type_to_config[ $_entity_type ])) continue;
+            if (!is_array($this->entity_type_to_config[ $_entity_type ]['relationships'])) {
+                Log::init([ $this->entity_type_to_config[ $_entity_type ]['relationships'] ])->log_it();
             }
-            static::$entity_type_to_config[ $_entity_type ]['relationships'] = array_merge($_rel_config, static::$entity_type_to_config[ $_entity_type ]['relationships']);
+            $this->entity_type_to_config[ $_entity_type ]['relationships'] = array_merge($_rel_config, $this->entity_type_to_config[ $_entity_type ]['relationships']);
         }
-        static::$debug = $deferred_relationship_indices;
+        $this->debug = $deferred_relationship_indices;
         return true;
     }
     /**
@@ -694,7 +696,7 @@ class EntityMeta {
      *
      * @return mixed
      */
-    protected static function _merge_relationship_index_config($old_config, $overriding_config, $relationship_index) {
+    protected function _merge_relationship_index_config($old_config, $overriding_config, $relationship_index) {
         $merge_properties = [ 'entity_type', 'index_singular' ];
         foreach ($merge_properties as $property) {
             if ($old_config[ $property ] ?? false) {
@@ -727,27 +729,27 @@ class EntityMeta {
      *
      * @return array|bool|mixed
      */
-    protected static function _normalize_relationship_index($entity_type, $relationship_index_name, $rel_config) {
+    protected function _normalize_relationship_index($entity_type, $relationship_index_name, $rel_config) {
         if (!is_array($rel_config)) return false;
-        $model_relationship                   = static::$standard_config['relationships'][ $relationship_index_name ] ?? false;
+        $model_relationship                   = $this->standard_config['relationships'][ $relationship_index_name ] ?? false;
         $index_singular                       = Inflector::singularize($relationship_index_name);
         $related_entity_type                  = $rel_config['entity_type'] =
             $rel_config['entity_type'] ?? $model_relationship['entity_type'] ?? ucfirst($index_singular);
         $rel_config['index_singular']         = $rel_config['index_singular'] ?? $model_relationship['index_singular'] ?? $index_singular;
         $linked_entities                      = $rel_config['linked_entities'] ?? $rel_config['linked_entities'] ?? (is_string($related_entity_type) ? [ $related_entity_type ] : null);
         $rel_config['linked_entities']        = [ ];
-        $le_arr                               = static::_normalize_linked_entities($entity_type, $linked_entities);
-        $le                                   = static::get_linked_entity_string($le_arr);
+        $le_arr                               = $this->_normalize_linked_entities($entity_type, $linked_entities);
+        $le                                   = $this->get_linked_entity_string($le_arr);
         $rel_config['linked_entities'][ $le ] = $le_arr;
-        if (isset(static::$linked_entities_to_model_type[ $le ])) {
-            $map_type                             = static::$linked_entities_to_model_type[ $le ];
+        if (isset($this->linked_entities_to_model_type[ $le ])) {
+            $map_type                             = $this->linked_entities_to_model_type[ $le ];
             $map_type                             = is_array($map_type) ? $map_type[0] : $map_type;
-            $mt_linked                            = static::$model_type_to_linked_entity_properties[ $map_type ] ??[ ];
+            $mt_linked                            = $this->model_type_to_linked_entity_properties[ $map_type ] ??[ ];
             $rel_config['linked_entities'][ $le ] = $mt_linked ?? $rel_config['linked_entities'][ $le ];
         }
         $rel_config['relationship_index'] = $relationship_index_name;
         
-        return static::replace_entity_placeholder($entity_type, $rel_config);
+        return $this->replace_entity_placeholder($entity_type, $rel_config);
     }
     /**
      * Make sure the entity configuration is in the format that we expect
@@ -757,7 +759,7 @@ class EntityMeta {
      *
      * @return mixed
      */
-    protected static function _normalize_entity_config($entity_type, $entity_config) {
+    protected function _normalize_entity_config($entity_type, $entity_config) {
         $entity_config['based_on'] = $entity_config['based_on'] ?? $entity_type;
         
         $based_on                     = $entity_config['based_on'];
@@ -765,11 +767,11 @@ class EntityMeta {
         $entity_config['model_type']  = $based_on;
         $entity_config['properties']  = $entity_config['properties'] ?? [ ];
         $all_properties               = $entity_config['properties']['all'] ?? false;
-        if (is_string($based_on) && isset(static::$model_type_to_properties[ $based_on ])) {
-            if (!$all_properties) $all_properties = static::$model_type_to_properties[ $based_on ];
+        if (is_string($based_on) && isset($this->model_type_to_properties[ $based_on ])) {
+            if (!$all_properties) $all_properties = $this->model_type_to_properties[ $based_on ];
         }
         if (is_array($all_properties)) {
-            $all_properties                     = static::_normalize_properties($all_properties);
+            $all_properties                     = $this->_normalize_properties($all_properties);
             $entity_config['properties']['all'] = $all_properties;
         } else {
             $all_properties = [ ];
@@ -786,7 +788,7 @@ class EntityMeta {
                     $index                = $_relationship_config;
                     $_relationship_config = [ ];
                 }
-                $relationship_config[ $index ] = static::_normalize_relationship_index($entity_type, $index, $_relationship_config);
+                $relationship_config[ $index ] = $this->_normalize_relationship_index($entity_type, $index, $_relationship_config);
             }
             $entity_config['relationships'] = $relationship_config;
         }
@@ -802,13 +804,13 @@ class EntityMeta {
      *
      * @return array|bool
      */
-    protected static function _normalize_linked_entities(string $self_entity_type, array $linked_entity_array = null, $object_type = 'Entity') {
+    protected function _normalize_linked_entities(string $self_entity_type, array $linked_entity_array = null, $object_type = 'Entity') {
         if (!is_array($linked_entity_array)) return false;
-        $linked_entity_array = static::replace_entity_placeholder($self_entity_type, $linked_entity_array);
+        $linked_entity_array = $this->replace_entity_placeholder($self_entity_type, $linked_entity_array);
         $linked_entities     = [ ];
         $linked_entity_type  = $map_index = '';
         foreach ($linked_entity_array as $map_index => $linked_entity_type) {
-            if (is_numeric($map_index)) $map_index = static::convert_to_id($linked_entity_type);
+            if (is_numeric($map_index)) $map_index = $this->convert_to_id($linked_entity_type);
             $linked_entities[ $map_index ] = $linked_entity_type;
         }
         if (count($linked_entities) === 1) {
@@ -825,7 +827,7 @@ class EntityMeta {
                             unset($linked_entities[ $map_index ]);
                         } else {
                             #--- By default, we just convert /this/ entity to an ID. That's the assumed foreign key
-                            $linked_entities[ static::convert_to_id($self_entity_type) ] = $self_entity_type;
+                            $linked_entities[ $this->convert_to_id($self_entity_type) ] = $self_entity_type;
                         }
                     }
                     break;
@@ -838,7 +840,7 @@ class EntityMeta {
         return $linked_entities;
     }
 #########################################################
-#            Private, static functions                  #
+#            Private, functions                  #
 #########################################################
     /**
      * When we inherit relationships from default, sometimes we use a placeholder like [Entity].
@@ -849,10 +851,10 @@ class EntityMeta {
      *
      * @return array|mixed
      */
-    private static function replace_entity_placeholder($entity_name, $item) {
+    private function replace_entity_placeholder($entity_name, $item) {
         if (is_array($item)) {
             foreach ($item as $k => $_string) {
-                $item[ static::replace_entity_placeholder($entity_name, $k) ] = static::replace_entity_placeholder($entity_name, $_string);
+                $item[ $this->replace_entity_placeholder($entity_name, $k) ] = $this->replace_entity_placeholder($entity_name, $_string);
             }
         }
         if (!is_string($item) || !is_string($entity_name)) return $item;
@@ -868,23 +870,23 @@ class EntityMeta {
                            ], $item);
         
     }
-    private static function convert_to_id($model_name) {
+    private function convert_to_id($model_name) {
         return Inflector::singularize(strtolower($model_name)) . '_id';
     }
 #########################################################
 #            Logging and Serialization                  #
 #########################################################
-    public static function _log_() {
+    public function _log_() {
         return [
-            'debug' => static::$debug,
-            'dump'  => static::dump(),
+            'debug' => $this->debug,
+            'dump'  => $this->dump(),
         ];
     }
-    public static function dump() {
-        $entity_relationships = static::$entity_type_to_relationships;
+    public function dump() {
+        $entity_relationships = $this->entity_type_to_relationships;
         
         $entities = [ ];
-        foreach (static::$entity_type_to_config as $key => $item) {
+        foreach ($this->entity_type_to_config as $key => $item) {
             if (isset($item['relationships'])) unset($item['relationships']);
             if (isset($item['model_type'])) unset($item['model_type']);
             if (isset($entity_relationships[ $key ])) {
@@ -906,21 +908,21 @@ class EntityMeta {
         }
         
         $linked_entities = [ ];
-        foreach (static::$linked_entities_to_model_type as $index => $item) {
+        foreach ($this->linked_entities_to_model_type as $index => $item) {
             $all_props = [ ];
             
             $entities[ $index ]                      = $entities[ $index ] ?? [ ];
             $entities[ $index ]['properties']        = $entities[ $index ]['properties'] ?? [ ];
             $entities[ $index ]['properties']['all'] = $entities[ $index ]['properties']['all'] ?? null;
             if (!$entities[ $index ]['properties']['all']) {
-                $mt = static::convert_linked_entities_to_model_type($index);
+                $mt = $this->convert_linked_entities_to_model_type($index);
                 if (is_array($mt)) {
-                    $props = static::get_linked_properties($index);
+                    $props = $this->get_linked_properties($index);
                     foreach ($props as $key => $et) {
                         $all_props[ $key ] = null;
                     }
                 } else {
-                    $all_props = static::get_model_type_properties($mt);
+                    $all_props = $this->get_model_type_properties($mt);
                 }
                 $entities[ $index ]['properties']['all'] = $all_props;
             }
@@ -933,8 +935,8 @@ class EntityMeta {
         }
         return [
             'entities'                      => $entities,
-            'linked_entities_relationships' => static::$linked_entities_to_relationships,
-            'enums'                         => static::$enum_values,
+            'linked_entities_relationships' => $this->linked_entities_to_relationships,
+            'enums'                         => $this->enum_values,
         ];
     }
     

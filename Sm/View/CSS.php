@@ -10,7 +10,6 @@ namespace Sm\View;
 
 use Sm\Core\App;
 use Sm\Core\Util;
-use Sm\Response\Http;
 use Sm\View\Abstraction\View;
 
 /**
@@ -28,7 +27,7 @@ class CSS extends View {
             $this->content = $content;
         }
     }
-    static public function create($path, $data = [ ], $is_in_view_path = true) {
+    static public function create($path, $data = [ ], $is_in_view_path = true, App $App = null) {
         $view = new static(null);
         $path = ($is_in_view_path ? App::_()->Paths->css : '') . $path;
         ob_start();

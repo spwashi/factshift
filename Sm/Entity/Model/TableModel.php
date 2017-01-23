@@ -32,7 +32,7 @@ class TableModel extends Model {
         $p               = parent::_init();
         static::$is_init = false;
         if (!$p) return $p;
-        static::$table_name = EntityMeta::convert_to_something(static::$model_type, EntityMeta::TYPE_TABLE);
+        static::$table_name = App::_()->IoC->EntityMeta->convert_to_something(static::$model_type, EntityMeta::TYPE_TABLE);
         if (!strlen(static::$table_name)) throw new ModelNotFoundException("Could not map model to table", ModelNotFoundException::REASON_UNIMPLEMENTED);
         static::$table_name;
         static::$is_init = true;

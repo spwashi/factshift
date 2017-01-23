@@ -24,7 +24,7 @@ define(['require', 'Sm', 'Sm-Core-Core',
                                          'Abstraction-RelationshipIndex',
                                          'Abstraction-Views-EntityView'
                                      ], function () {
-            var entity_types = [].concat(Object.keys(Sm.Entities._info.entities), Object.keys(known_entities));
+            var entity_types = [].concat(Object.keys(Sm.Entities._info.entities || {}), Object.keys(known_entities || {}));
             entity_types     = entity_types.filter(function (item, index) {return entity_types.indexOf(item) === index});
             Sm.Core.SmEntity.load_entity('Placeholder', ['PlaceholderEntity'] || []).then(function () {
 

@@ -36,7 +36,7 @@ class FactshiftModel extends TableModel {
     protected static function _init() {
         if (static::$is_init) return true;
         parent::_init();
-        static::$table_prefix = EntityMeta::convert_to_something(static::class, EntityMeta::TYPE_PREFIX);
+        static::$table_prefix = Factshift::_()->IoC->EntityMeta->convert_to_something(static::class, EntityMeta::TYPE_PREFIX);
         return true;
     }
     

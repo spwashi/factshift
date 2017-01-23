@@ -12,7 +12,7 @@ use Sm\Core\App;
 
 class Image extends View {
     public $content_type;
-    static public function create($path, $data = [ ], $is_in_view_path = true) {
+    static public function create($path, $data = [ ], $is_in_view_path = true, App $App = null) {
         $view = new static(null);
         $path = ($is_in_view_path ? App::_()->Paths->image : '') . $path;
         $view->setContent(file_get_contents($path));

@@ -27,7 +27,9 @@ define([
            Sm.Core                 = {};
            Sm.Extras               = {};
            Sm.Abstraction          = {};
-           Sm.Entities             = {_info: factshift_config_el ? JSON.parse(factshift_config_el.textContent) : {}};
+           Sm.Entities             = {
+               _info: factshift_config_el ? JSON.parse(factshift_config_el.textContent) : {entities: {}}
+           };
            /**
             * An object to keep track of which objects have been loaded
             * @property add         {Function}  Add an object as loaded {@link Sm.Core.dependencies.add}

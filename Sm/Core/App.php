@@ -105,6 +105,9 @@ class App implements \JsonSerializable {
             if ($app_name == 'booting' && static::$booting_app_name) return static::_(static::$booting_app_name);
             else if (isset(static::$instances[ $app_name ])) return static::$instances[ $app_name ];
         }
+        $class_name_arr = explode('\\', static::class);
+        $class_name     = $class_name_arr[ count($class_name_arr) - 1 ];
+        if ($class_name !== 'App' && isset(static::$instances[ $class_name ])) return static::$instances[ $class_name ];
         if (App::$instance === null) App::$instance = new static('Sm');
         return App::$instance;
     }
@@ -171,7 +174,7 @@ class App implements \JsonSerializable {
         
         if (file_exists("{$path}helpers.php")) Helper::register(require "{$path}helpers.php");
         if (file_exists("{$path}routes.php")) $this->IoC->router->register(require "{$path}routes.php");
-        if (file_exists("{$path}models.php")) EntityMeta::init(require "{$path}models.php");
+        if (file_exists("{$path}models.php")) $this->IoC->register('EntityMeta', EntityMeta::init(require "{$path}models.php", $this));
         return true;
     }
     public function change_uri($uri) { return $uri; }

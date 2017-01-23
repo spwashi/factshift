@@ -7,8 +7,8 @@
 
 namespace Sm\Controller\API;
 
+use Sm\Core\App;
 use Sm\Entity\EntityIterator;
-use Sm\Entity\Model\EntityMeta;
 use Sm\Response\Response;
 use Sm\Response\ResponseMessage;
 
@@ -37,8 +37,8 @@ class Endpoint implements \JsonSerializable {
         $InitializedClass = null;
         if ($this->is_entity) {
             try {
-                $ModelClass  = EntityMeta::model_type_to_class(EntityMeta::entity_type_to_model_type($this->endpoint_type));
-                $EntityClass = EntityMeta::entity_type_to_class($this->endpoint_type);
+                $ModelClass  = App::_()->IoC->EntityMeta->model_type_to_class(App::_()->IoC->EntityMeta->entity_type_to_model_type($this->endpoint_type));
+                $EntityClass = App::_()->IoC->EntityMeta->entity_type_to_class($this->endpoint_type);
                 if ($this->identifier) {
                     if (!is_array($this->identifier) && !strpos($this->identifier, ',')) {
                         $InitializedClass = $EntityClass->initFromModel($ModelClass->find($this->identifier));

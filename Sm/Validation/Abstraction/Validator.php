@@ -7,8 +7,8 @@
 
 namespace Sm\Validation\Abstraction;
 
+use Sm\Core\App;
 use Sm\Core\Util;
-use Sm\Entity\Model\EntityMeta;
 use Sm\Response\Response;
 use Sm\Response\ResponseMessage;
 
@@ -55,7 +55,7 @@ abstract class Validator {
     }
     
     protected static function _validate_enum($enum_name, $enum_value) {
-        if ($rel_type_enum = EntityMeta::get_enum_value($enum_name)) {
+        if ($rel_type_enum = App::_()->IoC->EntityMeta->get_enum_value($enum_name)) {
             foreach ($rel_type_enum as $index => $item) {
                 if ($enum_value == $index || $enum_value == $item['id']) return true;
             }

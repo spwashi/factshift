@@ -27,7 +27,7 @@ class JavaScript extends View {
             $this->content = $content;
         }
     }
-    static public function create($path, $data = [ ], $is_in_view_path = true, $throw_error = false) {
+    static public function create($path, $data = [ ], $is_in_view_path = true, App $App = null) {
         $view = new static(null);
         $path = ($is_in_view_path ? App::_()->Paths->js : '') . $path;
         ob_start();

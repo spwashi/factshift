@@ -53,6 +53,6 @@ class PathContainer {
         if (strpos($path, 'DRIVER_PATH') !== false && $name != 'driver') $path = str_replace('DRIVER_PATH', $this->__get('driver'), $path);
         if (strpos($path, 'VIEW_PATH') !== false && $name != 'view') $path = str_replace('VIEW_PATH', $this->__get('view'), $path);
         if (strpos($path, 'USER_PATH') !== false && $name != 'user') $path = str_replace('USER_PATH', $this->__get('user'), $path);
-        return $path;
+        return str_replace('//', '/', $path);
     }
 }

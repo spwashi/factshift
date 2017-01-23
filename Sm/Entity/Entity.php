@@ -9,10 +9,10 @@
 namespace Sm\Entity;
 
 
+use Sm\Core\App;
 use Sm\Core\Inflector;
 use Sm\Development\Log;
 use Sm\Entity\Model\Abstraction\Model;
-use Sm\Entity\Model\EntityMeta;
 use Sm\Entity\Model\ModelIterator;
 use Sm\Entity\Model\ModelNotFoundException;
 use Sm\Entity\Model\TableModel;
@@ -115,9 +115,9 @@ class Entity extends Abstraction\Entity implements \JsonSerializable {
             # --- Try formatting it in a lowercase/plural way just in case;
             $relationship_index = strtolower(Inflector::pluralize($relationship_index));
             if (!$this->RelationshipIndices->hasRelationshipIndex($relationship_index)) {
-                $rel_index_to_entity_type = EntityMeta::convert_to_something($relationship_index);
+                $rel_index_to_entity_type = App::_()->IoC->EntityMeta->convert_to_something($relationship_index);
                 if ($rel_index_to_entity_type) {
-                    $relationship_index = array_keys(EntityMeta::get_potential_relationships($this->getEntityType(), $rel_index_to_entity_type, true));
+                    $relationship_index = array_keys(App::_()->IoC->EntityMeta->get_potential_relationships($this->getEntityType(), $rel_index_to_entity_type, true));
                 }
             }
         }
@@ -176,7 +176,7 @@ class Entity extends Abstraction\Entity implements \JsonSerializable {
      * @return array
      */
     protected function resolve_relationship_search(array $relationship_search, $relationship_index) {
-        $enums              = EntityMeta::get_enum_value('relationship_types');
+        $enums              = App::_()->IoC->EntityMeta->get_enum_value('relationship_types');
         $RelationshipIndex  = $this->RelationshipIndices->$relationship_index;
         $relationship_index = $RelationshipIndex->interpret_relationship_index($relationship_index);
         if ($enums && ($enums[ $relationship_index ] ?? false) && ($enums[ $relationship_index ]['id'] ?? false)) {
@@ -211,20 +211,20 @@ class Entity extends Abstraction\Entity implements \JsonSerializable {
         # --- Iterate through the linked entities so we can use the Map to find models
         foreach ($involved_entities as $linked_entity_string => $le_array) {
             try {
-                $map_model_name = EntityMeta::convert_linked_entities_to_model_type($le_array);
+                $map_model_name = App::_()->IoC->EntityMeta->convert_linked_entities_to_model_type($le_array);
                 
                 # --- This should probably raise an error?
                 if (!is_string($map_model_name)) continue;
                 
                 # --- This is the Map Class that we're going to use to find the relationship
-                $MapClass = EntityMeta::model_type_to_class($map_model_name);
+                $MapClass = App::_()->IoC->EntityMeta->model_type_to_class($map_model_name);
                 
-                $map_index = EntityMeta::get_index_from_linked_entity($le_array, $this->getEntityType(), $relationship_is_reciprocal);
+                $map_index = App::_()->IoC->EntityMeta->get_index_from_linked_entity($le_array, $this->getEntityType(), $relationship_is_reciprocal);
                 if (!$map_index) throw new ModelNotFoundException([ "Not sure how to link the two entities ", $le_array, $this->getEntityType() ]);
                 
                 $search = $this->resolve_relationship_search([ $map_index => $this ], $relationship_index);
                 
-                $_linked_entity_properties = EntityMeta::get_linked_properties($linked_entity_string);
+                $_linked_entity_properties = App::_()->IoC->EntityMeta->get_linked_properties($linked_entity_string);
                 
                 if (!$_linked_entity_properties) throw new EntityNotFoundException([ "Not sure how to link the two entities ", $linked_entity_string, $this->getEntityType() ]);
                 unset($_linked_entity_properties[ $map_index ]);
@@ -237,15 +237,15 @@ class Entity extends Abstraction\Entity implements \JsonSerializable {
                         $Maps = $MapClass->findAll($search);
                         
                         # -- This is the Model type of the Entity that we just
-                        $entity_model_type = EntityMeta::entity_type_to_model_type($entity_name);
+                        $entity_model_type = App::_()->IoC->EntityMeta->entity_type_to_model_type($entity_name);
                         
                         # --- This should probably throw some sort of error.
                         # --- If we don't know the Model type, skip what we were doing
                         if (!$entity_model_type || !is_string($entity_model_type)) continue;
                         /** @var Model $EntityModelClass */
-                        $EntityModelClass = EntityMeta::model_type_to_class($entity_model_type);
+                        $EntityModelClass = App::_()->IoC->EntityMeta->model_type_to_class($entity_model_type);
                         /** @var \Sm\Entity\Abstraction\Entity $EntityClass */
-                        $EntityClass = EntityMeta::entity_type_to_class($entity_name);
+                        $EntityClass = App::_()->IoC->EntityMeta->entity_type_to_class($entity_name);
                         /** @var Model $map */
                         foreach ($Maps as $map) {
                             try {
@@ -284,8 +284,8 @@ class Entity extends Abstraction\Entity implements \JsonSerializable {
     protected function can_relate(string $relationship_index) {
         try {
             if (!$this->RelationshipIndices->hasRelationshipIndex($relationship_index)) {
-                $entity_name = EntityMeta::convert_to_something($relationship_index);
-                if (!$entity_name || !EntityMeta::get_potential_relationships($this->getEntityType(), $entity_name))
+                $entity_name = App::_()->IoC->EntityMeta->convert_to_something($relationship_index);
+                if (!$entity_name || !App::_()->IoC->EntityMeta->get_potential_relationships($this->getEntityType(), $entity_name))
                     throw new RelationshipNotFoundException("This entity type has no relationship index '{$relationship_index}'");
             } else if (!$this->PrimaryModel) {
                 throw new ModelNotFoundException("Entity has no Model to use to find Relationship");
@@ -307,7 +307,7 @@ class Entity extends Abstraction\Entity implements \JsonSerializable {
      * @return array|mixed
      */
     public function initRelationshipIndices() {
-        $relationship_config       = EntityMeta::get_potential_relationships($this->getEntityType());
+        $relationship_config       = App::_()->IoC->EntityMeta->get_potential_relationships($this->getEntityType());
         $this->RelationshipIndices = new RelationshipIndexContainer($this);
         foreach ($relationship_config as $index => $config) {
             try {

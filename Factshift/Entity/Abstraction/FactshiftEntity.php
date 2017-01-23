@@ -7,11 +7,14 @@
 
 namespace Factshift\Entity\Abstraction;
 
+use Factshift\Core\Factshift;
 use Factshift\Entity\Relationship\RelationshipIndex;
 use Factshift\User\AppUser;
+use Sm\Action\Create\CreateVictim;
 use Sm\Action\Destroy\DestroyVictim;
 use Sm\Action\Edit\EditVictim;
-use Sm\Core\App;
+use Sm\Entity\Action\Create\CreateEntityVictimTrait;
+use Sm\Entity\Action\Edit\EditEntityVictimTrait;
 use Sm\Entity\Entity;
 use Sm\Identifier\Identifiable;
 
@@ -22,11 +25,12 @@ use Sm\Identifier\Identifiable;
  * @package Factshift\Entity
  * @property-read $ent_id
  */
-class FactshiftEntity extends Entity {
+class FactshiftEntity extends Entity implements EditVictim, CreateVictim {
+    use EditEntityVictimTrait, CreateEntityVictimTrait;
     public function jsonSerialize() {
         $attributes = parent::jsonSerialize();
         /** @var AppUser $User */
-        $User = App::_()->IoC->session->getUser();
+        $User = Factshift::_()->IoC->session->getUser();
         if ($User === $this) return $attributes;
         $permissions = [
             'edit'    => false,

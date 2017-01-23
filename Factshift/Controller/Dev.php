@@ -7,44 +7,16 @@
 
 namespace Factshift\Controller;
 
-use Sm\Core\App;
-use Sm\Database\Abstraction\Sql;
-use Sm\Entity\Model\EntityMeta;
-use Sm\Process\Process;
-use Sm\View\View;
+use Factshift\Core\Factshift;
 
 class Dev extends HomeController {
     public function index() {
+        Factshift::_()->IoC->register('connection', Factshift::_()->IoC->config_connection);
         $View = $this->View;
         $View->setTitle('Development Access Suite')->insertContentCreate('dev/index.php');
         return $View;
     }
-    public function cl() {
-        $f = fopen(BASE_PATH . 'Logs/log.txt', 'w');
-        if (!$f) return false;
-        fwrite($f, "");
-        fclose($f);
-        return true;
-    }
     
-    public function m_d() {
-        return EntityMeta::dump();
-    }
     
-    public function p() {
-        $output = Process::create('deploy/print.php')->getOutput();
-        /** @var $sql Sql */
-        if (!App::_()->IoC->resolveSql($sql)) return [ false ];
-        /** @var \Sm\Database\Connection $connection */
-        $connection = App::_()->IoC->connection;
-        $DBH        = $connection->getConnection();
-        $connection->beginTransaction();
-        $output_string = implode(";\n", str_replace(" ", '  ', $output));
-        echo "<pre>{$output_string}</pre>";
-        foreach ($output as $item) {
-            $DBH->prepare($item)->execute();
-        }
-        $connection->commitTransaction();
-        return View::init($output);
-    }
+    
 }

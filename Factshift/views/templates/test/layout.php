@@ -6,10 +6,9 @@
  */
 use Factshift\Core\Factshift;
 use Factshift\User\AppUser;
-use Sm\Core\App;
 
 $User               = Factshift::_()->IoC->session->getUser();
-$current_route_name = App::_()->IoC->router->get_matched_route_name();
+$current_route_name = Factshift::_()->IoC->router->get_matched_route_name();
 ?>
 <!DOCTYPE HTML>
 <html>
@@ -21,19 +20,19 @@ $current_route_name = App::_()->IoC->router->get_matched_route_name();
     <meta name="keywords" content="" />
     <meta charset="utf-8">
     <META http-equiv="cache-control" content="public">
-    <link href="<?= App::_()->IoC->router->generate_url('css', [ 'raw/main.css' ]); ?>" rel="stylesheet" type="text/css" />
+    <link href="<?= Factshift::_()->IoC->router->generate_url('css', [ 'raw/main.css' ]); ?>" rel="stylesheet" type="text/css" />
     <!--    REQUIREMENT -->
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css">
-    <script src="<?= App::_()->IoC->router->generate_url('js', [ 'vendor/require.min.js' ]) ?>"></script>
-    <script type="application/javascript">var FACTSHIFT_BASE_URL = "<?= App::_()->base_url ?>";</script>
-    <script type="application/javascript">var FACTSHIFT_JS_URL = "<?= App::_()->IoC->router->generate_url('js', null) ?>";</script>
+    <script src="<?= Factshift::_()->IoC->router->generate_url('js', [ 'vendor/require.min.js' ]) ?>"></script>
+    <script type="application/javascript">var FACTSHIFT_BASE_URL = "<?= Factshift::_()->base_url ?>";</script>
+    <script type="application/javascript">var FACTSHIFT_JS_URL = "<?= Factshift::_()->IoC->router->generate_url('js', null) ?>";</script>
 </head>
 <body id="com-factshift">
     <!--    HEADER      -->
     <header role="banner" class="main clearfix" id="header">
         <div id="header-wrapper" class="clearfix main-wrapper">
             <div id="logo">
-                <a rel="home" href="<?= App::_()->base_url ?>">
+                <a rel="home" href="<?= Factshift::_()->base_url ?>">
                     <div class="logo">
                         <h1 class="no-view">{{site_title}}</h1>
                         
@@ -45,14 +44,14 @@ $current_route_name = App::_()->IoC->router->get_matched_route_name();
                 <ul id="menu-links">
                     <?php /** @var  AppUser $User */
                     if (!Factshift::_()->IoC->session->has_valid_user()): ?>
-                        <li class="<?= $current_route_name == 'signup' ? 'active' : '' ?>"><a href="<?= App::_()->IoC->router->generate_url('signup') ?>">Sign up</a></li>
-                        <li class="<?= $current_route_name == 'login' ? 'active' : '' ?>"><a href="<?= App::_()->IoC->router->generate_url('login') ?>">Login</a></li>
+                        <li class="<?= $current_route_name == 'signup' ? 'active' : '' ?>"><a href="<?= Factshift::_()->IoC->router->generate_url('signup') ?>">Sign up</a></li>
+                        <li class="<?= $current_route_name == 'login' ? 'active' : '' ?>"><a href="<?= Factshift::_()->IoC->router->generate_url('login') ?>">Login</a></li>
                     <?php else: ?>
                         <li class="<?= $current_route_name == 'user_home' ? 'active' : '' ?>">
-                            <a href="<?= App::_()->IoC->router->generate_url('user_home') ?>">Home ~ <?= $User->alias ?></a></li>
-                        <li class="<?= $current_route_name == 'logout' ? 'active' : '' ?>"><a href="<?= App::_()->IoC->router->generate_url('logout') ?>">Log out</a></li>
+                            <a href="<?= Factshift::_()->IoC->router->generate_url('user_home') ?>">Home ~ <?= $User->alias ?></a></li>
+                        <li class="<?= $current_route_name == 'logout' ? 'active' : '' ?>"><a href="<?= Factshift::_()->IoC->router->generate_url('logout') ?>">Log out</a></li>
                     <?php endif; ?>
-                    <li class="<?= $current_route_name == 'page_home' ? 'active' : '' ?>"><a href="<?= App::_()->IoC->router->generate_url('page_home') ?>">Topics</a></li>
+                    <li class="<?= $current_route_name == 'page_home' ? 'active' : '' ?>"><a href="<?= Factshift::_()->IoC->router->generate_url('page_home') ?>">Topics</a></li>
                 </ul>
                 <!--		    CHANGE THE FORM ACTION-->
                 <form action="" role="search" id="main-search-form">

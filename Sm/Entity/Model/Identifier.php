@@ -8,6 +8,7 @@
 namespace Sm\Entity\Model;
 
 
+use Sm\Core\App;
 use Sm\Core\Util;
 use Sm\Development\Log;
 
@@ -29,7 +30,7 @@ class Identifier {
      * @param $entity_type
      */
     public function __construct($id = null, $ent_id = null, $entity_type = null) {
-        if (EntityMeta::is_ent_id($id)) {
+        if (App::_()->IoC->EntityMeta->is_ent_id($id)) {
             $ent_id = $id;
             $id     = null;
         }
@@ -57,7 +58,7 @@ class Identifier {
      */
     public function setId($id) {
         if (!is_int($id)) {
-            Log::init([ $id, EntityMeta::is_ent_id($id), substr($id, 0, 4) ])->log_it();
+            Log::init([ $id, App::_()->IoC->EntityMeta->is_ent_id($id), substr($id, 0, 4) ])->log_it();
             return;
         }
         $this->id = $id;

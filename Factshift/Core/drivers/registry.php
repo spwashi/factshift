@@ -7,10 +7,14 @@
 
 ########################################################################################################################
 return [
-    'session'    => new Factshift\Libs\Session\Session(),
-    'connection' => Sm\Database\Connection::init('localhost',
-                                                 'codozsqq',
-                                                 '^bzXfxDc!Dl6',
-                                                 'factshift')->connect(),
+    'session'           => new Factshift\Libs\Session\Session(),
+    'config_connection' => Sm\Database\Connection::init('localhost',
+                                                        'codozsqq',
+                                                        '^bzXfxDc!Dl6',
+                                                        'factshift_config')->connect(),
+    'connection'        => Sm\Database\Connection::init('localhost',
+                                                        'codozsqq',
+                                                        '^bzXfxDc!Dl6',
+                                                        'factshift')->connect(),
 ];
 ########################################################################################################################

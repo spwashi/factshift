@@ -9,7 +9,6 @@ namespace Factshift\Entity\Relationship;
 
 
 use Factshift\Entity\Abstraction\FactshiftEntity;
-use Sm\Entity\Model\EntityMeta;
 
 class RelationshipIndex extends \Sm\Entity\Relationship\RelationshipIndex {
     /** @var FactshiftEntity $CurrentContext The current context in which these relationships are valid */
@@ -24,16 +23,16 @@ class RelationshipIndex extends \Sm\Entity\Relationship\RelationshipIndex {
         $Map                        = parent::initMap($OtherEntity, $Map);
         $relationship_is_reciprocal = strpos($this->relationship_index, 'reciprocal_') === 0;
         # --- Make sure the map indices are set! Might not be right?
-        $self_map_index  = EntityMeta::get_index_from_linked_entity([
+        $self_map_index  = Factshift::_()->IoC->EntityMeta->get_index_from_linked_entity([
                                                                         $this->Entity,
                                                                         $OtherEntity,
                                                                     ], $this->Entity, $relationship_is_reciprocal);
-        $other_map_index = EntityMeta::get_index_from_linked_entity([
+        $other_map_index = Factshift::_()->IoC->EntityMeta->get_index_from_linked_entity([
                                                                         $this->Entity,
                                                                         $OtherEntity,
                                                                     ], $OtherEntity, !$relationship_is_reciprocal);
         
-        $_em_relationship_types = EntityMeta::get_enum_value('relationship_types');
+        $_em_relationship_types = Factshift::_()->IoC->EntityMeta->get_enum_value('relationship_types');
         $relationship_index     = str_replace('reciprocal_', '', static::interpret_relationship_index($this->relationship_index));
         if (($_em_relationship_types[ $relationship_index ]?? false) &&
             ($relationship_type = ($_em_relationship_types[ $relationship_index ]['id'] ?? false)) &&

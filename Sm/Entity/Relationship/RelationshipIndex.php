@@ -8,10 +8,10 @@
 namespace Sm\Entity\Relationship;
 
 
+use Sm\Core\App;
 use Sm\Core\Inflector;
 use Sm\Entity\Abstraction\Entity;
 use Sm\Entity\Model\Abstraction\Model;
-use Sm\Entity\Model\EntityMeta;
 use Sm\Entity\Model\Identifier;
 use Sm\Identifier\Identifiable;
 use Sm\Identifier\UnidentifiableError;
@@ -62,9 +62,9 @@ class RelationshipIndex extends Iterator implements \JsonSerializable {
     public function initOtherEntity($OtherEntity) {
         if (!$OtherEntity || !($OtherEntity instanceof Entity)) {
             $Identifier        = $OtherEntity instanceof Identifier ? $OtherEntity : null;
-            $other_entity_type = EntityMeta::relationship_index_to_entity_type($this->Entity, $this->relationship_index);
+            $other_entity_type = App::_()->IoC->EntityMeta->relationship_index_to_entity_type($this->Entity, $this->relationship_index);
             try {
-                $OtherEntity = EntityMeta::entity_type_to_class($other_entity_type);
+                $OtherEntity = App::_()->IoC->EntityMeta->entity_type_to_class($other_entity_type);
                 if ($Identifier) $OtherEntity->findModel($Identifier);
             } catch (\Exception $e) {
                 return false;
@@ -74,9 +74,9 @@ class RelationshipIndex extends Iterator implements \JsonSerializable {
     }
     public function initMap($OtherEntity, $Map = null) {
         if (!$Map || !($Map instanceof Model)) {
-            $map_type = EntityMeta::convert_linked_entities_to_model_type([ $this->Entity, $OtherEntity ]);
+            $map_type = App::_()->IoC->EntityMeta->convert_linked_entities_to_model_type([ $this->Entity, $OtherEntity ]);
             try {
-                $Map = EntityMeta::model_type_to_class($map_type);
+                $Map = App::_()->IoC->EntityMeta->model_type_to_class($map_type);
             } catch (\Exception $e) {
                 return false;
             }
@@ -225,7 +225,7 @@ class RelationshipIndex extends Iterator implements \JsonSerializable {
      */
     public function getItems($index = null) {
         $index          = strtolower($index);
-        $entity_type    = EntityMeta::convert_to_something($index);
+        $entity_type    = App::_()->IoC->EntityMeta->convert_to_something($index);
         $index_singular = Inflector::singularize($index);
         $index_plural   = Inflector::pluralize($index);
         $is_same_index  = ($index == $this->relationship_index) || ($index_singular == $this->index_singular) || ($index_plural == $this->relationship_index);

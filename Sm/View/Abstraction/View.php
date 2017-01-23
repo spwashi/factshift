@@ -23,6 +23,7 @@ abstract class View {
     protected $title        = null;
     protected $subtitle     = null;
     protected $content;
+    protected $App;
     
     
     public function __toString() {
@@ -45,16 +46,18 @@ abstract class View {
     /**
      * Create a view based on a pre-existing file. This will get overridden by other types later (like if you want to include a JSON file or something like that)
      *
-     * @param string $path            The path to the file to be included. Could be an HTML or PHP file- just include the extension
-     * @param array  $data            Any variables that must be included for the file to operate correctly. Must be in a key=>value type map with indices matching the name of the variable.
-     * @param bool   $is_in_view_path If the view is not going to be in the app-specified view path (like if we are using a view from another app or location) mark this as false to flag the path as
-     *                                absolute
+     * @param string            $path            The path to the file to be included. Could be an HTML or PHP file- just include the extension
+     * @param array             $data            Any variables that must be included for the file to operate correctly. Must be in a key=>value type map with indices matching the name of the variable.
+     * @param bool              $is_in_view_path If the view is not going to be in the app-specified view path (like if we are using a view from another app or location) mark this as false to flag the path as
+     *                                           absolute
+     *
+     * @param null|\Sm\Core\App $App
      *
      * @return static
      */
-    static public function create($path, $data = [ ], $is_in_view_path = true) {
+    static public function create($path, $data = [ ], $is_in_view_path = true, App $App = null) {
         $view = new static(null);
-        $path = ($is_in_view_path ? App::_()->Paths->view : '') . $path;
+        $path = ($is_in_view_path ? ($App ?? App::_())->Paths->view : '') . $path;
         ob_start();
         try {
             $result = Util::includeWithVariables($path, $data, true, false);
@@ -80,6 +83,10 @@ abstract class View {
 #########################################################
 #            Getters and Setters                        #
 #########################################################
+    public function setApp(App $APP) {
+        $this->App = $APP;
+        return $this;
+    }
     /**
      * View content getter
      *
@@ -152,7 +159,7 @@ abstract class View {
         $content        = $this->content;
         $template_value = 1;
         if (!($template_or_view instanceof View)) {
-            if ($is_in_template_path) $template_or_view = App::_()->Paths->template . $template_or_view;
+            if ($is_in_template_path) $template_or_view = ($this->App ?? App::_())->Paths->template . $template_or_view;
             ob_start();
             try {
                 $template_value = Util::includeWithVariables($template_or_view, [ ], true, false);

@@ -10,7 +10,6 @@ namespace Sm\Entity\Abstraction;
 
 use Sm\Core\App;
 use Sm\Entity\Model\Abstraction\Model;
-use Sm\Entity\Model\EntityMeta;
 use Sm\Entity\Model\Identifier;
 use Sm\Entity\Model\ModelNotFoundException;
 use Sm\Entity\Relationship\RelationshipIndexContainer;
@@ -79,7 +78,7 @@ abstract class Entity implements \JsonSerializable, Identifiable, Validated {
      * @return array|mixed
      */
     public function getDefaultAttributes() {
-        return EntityMeta::get_entity_type_properties($this->_entity_type);
+        return App::_()->IoC->EntityMeta->get_entity_type_properties($this->_entity_type);
     }
     /**
      * Get an attribute of an Entity
@@ -161,7 +160,7 @@ abstract class Entity implements \JsonSerializable, Identifiable, Validated {
      * @return mixed
      */
     public function getEntityType() {
-        return $this->_entity_type ?? static::$entity_type ?? EntityMeta::convert_to_something(static::class);
+        return $this->_entity_type ?? static::$entity_type ?? App::_()->IoC->EntityMeta->convert_to_something(static::class);
     }
     /**
      * @return \Sm\Entity\Validation\EntityValidator|\Sm\Validation\Abstraction\Validator|\Sm\Validation\RejectingValidator
@@ -209,10 +208,10 @@ abstract class Entity implements \JsonSerializable, Identifiable, Validated {
      * @return bool
      */
     public function makeModels() {
-        $model_type = EntityMeta::entity_type_to_model_type($this->_entity_type);
+        $model_type = App::_()->IoC->EntityMeta->entity_type_to_model_type($this->_entity_type);
         if (is_array($model_type)) return false;
         try {
-            $this->PrimaryModel = EntityMeta::model_type_to_class($model_type);
+            $this->PrimaryModel = App::_()->IoC->EntityMeta->model_type_to_class($model_type);
             $this->PrimaryModel->set($this->attributes);
         } catch (\Exception $e) {
             return false;

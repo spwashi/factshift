@@ -285,7 +285,7 @@ class API extends Controller {
             # only operate on the indexes (not the values)
             if ($index % 2 !== 0 && $index != 0) continue;
             # Make sure the table name is the way we think it should be
-            $entity_name = EntityMeta::convert_to_something($endpoint_name, EntityMeta::TYPE_ENTITY_TYPE);
+            $entity_name = App::_()->IoC->EntityMeta->convert_to_something($endpoint_name, EntityMeta::TYPE_ENTITY_TYPE);
             
             
             #An object of the resource and the identifier that is associated with it

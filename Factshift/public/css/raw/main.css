@@ -1591,6 +1591,50 @@ body > .row,
   position: relative;
   max-width: 100%;
 }
+.dev-container {
+  width: 100%;
+  border-top: thin solid #ccc;
+  border-collapse: collapse;
+  box-sizing: border-box;
+  padding-bottom: 15px;
+  zoom: 1;
+}
+.dev-container:after {
+  clear: both;
+}
+.dev-container:before,
+.dev-container:after {
+  content: '\0020';
+  display: block;
+  overflow: hidden;
+  visibility: hidden;
+  width: 0;
+  height: 0;
+}
+.dev-container > button {
+  border-left: thin solid #aaa;
+  border-right: thin solid #aaa;
+}
+.dev-container > * {
+  float: left;
+  width: 20%;
+  height: 100%;
+  padding: 2px 5px;
+  margin: auto 2px;
+  border-left: thin solid #ccc;
+  border-radius: 0;
+}
+.dev-container > *:first-child {
+  margin: 0;
+  border-left: none;
+}
+.dev-container .display-container {
+  width: 100%;
+  clear: both;
+}
+.dev-container .display-container:empty {
+  display: none;
+}
 .factshift-section,
 .factshift-collection.preview,
 .factshift-dictionary.preview,

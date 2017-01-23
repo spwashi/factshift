@@ -7,6 +7,7 @@
 
 namespace Factshift\Controller\Abstraction;
 
+use Factshift\Core\Factshift;
 use Sm\View\View;
 
 /**
@@ -17,11 +18,12 @@ use Sm\View\View;
  */
 abstract class Controller extends \Sm\Controller\Abstraction\Controller {
     /** @var View */
-    public $view;
+    public $View;
     
     public function __construct() {
         /** @var View view */
         $this->View = View::init()
+                          ->setApp(Factshift::_())
                           ->enforceTemplate('test/layout.php')
                           ->insertContent('Facts the way you need them', '{{site_description}}');
     }

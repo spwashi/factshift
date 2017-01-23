@@ -10,16 +10,14 @@ return [
         'http_method' => 'all',
         'app'         => 'Factshift',
         #Set the callback to '_load_app' to make this only load the desired application. Then, if there is no matching route,
-        'callback'    => '_load_app'
+        'callback'    => '_load_app',
     ],
     [
         'http_method' => 'all',
-        'pattern'     => 'h',
-        'app'         => 'Honor',
+        'pattern'     => 's_dev/dev/',
+        'app'         => 'FactshiftDev',
         #Set the callback to '_load_app' to make this only load the desired application. Then, if there is no matching route,
         'callback'    => '_load_app',
-        #Strip removes the /h/ from the pattern because all of the routes in that application are written without it
-        'strip'       => true
     ],
     [
         'http_method' => 'all',
@@ -27,13 +25,12 @@ return [
         'app'         => 'Factshift',
         #Set the callback to '_load_app' to make this only load the desired application. Then, if there is no matching route,
         'callback'    => '_load_app',
-        'strip'       => true
     ],
     [
         'http_method' => 'all',
         'pattern'     => 'error/404',
         'callback'    => 'response@error_404',
         #We name the route to be able to use it elsewhere
-        'name'        => '404'
+        'name'        => '404',
     ],
 ];

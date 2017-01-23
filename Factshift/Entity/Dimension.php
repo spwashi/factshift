@@ -8,13 +8,9 @@
 namespace Factshift\Entity;
 
 
-use Sm\Action\Create\CreateVictim;
-use Sm\Action\Edit\EditVictim;
-use Sm\Entity\Action\Create\CreateEntityVictimTrait;
-use Sm\Entity\Action\Edit\EditEntityVictimTrait;
 use Factshift\Entity\Abstraction\FactshiftEntity;
 
-class Dimension extends FactshiftEntity implements EditVictim, CreateVictim {
+class Dimension extends FactshiftEntity  {
     static $entity_type = 'Dimension';
-    use EditEntityVictimTrait, CreateEntityVictimTrait;
+    
 }

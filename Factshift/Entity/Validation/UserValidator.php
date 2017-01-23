@@ -8,9 +8,9 @@
 namespace Factshift\Entity\Validation;
 
 
+use Factshift\Core\Factshift;
 use Factshift\Entity\Model\UserModel;
 use Factshift\Entity\Validation\Abstraction\EntityValidator;
-use Sm\Core\App;
 use Sm\Entity\Model\ModelNotFoundException;
 use Sm\Environment\Environment;
 use Sm\Response\Response;
@@ -39,7 +39,7 @@ class UserValidator extends EntityValidator {
                 'password',
                 'email',
             ];
-            if (App::_()->Environment && App::_()->Environment->getEntryPoint() === Environment::EP_FRONT_END) {
+            if (Factshift::_()->Environment && Factshift::_()->Environment->getEntryPoint() === Environment::EP_FRONT_END) {
                 $this->required_attributes[] = 'password_verify';
             }
         }

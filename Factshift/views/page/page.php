@@ -10,7 +10,6 @@ use Factshift\Entity\Dimension;
 use Factshift\Entity\Page;
 use Factshift\Entity\Validation\PageValidator;
 use Factshift\User\AppUser;
-use Sm\Entity\Model\EntityMeta;
 use Sm\Response\Http;
 use Sm\Security\XSS;
 
@@ -143,7 +142,7 @@ $urls['view'] = Factshift::_()->IoC->router->generate_url('page_view', [ $Page->
     </div>
 </article>
 
-<script id="factshift_config" type="application/json"><?= json_encode(EntityMeta::dump()) ?></script>
+<script id="factshift_config" type="application/json"><?= json_encode(Factshift::_()->IoC->EntityMeta->dump()) ?></script>
 <script id="section_models" type="application/json"><?= $sections ?? "" ?></script>
 <script id="dimension_models" type="application/json"><?= json_encode($Page->relationships->dimensions->getItems('dimension')) ?></script>
 <script id="user_models" type="application/json"><?= $User ?? "" ?></script>

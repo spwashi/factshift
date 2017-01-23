@@ -264,6 +264,40 @@ body > .row,
     }
 }
 
+.dev-container {
+    width           : 100%;
+    border-top      : thin solid #ccc;
+    border-collapse : collapse;
+    box-sizing      : border-box;
+    padding-bottom  : 15px;
+    .clearfix;
+    > button {
+        border-left  : thin solid #aaa;
+        border-right : thin solid #aaa;
+    }
+    > * {
+        float         : left;
+        width         : 20%;
+        height        : 100%;
+        padding       : 2px 5px;
+        margin        : auto 2px;
+        border-left   : thin solid #ccc;
+        border-radius : 0;
+        &:first-child {
+            margin      : 0;
+            border-left : none;
+        }
+    }
+    
+    .display-container {
+        width : 100%;
+        clear : both;
+        &:empty {
+            display : none;
+        }
+    }
+}
+
 @subsection-padding : 20px;
 .factshift-section, .factshift-collection.preview, .factshift-dictionary.preview, .concept.preview {
     position           : relative;

@@ -4,10 +4,9 @@
  * Date: 6/20/15
  * Time: 8:29 PM
  */
+use Factshift\Core\Factshift;
 use Factshift\Entity\Model\PageModel;
 use Factshift\Entity\Page;
-use Factshift\Libs\Session\Session;
-use Sm\Core\App;
 use Sm\Entity\EntityIterator;
 use Sm\Entity\Model\EntityMeta;
 use Sm\Entity\Model\ModelNotFoundException;
@@ -15,10 +14,10 @@ use Sm\Entity\Model\ModelNotFoundException;
 $page_models  = [ ];
 $user_id      = null;
 $PageIterator = new EntityIterator;
-if ($user = App::_()->IoC->session->getUser()) {
+if ($user = Factshift::_()->IoC->session->getUser()) {
     try {
         $user_id     = $user->id;
-        $page_models = PageModel::findAll([ 'user_id' => $user_id ], EntityMeta::get_entity_type_properties('Page', EntityMeta::FIND_API_GETTABLE));
+        $page_models = PageModel::findAll([ 'user_id' => $user_id ], Factshift::_()->IoC->EntityMeta->get_entity_type_properties('Page', EntityMeta::FIND_API_GETTABLE));
         foreach ($page_models as $page) {
             $PageEntity = Page::initFromModel($page);
             $PageIterator->push($PageEntity);
@@ -41,7 +40,7 @@ if ($user = App::_()->IoC->session->getUser()) {
                 foreach ($PageIterator as $index => $item) :?>
                     <li title="<?= htmlentities($item->description) ?>">
                         <?php $url = 'page_view' ?>
-                        <a data-ent_id="<?= $item->ent_id ?>" href="<?= App::_()->IoC->router->generate_url($url, [ $item->context, $item->alias ]) ?>">
+                        <a data-ent_id="<?= $item->ent_id ?>" href="<?= Factshift::_()->IoC->router->generate_url($url, [ $item->context, $item->alias ]) ?>">
                             <?= htmlentities($item->title) ?> - <em><?= htmlentities($item->subtitle) ?></em>
                         </a>
                     </li>
@@ -59,7 +58,7 @@ if ($user = App::_()->IoC->session->getUser()) {
     </header>
     <section class="content">
         <ul>
-            <li><a href="<?= App::_()->IoC->router->generate_url('page_create') ?>">Create a page</a></li>
+            <li><a href="<?= Factshift::_()->IoC->router->generate_url('page_create') ?>">Create a page</a></li>
         </ul>
     </section>
 </article>

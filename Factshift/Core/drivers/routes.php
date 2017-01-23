@@ -6,7 +6,7 @@
  */
 
 return [
-    'home' => [ 'pattern' => 's', 'callback' => 'HomeController@index', ],
+    'home' => [ 'pattern' => '', 'callback' => 'HomeController@index', ],
     
     'user_home' => [ 'pattern' => 'user$', 'callback' => 'User\UserController@home', ],
     'login'     => [ 'pattern' => 'user/login', 'callback' => 'User\UserController@login', ],

@@ -9,17 +9,19 @@
  * Very tightly coupled with the
  */
 
-use Sm\Core\App;
+use FactshiftDev\Core\FactshiftDev;
 use Sm\Core\Inflector;
 use Sm\Core\Util;
 use Sm\Entity\Model\EntityMeta;
 
-$path       = App::_()->Paths->driver . 'models.php';
-$model_file = file_get_contents(App::_()->Paths->model . 'Abstraction/Model.dummy', FILE_USE_INCLUDE_PATH);
-$mf_array   = [ ];
-$models     = include ($path) ?? [ ];
-$m_tables   = $models['models'] ?? false;
-if (!$m_tables) return [ ];
+$App = FactshiftDev::_();
+
+
+$path     = $App->Paths->driver . 'models.php';
+$mf_array = [ ];
+$models   = include ($path) ?? [ ];
+$m_tables = $models['models'] ?? false;
+if (!$m_tables) return [ null ];
 $tables      = [ ];
 $value_table = [ ];
 $end_insert  = [ ];
@@ -85,48 +87,13 @@ foreach ($m_tables as $model_name => $model_details) {
             ksort($values);
             $insert = "INSERT INTO {$table_name}(id, alias) VALUES ";
             $v      = [ ];
+            asort($values);
             foreach ($values as $value => $id) {
                 $v[]         = "($id, '" . str_replace('_', '-', strtolower($value)) . "')";
                 $variables[] = "\tTYPE_" . strtoupper($value) . "\t= {$id}";
             }
             $insert .= implode(',', $v) . '';
             $end_insert[] = $insert;
-        }
-        if ($model_file) {
-            
-            $folder          = $cn_impl !== "" ? implode('', $cn_exp) : "";
-            $ns              = trim(App::_()->name . '\\Models\\' . $cn_impl, '\\');
-            $self_model_file = str_replace([
-                                               '{$CLASS_NAME$}',
-                                               '{$NAMESPACE$}',
-                                               '{$DATE$}',
-                                               '{$TIME$}',
-                                               '{$PROPERTIES$}',
-                                               '{$MAIN_STRING_KEY$}',
-                                               '{$VARIABLES$}',
-                
-                                               '{$APP_NAME$}',
-                                               '{$DESCRIPTION$}',
-                                           ],
-                                           [
-                                               $class_name,
-                                               $ns,
-                                               date('j/m/Y'),
-                                               date("H:i:s"),
-                                               $prop_string,
-                                               (in_array('alias', $properties) ? 'alias' :
-                                                   (in_array('ent_id', $properties) ? 'ent_id' :
-                                                       (in_array('title', $properties) ? 'title' : ''))),
-                                               implode("\n", $variables),
-                
-                                               App::_()->name,
-                                               $description ? $description : "Model {$class_name} Class",
-                                           ], $model_file);
-            if ($folder != false) {
-                $mf_array[ $folder ]   = $mf_array[ $folder ] ??[ ];
-                $mf_array[ $folder ][] = $self_model_file;
-            }
-            $mf_array[] = $self_model_file;
         }
     }
 }
@@ -164,9 +131,10 @@ foreach ($tables as $table => $properties) {
                     $end_of_query_array[] = "PRIMARY KEY ({$property_name})";
                 } else {
                     $query_array[] = "{$property_name} INT($integer_length) UNSIGNED NULL";
-                    if ($ty == 'id' || $ty == 'tiny_id') {
-                        $other_table = EntityMeta::convert_to_something($property_name, EntityMeta::TYPE_TABLE);
-                    } else {
+                    $is_id         = $ty == 'id' || $ty == 'tiny_id';
+                    $other_table   = '';
+                    if ($is_id) $other_table = $App->IoC->EntityMeta->convert_to_something($property_name, EntityMeta::TYPE_TABLE);
+                    if (!$is_id || empty($other_table)) {
                         $other_table = Inflector::pluralize($property_name);
                     }
                     
@@ -207,8 +175,9 @@ $res_small = str_replace([ "\n", "\t" ], "", $aq_impl) . "\n" . str_replace([ "\
 /** @var string $res_html Another way to represent the query. Just puts everything in a "pre" tag */
 $res_html = "<pre>{$aq_impl}</pre><pre>{$sq_impl}</pre><div><pre>{$f_impl}</pre></div>";
 //return '<pre>' . Log::styleArray($mf_array) . '</pre>';
-return array_merge($aggregate_query_array, $secondary_query);
+
 return "<pre>$res_html</pre>";
+return array_merge($aggregate_query_array, $secondary_query);
 return $res;
 return "<pre>$model_file</pre>";
 return $res_html;

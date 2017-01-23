@@ -2,7 +2,7 @@
  * Created by Sam Washington on 11/8/16.
  */
 define(['require', 'Sm', 'Emitter', 'Sm-Core-Core'], function (require, Sm, Emitter) {
-    var entity_config_object = Sm.Entities._info.entities;
+    var entity_config_object = Sm.Entities._info.entities || {};
 
     /**
      * @class Sm.Core.SmEntity
@@ -19,7 +19,7 @@ define(['require', 'Sm', 'Emitter', 'Sm-Core-Core'], function (require, Sm, Emit
                 this.entity_type         = entity_type || this.entity_type || false;
                 this.Abstraction         = this.Abstraction || {};
                 this.templates           = this.templates || {};
-                this._info               = Sm.Entities._info.entities[entity_type];
+                this._info               = entity_config_object[entity_type];
                 if (this.entity_type) {
                     this._createDefaultProperties();
                     Sm.Core.dependencies.add('SmEntity:' + this.entity_type);

@@ -16,7 +16,6 @@ use Sm\Entity\Abstraction\Entity;
 use Sm\Entity\Action\Create\CreateEntityVictimTrait;
 use Sm\Entity\Action\Destroy\DestroyEntityVictimTrait;
 use Sm\Entity\Action\Edit\EditEntityVictimTrait;
-use Sm\Entity\Model\EntityMeta;
 use Sm\Identifier\Identifiable;
 use Sm\Validation\Abstraction\Validator;
 
@@ -70,7 +69,7 @@ class RelationshipEntity extends Entity implements \JsonSerializable, EditVictim
      */
     public function getItems($identifier = null) {
         if (!$identifier) return $this->Entities;
-        $entity_type = EntityMeta::convert_to_something($identifier);
+        $entity_type = App::_()->IoC->EntityMeta->convert_to_something($identifier);
         $items       = [ ];
         
         
@@ -111,7 +110,7 @@ class RelationshipEntity extends Entity implements \JsonSerializable, EditVictim
         return false;
     }
     public function getEntityType() {
-        return $this->linked_entity_string ?? ($this->linked_entity_string = EntityMeta::get_linked_entity_string($this->Entities));
+        return $this->linked_entity_string ?? ($this->linked_entity_string = App::_()->IoC->EntityMeta->get_linked_entity_string($this->Entities));
     }
     public function getValidator() : Validator {
         $model_type = null;

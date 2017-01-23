@@ -8,12 +8,12 @@
 namespace Factshift\Entity;
 
 
+use Factshift\Core\Factshift;
 use Factshift\Entity\Abstraction\FactshiftEntity;
 use Factshift\Libs\Validation\SectionValidator;
 use Sm\Action\Create\CreateVictim;
 use Sm\Action\Destroy\DestroyVictim;
 use Sm\Action\Edit\EditVictim;
-use Sm\Core\App;
 use Sm\Entity\Action\Create\CreateEntityVictimTrait;
 use Sm\Entity\Action\Destroy\DestroyEntityVictimTrait;
 use Sm\Entity\Action\Edit\EditEntityVictimTrait;
@@ -38,7 +38,7 @@ class Section extends FactshiftEntity implements EditVictim, CreateVictim, Destr
     static $entity_type = 'Section';
     use EditEntityVictimTrait, CreateEntityVictimTrait, DestroyEntityVictimTrait;
     public function createView() {
-        return View::create(App::_()->Paths->template . '/entities/section/template.php', [
+        return View::create(Factshift::_()->Paths->template . '/entities/section/template.php', [
             'Section' => $this,
         ], false);
     }

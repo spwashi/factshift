@@ -43,7 +43,7 @@ class EntityValidator extends Validator {
             $environment_is_api = $environment->getEntryPoint() === Environment::EP_API;
             $entity_type        = static::$entity_type ? static::$entity_type : ($this->Resource ? $this->Resource->getEntityType() : null);
             if ($environment_is_api)
-                $this->allowed_attributes = EntityMeta::get_entity_type_properties($entity_type, EntityMeta::FIND_API_SETTABLE);
+                $this->allowed_attributes = App::_()->IoC->EntityMeta->get_entity_type_properties($entity_type, EntityMeta::FIND_API_SETTABLE);
         } catch (\Exception $e) {
         }
     }

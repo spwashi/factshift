@@ -4,9 +4,8 @@
  * Date: 6/13/15
  * Time: 6:28 PM
  */
-use Sm\Core\App;
 
-$nonce     = App::_()->IoC->session->generate_nonce('frm-user_signup');
+$nonce     = Factshift::_()->IoC->session->generate_nonce('frm-user_signup');
 $post_data = isset($post_data) ? $post_data : [ ];
 $result    = isset($result) ? $result : [ ];
 ?>

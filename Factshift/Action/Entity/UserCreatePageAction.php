@@ -8,13 +8,13 @@
 namespace Factshift\Action\Entity;
 
 
+use Factshift\Core\Factshift;
 use Factshift\Entity\Dimension;
 use Factshift\Entity\Page;
 use Factshift\User\AppUser;
 use Sm\Action\Create\CreateActionResponse;
 use Sm\Development\Log;
 use Sm\Entity\Action\Create\CreateEntityAction;
-use Sm\Entity\Model\EntityMeta;
 use Sm\Response\ResponseMessage;
 
 class UserCreatePageAction extends CreateEntityAction {
@@ -50,8 +50,8 @@ class UserCreatePageAction extends CreateEntityAction {
         if (!$CreateDimensionResponse->getStatus()) return $CreateDimensionResponse;
         Log::init($StandardFirstDimension)->log_it();
         try {
-            $relationship_model_type = EntityMeta::convert_linked_entities_to_model_type([ $Page, $StandardFirstDimension ]);
-            $Map                     = EntityMeta::model_type_to_class($relationship_model_type);
+            $relationship_model_type = Factshift::_()->IoC->EntityMeta->convert_linked_entities_to_model_type([ $Page, $StandardFirstDimension ]);
+            $Map                     = Factshift::_()->IoC->EntityMeta->model_type_to_class($relationship_model_type);
             $Map->set([ 'dimension_role' => 1, 'position' => 1 ]);
             $Relationship = $Page->relateEntity('dimensions', $StandardFirstDimension, $Map);
             if ($Relationship) return $User->initCreateActionAsActor($Relationship, $Relationship)->execute();

@@ -7,8 +7,8 @@
 
 namespace Factshift\Libs\Session;
 
+use Factshift\Core\Factshift;
 use Factshift\User\AppUser;
-use Sm\Core\App;
 use Sm\Core\Util;
 use Sm\Response\Http;
 
@@ -16,7 +16,7 @@ class Session extends \Sm\Session\Session {
     public function require_user_or_redirect(&$user, $url = null) {
         $user = $this->getUser();
         if (!($this->has_valid_user())) {
-            Http::redirect(App::_()->IoC->router->generate_url('login', null, $url ? [ 'goto' => $url ] : $url), true, 302);
+            Http::redirect(Factshift::_()->IoC->router->generate_url('login', null, $url ? [ 'goto' => $url ] : $url), true, 302);
         }
     }
     public function has_valid_user() {
@@ -43,7 +43,7 @@ class Session extends \Sm\Session\Session {
      */
     public function generate_nonce($form_name) {
         $nonce_name = 'nonce-' . $form_name;
-        $session    = App::_()->IoC->session;
+        $session    = Factshift::_()->IoC->session;
         if (!$session) return false;
         
         $session_nonce = $session->get($nonce_name);
@@ -54,7 +54,7 @@ class Session extends \Sm\Session\Session {
         return $nonce;
     }
     public function get_nonce($form_name) {
-        $session = App::_()->IoC->session;
+        $session = Factshift::_()->IoC->session;
         if (!$session) return false;
         
         $result = $session->get('nonce-' . $form_name);

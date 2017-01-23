@@ -8,12 +8,12 @@
 namespace Factshift\Controller\Page;
 
 use Factshift\Controller\Abstraction\Controller;
+use Factshift\Core\Factshift;
 use Factshift\Entity\Model\PageModel;
 use Factshift\Entity\Page;
 use Factshift\Libs\View\SectionViewCreator;
 use Factshift\User\AppUser;
 use Sm\Action\Exception\ActionException;
-use Sm\Core\App;
 use Sm\Development\Log;
 use Sm\Environment\Environment;
 use Sm\Process\Process;
@@ -33,12 +33,12 @@ class PageController extends Controller {
     public function create() {
         $error_messages = [ ];
         if (!empty($_POST)) {
-            $User   = App::_()->IoC->session->getUser();
+            $User   = Factshift::_()->IoC->session->getUser();
             $Page   = new Page;
             $Action = $User->initCreateActionAsActor($Page, $_POST);
             try {
                 $Response = $Action->execute();
-                if ($Response->getStatus()) Http::redirect(App::_()->IoC->router->generate_url('page_view', [ $Page->context, $Page->alias ]));
+                if ($Response->getStatus()) Http::redirect(Factshift::_()->IoC->router->generate_url('page_view', [ $Page->context, $Page->alias ]));
             } catch (ActionException $e) {
                 $error_messages = $e->getResponse()->getErrors();
             } catch (\Exception $e) {
@@ -55,7 +55,7 @@ class PageController extends Controller {
         $is_edit = $args[ count($args) - 1 ] == 'edit' ? true : false;
         $type    = $is_edit ? 'edit' : 'view';
         /** @var AppUser $user */
-        App::_()->IoC->session->require_user_or_redirect($user, App::_()->IoC->router->generate_url('page_view', [ $context_or_ent_id, $alias ]));
+        Factshift::_()->IoC->session->require_user_or_redirect($user, Factshift::_()->IoC->router->generate_url('page_view', [ $context_or_ent_id, $alias ]));
         
         $PageModel = PageModel::find([ 'alias' => $alias, 'context' => $context_or_ent_id ]);
         /** @var Page $Page */
@@ -69,7 +69,7 @@ class PageController extends Controller {
             if (!is_array($error_messages) || empty($error_messages)) {
                 if (isset($post_result['page'])) {
                     $Page                      = $post_result['page'];
-                    $success_redirect_location = App::_()->IoC->router->generate_url('page_view', [ $Page->context, $Page->alias, 'edit' ]);
+                    $success_redirect_location = Factshift::_()->IoC->router->generate_url('page_view', [ $Page->context, $Page->alias, 'edit' ]);
                 } else {
                     $success_redirect_location = URI::get_full_url();
                 }
@@ -101,7 +101,7 @@ class PageController extends Controller {
         
         $dictionaries = $user->findRelationshipIndex('dictionaries')->getItems('Dictionary');
         $debug        =
-            App::_()->Environment->getDevStatus() === Environment::ENV_DEV
+            Factshift::_()->Environment->getDevStatus() === Environment::ENV_DEV
                 ? ($_GET['debug'] ?? false)
                 : false;
         $debug        = true;
@@ -122,7 +122,8 @@ class PageController extends Controller {
         ];
         
         /** @var View $view */
-        $view         = $this->View;
+        $view = $this->View;
+        Log::init($this->View . '')->log_it();
         $page_sidebar = View::create('page/page_sidebar.php', $variables)->enforceTemplate('sidebar.php');
         $view
             ->setTitle($Page->title, $Page->subtitle)

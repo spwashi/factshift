@@ -9,6 +9,7 @@ namespace Sm\Core;
 
 use Sm\Database\Connection;
 use Sm\Database\Sql;
+use Sm\Entity\Model\EntityMeta;
 use Sm\Environment\Environment;
 use Sm\Router\Abstraction\Router;
 use Sm\Session\Session;
@@ -20,11 +21,13 @@ use Sm\Session\Session;
  *
  * @package Sm\Core
  *
- * @property-read Session     $session     The Session holder
- * @property-read Router      $router      Class to manage routing
- * @property-read Sql         $sql         Returns an instance of Sql
- * @property-read Connection  $connection  Connection to the database
- * @property-read Environment $environment The environment in which everything is happening
+ * @property-read Session     $session            The Session holder
+ * @property-read Router      $router             Class to manage routing
+ * @property-read Sql         $sql                Returns an instance of Sql
+ * @property-read EntityMeta  $EntityMeta         Contains some information about the app's Models and stuff
+ * @property-read Connection  $connection         Connection to the database
+ * @property-read Connection  $config_connection  Connection to the database
+ * @property-read Environment $environment        The environment in which everything is happening
  * @method string process_output($output)
  */
 class IoC {
@@ -34,7 +37,10 @@ class IoC {
     protected $session;
     protected $router;
     protected $sql;
+    /** @var  EntityMeta $EntityMeta */
+    protected $EntityMeta;
     protected $connection;
+    protected $config_connection;
     protected $environment;
     protected $output;
     

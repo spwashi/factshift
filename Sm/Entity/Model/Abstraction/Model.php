@@ -8,6 +8,7 @@
 namespace Sm\Entity\Model\Abstraction;
 
 
+use Sm\Core\App;
 use Sm\Development\Log;
 use Sm\Entity\Abstraction\Entity;
 use Sm\Entity\Model\EntityMeta;
@@ -82,9 +83,9 @@ abstract class Model implements \JsonSerializable, Identifiable {
     protected static function _init() {
         if (static::$is_init || (strpos(static::class, '@') && !static::$model_type)) return null;
         try {
-            static::$model_type = static::$model_type ?? EntityMeta::convert_to_something(static::class, EntityMeta::TYPE_MODEL_TYPE);
+            static::$model_type = static::$model_type ?? App::_()->IoC->EntityMeta->convert_to_something(static::class, EntityMeta::TYPE_MODEL_TYPE);
             if (!static::$model_type) throw new ModelNotFoundException([ "Model has no type", static::_log_() ], ModelNotFoundException::REASON_UNIMPLEMENTED);
-            static::$default_attributes = EntityMeta::get_model_type_properties(static::$model_type);
+            static::$default_attributes = App::_()->IoC->EntityMeta->get_model_type_properties(static::$model_type);
             if (!count(static::$default_attributes)) throw new ModelNotFoundException([ "Model has no properties", static::_log_() ], ModelNotFoundException::REASON_UNIMPLEMENTED);
             static::$is_init = true;
             return true;
@@ -316,9 +317,9 @@ abstract class Model implements \JsonSerializable, Identifiable {
         throw new ModelNotFoundException("No implemented method to find " . static::$model_type, ModelNotFoundException::REASON_UNIMPLEMENTED);
     }
     protected static function guess_attribute_from_value($value) {
-        if (EntityMeta::is_id($value)) return 'id';
+        if (App::_()->IoC->EntityMeta->is_id($value)) return 'id';
         if (filter_var($value, FILTER_VALIDATE_EMAIL)) return 'email';
-        if (EntityMeta::is_ent_id($value)) return 'ent_id';
+        if (App::_()->IoC->EntityMeta->is_ent_id($value)) return 'ent_id';
         return false;
     }
     public static function canFindAll() {

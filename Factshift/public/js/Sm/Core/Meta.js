@@ -201,7 +201,7 @@ require(['require', 'Emitter', 'Sm', 'underscore'], function (require, Emitter, 
             },
             initEntityPlaceholder:  function (attributes) {
                 var entity_type = this.entity_type || null;
-                var Meta        = Sm.Core.Identifier.getRootObjectAttribute('Placeholder', 'Meta');
+                var Meta        = Sm.Core.Identifier.getRootObjectAttribute('Placeholder', 'Meta') || Sm.Core.Meta;
                 var Entity      = Meta.initEntity(attributes);
                 return Entity;
             },

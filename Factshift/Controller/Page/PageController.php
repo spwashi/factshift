@@ -123,7 +123,6 @@ class PageController extends Controller {
         
         /** @var View $view */
         $view = $this->View;
-        Log::init($this->View . '')->log_it();
         $page_sidebar = View::create('page/page_sidebar.php', $variables)->enforceTemplate('sidebar.php');
         $view
             ->setTitle($Page->title, $Page->subtitle)

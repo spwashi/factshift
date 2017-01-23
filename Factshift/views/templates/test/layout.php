@@ -24,8 +24,8 @@ $current_route_name = Factshift::_()->IoC->router->get_matched_route_name();
     <!--    REQUIREMENT -->
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css">
     <script src="<?= Factshift::_()->IoC->router->generate_url('js', [ 'vendor/require.min.js' ]) ?>"></script>
-    <script type="application/javascript">var FACTSHIFT_BASE_URL = "<?= Factshift::_()->base_url ?>";</script>
-    <script type="application/javascript">var FACTSHIFT_JS_URL = "<?= Factshift::_()->IoC->router->generate_url('js', null) ?>";</script>
+    <script type="application/javascript">var APP_BASE_URL = "<?= Factshift::_()->base_url ?>";</script>
+    <script type="application/javascript">var APP_JS_URL = "<?= Factshift::_()->IoC->router->generate_url('js', null) ?>";</script>
 </head>
 <body id="com-factshift">
     <!--    HEADER      -->

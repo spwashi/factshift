@@ -19,7 +19,7 @@ use Sm\URI\URI;
  */
 class FactshiftDev extends App {
     protected $name             = 'FactshiftDev';
-    protected $base_url         = 'http://localhost/s_dev/';
+    protected $base_url         = 'http://localhost/s_dev/dev/';
     protected $site_title       = 'FactshiftDev';
     protected $site_title_short = 'FactshiftDev';
     

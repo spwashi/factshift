@@ -146,14 +146,13 @@ $urls['view'] = Factshift::_()->IoC->router->generate_url('page_view', [ $Page->
 <script id="section_models" type="application/json"><?= $sections ?? "" ?></script>
 <script id="dimension_models" type="application/json"><?= json_encode($Page->relationships->dimensions->getItems('dimension')) ?></script>
 <script id="user_models" type="application/json"><?= $User ?? "" ?></script>
-
 <script type="text/javascript">
-    require(['<?= Factshift::_()->base_url ?>resource/js/alpha/require_config.js'], function () {
-        require(['Promise', 'jquery', 'Sm', 'Sm-init'], function (P, $, Sm, init) {
-            if (!Promise) {P.polyfill();}
-            init();
-            require(['require', 'select2'], function (require) {});
-            require(['require', 'inflection'], function (require) {});
+    require([
+                '<?= Factshift::_()->IoC->router->generate_url('js-Sm-config')?>',
+                '<?= Factshift::_()->IoC->router->generate_url('js-app-config') ?>'
+            ], function () {
+        require(['Sm-init'], function () {
+            Sm.init({Section: ['SectionEntity'], Dimension: ['DimensionEntity'], Page: ['PageEntity']});
             require(['require', 'http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS_HTML-full'], function (require) {
                 MathJax.Hub.Config({tex2jax: {inlineMath: [["$", "$"]]}});
                 Sm.Core.dependencies.add('Vendor_MathJax');

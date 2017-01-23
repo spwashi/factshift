@@ -39,10 +39,16 @@ use Factshift\Core\Factshift;
 
 <script id="factshift_config" type="application/json"><?= json_encode(Factshift::_()->IoC->EntityMeta->dump()) ?></script>
 <script type="text/javascript">
-    require(['<?= Factshift::_()->base_url ?>resource/js/alpha/require_config.js'], function () {
-        require(['Promise', 'jquery', 'Sm', 'Sm-init'], function (P, $, Sm, init) {
-            if (!Promise) {P.polyfill();}
-            init();
+    require([
+                '<?= Factshift::_()->IoC->router->generate_url('js-Sm-config')?>',
+                '<?= Factshift::_()->IoC->router->generate_url('js-app-config') ?>'
+            ], function () {
+        require(['Sm-init'], function () {
+            Sm.init({Section: ['SectionEntity'], Dimension: ['DimensionEntity'], Page: ['PageEntity']});
+            require(['require', 'http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS_HTML-full'], function (require) {
+                MathJax.Hub.Config({tex2jax: {inlineMath: [["$", "$"]]}});
+                Sm.Core.dependencies.add('Vendor_MathJax');
+            });
             
             var get_dev_container = function ($child) {
                 return $child.closest('.dev-container');

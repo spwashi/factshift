@@ -102,13 +102,18 @@ class App implements \JsonSerializable {
      */
     public static function _($app_name = null) {
         if (isset($app_name)) {
-            if ($app_name == 'booting' && static::$booting_app_name) return static::_(static::$booting_app_name);
-            else if (isset(static::$instances[ $app_name ])) return static::$instances[ $app_name ];
+            if (isset(static::$instances[ $app_name ])) {
+                return static::$instances[ $app_name ];
+            }
         }
         $class_name_arr = explode('\\', static::class);
         $class_name     = $class_name_arr[ count($class_name_arr) - 1 ];
-        if ($class_name !== 'App' && isset(static::$instances[ $class_name ])) return static::$instances[ $class_name ];
-        if (App::$instance === null) App::$instance = new static('Sm');
+        if ($class_name !== 'App' && isset(static::$instances[ $class_name ])) {
+            return static::$instances[ $class_name ];
+        }
+        if (App::$instance === null) {
+            App::$instance = new static('Sm');
+        }
         return App::$instance;
     }
 #########################################################
@@ -121,15 +126,18 @@ class App implements \JsonSerializable {
      */
     public function boot() {
         if ($this->has_been_booted) return $this;
-        static::$booting_app_name = $this->name;
-        $result                   = $this->_boot_function($this->name);
+        $previous                    = static::$instances['active'] ?? null;
+        static::$instances['active'] = $this;
+        static::$booting_app_name    = $this->name;
+        $result                      = $this->_boot_function($this->name);
         if (!$result || !$this->is_bootable) {
             Log::init('Could not successfully boot the application "' . $this->name . '"')->log_it();
             $this->has_been_booted = false;
             return $this;
         }
-        $this->has_been_booted    = true;
-        static::$booting_app_name = null;
+        $this->has_been_booted       = true;
+        static::$booting_app_name    = null;
+        static::$instances['active'] = $previous;
         return $this;
     }
     /**
@@ -138,7 +146,10 @@ class App implements \JsonSerializable {
      * @return $this|\Sm\Core\App
      */
     public function set_as_main() {
-        if ($this->has_been_booted) return App::$instance = &$this;
+        if ($this->has_been_booted) {
+            static::$instances['active'] = $this;
+            return App::$instance = &$this;
+        }
         return $this;
     }
     /**
@@ -173,7 +184,10 @@ class App implements \JsonSerializable {
         if (file_exists("{$path}registry.php")) $this->IoC->register(require "{$path}registry.php");
         
         if (file_exists("{$path}helpers.php")) Helper::register(require "{$path}helpers.php");
-        if (file_exists("{$path}routes.php")) $this->IoC->router->register(require "{$path}routes.php");
+        if (file_exists("{$path}routes.php")) {
+            $routes = require "{$path}routes.php";
+            $this->IoC->router->register($routes);
+        }
         if (file_exists("{$path}models.php")) $this->IoC->register('EntityMeta', EntityMeta::init(require "{$path}models.php", $this));
         return true;
     }

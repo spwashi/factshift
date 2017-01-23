@@ -13,7 +13,10 @@ use Sm\Router\Router;
 ########################################################################################################################
 return [
     'session'           => new Sm\Session\Session,
-    'router.app'        => function () { return new Router; },
+    'router.app'        => function () {
+        $Router = new Router(App::_('active'));
+        return $Router;
+    },
     'connection'        => Sm\Database\Connection::init(),
     'config_connection' => Sm\Database\Connection::init(),
     'EntityMeta'        => new EntityMeta(),

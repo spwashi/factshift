@@ -26,6 +26,10 @@ return [
     'font' => [ 'pattern' => 'resource/font/{file}', 'callback' => 'File\Resource@font', ],
     'js'   => [ 'pattern' => 'resource/js/{file}', 'callback' => 'File\Resource@js', ],
     
+    'js-Sm-config'        => [ 'path' => 'resource/js/Sm/core_config.js' ],
+    'js-app-config'       => [ 'path' => 'resource/js/factshift/app_config.js' ],
+    'js-Factshift-config' => [ 'path' => 'resource/js/factshift/app_config.js' ],
+    
     [ 'pattern' => 'user/{method}', 'callback' => 'User\UserController@*', ],
     
     #---FOR THE SAKE OF DEPLOYMENT SCRIPTS------------------------------------------------#

@@ -5,7 +5,7 @@
  * @global
  * @type {{Core:{}, Extras: {}, Entities: {}, CONFIG:{}, Abstraction: {}, Exceptions: {}}}
  */
-var Sm = {};
+var Sm = window.Sm = {};
 define([
            'require',
            'jquery',

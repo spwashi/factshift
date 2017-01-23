@@ -58,7 +58,7 @@ abstract class Route {
      */
     public $parameters = [ ];
     /**
-     * If we're ever in the case where routing is defeerred to a different application ater the initial routing,
+     * If we're ever in the case where routing is deferred to a different application ater the initial routing,
      * this flag says whether or not we should strip the current URI from the route path.
      * For example, if we are in the initial router that delegates to other apps, there might be a prefix that is assumed to be appended in all the rest of the app's routes
      * like a /s/ for the factshift app. The apps in the factshift app may not be written with that /s/, it could just be there to tell us to switch.'
@@ -67,6 +67,7 @@ abstract class Route {
      * @var bool
      */
     public $strip = false;
+    public $path;
     
     /**
      * Call a route, return the result. The router probably returns this, then this in turn returns the raw output data
